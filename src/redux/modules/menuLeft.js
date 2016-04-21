@@ -1,23 +1,23 @@
-const INCREMENT = 'redux-example/counter/INCREMENT';
+const TOGGLE = 'ml/TOGGLE';
 
 const initialState = {
-  count: 0
+  toggled: false
 };
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
-    case INCREMENT:
-      const {count} = state;
+    case TOGGLE:
+      const {toggled} = state;
       return {
-        count: count + 1
+        toggled: !toggled
       };
     default:
       return state;
   }
 }
 
-export function increment() {
+export function toggle() {
   return {
-    type: INCREMENT
+    type: TOGGLE
   };
 }

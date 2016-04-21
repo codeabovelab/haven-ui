@@ -1,0 +1,78 @@
+@import "../../css/variables";
+
+$local-menu-min-width: 4rem;
+$local-menu-max-width: 12rem;
+$local-border: 1px solid lighten($brand-secondary, 10);
+
+@mixin big-left-collapsed {
+  width: $local-menu-min-width;
+  .mlHeader {
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .nav-pills .nav-item .nav-link {
+    padding-left: 0;
+    padding-right: 0;
+    text-align: center;
+    .label {
+      display: none;
+    }
+  }
+}
+
+.ml {
+  flex-shrink: 0;
+  flex-grow: 0;
+  background-color: $brand-secondary;
+  width: $local-menu-max-width;
+  border-right: $local-border;
+
+  .mlHeader {
+    height: 5rem;
+    padding-top: 1.4rem;
+    padding-right: 1rem;
+    font-size: 1rem;
+    .fa-bars {
+      color: #fff;
+      padding: 0.5rem 0.55rem 0.4rem;
+      border-radius: 0.2rem;
+      border: $local-border;
+      cursor: pointer;
+      transition: $transition-all;
+      &:hover {
+        background-color: darken($brand-secondary, 7);
+      }
+    }
+  }
+  .nav-pills {
+    overflow: hidden;
+    .nav-item {
+      color: white;
+      margin-top: 0;
+      transition: $transition-all;
+      border-bottom: $local-border;
+      &:hover {
+        background-color: darken($brand-secondary, 10);
+      }
+      .nav-link {
+        color: #fff;
+        white-space: nowrap; //not take 2 lines while toggling
+        .icon-container {
+          display: inline-block;
+          width: 1rem;
+        }
+      }
+    }
+    .nav-item:first-child {
+      border-top: $local-border;
+    }
+
+  }
+
+  transition: $transition-all;
+  &[data-toggle="true"] {
+    @include big-left-collapsed;
+  }
+}

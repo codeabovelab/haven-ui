@@ -1,0 +1,6 @@
+$transition-time: 0.3s;
+$transition-all: all 0.3s ease;
+
+//mixins
+@import "our_mixins";
+$brand-secondary: $brand-primary;

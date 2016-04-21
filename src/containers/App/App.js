@@ -6,7 +6,6 @@ import Navbar from 'react-bootstrap/lib/Navbar';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
 import Helmet from 'react-helmet';
-import { isLoaded as isInfoLoaded, load as loadInfo } from 'redux/modules/info';
 import { isLoaded as isAuthLoaded, load as loadAuth, logout } from 'redux/modules/auth';
 import { MenuLeft } from 'components';
 import { routeActions } from 'react-router-redux';
@@ -17,9 +16,6 @@ import { asyncConnect } from 'redux-async-connect';
   promise: ({store: {dispatch, getState}}) => {
     const promises = [];
 
-    if (!isInfoLoaded(getState())) {
-      promises.push(dispatch(loadInfo()));
-    }
     if (!isAuthLoaded(getState())) {
       promises.push(dispatch(loadAuth()));
     }
@@ -60,6 +56,7 @@ export default class App extends Component {
   render() {
     const {user} = this.props;
     const styles = require('./App.scss');
+    /*<div className={styles['full-page-container']}>*/
 
     return (
       <div className={styles.app}>
@@ -109,7 +106,7 @@ export default class App extends Component {
           </div>
 
           <div className="footer">
-            <div className="well text-center">
+            <div className="text-xs-center">
               &copy; {(new Date()).getFullYear()} Dockmaster
             </div>
           </div>

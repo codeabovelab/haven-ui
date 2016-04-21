@@ -17,7 +17,8 @@
     "no-console": 0,
     "no-alert": 0,
     "no-unused-vars": 0,
-    "spaced-comment": 0
+    "spaced-comment": 0,
+    "id-length": 0
   },
   "plugins": [
     "react", "import"
