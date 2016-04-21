@@ -6,3 +6,4 @@
  */
 
 export MenuLeft from './MenuLeft/MenuLeft';
+export Navbar from './Navbar/Navbar';

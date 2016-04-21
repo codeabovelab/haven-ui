@@ -1,3 +1,5 @@
+@import "../../css/variables";
+
 html, body, body > div {
   height: 100%;
 }
@@ -30,4 +32,13 @@ body {
       }
     }
   }
+}
+
+
+.footer {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-top: 1px solid $gray-lighter;
+  font-size: 0.8rem;
+  color: $gray;
 }

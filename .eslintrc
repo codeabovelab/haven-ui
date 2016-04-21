@@ -18,7 +18,8 @@
     "no-alert": 0,
     "no-unused-vars": 0,
     "spaced-comment": 0,
-    "id-length": 0
+    "id-length": 0,
+    "quotes": 0
   },
   "plugins": [
     "react", "import"

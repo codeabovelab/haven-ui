@@ -39,7 +39,7 @@ export default class ApiClient {
    *
    * Remove it at your own risk.
    */
-  func(){
+  func() {
 
   }
 }

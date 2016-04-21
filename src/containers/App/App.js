@@ -1,13 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { IndexLink } from 'react-router';
-import { LinkContainer } from 'react-router-bootstrap';
-import Navbar from 'react-bootstrap/lib/Navbar';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
 import Helmet from 'react-helmet';
-import { isLoaded as isAuthLoaded, load as loadAuth, logout } from 'redux/modules/auth';
-import { MenuLeft } from 'components';
+import { isLoaded as isAuthLoaded, load as loadAuth} from 'redux/modules/auth';
+import { MenuLeft, Navbar } from 'components';
 import { routeActions } from 'react-router-redux';
 import config from '../../config';
 import { asyncConnect } from 'redux-async-connect';
@@ -25,7 +22,7 @@ import { asyncConnect } from 'redux-async-connect';
 }])
 @connect(
   state => ({user: state.auth.user}),
-  {logout, pushState: routeActions.push})
+  {pushState: routeActions.push})
 export default class App extends Component {
   static propTypes = {
     children: PropTypes.object.isRequired,
@@ -48,64 +45,22 @@ export default class App extends Component {
     }
   }
 
-  handleLogout = (event) => {
-    event.preventDefault();
-    this.props.logout();
-  };
-
   render() {
-    const {user} = this.props;
-    const styles = require('./App.scss');
-    /*<div className={styles['full-page-container']}>*/
+    const s = require('./App.scss');
 
     return (
-      <div className={styles.app}>
+      <div className={s.app}>
+        <Helmet {...config.app.head}/>
         <MenuLeft/>
-        <div className={styles['full-page-container']}>
+        <div className={s['full-page-container']}>
           <div className="above-footer">
-
-            <Helmet {...config.app.head}/>
-            <Navbar>
-              <Navbar.Header>
-                <Navbar.Brand>
-                  <IndexLink to="/" activeStyle={{color: '#33e0ff'}}>
-                    <div className={styles.brand}/>
-                    <span>{config.app.title}</span>
-                  </IndexLink>
-                </Navbar.Brand>
-                <Navbar.Toggle/>
-              </Navbar.Header>
-
-              <Navbar.Collapse eventKey={0}>
-                <Nav navbar>
-                  {!user &&
-                  <LinkContainer to="/login">
-                    <NavItem eventKey={5}>Login</NavItem>
-                  </LinkContainer>}
-                  {user &&
-                  <LinkContainer to="/logout">
-                    <NavItem eventKey={6} className="logout-link" onClick={this.handleLogout}>
-                      Logout
-                    </NavItem>
-                  </LinkContainer>}
-                </Nav>
-                {user &&
-                <p className={styles.loggedInMessage + ' navbar-text'}>Logged in as <strong>{user.name}</strong>.</p>}
-                <Nav navbar pullRight>
-                  <NavItem eventKey={1} target="_blank" title="View on Github"
-                           href="https://github.com/">
-                    <i className="fa fa-github"/>
-                  </NavItem>
-                </Nav>
-              </Navbar.Collapse>
-            </Navbar>
-
+            <Navbar />
             <div className="main">
               {this.props.children}
             </div>
           </div>
 
-          <div className="footer">
+          <div className={s.footer}>
             <div className="text-xs-center">
               &copy; {(new Date()).getFullYear()} Dockmaster
             </div>
