@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {isLoaded, load as loadClusterList} from 'redux/modules/clusterList';
 import {connect} from 'react-redux';
 import { asyncConnect } from 'redux-async-connect';
+import { Link } from 'react-router';
 
 @asyncConnect([{
   deferred: true,
@@ -47,7 +48,9 @@ export default class ClusterList extends Component {
             </tr>
             {clusterList && clusterList.map(cluster =>
               <tr key={String(cluster.name)}>
-                <td>{String(cluster.name)}</td>
+                <td>
+                  <Link to={"/cluster/" + cluster.name}>{String(cluster.name)}</Link>
+                </td>
                 <td></td>
                 <td></td>
                 <td></td>
