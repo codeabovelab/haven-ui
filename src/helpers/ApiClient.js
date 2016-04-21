@@ -13,12 +13,6 @@ function formatUrl(path) {
   return '/api' + adjustedPath;
 }
 
-/*
- * This silly underscore is here to avoid a mysterious "ReferenceError: ApiClient is not defined" error.
- * See Issue #14. https://github.com/erikras/react-redux-universal-hot-example/issues/14
- *
- * Remove it at your own risk.
- */
 export default class ApiClient {
   constructor(req) {
     methods.forEach((method) =>
@@ -37,5 +31,15 @@ export default class ApiClient {
 
         request.end((err, { body } = {}) => err ? reject(body || err) : resolve(body));
       }));
+  }
+
+  /*
+   * This silly function to avoid mysterious "ReferenceError: ApiClient is not defined" error.
+   * See Issue #14. https://github.com/erikras/react-redux-universal-hot-example/issues/14
+   *
+   * Remove it at your own risk.
+   */
+  func(){
+
   }
 }

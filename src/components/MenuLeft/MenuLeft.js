@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
 )
 export default class MenuLeft extends Component {
   static propTypes = {
-    toggled: PropTypes.boolean,
+    toggled: PropTypes.bool,
     toggle: PropTypes.func.isRequired
   };
 

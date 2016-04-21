@@ -21,18 +21,18 @@ export default class ClusterList extends Component {
   static propTypes = {
     clusterList: PropTypes.array,
     error: PropTypes.string,
-    loading: PropTypes.bool,
-  }
+    loading: PropTypes.bool
+  };
 
   render() {
     const {clusterList} = this.props; // eslint-disable-line no-shadow
     return (
-      <div>
-        <h1>Cluster List</h1>
-        <div className="text-center">
+      <div className="container">
+        <h1 className="text-xs-center">Cluster List</h1>
+        <div className="text-xs-center">
           Clusters total: <strong>{clusterList && clusterList.length}</strong>
         </div>
-        <div className="pull-right">
+        <div className="pull-xs-right">
           <button className="btn btn-primary">Create New Cluster</button>
         </div>
         <table className="table">
