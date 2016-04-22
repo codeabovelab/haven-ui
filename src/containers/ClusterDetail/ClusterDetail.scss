@@ -1,3 +1,12 @@
+@import "../../css/variables";
+
 .clusterDetail {
   margin-top: 1rem;
+  .actions {
+    margin: 1rem 0;
+  }
+}
+
+.infoGroup {
+  @include info-group();
 }

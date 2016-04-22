@@ -1,6 +1,6 @@
-const LOAD = 'dm/clusterList/LOAD';
-const LOAD_SUCCESS = 'dm/clusterList/LOAD_SUCCESS';
-const LOAD_FAIL = 'dm/clusterList/LOAD_FAIL';
+const LOAD = 'clusterList/LOAD';
+const LOAD_SUCCESS = 'clusterList/LOAD_SUCCESS';
+const LOAD_FAIL = 'clusterList/LOAD_FAIL';
 
 const initialState = {
   loaded: false,

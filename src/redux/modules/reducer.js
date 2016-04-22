@@ -7,6 +7,7 @@ import auth from './auth';
 import {reducer as form} from 'redux-form';
 import menuLeft from './menuLeft';
 import clusterList from './clusterList';
+import clusterDetail from './clusterDetail';
 
 export default combineReducers({
   routing: routeReducer,
@@ -14,5 +15,6 @@ export default combineReducers({
   auth,
   form,
   menuLeft,
-  clusterList
+  clusterList,
+  clusterDetail
 });

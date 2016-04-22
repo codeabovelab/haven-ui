@@ -1,42 +1,80 @@
 import React, {Component, PropTypes} from 'react';
-import {isLoaded, load as loadClusterList} from 'redux/modules/clusterList';
+import * as clusterActions from 'redux/modules/clusterDetail';
 import {connect} from 'react-redux';
-import { asyncConnect } from 'redux-async-connect';
+//import { asyncConnect } from 'redux-async-connect';
 import { Link } from 'react-router';
 
-@asyncConnect([{
-  deferred: true,
-  promise: ({store: {dispatch, getState}}) => {
-    if (!isLoaded(getState())) {
-      return dispatch(loadClusterList());
-    }
-  }
-}])
 @connect(
   state => ({
-    clusterList: state.clusterList.data,
-    error: state.clusterList.error,
-    loading: state.clusterList.loading
-  }))
-export default class ClusterList extends Component {
+    containers: state.clusterDetail.data,
+    loadingContainers: state.clusterDetail.loadingContainers,
+    loadedContainers: state.clusterDetail.loadedContainers
+  }),
+  clusterActions)
+export default class ClusterDetail extends Component {
   static propTypes = {
-    clusterList: PropTypes.array,
-    error: PropTypes.string,
-    loading: PropTypes.bool,
-    params: PropTypes.object
+    containers: PropTypes.array,
+    params: PropTypes.object,
+    loadContainers: PropTypes.func.isRequired,
+    loadingContainers: PropTypes.bool,
+    loadedContainers: PropTypes.bool
   };
+
+  componentDidMount() {
+    const {loadContainers, params: {name}} = this.props; // eslint-disable-line no-shadow
+    loadContainers(name);
+  }
 
   render() {
     const s = require('./ClusterDetail.scss');
-    const {clusterList, params} = this.props; // eslint-disable-line no-shadow
-    console.log(params.name);
+    const {containers, params: {name}} = this.props; // eslint-disable-line no-shadow
 
     return (
-      <div className={"container " + s.clusterDetail}>
-        <div className="">
+      <div className={s.clusterDetail}>
+        <div className="container-fluid">
           <h1>
-            <Link to="/ClusterList">Clusters</Link> / {String(params.name)}
+            <Link to="/ClusterList">Clusters</Link> / {name}
           </h1>
+          <div className={s.infoGroup}>
+            # of Containers: <strong>{containers && containers.length}</strong>
+          </div>
+          <div className={"pull-xs-right " + s.actions}>
+            <button className="btn btn-primary">Create New Container</button>
+          </div>
+          <div className="clearfix">
+
+          </div>
+          {containers && containers.length &&
+          <div>
+            <h2>Containers</h2>
+            <div className="table-responsive">
+              <table className="table table-striped table-sm">
+                <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Image Name</th>
+                  <th>Node Name</th>
+                  <th>Port Mapping</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {containers.map(container =>
+                  <tr key={container.name}>
+                    <td>{container.name}</td>
+                    <td>{container.image}</td>
+                    <td>{container.node}</td>
+                    <td>{container.ports}</td>
+                    <td>{container.status}</td>
+                    <td></td>
+                  </tr>
+                )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          }
         </div>
       </div>
     );
