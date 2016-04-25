@@ -8,6 +8,7 @@ import {reducer as form} from 'redux-form';
 import menuLeft from './menuLeft';
 import clusterList from './clusterList';
 import clusterDetail from './clusterDetail';
+import nodes from './nodes';
 
 export default combineReducers({
   routing: routeReducer,
@@ -16,5 +17,6 @@ export default combineReducers({
   form,
   menuLeft,
   clusterList,
-  clusterDetail
+  clusterDetail,
+  nodes
 });

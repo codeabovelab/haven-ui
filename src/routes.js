@@ -5,6 +5,7 @@ import {
   App,
   Home,
   ClusterList,
+  NodesList,
   ClusterDetail,
   Login,
   LoginSuccess,
@@ -42,6 +43,7 @@ export default (store) => {
       <Route path="loginSuccess" component={LoginSuccess}/>
       <Route path="clusters" component={ClusterList}/>
       <Route path="cluster/:name" component={ClusterDetail}/>
+      <Route path="nodes" component={NodesList}/>
       /* </Route>*/
 
       { /* Routes */ }

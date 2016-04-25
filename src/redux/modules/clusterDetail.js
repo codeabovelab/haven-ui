@@ -8,7 +8,6 @@ const DELETE_CLUSTER_FAIL = 'cluster/DELETE_FAIL';
 
 const initialState = {
   loaded: false,
-  editing: {},
   saveError: {}
 };
 

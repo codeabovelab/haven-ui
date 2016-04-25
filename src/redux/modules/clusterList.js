@@ -7,7 +7,6 @@ const CREATE_FAIL = 'cluster/CREATE_FAIL';
 
 const initialState = {
   loaded: false,
-  editing: {},
   saveError: {}
 };
 
