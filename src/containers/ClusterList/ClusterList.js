@@ -1,14 +1,15 @@
 import React, {Component, PropTypes} from 'react';
-import {isLoaded, load as loadClusterList} from 'redux/modules/clusterList';
+import {isLoaded, load, create} from 'redux/modules/clusterList';
 import {connect} from 'react-redux';
 import { asyncConnect } from 'redux-async-connect';
 import { Link } from 'react-router';
+import {bindActionCreators} from 'redux';
 
 @asyncConnect([{
   deferred: true,
   promise: ({store: {dispatch, getState}}) => {
     if (!isLoaded(getState())) {
-      return dispatch(loadClusterList());
+      return dispatch(load());
     }
   }
 }])
@@ -17,17 +18,28 @@ import { Link } from 'react-router';
     clusterList: state.clusterList.data,
     error: state.clusterList.error,
     loading: state.clusterList.loading
-  }))
+  }), dispatch => bindActionCreators({create, load}, dispatch))
 export default class ClusterList extends Component {
   static propTypes = {
     clusterList: PropTypes.array,
     error: PropTypes.string,
-    loading: PropTypes.bool
+    loading: PropTypes.bool,
+    create: PropTypes.func.isRequired,
+    load: PropTypes.func.isRequired
   };
 
   render() {
     const s = require('./ClusterList.scss');
-    const {clusterList} = this.props; // eslint-disable-line no-shadow
+    const {clusterList, create, load} = this.props; // eslint-disable-line no-shadow
+
+    function handleCreate() {
+      const name = prompt("Name of new cluster");
+      if (name) {
+        create(name)
+          .then(() => load());
+      }
+    }
+
     return (
       <div className="container">
         <div className={s.clusterList}>
@@ -36,7 +48,7 @@ export default class ClusterList extends Component {
             Clusters total: <strong>{clusterList && clusterList.length}</strong>
           </div>
           <div className="pull-xs-right">
-            <button className="btn btn-primary">Create New Cluster</button>
+            <button className="btn btn-primary" onClick={handleCreate}>Create New Cluster</button>
           </div>
           <table className="table">
             <thead>

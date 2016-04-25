@@ -1,6 +1,9 @@
-const LOAD = 'clusterList/LOAD';
-const LOAD_SUCCESS = 'clusterList/LOAD_SUCCESS';
-const LOAD_FAIL = 'clusterList/LOAD_FAIL';
+const LOAD = 'cluster/LOAD';
+const LOAD_SUCCESS = 'cluster/LOAD_SUCCESS';
+const LOAD_FAIL = 'cluster/LOAD_FAIL';
+const CREATE = 'cluster/CREATE';
+const CREATE_SUCCESS = 'cluster/CREATE_SUCCESS';
+const CREATE_FAIL = 'cluster/CREATE_FAIL';
 
 const initialState = {
   loaded: false,
@@ -35,14 +38,31 @@ export default function reducer(state = initialState, action = {}) {
         data: null,
         error: action.error
       };
+    case CREATE_SUCCESS:
+      return {
+        ...state,
+        created: true,
+        data: [...state.data, action.result],
+        error: null
+      };
     default:
       return state;
   }
 }
 
+function _loadClusters(client) {
+  return client.get('/ui/api/clusters/');
+}
 export function load() {
   return {
     types: [LOAD, LOAD_SUCCESS, LOAD_FAIL],
-    promise: (client) => client.get('/ui/api/clusters/')
+    promise: _loadClusters
+  };
+}
+
+export function create(name) {
+  return {
+    types: [CREATE, CREATE_SUCCESS, CREATE_FAIL],
+    promise: (client) => client.put(`/ui/api/clusters/${name}`)
   };
 }

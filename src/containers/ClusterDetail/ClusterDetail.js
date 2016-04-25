@@ -44,7 +44,7 @@ export default class ClusterDetail extends Component {
           <div className="clearfix">
 
           </div>
-          {containers && containers.length &&
+          {containers && containers.length > 0 &&
           <div>
             <h2>Containers</h2>
             <div className="table-responsive">
@@ -75,6 +75,10 @@ export default class ClusterDetail extends Component {
             </div>
           </div>
           }
+          {containers && containers.length === 0 &&
+          <div className="alert alert-info">
+              No containers yet
+          </div>}
         </div>
       </div>
     );
