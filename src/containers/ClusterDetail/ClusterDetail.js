@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusterDetail';
 import {connect} from 'react-redux';
 //import { asyncConnect } from 'redux-async-connect';
-import { Link } from 'react-router';
+import { Link, browserHistory } from 'react-router';
 
 @connect(
   state => ({
@@ -16,6 +16,7 @@ export default class ClusterDetail extends Component {
     containers: PropTypes.array,
     params: PropTypes.object,
     loadContainers: PropTypes.func.isRequired,
+    deleteCluster: PropTypes.func.isRequired,
     loadingContainers: PropTypes.bool,
     loadedContainers: PropTypes.bool
   };
@@ -25,21 +26,32 @@ export default class ClusterDetail extends Component {
     loadContainers(name);
   }
 
+
   render() {
     const s = require('./ClusterDetail.scss');
-    const {containers, params: {name}} = this.props; // eslint-disable-line no-shadow
+    const {containers, params: {name}, deleteCluster} = this.props; // eslint-disable-line no-shadow
+
+    function handleDelete() {
+      if (confirm('Are you sure you want to remove this cluster?')) {
+        deleteCluster(name)
+          .then(() => browserHistory.push('/clusters'));
+      }
+    }
+
 
     return (
       <div className={s.clusterDetail}>
         <div className="container-fluid">
           <h1>
-            <Link to="/ClusterList">Clusters</Link> / {name}
+            <Link to="/clusters">Clusters</Link> / {name}
           </h1>
           <div className={s.infoGroup}>
             # of Containers: <strong>{containers && containers.length}</strong>
           </div>
           <div className={"pull-xs-right " + s.actions}>
             <button className="btn btn-primary">Create New Container</button>
+            <button className="btn btn-danger" style={{marginLeft: "1rem"}} onClick={handleDelete}>Delete Cluster
+            </button>
           </div>
           <div className="clearfix">
 
@@ -77,7 +89,7 @@ export default class ClusterDetail extends Component {
           }
           {containers && containers.length === 0 &&
           <div className="alert alert-info">
-              No containers yet
+            No containers yet
           </div>}
         </div>
       </div>

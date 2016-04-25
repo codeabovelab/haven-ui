@@ -25,7 +25,7 @@ export default class MenuLeft extends Component {
         </div>
         <div className={'nav nav-pills nav-stacked ' + s['nav-pills']}>
           <li className={'nav-item ' + s['nav-item']}>
-            <Link to="/clusterList" className={'nav-link ' + s['nav-link']}>Cluster List</Link>
+            <Link to="/clusters" className={'nav-link ' + s['nav-link']}>Cluster List</Link>
           </li>
           <li className={'nav-item ' + s['nav-item']}>
             <Link to="" className={'nav-link ' + s['nav-link']}>Node List</Link>

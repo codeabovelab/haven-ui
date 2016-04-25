@@ -40,7 +40,7 @@ export default (store) => {
       { /* Routes requiring login */ }
       /* <Route onEnter={requireLogin}>*/
       <Route path="loginSuccess" component={LoginSuccess}/>
-      <Route path="clusterList" component={ClusterList}/>
+      <Route path="clusters" component={ClusterList}/>
       <Route path="cluster/:name" component={ClusterDetail}/>
       /* </Route>*/
 

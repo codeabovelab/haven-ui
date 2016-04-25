@@ -5,14 +5,6 @@ import { asyncConnect } from 'redux-async-connect';
 import { Link } from 'react-router';
 import {bindActionCreators} from 'redux';
 
-@asyncConnect([{
-  deferred: true,
-  promise: ({store: {dispatch, getState}}) => {
-    if (!isLoaded(getState())) {
-      return dispatch(load());
-    }
-  }
-}])
 @connect(
   state => ({
     clusterList: state.clusterList.data,
@@ -27,6 +19,11 @@ export default class ClusterList extends Component {
     create: PropTypes.func.isRequired,
     load: PropTypes.func.isRequired
   };
+
+  componentDidMount() {
+    const {load} = this.props; // eslint-disable-line no-shadow
+    load();
+  }
 
   render() {
     const s = require('./ClusterList.scss');
