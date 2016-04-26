@@ -1,34 +1,31 @@
 import React, {Component, PropTypes} from 'react';
-import * as clusterActions from 'redux/modules/clusterDetail';
+import * as clusterActions from 'redux/modules/clusters/clusters';
 import {connect} from 'react-redux';
-//import { asyncConnect } from 'redux-async-connect';
 import { Link, browserHistory } from 'react-router';
 
 @connect(
   state => ({
-    containers: state.clusterDetail.data,
-    loadingContainers: state.clusterDetail.loadingContainers,
-    loadedContainers: state.clusterDetail.loadedContainers
+    clusters: state.clusters,
+    containers: state.containers
   }),
   clusterActions)
 export default class ClusterDetail extends Component {
   static propTypes = {
-    containers: PropTypes.array,
+    clusters: PropTypes.object,
+    containers: PropTypes.object,
     params: PropTypes.object,
     loadContainers: PropTypes.func.isRequired,
-    deleteCluster: PropTypes.func.isRequired,
-    loadingContainers: PropTypes.bool,
-    loadedContainers: PropTypes.bool
+    deleteCluster: PropTypes.func.isRequired
   };
 
   componentDidMount() {
-    const {loadContainers, params: {name}} = this.props; // eslint-disable-line no-shadow
+    const {loadContainers, params: {name}} = this.props;
     loadContainers(name);
   }
 
 
   render() {
-    const {containers, params: {name}, deleteCluster} = this.props; // eslint-disable-line no-shadow
+    const {containers, clusters, params: {name}, deleteCluster} = this.props;
 
     function handleDelete() {
       if (confirm('Are you sure you want to remove this cluster?')) {
@@ -37,6 +34,8 @@ export default class ClusterDetail extends Component {
       }
     }
 
+    const containersIds = clusters[name].containersList;
+    const containersList = containersIds == null ? null : containersIds.map(id => containers[id]);
 
     return (
       <div className="container-fluid">
@@ -44,17 +43,17 @@ export default class ClusterDetail extends Component {
           <Link to="/clusters">Clusters</Link> / {name}
         </h1>
         <div className="page-info-group">
-          # of Containers: <strong>{containers && containers.length}</strong>
+          # of Containers: <strong>{containersList && containersList.length}</strong>
         </div>
         <div className="page-actions">
           <div className="btn-group">
-            <button className="btn btn-primary" disabled><i className="fa fa-plus"></i> New Container</button>
-            <button className="btn btn-danger" onClick={handleDelete}><i className="fa fa-trash"></i> Delete Cluster
+            <button className="btn btn-primary" disabled><i className="fa fa-plus"/> New Container</button>
+            <button className="btn btn-danger" onClick={handleDelete}><i className="fa fa-trash"/> Delete Cluster
             </button>
           </div>
         </div>
         <div className="clearfix"></div>
-        {containers && containers.length > 0 &&
+        {containersList && containersList.length > 0 &&
         <div>
           <h2>Containers</h2>
           <div className="table-responsive">
@@ -70,7 +69,7 @@ export default class ClusterDetail extends Component {
               </tr>
               </thead>
               <tbody>
-              {containers.map(container =>
+              {containersList.map(container =>
                 <tr key={container.name}>
                   <td>{container.name}</td>
                   <td>{container.image}</td>
@@ -85,7 +84,7 @@ export default class ClusterDetail extends Component {
           </div>
         </div>
         }
-        {containers && containers.length === 0 &&
+        {containersList && containersList.length === 0 &&
         <div className="alert alert-info">
           No containers yet
         </div>}

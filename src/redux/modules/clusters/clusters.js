@@ -1,24 +1,19 @@
-const _ACTIONS = {
-  LOAD: 'LOAD',
-  LOAD_SUCCESS: 'LOAD_SUCCESS',
-  LOAD_FAIL: 'LOAD_FAIL',
-  CREATE: "CREATE",
-  CREATE_SUCCESS: 'CREATE_SUCESS',
-  CREATE_FAIL: 'CREATE_FAIL'
-};
-Object.keys(_ACTIONS).forEach((key) => {
-  _ACTIONS[key] = 'clusters/' + _ACTIONS[key];
-});
-
+import {ACTIONS} from './actions';
 import _ from 'lodash';
-
-export const ACTIONS = _ACTIONS;
 
 
 export default function reducer(state = {}, action = {}) {
   switch (action.type) {
     case ACTIONS.LOAD_SUCCESS:
       return _.keyBy(action.result, 'name');
+    case ACTIONS.LOAD_CONTAINERS_SUCCESS:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          containersList: action.result.map(container => container.name)
+        }
+      };
     default:
       return state;
   }
@@ -38,3 +33,20 @@ export function create({env, name}) {
     promise: (client) => client.put(`/ui/api/clusters/${id}`)
   };
 }
+
+export function deleteCluster(clusterId) {
+  return {
+    types: [ACTIONS.DELETE, ACTIONS.DELETE_SUCCESS, ACTIONS.DELETE_FAIL],
+    id: clusterId,
+    promise: (client) => client.del(`/ui/api/clusters/${clusterId}`)
+  };
+}
+
+export function loadContainers(clusterId) {
+  return {
+    types: [ACTIONS.LOAD_CONTAINERS, ACTIONS.LOAD_CONTAINERS_SUCCESS, ACTIONS.LOAD_CONTAINERS_FAIL],
+    id: clusterId,
+    promise: (client) => client.get(`/ui/api/clusters/${clusterId}/containers`)
+  };
+}
+

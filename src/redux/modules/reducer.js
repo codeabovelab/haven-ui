@@ -8,7 +8,7 @@ import {reducer as form} from 'redux-form';
 import menuLeft from './menuLeft';
 import clusters from './clusters/clusters';
 import clustersUI from './clusters/clustersUI';
-import clusterDetail from './clusterDetail';
+import containers from './containers/containers';
 import nodes from './nodes';
 
 export default combineReducers({
@@ -17,8 +17,10 @@ export default combineReducers({
   auth,
   form,
   menuLeft,
+  //models
   clusters,
+  containers,
+  //END models
   clustersUI,
-  clusterDetail,
   nodes
 });

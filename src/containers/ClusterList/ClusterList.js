@@ -1,7 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {load, create} from 'redux/modules/clusters/clusters';
 import {connect} from 'react-redux';
-import { asyncConnect } from 'redux-async-connect';
 import { Link } from 'react-router';
 import {bindActionCreators} from 'redux';
 import {reduxForm} from 'redux-form';
@@ -11,6 +10,7 @@ import clusterValidation from './clusterValidation';
 @connect(
   state => ({
     clusters: state.clusters,
+    clustersIds: state.clustersUI.list,
     createError: state.clustersUI.createError
   }), dispatch => bindActionCreators({create, load}, dispatch))
 @reduxForm({
@@ -22,6 +22,7 @@ export default class ClusterList extends Component {
   static propTypes = {
     fields: PropTypes.object.isRequired,
     clusters: PropTypes.object,
+    clustersIds: PropTypes.array,
     createError: PropTypes.string,
     create: PropTypes.func.isRequired,
     load: PropTypes.func.isRequired,
@@ -35,10 +36,8 @@ export default class ClusterList extends Component {
   }
 
   render() {
-    const {fields, valid, resetForm, clusters, create, createError, load} = this.props;
-    console.log('clusters', clusters);
-    const clustersList = Object.values(clusters);
-    console.log('list', clustersList);
+    const {fields, valid, resetForm, clusters, clustersIds, create, createError, load} = this.props;
+    const clustersList = clustersIds !== null ? clustersIds.map(id => clusters[id]) : null;
 
     function handleCreate() {
       let name = fields.name.value;
@@ -67,8 +66,7 @@ export default class ClusterList extends Component {
           # of Clusters: <strong>{clustersList && clustersList.length}</strong>
         </div>
         <div className="page-actions">
-          <button className="btn btn-primary" onClick={showModal}><i
-            className="fa fa-plus"></i> New Cluster
+          <button className="btn btn-primary" onClick={showModal}><i className="fa fa-plus"/> New Cluster
           </button>
         </div>
         <div className="table-responsive">
@@ -85,7 +83,7 @@ export default class ClusterList extends Component {
             {clustersList && clustersList.map(cluster =>
               <tr key={cluster.name}>
                 <td>
-                  <Link to={"/cluster/" + cluster.name}>{cluster.name}</Link>
+                  <Link to={"/clusters/" + cluster.name}>{cluster.name}</Link>
                 </td>
                 <td>{cluster.environment}</td>
                 <td>{cluster.containers}</td>
