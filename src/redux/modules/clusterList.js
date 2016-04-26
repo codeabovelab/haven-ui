@@ -40,9 +40,7 @@ export default function reducer(state = initialState, action = {}) {
     case CREATE_SUCCESS:
       return {
         ...state,
-        created: true,
-        data: [...state.data, action.result],
-        error: null
+        created: true
       };
     default:
       return state;
