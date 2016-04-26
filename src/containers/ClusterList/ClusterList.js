@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import { asyncConnect } from 'redux-async-connect';
 import { Link } from 'react-router';
 import {bindActionCreators} from 'redux';
+import {reduxForm} from 'redux-form';
 
 @connect(
   state => ({
@@ -11,12 +12,18 @@ import {bindActionCreators} from 'redux';
     error: state.clusterList.error,
     loading: state.clusterList.loading
   }), dispatch => bindActionCreators({create, load}, dispatch))
+@reduxForm({
+  form: 'newCluster',
+  fields: ['env', 'name']
+})
 export default class ClusterList extends Component {
   static propTypes = {
+    fields: PropTypes.object.isRequired,
     clusterList: PropTypes.array,
     error: PropTypes.string,
     loading: PropTypes.bool,
     create: PropTypes.func.isRequired,
+    resetForm: PropTypes.func.isRequired,
     load: PropTypes.func.isRequired
   };
 
@@ -26,15 +33,30 @@ export default class ClusterList extends Component {
   }
 
   render() {
-    const {clusterList, create, load} = this.props; // eslint-disable-line no-shadow
+    const {
+      fields,
+      clusterList, create, load, resetForm // eslint-disable-line no-shadow
+      } = this.props; // eslint-disable-line no-shadow
+
 
     function handleCreate() {
-      const name = prompt("Name of new cluster");
-      if (name) {
-        create(name)
-          .then(() => load());
-      }
+      let name = fields.name.value;
+      let env = fields.env.value;
+      create({name, env})
+        .then(() => {
+          resetForm();
+          fields.name.value = '';
+          fields.env.value = '';
+          $('#newCluster').modal('hide');
+          return load();
+        });
     }
+
+    function showModal() {
+      $('#newCluster').modal('show');
+      $('#env').focus();
+    }
+
 
     return (
       <div className="container-fluid">
@@ -43,7 +65,8 @@ export default class ClusterList extends Component {
           # of Clusters: <strong>{clusterList && clusterList.length}</strong>
         </div>
         <div className="page-actions">
-          <button className="btn btn-primary" onClick={handleCreate}><i className="fa fa-plus"></i> New Cluster
+          <button className="btn btn-primary" onClick={showModal}><i
+            className="fa fa-plus"></i> New Cluster
           </button>
         </div>
         <div className="table-responsive">
@@ -60,7 +83,7 @@ export default class ClusterList extends Component {
             {clusterList && clusterList.map(cluster =>
               <tr key={cluster.name}>
                 <td>
-                  <Link to={"/cluster/" + cluster.name}>{String(cluster.name)}</Link>
+                  <Link to={"/cluster/" + cluster.name}>{cluster.name}</Link>
                 </td>
                 <td>{cluster.environment}</td>
                 <td>{cluster.containers}</td>
@@ -68,6 +91,34 @@ export default class ClusterList extends Component {
               </tr>)}
             </tbody>
           </table>
+        </div>
+        <div id="newCluster" className="modal">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 className="modal-title">Create New Cluster</h4>
+              </div>
+              <div className="modal-body">
+                <form>
+                  <div className="form-group">
+                    <label>Environment</label>
+                    <input id="env" type="text" {...fields.env} className="form-control"/>
+                  </div>
+                  <div>
+                    <label>Cluster name</label>
+                    <input type="text" {...fields.name} className="form-control"/>
+                  </div>
+                </form>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" className="btn btn-primary" onClick={handleCreate}>Create New Cluster</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );

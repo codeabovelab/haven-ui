@@ -107,7 +107,8 @@ module.exports = {
   plugins: [
     // hot reload
     new webpack.ProvidePlugin({
-      "window.Tether": "tether"
+      "window.Tether": "tether",
+      '$': 'jquery'
     }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.IgnorePlugin(/webpack-stats\.json$/),

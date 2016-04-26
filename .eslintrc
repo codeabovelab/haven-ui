@@ -19,6 +19,7 @@
     "no-unused-vars": 0,
     "spaced-comment": 0,
     "id-length": 0,
+    "prefer-const": 0,
     "quotes": 0
   },
   "plugins": [
@@ -37,6 +38,7 @@
     "__DISABLE_SSR__": true,
     "__DEVTOOLS__": true,
     "socket": true,
-    "webpackIsomorphicTools": true
+    "webpackIsomorphicTools": true,
+    "$": true
   }
 }

@@ -57,9 +57,10 @@ export function load() {
   };
 }
 
-export function create(name) {
+export function create({name, env}) {
+  let id = `${env}:${name}`;
   return {
     types: [CREATE, CREATE_SUCCESS, CREATE_FAIL],
-    promise: (client) => client.put(`/ui/api/clusters/${name}`)
+    promise: (client) => client.put(`/ui/api/clusters/${id}`)
   };
 }
