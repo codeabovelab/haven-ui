@@ -38,38 +38,39 @@ export default class ClusterList extends Component {
     }
 
     return (
-      <div className="container">
+      <div className="container-fluid">
         <div className={s.clusterList}>
-          <h1 className="text-xs-center">Cluster List</h1>
-          <div className="text-xs-center">
-            Clusters total: <strong>{clusterList && clusterList.length}</strong>
+          <h1>Cluster List</h1>
+          <div className="page-info-group">
+            # of Clusters: <strong>{clusterList && clusterList.length}</strong>
           </div>
-          <div className="pull-xs-right">
-            <button className="btn btn-primary" onClick={handleCreate}>Create New Cluster</button>
+          <div className="page-actions">
+            <button className="btn btn-primary" onClick={handleCreate}><i className="fa fa-plus"></i> New Cluster
+            </button>
           </div>
-          <table className="table">
-            <thead>
-            <tr>
-              <th>Cluster Name</th>
-              <th># of Containers</th>
-              <th># of Nodes</th>
-              <th>Deployable Image Tag</th>
-            </tr>
-            {clusterList && clusterList.map(cluster =>
-              <tr key={String(cluster.name)}>
-                <td>
-                  <Link to={"/cluster/" + cluster.name}>{String(cluster.name)}</Link>
-                </td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>)}
-            </thead>
-            <tbody>
-            <tr>
-            </tr>
-            </tbody>
-          </table>
+          <div className="table-responsive">
+            <table className="table table-bordered table-striped">
+              <thead>
+              <tr>
+                <th>Cluster Name</th>
+                <th># of Containers</th>
+                <th># of Nodes</th>
+              </tr>
+              {clusterList && clusterList.map(cluster =>
+                <tr key={String(cluster.name)}>
+                  <td>
+                    <Link to={"/cluster/" + cluster.name}>{String(cluster.name)}</Link>
+                  </td>
+                  <td></td>
+                  <td></td>
+                </tr>)}
+              </thead>
+              <tbody>
+              <tr>
+              </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     );

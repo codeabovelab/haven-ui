@@ -27,11 +27,11 @@ export default class NodesList extends Component {
     return (
       <div className="container-fluid">
         <div className={s.nodesList}>
-          <h1 className="text-xs-center">Node List</h1>
-          <div className="text-xs-center">
-            Nodes total: <strong>{nodes && nodes.length}</strong>
+          <h1>Node List</h1>
+          <div className="page-info-group">
+            # of Nodes: <strong>{nodes && nodes.length}</strong>
           </div>
-          <div className="pull-xs-right">
+          <div className="page-actions">
             <button className="btn btn-primary" disabled>Add Node</button>
           </div>
           <div className="table-responsive">

@@ -1,0 +1,9 @@
+
+.page-actions {
+  margin: 1rem 0;
+  float: right;
+}
+
+.page-info-group {
+  @include info-group();
+}

@@ -45,13 +45,15 @@ export default class ClusterDetail extends Component {
           <h1>
             <Link to="/clusters">Clusters</Link> / {name}
           </h1>
-          <div className={s.infoGroup}>
+          <div className="page-info-group">
             # of Containers: <strong>{containers && containers.length}</strong>
           </div>
-          <div className={"pull-xs-right " + s.actions}>
-            <button className="btn btn-primary">Create New Container</button>
-            <button className="btn btn-danger" style={{marginLeft: "1rem"}} onClick={handleDelete}>Delete Cluster
-            </button>
+          <div className="page-actions">
+            <div className="btn-group">
+              <button className="btn btn-primary" disabled><i className="fa fa-plus"></i> New Container</button>
+              <button className="btn btn-danger" onClick={handleDelete}><i className="fa fa-trash"></i> Delete Cluster
+              </button>
+            </div>
           </div>
           <div className="clearfix">
 
