@@ -57,10 +57,3 @@ export function deleteCluster(clusterName) {
     promise: (client) => client.del(`/ui/api/clusters/${clusterName}`)
   };
 }
-
-//export function loadNodes(cluster) {
-//  return {
-//    types: [LOAD_CONTAINERS, LOAD_CONTAINERS_SUCCESS, LOAD_CONTAINERS_FAIL],
-//    promise: (client) => client.get(`/ui/api/clusters/${cluster}/containers`)
-//  };
-//}

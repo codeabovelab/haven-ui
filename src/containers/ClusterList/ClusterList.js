@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {load, create} from 'redux/modules/clusterList';
+import {load, create} from 'redux/modules/clusters/clusters';
 import {connect} from 'react-redux';
 import { asyncConnect } from 'redux-async-connect';
 import { Link } from 'react-router';
@@ -7,10 +7,11 @@ import {bindActionCreators} from 'redux';
 import {reduxForm} from 'redux-form';
 import clusterValidation from './clusterValidation';
 
+
 @connect(
   state => ({
-    clusterList: state.clusterList.data,
-    createError: state.clusterList.createError
+    clusters: state.clusters,
+    createError: state.clustersUI.createError
   }), dispatch => bindActionCreators({create, load}, dispatch))
 @reduxForm({
   form: 'newCluster',
@@ -20,7 +21,7 @@ import clusterValidation from './clusterValidation';
 export default class ClusterList extends Component {
   static propTypes = {
     fields: PropTypes.object.isRequired,
-    clusterList: PropTypes.array,
+    clusters: PropTypes.object,
     createError: PropTypes.string,
     create: PropTypes.func.isRequired,
     load: PropTypes.func.isRequired,
@@ -34,7 +35,10 @@ export default class ClusterList extends Component {
   }
 
   render() {
-    const {fields, valid, resetForm, clusterList, create, createError, load} = this.props;
+    const {fields, valid, resetForm, clusters, create, createError, load} = this.props;
+    console.log('clusters', clusters);
+    const clustersList = Object.values(clusters);
+    console.log('list', clustersList);
 
     function handleCreate() {
       let name = fields.name.value;
@@ -60,7 +64,7 @@ export default class ClusterList extends Component {
       <div className="container-fluid">
         <h1>Cluster List</h1>
         <div className="page-info-group">
-          # of Clusters: <strong>{clusterList && clusterList.length}</strong>
+          # of Clusters: <strong>{clustersList && clustersList.length}</strong>
         </div>
         <div className="page-actions">
           <button className="btn btn-primary" onClick={showModal}><i
@@ -78,7 +82,7 @@ export default class ClusterList extends Component {
             </tr>
             </thead>
             <tbody>
-            {clusterList && clusterList.map(cluster =>
+            {clustersList && clustersList.map(cluster =>
               <tr key={cluster.name}>
                 <td>
                   <Link to={"/cluster/" + cluster.name}>{cluster.name}</Link>

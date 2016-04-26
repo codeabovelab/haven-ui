@@ -6,7 +6,8 @@ import {reducer as reduxAsyncConnect} from 'redux-async-connect';
 import auth from './auth';
 import {reducer as form} from 'redux-form';
 import menuLeft from './menuLeft';
-import clusterList from './clusterList';
+import clusters from './clusters/clusters';
+import clustersUI from './clusters/clustersUI';
 import clusterDetail from './clusterDetail';
 import nodes from './nodes';
 
@@ -16,7 +17,8 @@ export default combineReducers({
   auth,
   form,
   menuLeft,
-  clusterList,
+  clusters,
+  clustersUI,
   clusterDetail,
   nodes
 });
