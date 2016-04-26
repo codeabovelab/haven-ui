@@ -1,43 +1,40 @@
 import React, {Component, PropTypes} from 'react';
-import {isLoaded, load, create} from 'redux/modules/clusterList';
+import {load, create} from 'redux/modules/clusterList';
 import {connect} from 'react-redux';
 import { asyncConnect } from 'redux-async-connect';
 import { Link } from 'react-router';
 import {bindActionCreators} from 'redux';
 import {reduxForm} from 'redux-form';
+import clusterValidation from './clusterValidation';
 
 @connect(
   state => ({
     clusterList: state.clusterList.data,
-    error: state.clusterList.error,
-    loading: state.clusterList.loading
+    createError: state.clusterList.createError
   }), dispatch => bindActionCreators({create, load}, dispatch))
 @reduxForm({
   form: 'newCluster',
+  validate: clusterValidation,
   fields: ['env', 'name']
 })
 export default class ClusterList extends Component {
   static propTypes = {
     fields: PropTypes.object.isRequired,
     clusterList: PropTypes.array,
-    error: PropTypes.string,
-    loading: PropTypes.bool,
+    createError: PropTypes.string,
     create: PropTypes.func.isRequired,
+    load: PropTypes.func.isRequired,
     resetForm: PropTypes.func.isRequired,
-    load: PropTypes.func.isRequired
+    valid: PropTypes.bool.isRequired
   };
 
   componentDidMount() {
-    const {load} = this.props; // eslint-disable-line no-shadow
+    const {load} = this.props;
     load();
   }
 
   render() {
-    const {
-      fields,
-      clusterList, create, load, resetForm // eslint-disable-line no-shadow
-      } = this.props; // eslint-disable-line no-shadow
-
+    const {fields, valid, resetForm, clusterList, create, createError, load} = this.props;
 
     function handleCreate() {
       let name = fields.name.value;
@@ -49,15 +46,16 @@ export default class ClusterList extends Component {
           fields.env.value = '';
           $('#newCluster').modal('hide');
           return load();
-        });
+        })
+        .catch();
     }
 
     function showModal() {
       $('#newCluster').modal('show');
-      $('#env').focus();
+      $('#input-env').focus();
     }
 
-
+    let field;
     return (
       <div className="container-fluid">
         <h1>Cluster List</h1>
@@ -103,19 +101,26 @@ export default class ClusterList extends Component {
               </div>
               <div className="modal-body">
                 <form>
-                  <div className="form-group">
-                    <label>Environment</label>
-                    <input id="env" type="text" {...fields.env} className="form-control"/>
+                  <div className="form-group" required>
+                    <label>Environment:</label>
+                    {(field = fields.env) && ''}
+                    {field.error && field.touched && <div className="text-danger">{field.error}</div>}
+                    <input id="input-env" type="text" {...fields.env} className="form-control"/>
                   </div>
-                  <div>
-                    <label>Cluster name</label>
+                  <div className="form-group" required>
+                    {(field = fields.name) && ''}
+                    <label>Cluster name:</label>
+                    {field.error && field.touched && <div className="text-danger">{field.error}</div>}
                     <input type="text" {...fields.name} className="form-control"/>
                   </div>
+                  <div className="text-danger">{createError}</div>
                 </form>
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" className="btn btn-primary" onClick={handleCreate}>Create New Cluster</button>
+                <button type="button" className="btn btn-primary" onClick={handleCreate} disabled={!valid}>Create New
+                  Cluster
+                </button>
               </div>
             </div>
           </div>

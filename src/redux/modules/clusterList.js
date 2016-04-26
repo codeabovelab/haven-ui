@@ -5,59 +5,36 @@ const CREATE = 'cluster/CREATE';
 const CREATE_SUCCESS = 'cluster/CREATE_SUCCESS';
 const CREATE_FAIL = 'cluster/CREATE_FAIL';
 
-const initialState = {
-  loaded: false,
-  saveError: {}
-};
-
-export function isLoaded(globalState) {
-  return globalState.clusterList && globalState.clusterList.loaded;
-}
-
-export default function reducer(state = initialState, action = {}) {
+export default function reducer(state = {}, action = {}) {
   switch (action.type) {
-    case LOAD:
-      return {
-        ...state,
-        loading: true
-      };
     case LOAD_SUCCESS:
       return {
         ...state,
-        loading: false,
-        loaded: true,
-        data: action.result,
-        error: null
+        data: action.result
       };
-    case LOAD_FAIL:
+    case CREATE:
       return {
         ...state,
-        loading: false,
-        loaded: false,
-        data: null,
-        error: action.error
+        createError: null
       };
-    case CREATE_SUCCESS:
+    case CREATE_FAIL:
       return {
         ...state,
-        created: true
+        createError: action.error.message
       };
     default:
       return state;
   }
 }
 
-function _loadClusters(client) {
-  return client.get('/ui/api/clusters/');
-}
 export function load() {
   return {
     types: [LOAD, LOAD_SUCCESS, LOAD_FAIL],
-    promise: _loadClusters
+    promise: (client) => client.get('/ui/api/clusters/')
   };
 }
 
-export function create({name, env}) {
+export function create({env, name}) {
   let id = `${env}:${name}`;
   return {
     types: [CREATE, CREATE_SUCCESS, CREATE_FAIL],
