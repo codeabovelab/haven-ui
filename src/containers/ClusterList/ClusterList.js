@@ -26,7 +26,6 @@ export default class ClusterList extends Component {
   }
 
   render() {
-    const s = require('./ClusterList.scss');
     const {clusterList, create, load} = this.props; // eslint-disable-line no-shadow
 
     function handleCreate() {
@@ -39,38 +38,36 @@ export default class ClusterList extends Component {
 
     return (
       <div className="container-fluid">
-        <div className={s.clusterList}>
-          <h1>Cluster List</h1>
-          <div className="page-info-group">
-            # of Clusters: <strong>{clusterList && clusterList.length}</strong>
-          </div>
-          <div className="page-actions">
-            <button className="btn btn-primary" onClick={handleCreate}><i className="fa fa-plus"></i> New Cluster
-            </button>
-          </div>
-          <div className="table-responsive">
-            <table className="table table-bordered table-striped">
-              <thead>
-              <tr>
-                <th>Cluster Name</th>
-                <th># of Containers</th>
-                <th># of Nodes</th>
-              </tr>
-              {clusterList && clusterList.map(cluster =>
-                <tr key={String(cluster.name)}>
-                  <td>
-                    <Link to={"/cluster/" + cluster.name}>{String(cluster.name)}</Link>
-                  </td>
-                  <td></td>
-                  <td></td>
-                </tr>)}
-              </thead>
-              <tbody>
-              <tr>
-              </tr>
-              </tbody>
-            </table>
-          </div>
+        <h1>Cluster List</h1>
+        <div className="page-info-group">
+          # of Clusters: <strong>{clusterList && clusterList.length}</strong>
+        </div>
+        <div className="page-actions">
+          <button className="btn btn-primary" onClick={handleCreate}><i className="fa fa-plus"></i> New Cluster
+          </button>
+        </div>
+        <div className="table-responsive">
+          <table className="table table-bordered table-striped">
+            <thead>
+            <tr>
+              <th>Cluster Name</th>
+              <th>Environment</th>
+              <th># of Containers</th>
+              <th># of Nodes</th>
+            </tr>
+            </thead>
+            <tbody>
+            {clusterList && clusterList.map(cluster =>
+              <tr key={cluster.name}>
+                <td>
+                  <Link to={"/cluster/" + cluster.name}>{String(cluster.name)}</Link>
+                </td>
+                <td>{cluster.environment}</td>
+                <td>{cluster.containers}</td>
+                <td>{cluster.nodes}</td>
+              </tr>)}
+            </tbody>
+          </table>
         </div>
       </div>
     );
