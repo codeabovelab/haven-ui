@@ -1,14 +1,19 @@
-#Dockmaster Web App
+# Dockmaster Web App
 
-##Requirements
+## Requirements
 
 * node
 * npm
 
-##Installation
+## Installation
 `npm install`
 
-##Development
+## Development
 To start dev server - `npm run dev`
 
 Then access it via [http://localhost:3000](http://localhost:3000)
+
+## Production
+`npm run build`
+
+Copy static files from `dist` to server.

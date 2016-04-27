@@ -66,8 +66,6 @@ export default class NodesList extends Component {
     function handleCreate() {
       let cluster = fields.cluster.value;
       let name = fields.name.value;
-      console.log(clusters[cluster]);
-      console.log(clusters[cluster].getId);
       let clusterId = clusters[cluster].getId();
       create({cluster: clusterId, name})
         .then(() => {

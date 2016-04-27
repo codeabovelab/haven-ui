@@ -12,16 +12,16 @@ const environment = {
 module.exports = Object.assign({
   host: process.env.HOST || 'localhost',
   port: process.env.PORT,
-  apiHost: process.env.APIHOST || 'hb1.codeabovelab.com',
+  apiHost: 'hb1.codeabovelab.com',
   apiPort: 8761,
   app: {
     title: 'Dockmaster',
     head: {
       titleTemplate: 'Dockmaster: %s',
       meta: [
-        {charset: 'utf-8'},
+        {charset: 'utf-8'}
       ]
     }
-  },
+  }
 
 }, environment);
