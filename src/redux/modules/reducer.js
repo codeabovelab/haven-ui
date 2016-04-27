@@ -9,7 +9,8 @@ import menuLeft from './menuLeft';
 import clusters from './clusters/clusters';
 import clustersUI from './clusters/clustersUI';
 import containers from './containers/containers';
-import nodes from './nodes';
+import nodes from './nodes/nodes';
+import nodesUI from './nodes/nodesUI';
 
 export default combineReducers({
   routing: routeReducer,
@@ -17,10 +18,11 @@ export default combineReducers({
   auth,
   form,
   menuLeft,
-  //models
+  //BEGIN models data
   clusters,
   containers,
-  //END models
+  nodes,
+  //END models data
   clustersUI,
-  nodes
+  nodesUI
 });

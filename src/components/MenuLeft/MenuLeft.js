@@ -17,7 +17,7 @@ export default class MenuLeft extends Component {
 
   render() {
     const s = require('./MenuLeft.scss');
-    const {toggled, toggle} = this.props; // eslint-disable-line no-shadow
+    const {toggled, toggle} = this.props;
     return (
       <div data-toggle={toggled} className={s.ml}>
         <div className={s.mlHeader}>

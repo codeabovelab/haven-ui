@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {load} from 'redux/modules/nodes';
+import {load} from 'redux/modules/nodes/nodes';
 import {connect} from 'react-redux';
 import { asyncConnect } from 'redux-async-connect';
 import { Link } from 'react-router';
@@ -7,29 +7,39 @@ import {bindActionCreators} from 'redux';
 
 @connect(
   state => ({
-    nodes: state.nodes.all
+    nodes: state.nodes,
+    nodesIds: state.nodesUI.list
   }), dispatch => bindActionCreators({load}, dispatch))
 export default class NodesList extends Component {
   static propTypes = {
-    nodes: PropTypes.array,
-    load: PropTypes.func.isRequired,
+    nodes: PropTypes.object,
+    nodesIds: PropTypes.array,
+    load: PropTypes.func.isRequired
   };
 
   componentDidMount() {
-    const {load} = this.props; // eslint-disable-line no-shadow
+    const {load} = this.props;
     load();
   }
 
   render() {
     const s = require('./NodesList.scss');
-    const {nodes} = this.props; // eslint-disable-line no-shadow
+    const {nodes, nodesIds} = this.props;
+    const nodesList = nodesIds !== null ? nodesIds.map(id => nodes[id]) : null;
 
     return (
       <div className="container-fluid">
         <div className={s.nodesList}>
           <h1>Node List</h1>
           <div className="page-info-group">
-            # of Nodes: <strong>{nodes && nodes.length}</strong>
+            <div>
+              <label>
+                # of Nodes:
+              </label>
+              <value>
+                {nodesList && nodesList.length}
+              </value>
+            </div>
           </div>
           <div className="page-actions">
             <button className="btn btn-primary" disabled>Add Node</button>
@@ -49,7 +59,7 @@ export default class NodesList extends Component {
               </tr>
               </thead>
               <tbody>
-              {nodes && nodes.map(node =>
+              {nodesList && nodesList.map(node =>
                 <tr key={node.name}>
                   <td>{node.name}</td>
                   <td>{node.ip}</td>
@@ -59,7 +69,7 @@ export default class NodesList extends Component {
                   <td></td>
                   <td></td>
                   <td className={s.actions}>
-                    <i className="fa fa-trash"></i> | <i className="fa fa-pencil"></i>
+                    <i className="fa fa-trash"/> | <i className="fa fa-pencil"/>
                   </td>
                 </tr>)}
               </tbody>
