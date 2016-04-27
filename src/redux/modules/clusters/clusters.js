@@ -1,11 +1,12 @@
 import {ACTIONS} from './actions';
 import _ from 'lodash';
-
+import {Cluster} from '../../models/common/Cluster';
 
 export default function reducer(state = {}, action = {}) {
   switch (action.type) {
     case ACTIONS.LOAD_SUCCESS:
-      return _.merge({}, state, _.keyBy(action.result, 'name'));
+      let clusters = action.result.map(row => new Cluster({init: row}));
+      return _.merge({}, state, _.keyBy(clusters, 'name'));
     case ACTIONS.LOAD_CONTAINERS_SUCCESS:
       return {
         ...state,

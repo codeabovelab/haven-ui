@@ -19,3 +19,10 @@ export function load() {
     promise: (client) => client.get('/ui/api/nodes/')
   };
 }
+
+export function create({name, cluster}) {
+  return {
+    types: [ACTIONS.CREATE, ACTIONS.CREATE_SUCCESS, ACTIONS.CREATE_FAIL],
+    promise: (client) => client.post(`/ui/api/clusters/${cluster}/nodes/${name}`)
+  };
+}

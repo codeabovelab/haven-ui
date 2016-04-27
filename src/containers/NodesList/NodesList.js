@@ -1,20 +1,41 @@
 import React, {Component, PropTypes} from 'react';
-import {load} from 'redux/modules/nodes/nodes';
+import {load, create} from 'redux/modules/nodes/nodes';
+import {removeCreateError} from 'redux/modules/nodes/nodesUI';
+import {load as loadClusters} from 'redux/modules/clusters/clusters';
 import {connect} from 'react-redux';
 import { asyncConnect } from 'redux-async-connect';
 import { Link } from 'react-router';
 import {bindActionCreators} from 'redux';
+import {reduxForm} from 'redux-form';
+import nodeValidation from './nodeValidation';
 
 @connect(
   state => ({
     nodes: state.nodes,
-    nodesIds: state.nodesUI.list
-  }), dispatch => bindActionCreators({load}, dispatch))
+    nodesIds: state.nodesUI.list,
+    createError: state.nodesUI.createError,
+    clusters: state.clusters,
+    clustersIds: state.clustersUI.list
+  }), dispatch => bindActionCreators({load, create, loadClusters, removeCreateError}, dispatch))
+@reduxForm({
+  form: 'newNode',
+  fields: ['cluster', 'name'],
+  validate: nodeValidation
+})
 export default class NodesList extends Component {
   static propTypes = {
     nodes: PropTypes.object,
     nodesIds: PropTypes.array,
-    load: PropTypes.func.isRequired
+    load: PropTypes.func.isRequired,
+    create: PropTypes.func.isRequired,
+    createError: PropTypes.string,
+    clusters: PropTypes.object,
+    clustersIds: PropTypes.array,
+    loadClusters: PropTypes.func.isRequired,
+    removeCreateError: PropTypes.func.isRequired,
+    fields: PropTypes.object.isRequired,
+    resetForm: PropTypes.func.isRequired,
+    valid: PropTypes.bool.isRequired
   };
 
   componentDidMount() {
@@ -23,10 +44,43 @@ export default class NodesList extends Component {
   }
 
   render() {
+    let self = this;
     const s = require('./NodesList.scss');
-    const {nodes, nodesIds} = this.props;
+    const {fields, valid, resetForm, create, createError, nodes, nodesIds} = this.props;
     const nodesList = nodesIds !== null ? nodesIds.map(id => nodes[id]) : null;
+    const {clusters, clustersIds, loadClusters} = this.props;
+    const clustersList = clustersIds !== null ? clustersIds.map(id => clusters[id]) : null;
 
+    function showModal() {
+      const {removeCreateError} = self.props;
+      if (clustersIds === null) {
+        loadClusters();
+      }
+      if (createError) {
+        removeCreateError();
+      }
+      $('#newNode').modal('show');
+      $('#input-name').focus();
+    }
+
+    function handleCreate() {
+      let cluster = fields.cluster.value;
+      let name = fields.name.value;
+      console.log(clusters[cluster]);
+      console.log(clusters[cluster].getId);
+      let clusterId = clusters[cluster].getId();
+      create({cluster: clusterId, name})
+        .then(() => {
+          resetForm();
+          fields.cluster.value = '';
+          fields.name.value = '';
+          $('#newNode').modal('hide');
+          return load();
+        })
+        .catch();
+    }
+
+    let field;
     return (
       <div className="container-fluid">
         <div className={s.nodesList}>
@@ -42,7 +96,7 @@ export default class NodesList extends Component {
             </div>
           </div>
           <div className="page-actions">
-            <button className="btn btn-primary" disabled>Add Node</button>
+            <button className="btn btn-primary" onClick={showModal}><i className="fa fa-plus"/> Add Node</button>
           </div>
           <div className="table-responsive">
             <table className="table table-bordered table-striped">
@@ -69,11 +123,51 @@ export default class NodesList extends Component {
                   <td></td>
                   <td></td>
                   <td className={s.actions}>
-                    <i className="fa fa-trash"/> | <i className="fa fa-pencil"/>
+                    <i className="fa fa-pencil"/> | <i className="fa fa-trash"/>
                   </td>
                 </tr>)}
               </tbody>
             </table>
+          </div>
+        </div>
+        <div id="newNode" className="modal">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 className="modal-title">Create New Node</h4>
+              </div>
+              <div className="modal-body">
+                <form>
+                  <div className="form-group" required>
+                    {(field = fields.name) && ''}
+                    <label>Node name:</label>
+                    {field.error && field.touched && <div className="text-danger">{field.error}</div>}
+                    <input type="text" id="input-name" {...fields.name} className="form-control"/>
+                  </div>
+                  <div className="form-group" required>
+                    <label>Cluster:</label>
+                    {(field = fields.cluster) && ''}
+                    {field.error && field.touched && <div className="text-danger">{field.error}</div>}
+                    <select className="form-control" {...fields.cluster}>
+                      <option disabled/>
+                      {clustersList && clustersList.map(cluster =>
+                        <option key={cluster.name} value={cluster.name}>{cluster.name}</option>
+                      )}
+                    </select>
+                  </div>
+                  <div className="text-danger">{createError}</div>
+                </form>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" className="btn btn-primary" onClick={handleCreate} disabled={!valid}>Create New
+                  Node
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

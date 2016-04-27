@@ -20,12 +20,12 @@ import clusterValidation from './clusterValidation';
 })
 export default class ClusterList extends Component {
   static propTypes = {
-    fields: PropTypes.object.isRequired,
     clusters: PropTypes.object,
     clustersIds: PropTypes.array,
     createError: PropTypes.string,
     create: PropTypes.func.isRequired,
     load: PropTypes.func.isRequired,
+    fields: PropTypes.object.isRequired,
     resetForm: PropTypes.func.isRequired,
     valid: PropTypes.bool.isRequired
   };
