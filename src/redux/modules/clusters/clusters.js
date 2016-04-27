@@ -5,7 +5,7 @@ import _ from 'lodash';
 export default function reducer(state = {}, action = {}) {
   switch (action.type) {
     case ACTIONS.LOAD_SUCCESS:
-      return _.keyBy(action.result, 'name');
+      return _.merge({}, state, _.keyBy(action.result, 'name'));
     case ACTIONS.LOAD_CONTAINERS_SUCCESS:
       return {
         ...state,

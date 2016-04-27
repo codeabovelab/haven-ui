@@ -63,7 +63,10 @@ export default class ClusterList extends Component {
       <div className="container-fluid">
         <h1>Cluster List</h1>
         <div className="page-info-group">
-          # of Clusters: <strong>{clustersList && clustersList.length}</strong>
+          <div>
+            <label># of Clusters:</label>
+            <value>{clustersList && clustersList.length}</value>
+          </div>
         </div>
         <div className="page-actions">
           <button className="btn btn-primary" onClick={showModal}><i className="fa fa-plus"/> New Cluster

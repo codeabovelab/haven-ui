@@ -5,6 +5,23 @@
 }
 
 .page-info-group {
-  @include info-group();
+  border: 2px solid $gray-light;
+  border-radius: 0.25rem;
+  padding: 0 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  & > * {
+    display: block;
+    flex-grow: 1;
+    margin: 0.5rem 0.5rem;
+    label {
+      font-weight: bold;
+      margin: 0;
+    }
+    value {
+      margin-left: 0.2rem;
+      display: inline;
+    }
+  }
 }
 

@@ -26,6 +26,14 @@ export default class ClusterDetail extends Component {
 
   render() {
     const {containers, clusters, params: {name}, deleteCluster} = this.props;
+    const cluster = clusters[name];
+
+    if (!cluster) {
+      return (
+        <div></div>
+      );
+    }
+
 
     function handleDelete() {
       if (confirm('Are you sure you want to remove this cluster?')) {
@@ -34,7 +42,7 @@ export default class ClusterDetail extends Component {
       }
     }
 
-    const containersIds = clusters[name].containersList;
+    const containersIds = cluster.containersList;
     const containersList = containersIds == null ? null : containersIds.map(id => containers[id]);
 
     return (
@@ -43,7 +51,16 @@ export default class ClusterDetail extends Component {
           <Link to="/clusters">Clusters</Link> / {name}
         </h1>
         <div className="page-info-group">
-          # of Containers: <strong>{containersList && containersList.length}</strong>
+          {cluster.environment &&
+          <div>
+            <label>Env:</label>
+            <value>{cluster.environment}</value>
+          </div>
+          }
+          <div>
+            <label># of Containers:</label>
+            <value>{containersList && containersList.length}</value>
+          </div>
         </div>
         <div className="page-actions">
           <div className="btn-group">
