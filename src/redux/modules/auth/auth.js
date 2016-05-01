@@ -7,6 +7,11 @@ export default function reducer(state = {}, action = {}) {
     case ACTIONS.LOAD_FROM_LS_SUCCESS:
       let data = action.data;
       return data ? data : state;
+    case ACTIONS.LOGIN:
+      return {
+        ...state,
+        loginError: null
+      };
     case ACTIONS.LOGIN_SUCCESS:
       if (!action.result) {
         /* workaround till API fixed
@@ -16,7 +21,7 @@ export default function reducer(state = {}, action = {}) {
           ...state,
           token: null,
           user: null,
-          loginError: 'Username or password is incorrect'
+          loginError: 'Username or password is incorrect.'
         };
       }
 

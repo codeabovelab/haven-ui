@@ -17,6 +17,12 @@ export default class Login extends Component {
     logout: PropTypes.func.isRequired
   };
 
+  componentDidMount() {
+    this.refs.username.value = 'admin';
+    this.refs.password.value = 'password';
+    this.refs.username.focus();
+  }
+
   handleSubmit = (event) => {
     event.preventDefault();
     const iUsername = this.refs.username;
@@ -28,11 +34,12 @@ export default class Login extends Component {
         const {auth} = this.props;
         if (auth && auth.token) {
           window.ls.setItem('auth', JSON.stringify(auth));
+          iUsername.value = '';
+          iPassword.value = '';
         }
       });
-    iUsername.value = '';
-    iPassword.value = '';
   };
+
 
   render() {
     const {user, logout, loginError} = this.props;
@@ -59,8 +66,9 @@ export default class Login extends Component {
                   className="fa fa-sign-in"/>{' '}Log In
                 </button>
               </form>
-              <div className="text-danger">
-                {loginError ? loginError : ' ' /*' ' to reserve space for error */}
+              <div className="text-danger text-xs-center text-error">
+                {!loginError && <span>&nbsp;</span>}
+                {loginError}
               </div>
             </div>
             }

@@ -18,9 +18,8 @@
     font-size: 2rem;
     margin-bottom: 1rem;
   }
-  form {
-    :global(.btn) {
-      //margin-left: 10px;
-    }
+  :global(.text-error) {
+    margin-top: 1rem;
+    font-size: 1.2rem;
   }
 }
