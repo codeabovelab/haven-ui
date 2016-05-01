@@ -1,11 +1,13 @@
 import {ACTIONS} from './actions';
 
-const initialState = {
-  //Authorization: 'Basic YWRtaW46cGFzc3dvcmQ=',
-};
+const LS_KEY = 'auth';
 
-export default function reducer(state = initialState, action = {}) {
+export default function reducer(state = {}, action = {}) {
   switch (action.type) {
+    case ACTIONS.LOAD_FROM_LS_SUCCESS:
+      let data = action.data;
+      console.log('action called', data);
+      return data ? data : state;
     case ACTIONS.LOGIN_SUCCESS:
       return {
         ...state,
@@ -22,7 +24,6 @@ export default function reducer(state = initialState, action = {}) {
     case ACTIONS.LOGOUT_SUCCESS:
       return {
         ...state,
-        loggingOut: false,
         token: null,
         user: null
       };
@@ -31,6 +32,29 @@ export default function reducer(state = initialState, action = {}) {
   }
 }
 
+export function loadFromLS() {
+  let data = null;
+  if (!__SERVER__) {
+    //!server side
+    let json = ls.getItem(LS_KEY);
+    if (json) {
+      try {
+        data = JSON.parse(json);
+        data = data.token && data.user ? data : null;
+      } catch (e) {
+        data = null;
+      }
+    }
+  }
+  return {
+    type: ACTIONS.LOAD_FROM_LS_SUCCESS,
+    data: data
+  };
+}
+
+export function saveToLS(auth) {
+  window.ls.setItem(LS_KEY, JSON.stringify(auth));
+}
 
 export function login(username, password) {
   return {
@@ -44,8 +68,8 @@ export function login(username, password) {
 }
 
 export function logout() {
+  window.ls.removeItem(LS_KEY);
   return {
-    types: [ACTIONS.LOGOUT, ACTIONS.LOGOUT_SUCCESS, ACTIONS.LOGOUT_FAIL],
-    promise: Promise.resolve()
+    type: ACTIONS.LOGOUT_SUCCESS
   };
 }

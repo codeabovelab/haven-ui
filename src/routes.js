@@ -1,6 +1,6 @@
 import React from 'react';
 import {IndexRoute, Route} from 'react-router';
-import { isLoaded as isAuthLoaded} from 'redux/modules/auth/auth';
+import {loadFromLS} from 'redux/modules/auth/auth';
 import {
   App,
   Home,
@@ -23,10 +23,11 @@ export default (store) => {
       cb();
     }
 
+    checkAuth();
     //if (!isAuthLoaded(store.getState())) {
+
     //  store.dispatch(loadAuth()).then(checkAuth);
     //} else {
-    checkAuth();
     //}
   };
 

@@ -11,6 +11,7 @@ import {Provider} from 'react-redux';
 import { Router, browserHistory } from 'react-router';
 import { ReduxAsyncConnect } from 'redux-async-connect';
 import useScroll from 'scroll-behavior/lib/useStandardScroll';
+import {loadFromLS} from 'redux/modules/auth/auth';
 
 import getRoutes from './routes';
 
@@ -19,20 +20,6 @@ const history = useScroll(() => browserHistory)();
 const dest = document.getElementById('content');
 const store = createStore(history, client, window.__data);
 client.setStore(store);
-
-function initSocket() {
-  const socket = io('', {path: '/ws'});
-  socket.on('news', (data) => {
-    console.log(data);
-    socket.emit('my other event', {my: 'data from client'});
-  });
-  socket.on('msg', (data) => {
-    console.log(data);
-  });
-
-  return socket;
-}
-// global.socket = initSocket();
 
 const component = (
   <Router render={(props) =>
@@ -69,3 +56,5 @@ if (__DEVTOOLS__ && !window.devToolsExtension) {
     dest
   );
 }
+
+store.dispatch(loadFromLS());

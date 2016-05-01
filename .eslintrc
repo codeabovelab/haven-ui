@@ -41,6 +41,7 @@
     "__DEVTOOLS__": true,
     "socket": true,
     "webpackIsomorphicTools": true,
-    "$": true
+    "$": true,
+    "ls": true
   }
 }

@@ -10,8 +10,10 @@ export default class Login extends Component {
   static propTypes = {
     user: PropTypes.object,
     auth: PropTypes.object,
-    login: PropTypes.func,
-    logout: PropTypes.func
+    saveToLS: PropTypes.func.isRequired,
+    loadFromLS: PropTypes.func.isRequired,
+    login: PropTypes.func.isRequired,
+    logout: PropTypes.func.isRequired
   };
 
   handleSubmit = (event) => {
@@ -24,7 +26,7 @@ export default class Login extends Component {
       .then(() => {
         const {auth} = this.props;
         if (auth && auth.token) {
-          console.log('auth', auth.token);
+          window.ls.setItem('auth', JSON.stringify(auth));
         }
       });
     iUsername.value = '';
@@ -39,27 +41,29 @@ export default class Login extends Component {
         <div className={s.loginWrapper}>
           <div className={"container " + s.loginContainer}>
             <Helmet title="Login"/>
-            <h1 className="text-xs-center">Login</h1>
             {!user &&
-            <form className="login-form" onSubmit={this.handleSubmit}>
-              <div className="form-group">
-                <input type="text" ref="username" placeholder="Enter a username"
-                       className="form-control form-control-lg"/>
-              </div>
-              <div className="form-group">
-                <input type="password" ref="password" placeholder="Enter a password"
-                       className="form-control form-control-lg"/>
-              </div>
-              <button className="btn btn-primary btn-block btn-lg" onClick={this.handleSubmit}><i
-                className="fa fa-sign-in"/>{' '}Log In
-              </button>
-            </form>
+            <div>
+
+              <h1 className="text-xs-center">Login</h1>
+              <form className="login-form" onSubmit={this.handleSubmit}>
+                <div className="form-group">
+                  <input type="text" ref="username" placeholder="Enter a username"
+                         className="form-control form-control-lg"/>
+                </div>
+                <div className="form-group">
+                  <input type="password" ref="password" placeholder="Enter a password"
+                         className="form-control form-control-lg"/>
+                </div>
+                <button className="btn btn-primary btn-block btn-lg" onClick={this.handleSubmit}><i
+                  className="fa fa-sign-in"/>{' '}Log In
+                </button>
+              </form>
+            </div>
             }
             {user &&
             <div>
-              <p>You are currently logged in as {user.name}.</p>
-
-              <div>
+              <p className="text-xs-center lead">You are currently logged in as <strong>{user.name}</strong>.</p>
+              <div className="text-xs-center">
                 <button className="btn btn-danger" onClick={logout}><i className="fa fa-sign-out"/>{' '}Log Out</button>
               </div>
             </div>
