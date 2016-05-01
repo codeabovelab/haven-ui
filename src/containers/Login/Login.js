@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import Helmet from 'react-helmet';
-import * as authActions from 'redux/modules/auth';
+import * as authActions from 'redux/modules/auth/auth';
 
 @connect(
   state => ({user: state.auth.user, token: state.auth}),
@@ -12,7 +12,7 @@ export default class Login extends Component {
     token: PropTypes.object,
     login: PropTypes.func,
     logout: PropTypes.func
-  }
+  };
 
   handleSubmit = (event) => {
     event.preventDefault();
@@ -23,38 +23,43 @@ export default class Login extends Component {
     const value = this.props.login(username, password);
     iUsername.value = '';
     iPassword.value = '';
-  }
+  };
 
   render() {
     const {user, logout} = this.props;
-    const styles = require('./Login.scss');
+    const s = require('./Login.scss');
     return (
-      <div className={styles.loginPage + ' container'}>
-        <Helmet title="Login"/>
-        <h1>Login</h1>
-        {!user &&
-        <div>
-          <form className="login-form form-inline" onSubmit={this.handleSubmit}>
-            <div className="form-group">
-              <input type="text" ref="username" placeholder="Enter a username" className="form-control"/>
-            </div>
-            <div className="form-group">
-              <input type="password" ref="password" placeholder="Enter a password" className="form-control"/>
-            </div>
-            <button className="btn btn-success" onClick={this.handleSubmit}><i className="fa fa-sign-in"/>{' '}Log In
-            </button>
-          </form>
-        </div>
-        }
-        {user &&
-        <div>
-          <p>You are currently logged in as {user.name}.</p>
+      <div className={s.loginPage}>
+        <div className={s.loginWrapper}>
+          <div className={"container " + s.loginContainer}>
+            <Helmet title="Login"/>
+            <h1 className="text-xs-center">Login</h1>
+            {!user &&
+            <form className="login-form" onSubmit={this.handleSubmit}>
+              <div className="form-group">
+                <input type="text" ref="username" placeholder="Enter a username"
+                       className="form-control form-control-lg"/>
+              </div>
+              <div className="form-group">
+                <input type="password" ref="password" placeholder="Enter a password"
+                       className="form-control form-control-lg"/>
+              </div>
+              <button className="btn btn-primary btn-block btn-lg" onClick={this.handleSubmit}><i
+                className="fa fa-sign-in"/>{' '}Log In
+              </button>
+            </form>
+            }
+            {user &&
+            <div>
+              <p>You are currently logged in as {user.name}.</p>
 
-          <div>
-            <button className="btn btn-danger" onClick={logout}><i className="fa fa-sign-out"/>{' '}Log Out</button>
+              <div>
+                <button className="btn btn-danger" onClick={logout}><i className="fa fa-sign-out"/>{' '}Log Out</button>
+              </div>
+            </div>
+            }
           </div>
         </div>
-        }
       </div>
     );
   }

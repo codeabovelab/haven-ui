@@ -18,9 +18,7 @@ export default class ApiClient {
     methods.forEach((method) =>
       this[method] = (path, { params, data } = {}) => new Promise((resolve, reject) => {
         const request = superagent[method](formatUrl(path));
-        const AUTH = 'Basic YWRtaW46cGFzc3dvcmQ=';
-        request.set('Authorization', AUTH);
-
+        this.setToken(request);
         if (params) {
           request.query(params);
         }
@@ -33,13 +31,17 @@ export default class ApiClient {
       }));
   }
 
-  /*
-   * This silly function to avoid mysterious "ReferenceError: ApiClient is not defined" error.
-   * See Issue #14. https://github.com/erikras/react-redux-universal-hot-example/issues/14
-   *
-   * Remove it at your own risk.
-   */
-  func() {
+  _store;
 
+  setStore(store) {
+    this._store = store;
+  }
+
+  setToken(request) {
+    let auth = this._store.getState().auth;
+    if (auth && auth.token) {
+      request.set('X-Auth-Token', auth.token.key);
+      //request.set('Authorization', auth.Authorization);
+    }
   }
 }

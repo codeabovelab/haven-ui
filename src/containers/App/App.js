@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
 import Helmet from 'react-helmet';
-import { isLoaded as isAuthLoaded, load as loadAuth} from 'redux/modules/auth';
+import { isLoaded as isAuthLoaded} from 'redux/modules/auth/auth';
 import { MenuLeft, Navbar } from 'components';
 import { routeActions } from 'react-router-redux';
 import config from '../../config';
@@ -13,9 +13,9 @@ import { asyncConnect } from 'redux-async-connect';
   promise: ({store: {dispatch, getState}}) => {
     const promises = [];
 
-    if (!isAuthLoaded(getState())) {
-      promises.push(dispatch(loadAuth()));
-    }
+    //if (!isAuthLoaded(getState())) {
+    //  promises.push(dispatch(loadAuth()));
+    //}
 
     return Promise.all(promises);
   }
@@ -37,21 +37,19 @@ export default class App extends Component {
   componentWillReceiveProps(nextProps) {
     if (!this.props.user && nextProps.user) {
       // login
-      this.props.pushState('/loginSuccess');
+      this.props.pushState('/');
     } else if (this.props.user && !nextProps.user) {
       // logout
-      this.props.pushState('/');
+      this.props.pushState('/login');
     }
   }
 
   render() {
-    const s = require('./App.scss');
-
     return (
-      <div className={s.app}>
+      <div className="app">
         <Helmet {...config.app.head}/>
         <MenuLeft/>
-        <div className={s['full-page-container']}>
+        <div className="full-page-container">
           <div className="above-footer">
             <Navbar />
             <div className="main">
@@ -59,7 +57,7 @@ export default class App extends Component {
             </div>
           </div>
 
-          <div className={s.footer}>
+          <div className="footer">
             <div className="text-xs-center">
               &copy; {(new Date()).getFullYear()} Dockmaster
             </div>

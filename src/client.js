@@ -18,6 +18,7 @@ const client = new ApiClient();
 const history = useScroll(() => browserHistory)();
 const dest = document.getElementById('content');
 const store = createStore(history, client, window.__data);
+client.setStore(store);
 
 function initSocket() {
   const socket = io('', {path: '/ws'});

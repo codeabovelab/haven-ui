@@ -1,3 +1,44 @@
+html, body, body > div {
+  height: 100%;
+}
+
+body {
+  word-wrap: break-word;
+}
+
+.app {
+  display: flex;
+  min-height: 100%;
+  position: relative;
+
+  .full-page-container {
+    min-width: 1rem;
+    overflow: hidden;
+    flex-grow: 1;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    & > .above-footer {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      .main {
+        position: relative;
+        flex-grow: 1;
+        min-height: 25rem;
+      }
+    }
+  }
+}
+
+.footer {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-top: 1px solid $gray-lighter;
+  font-size: 0.8rem;
+  color: $gray;
+}
 
 .page-actions {
   margin: 1rem 0;

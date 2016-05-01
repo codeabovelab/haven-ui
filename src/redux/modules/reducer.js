@@ -3,7 +3,7 @@ import multireducer from 'multireducer';
 import { routeReducer } from 'react-router-redux';
 import {reducer as reduxAsyncConnect} from 'redux-async-connect';
 
-import auth from './auth';
+import auth from './auth/auth';
 import {reducer as form} from 'redux-form';
 import menuLeft from './menuLeft';
 import clusters from './clusters/clusters';

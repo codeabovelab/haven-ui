@@ -1,6 +1,6 @@
 import React from 'react';
 import {IndexRoute, Route} from 'react-router';
-import { isLoaded as isAuthLoaded, load as loadAuth } from 'redux/modules/auth';
+import { isLoaded as isAuthLoaded} from 'redux/modules/auth/auth';
 import {
   App,
   Home,
@@ -18,16 +18,16 @@ export default (store) => {
       const { auth: { user }} = store.getState();
       if (!user) {
         // oops, not logged in, so can't be here!
-        replace('/');
+        replace('/login');
       }
       cb();
     }
 
-    if (!isAuthLoaded(store.getState())) {
-      store.dispatch(loadAuth()).then(checkAuth);
-    } else {
-      checkAuth();
-    }
+    //if (!isAuthLoaded(store.getState())) {
+    //  store.dispatch(loadAuth()).then(checkAuth);
+    //} else {
+    checkAuth();
+    //}
   };
 
   /**
@@ -35,18 +35,18 @@ export default (store) => {
    */
   return (
     <Route path="/" component={App}>
-      { /* Home (main) route */ }
-      <IndexRoute component={Home}/>
+      <Route onEnter={requireLogin}>
+        { /* Routes requiring login */ }
+        { /* Home (main) route */ }
+        <IndexRoute component={Home}/>
 
-      { /* Routes requiring login */ }
-      /* <Route onEnter={requireLogin}>*/
-      <Route path="loginSuccess" component={LoginSuccess}/>
-      <Route path="clusters" component={ClusterList}/>
-      <Route path="clusters/:name" component={ClusterDetail}/>
-      <Route path="nodes" component={NodesList}/>
-      /* </Route>*/
+        <Route path="loginSuccess" component={LoginSuccess}/>
+        <Route path="clusters" component={ClusterList}/>
+        <Route path="clusters/:name" component={ClusterDetail}/>
+        <Route path="nodes" component={NodesList}/>
+      </Route>
 
-      { /* Routes */ }
+      { /* Public Routes */ }
       <Route path="login" component={Login}/>
 
       { /* Catch all route */ }
