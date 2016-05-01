@@ -6,7 +6,6 @@ export default function reducer(state = {}, action = {}) {
   switch (action.type) {
     case ACTIONS.LOAD_FROM_LS_SUCCESS:
       let data = action.data;
-      console.log('action called', data);
       return data ? data : state;
     case ACTIONS.LOGIN_SUCCESS:
       return {
