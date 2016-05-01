@@ -4,12 +4,13 @@ import Helmet from 'react-helmet';
 import * as authActions from 'redux/modules/auth/auth';
 
 @connect(
-  state => ({user: state.auth.user, auth: state.auth}),
+  state => ({user: state.auth.user, auth: state.auth, loginError: state.auth.loginError}),
   authActions)
 export default class Login extends Component {
   static propTypes = {
     user: PropTypes.object,
     auth: PropTypes.object,
+    loginError: PropTypes.string,
     saveToLS: PropTypes.func.isRequired,
     loadFromLS: PropTypes.func.isRequired,
     login: PropTypes.func.isRequired,
@@ -34,7 +35,7 @@ export default class Login extends Component {
   };
 
   render() {
-    const {user, logout} = this.props;
+    const {user, logout, loginError} = this.props;
     const s = require('./Login.scss');
     return (
       <div className={s.loginPage}>
@@ -58,6 +59,9 @@ export default class Login extends Component {
                   className="fa fa-sign-in"/>{' '}Log In
                 </button>
               </form>
+              <div className="text-danger">
+                {loginError ? loginError : ' ' /*' ' to reserve space for error */}
+              </div>
             </div>
             }
             {user &&

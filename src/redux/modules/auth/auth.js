@@ -8,6 +8,18 @@ export default function reducer(state = {}, action = {}) {
       let data = action.data;
       return data ? data : state;
     case ACTIONS.LOGIN_SUCCESS:
+      if (!action.result) {
+        /* workaround till API fixed
+         * that actually means there was redirect
+         */
+        return {
+          ...state,
+          token: null,
+          user: null,
+          loginError: 'Username or password is incorrect'
+        };
+      }
+
       return {
         ...state,
         token: action.result,
