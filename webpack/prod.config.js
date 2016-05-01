@@ -25,6 +25,9 @@ module.exports = {
     'tether': [
       'tether'
     ],
+    "global": [
+      './src/js/_global.js'
+    ],
     'main': [
       'bootstrap-loader',
       'font-awesome-webpack!./src/theme/font-awesome.config.prod.js',
@@ -114,7 +117,7 @@ module.exports = {
     // See: https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
       template: 'static/index.html',
-      chunksSortMode: helpers.packageSort(['tether', 'main'])
+      chunksSortMode: helpers.packageSort(['tether', 'global', 'main'])
     }),
 
     webpackIsomorphicToolsPlugin

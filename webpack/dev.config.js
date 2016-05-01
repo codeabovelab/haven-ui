@@ -68,6 +68,9 @@ module.exports = {
     'tether': [
       'tether'
     ],
+    "global":[
+      './src/js/_global.js'
+    ],
     'main': [
       'webpack-hot-middleware/client?path=http://' + host + ':' + port + '/__webpack_hmr',
       'bootstrap-loader',
@@ -83,7 +86,8 @@ module.exports = {
   },
   module: {
     loaders: [
-      { test: /\.jsx?$/, exclude: /node_modules/, loaders: ['babel?' + JSON.stringify(babelLoaderQuery), 'eslint-loader']},
+      { test: require.resolve("jquery"), loader: "expose?$!expose?jQuery" },
+      { test: /\/src\/(?!js).*\.jsx?$/, exclude: /node_modules/, loaders: ['babel?' + JSON.stringify(babelLoaderQuery), 'eslint-loader']},
       { test: /\.json$/, loader: 'json-loader' },
       // Bootstrap 4
       { test: /bootstrap[\/\\]dist[\/\\]js[\/\\]umd[\/\\]/, loader: 'imports?jQuery=jquery' },
@@ -106,8 +110,7 @@ module.exports = {
   },
   plugins: [
     new webpack.ProvidePlugin({
-      "window.Tether": "tether",
-      '$': 'jquery'
+      "window.Tether": "tether"
     }),
     // hot reload
     new webpack.HotModuleReplacementPlugin(),

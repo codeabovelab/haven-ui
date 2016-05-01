@@ -4,12 +4,12 @@ import Helmet from 'react-helmet';
 import * as authActions from 'redux/modules/auth/auth';
 
 @connect(
-  state => ({user: state.auth.user, token: state.auth}),
+  state => ({user: state.auth.user, auth: state.auth}),
   authActions)
 export default class Login extends Component {
   static propTypes = {
     user: PropTypes.object,
-    token: PropTypes.object,
+    auth: PropTypes.object,
     login: PropTypes.func,
     logout: PropTypes.func
   };
@@ -20,7 +20,13 @@ export default class Login extends Component {
     const username = iUsername.value;
     const iPassword = this.refs.password;
     const password = iPassword.value;
-    const value = this.props.login(username, password);
+    this.props.login(username, password)
+      .then(() => {
+        const {auth} = this.props;
+        if (auth && auth.token) {
+          console.log('auth', auth.token);
+        }
+      });
     iUsername.value = '';
     iPassword.value = '';
   };
