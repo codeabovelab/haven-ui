@@ -45,7 +45,6 @@ export default class NodesList extends Component {
 
   render() {
     let self = this;
-    const s = require('./NodesList.scss');
     const {fields, valid, resetForm, create, createError, nodes, nodesIds} = this.props;
     const nodesList = nodesIds !== null ? nodesIds.map(id => nodes[id]) : null;
     const {clusters, clustersIds, loadClusters} = this.props;
@@ -81,7 +80,7 @@ export default class NodesList extends Component {
     let field;
     return (
       <div className="container-fluid">
-        <div className={s.nodesList}>
+        <div>
           <h1>Node List</h1>
           <div className="page-info-group">
             <div>
@@ -116,12 +115,12 @@ export default class NodesList extends Component {
                   <td>{node.name}</td>
                   <td>{node.ip}</td>
                   <td>{node.containers.length}</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td className={s.actions}>
-                    <i className="fa fa-pencil"/> | <i className="fa fa-trash"/>
+                  <td/>
+                  <td/>
+                  <td/>
+                  <td/>
+                  <td className="td-actions">
+                    <i className="fa fa-pencil" disabled/> | <i className="fa fa-trash" disabled/>
                   </td>
                 </tr>)}
               </tbody>

@@ -66,3 +66,18 @@ body {
   }
 }
 
+.td-actions {
+  i {
+    color: $link-color;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+  i[disabled] {
+    color: $body-color;
+    &:hover {
+      cursor: not-allowed;
+    }
+  }
+}
+

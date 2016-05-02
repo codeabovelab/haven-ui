@@ -7,3 +7,4 @@
 
 export MenuLeft from './MenuLeft/MenuLeft';
 export Navbar from './Navbar/Navbar';
+export ContainerLog from './containers/ContainerLog/ContainerLog';

@@ -12,7 +12,7 @@ export default function reducer(state = {}, action = {}) {
         ...state,
         [action.id]: {
           ...state[action.id],
-          containersList: action.result.map(container => container.name)
+          containersList: action.result.map(container => container.id)
         }
       };
     default:

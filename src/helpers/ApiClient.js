@@ -27,7 +27,16 @@ export default class ApiClient {
           request.send(data);
         }
 
-        request.end((err, { body } = {}) => err ? reject(body || err) : resolve(body));
+        request.end((err, response = {}) => {
+          let {body} = response;
+          if (err) {
+            reject(body || err);
+          } else {
+            let res = body ? body : {};
+            res._res = response;
+            resolve(res);
+          }
+        });
       }));
   }
 

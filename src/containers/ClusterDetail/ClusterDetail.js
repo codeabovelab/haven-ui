@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 import {connect} from 'react-redux';
 import { Link, browserHistory } from 'react-router';
+import {ContainerLog} from '../../components/index';
 
 @connect(
   state => ({
@@ -23,6 +24,7 @@ export default class ClusterDetail extends Component {
     loadContainers(name);
   }
 
+  additionalComponent = null;
 
   render() {
     const {containers, clusters, params: {name}, deleteCluster} = this.props;
@@ -87,13 +89,16 @@ export default class ClusterDetail extends Component {
               </thead>
               <tbody>
               {containersList.map(container =>
-                <tr key={container.name}>
+                <tr key={container.name} data-id={container.id}>
                   <td>{container.name}</td>
                   <td>{container.image}</td>
                   <td>{container.node}</td>
                   <td>{container.ports}</td>
                   <td>{container.status}</td>
-                  <td></td>
+                  <td className="td-actions">
+                    <i className="fa fa-eye" onClick={this.showLog.bind(this)}/> | <i className="fa fa-stop" disabled/>
+                    {' '}| <i className="fa fa-trash" disabled/>
+                  </td>
                 </tr>
               )}
               </tbody>
@@ -105,7 +110,21 @@ export default class ClusterDetail extends Component {
         <div className="alert alert-info">
           No containers yet
         </div>}
+        {this.state && this.state.additionalComponent}
       </div>
     );
   }
+
+  showLog(event) {
+    let container = this.getContainerByTarget(event.target);
+    this.setState({additionalComponent: <ContainerLog container={container}/>});
+  }
+
+  getContainerByTarget(target) {
+    const {containers} = this.props;
+    let $tr = $(target).parents('tr');
+    let id = $tr.data('id');
+    return containers[id];
+  }
+
 }
