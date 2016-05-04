@@ -11,7 +11,6 @@ export default class Login extends Component {
     user: PropTypes.object,
     auth: PropTypes.object,
     loginError: PropTypes.string,
-    saveToLS: PropTypes.func.isRequired,
     loadFromLS: PropTypes.func.isRequired,
     login: PropTypes.func.isRequired,
     logout: PropTypes.func.isRequired
@@ -33,7 +32,7 @@ export default class Login extends Component {
       .then(() => {
         const {auth} = this.props;
         if (auth && auth.token) {
-          window.ls.setItem('auth', JSON.stringify(auth));
+          authActions.saveToLS(auth);
           iUsername.value = '';
           iPassword.value = '';
         }

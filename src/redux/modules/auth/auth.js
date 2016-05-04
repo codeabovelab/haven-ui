@@ -1,6 +1,7 @@
 import {ACTIONS} from './actions';
 
 const LS_KEY = 'auth';
+import _ from 'lodash';
 
 export default function reducer(state = {}, action = {}) {
   switch (action.type) {
@@ -27,7 +28,7 @@ export default function reducer(state = {}, action = {}) {
 
       return {
         ...state,
-        token: action.result,
+        token: _.omit(action.result, '_res'),
         user: {name: action.result.userName}
       };
     case ACTIONS.LOGIN_FAIL:
@@ -70,6 +71,7 @@ export function loadFromLS() {
 
 export function saveToLS(auth) {
   window.ls.setItem(LS_KEY, JSON.stringify(auth));
+  console.log('saved');
 }
 
 export function login(username, password) {
