@@ -31,9 +31,9 @@ export default class ContainerLog extends Component {
     const {container, containers} = this.props;
     let containerDetailed = containers[container.id];
     return (
-      <div>
-        <h1 className="text-xs-center">{container.name}</h1>
-        <div className={s.logs}>{containerDetailed.logs}</div>
+      <div className={s.logs}>
+        <h5>{container.name}</h5>
+        <pre>{containerDetailed.logs}</pre>
       </div>
     );
   }
