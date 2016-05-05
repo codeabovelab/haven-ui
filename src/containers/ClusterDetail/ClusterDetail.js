@@ -3,6 +3,7 @@ import * as clusterActions from 'redux/modules/clusters/clusters';
 import {connect} from 'react-redux';
 import { Link, browserHistory } from 'react-router';
 import {ContainerLog} from '../../components/index';
+import {ConfirmDialog} from '../../components/index';
 
 @connect(
   state => ({
@@ -38,10 +39,11 @@ export default class ClusterDetail extends Component {
 
 
     function handleDelete() {
-      if (confirm('Are you sure you want to remove this cluster?')) {
-        deleteCluster(name)
-          .then(() => browserHistory.push('/clusters'));
-      }
+      confirm('Are you sure you want to remove this cluster?')
+        .then(() => {
+          deleteCluster(name)
+            .then(() => browserHistory.push('/clusters'));
+        }, () => null);
     }
 
     const containersIds = cluster.containersList;
@@ -116,15 +118,20 @@ export default class ClusterDetail extends Component {
   }
 
   showLog(event) {
-    let container = this.getContainerByTarget(event.target);
+    let container = this._getContainerByTarget(event.target);
     this.setState({additionalComponent: <ContainerLog container={container}/>});
   }
 
-  getContainerByTarget(target) {
+  stopContainer(event) {
+    let container = this._getContainerByTarget(event.target);
+  }
+
+  _getContainerByTarget(target) {
     const {containers} = this.props;
     let $tr = $(target).parents('tr');
     let id = $tr.data('id');
     return containers[id];
   }
+
 
 }

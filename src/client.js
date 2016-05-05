@@ -12,6 +12,7 @@ import { Router, browserHistory } from 'react-router';
 import { ReduxAsyncConnect } from 'redux-async-connect';
 import useScroll from 'scroll-behavior/lib/useStandardScroll';
 import {loadFromLS} from 'redux/modules/auth/auth';
+import {ConfirmDialog} from './components/index';
 
 import getRoutes from './routes';
 
@@ -58,3 +59,24 @@ if (__DEVTOOLS__ && !window.devToolsExtension) {
 }
 
 store.dispatch(loadFromLS());
+
+(() => {
+  window.confirm = (message, options = {}) => {
+    if (document.getElementById('confirm')) {
+      return Promise.reject();
+    }
+
+    let props = $.extend({message: message}, options);
+    let wrapper = document.body.appendChild(document.createElement('div'));
+    let component = ReactDOM.render(React.createElement(ConfirmDialog, props), wrapper);
+
+    function cleanup() {
+      ReactDOM.unmountComponentAtNode(wrapper);
+      setTimeout(() => wrapper.remove());
+    }
+
+    component.promise.then(cleanup, cleanup);
+    return component.promise;
+  };
+})();
+

@@ -71,7 +71,6 @@ export function loadFromLS() {
 
 export function saveToLS(auth) {
   window.ls.setItem(LS_KEY, JSON.stringify(auth));
-  console.log('saved');
 }
 
 export function login(username, password) {
