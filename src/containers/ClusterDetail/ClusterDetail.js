@@ -139,7 +139,8 @@ export default class ClusterDetail extends Component {
 
   showLog(event) {
     let container = this._getContainerByTarget(event.target);
-    this.setState({additionalComponent: <ContainerLog container={container}/>});
+    let childComponent = <ContainerLog container={container}/>;
+    window.simpleModal({title: 'Logs', childComponent, size: 'xl'});
   }
 
   startContainer(event) {

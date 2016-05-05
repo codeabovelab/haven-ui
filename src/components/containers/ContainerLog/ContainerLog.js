@@ -19,6 +19,13 @@ export default class ContainerLog extends Component {
     loadLogs(container);
   }
 
+  componentWillUpdate(nextProps) {
+    const {container, loadLogs} = this.props;
+    if (container.id !== nextProps.container.id) {
+      loadLogs(nextProps.container);
+    }
+  }
+
   render() {
     const s = require('./ContainerLog.scss');
     const {container, containers} = this.props;
@@ -26,7 +33,6 @@ export default class ContainerLog extends Component {
     return (
       <div>
         <h1 className="text-xs-center">{container.name}</h1>
-        Log Container
         <div className={s.logs}>{containerDetailed.logs}</div>
       </div>
     );

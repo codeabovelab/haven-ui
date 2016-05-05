@@ -12,7 +12,7 @@ import { Router, browserHistory } from 'react-router';
 import { ReduxAsyncConnect } from 'redux-async-connect';
 import useScroll from 'scroll-behavior/lib/useStandardScroll';
 import {loadFromLS} from 'redux/modules/auth/auth';
-import {ConfirmDialog} from './components/index';
+import {ConfirmDialog, SimpleModal} from './components/index';
 
 import getRoutes from './routes';
 
@@ -78,5 +78,7 @@ store.dispatch(loadFromLS());
     component.promise.then(cleanup, cleanup);
     return component.promise;
   };
+
+  SimpleModal.initJs(store);
 })();
 
