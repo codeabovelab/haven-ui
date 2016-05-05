@@ -13,7 +13,9 @@ import {ContainerLog} from '../../components/index';
     loadContainers: clusterActions.loadContainers,
     deleteCluster: clusterActions.deleteCluster,
     startContainer: containerActions.start,
-    stopContainer: containerActions.stop
+    stopContainer: containerActions.stop,
+    restartContainer: containerActions.restart,
+    removeContainer: containerActions.remove
   })
 export default class ClusterDetail extends Component {
   static propTypes = {
@@ -23,7 +25,9 @@ export default class ClusterDetail extends Component {
     loadContainers: PropTypes.func.isRequired,
     deleteCluster: PropTypes.func.isRequired,
     startContainer: PropTypes.func.isRequired,
-    stopContainer: PropTypes.func.isRequired
+    stopContainer: PropTypes.func.isRequired,
+    restartContainer: PropTypes.func.isRequired,
+    removeContainer: PropTypes.func.isRequired
   };
 
   componentDidMount() {
@@ -104,12 +108,18 @@ export default class ClusterDetail extends Component {
                   <td>{container.ports}</td>
                   <td>{container.status}</td>
                   <td className="td-actions">
-                    <i className="fa fa-eye" onClick={this.showLog.bind(this)}/>
+                    <i className="fa fa-eye" data-toggle="tooltip" data-placement="top" title="Show Logs"
+                       onClick={this.showLog.bind(this)}/>
                     {!container.run &&
-                    <span> | <i className="fa fa-play" onClick={this.startContainer.bind(this)}/></span>}
+                    <span> | <i className="fa fa-play" data-toggle="tooltip" title="Start"
+                                onClick={this.startContainer.bind(this)}/></span>}
                     {container.run &&
-                    <span> | <i className="fa fa-stop" onClick={this.stopContainer.bind(this)}/></span>}
-                    {' '}| <i className="fa fa-trash" disabled/>
+                    <span> | <i className="fa fa-stop" title="Stop" onClick={this.stopContainer.bind(this)}/></span>}
+                    {container.run &&
+                    <span> | <i className="fa fa-refresh" title="Restart"
+                                onClick={this.restartContainer.bind(this)}/></span>}
+                    <span> | <i className="fa fa-trash" title="Remove"
+                                onClick={this.removeContainer.bind(this)}/></span>
                   </td>
                 </tr>
               )}
@@ -149,6 +159,28 @@ export default class ClusterDetail extends Component {
     confirm('Are you sure you want to stop container?')
       .then(() => {
         stopContainer(container).catch(() => null)
+          .then(() => loadContainers(name));
+      })
+      .catch(() => null);// confirm cancel
+  }
+
+  restartContainer(event) {
+    const {restartContainer, loadContainers, params: {name}} = this.props;
+    let container = this._getContainerByTarget(event.target);
+    confirm('Are you sure you want to restart container?')
+      .then(() => {
+        restartContainer(container).catch(() => null)
+          .then(() => loadContainers(name));
+      })
+      .catch(() => null);// confirm cancel
+  }
+
+  removeContainer(event) {
+    const {removeContainer, loadContainers, params: {name}} = this.props;
+    let container = this._getContainerByTarget(event.target);
+    confirm('Are you sure you want to remove container?')
+      .then(() => {
+        removeContainer(container).catch(() => null)
           .then(() => loadContainers(name));
       })
       .catch(() => null);// confirm cancel

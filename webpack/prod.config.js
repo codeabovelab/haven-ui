@@ -42,6 +42,8 @@ module.exports = {
   },
   module: {
     loaders: [
+      {test: require.resolve("jquery"), loader: "expose?$!expose?jQuery"},
+      {test: require.resolve("tether"), loader: "expose?Tether"},
       {test: /\.jsx?$/, exclude: /node_modules/, loaders: [strip.loader('debug'), 'babel']},
       {test: /\.json$/, loader: 'json-loader'},
       {test: /bootstrap[\/\\]dist[\/\\]js[\/\\]umd[\/\\]/, loader: 'imports?jQuery=jquery'},
