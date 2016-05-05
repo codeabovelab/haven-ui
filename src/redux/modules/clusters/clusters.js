@@ -5,7 +5,10 @@ import {Cluster} from '../../models/common/Cluster';
 export default function reducer(state = {}, action = {}) {
   switch (action.type) {
     case ACTIONS.LOAD_SUCCESS:
-      let clusters = action.result.map(row => new Cluster({init: row}));
+      let clusters = action.result.map(row => {
+        let data = Object.assign({}, state[row.name], row);
+        return new Cluster({init: data});
+      });
       return _.merge({}, state, _.keyBy(clusters, 'name'));
     case ACTIONS.LOAD_CONTAINERS_SUCCESS:
       return {
