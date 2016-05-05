@@ -69,8 +69,6 @@ export default class NodesList extends Component {
       create({cluster: clusterId, name})
         .then(() => {
           resetForm();
-          fields.cluster.value = '';
-          fields.name.value = '';
           $('#newNode').modal('hide');
           return load();
         })
@@ -142,13 +140,13 @@ export default class NodesList extends Component {
                     {(field = fields.name) && ''}
                     <label>Node name:</label>
                     {field.error && field.touched && <div className="text-danger">{field.error}</div>}
-                    <input type="text" id="input-name" {...fields.name} className="form-control"/>
+                    <input type="text" id="input-name" {...field} className="form-control"/>
                   </div>
                   <div className="form-group" required>
                     <label>Cluster:</label>
                     {(field = fields.cluster) && ''}
                     {field.error && field.touched && <div className="text-danger">{field.error}</div>}
-                    <select className="form-control" {...fields.cluster}>
+                    <select className="form-control" {...field}>
                       <option disabled/>
                       {clustersList && clustersList.map(cluster =>
                         <option key={cluster.name} value={cluster.name}>{cluster.name}</option>

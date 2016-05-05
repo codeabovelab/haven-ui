@@ -6,3 +6,4 @@ export NodesList from './NodesList/NodesList';
 export Login from './Login/Login';
 export LoginSuccess from './LoginSuccess/LoginSuccess';
 export NotFound from './NotFound/NotFound';
+export ContainerCreate from './containers/ContainerCreate/ContainerCreate';

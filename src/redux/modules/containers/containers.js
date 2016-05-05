@@ -34,6 +34,13 @@ export function loadLogs(container) {
   };
 }
 
+export function create(container) {
+  return {
+    types: [ACTIONS.CREATE, ACTIONS.CREATE_SUCCESS, ACTIONS.CREATE_FAIL],
+    promise: (client) => client.post(`/ui/api/clusters/${container.cluster}/containers/create`, {data: container})
+  };
+}
+
 export function start(container) {
   let url = _containerUrl(container);
   return {

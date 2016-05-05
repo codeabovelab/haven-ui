@@ -18,6 +18,14 @@ export default function reducer(state = {}, action = {}) {
           containersList: action.result.map(container => container.id)
         }
       };
+    case ACTIONS.LOAD_NODES_SUCCESS:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          nodesList: action.result
+        }
+      };
     default:
       return state;
   }
@@ -51,6 +59,14 @@ export function loadContainers(clusterId) {
     types: [ACTIONS.LOAD_CONTAINERS, ACTIONS.LOAD_CONTAINERS_SUCCESS, ACTIONS.LOAD_CONTAINERS_FAIL],
     id: clusterId,
     promise: (client) => client.get(`/ui/api/clusters/${clusterId}/containers`)
+  };
+}
+
+export function loadNodes(clusterId) {
+  return {
+    types: [ACTIONS.LOAD_NODES, ACTIONS.LOAD_NODES_SUCCESS, ACTIONS.LOAD_NODES_FAIL],
+    id: clusterId,
+    promise: (client) => client.get(`/ui/api/clusters/${clusterId}/nodes`)
   };
 }
 

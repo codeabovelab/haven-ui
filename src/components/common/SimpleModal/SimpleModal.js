@@ -7,13 +7,14 @@ export default class SimpleModal extends Component {
     size: PropTypes.string,
     message: PropTypes.string,
     title: PropTypes.string,
-    childComponent: PropTypes.object
+    contentComponent: PropTypes.object,
+    bodyComponent: PropTypes.object
   };
 
   constructor() {
     super();
     this.closePromise = new Promise((resolve, reject) => {
-      this._resolve = resolve;
+      this._resolveClose = resolve;
     });
   }
 
@@ -22,17 +23,21 @@ export default class SimpleModal extends Component {
     let $el = $('#simpleModal');
     $el.modal('show');
     $el.find('.btn-primary').focus();
-    $el.on('hidden.bs.modal', () => this._resolve());
+    $el.on('hidden.bs.modal', () => this._resolveClose());
   }
 
+  childComponent = null;
+
   render() {
-    let {size, message, title = "", childComponent} = this.props;
+    let {size, message, title = "", bodyComponent, contentComponent} = this.props;
     let s = require('./SimpleModal.scss');
     let modalStyle = size ? s[size] : null;
     modalStyle = modalStyle ? modalStyle : '';
     return (
       <div id="simpleModal" className="modal">
         <div className={"modal-dialog " + modalStyle}>
+          {contentComponent}
+          {!contentComponent &&
           <div className="modal-content">
             <div className="modal-header">
               <button type="button" className="close" data-dismiss="modal">
@@ -42,12 +47,13 @@ export default class SimpleModal extends Component {
             </div>
             <div className="modal-body">
               {message}
-              {childComponent}
+              {bodyComponent}
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-primary" onClick={this.onOk.bind(this)}>Ok</button>
             </div>
           </div>
+          }
         </div>
       </div>
     );
@@ -56,11 +62,11 @@ export default class SimpleModal extends Component {
   closeIt() {
     let $el = $('#simpleModal');
     $el.modal('hide');
+    this._resolveClose();
   }
 
   onOk() {
     this.closeIt();
-    this._resolve();
   }
 
   static initJs(store) {

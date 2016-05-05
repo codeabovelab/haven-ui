@@ -45,8 +45,6 @@ export default class ClusterList extends Component {
       create({name, env})
         .then(() => {
           resetForm();
-          fields.name.value = '';
-          fields.env.value = '';
           $('#newCluster').modal('hide');
           return load();
         })
@@ -110,13 +108,13 @@ export default class ClusterList extends Component {
                     <label>Environment:</label>
                     {(field = fields.env) && ''}
                     {field.error && field.touched && <div className="text-danger">{field.error}</div>}
-                    <input id="input-env" type="text" {...fields.env} className="form-control"/>
+                    <input id="input-env" type="text" {...field} className="form-control"/>
                   </div>
                   <div className="form-group" required>
                     {(field = fields.name) && ''}
                     <label>Cluster name:</label>
                     {field.error && field.touched && <div className="text-danger">{field.error}</div>}
-                    <input type="text" {...fields.name} className="form-control"/>
+                    <input type="text" {...field} className="form-control"/>
                   </div>
                   <div className="text-danger">{createError}</div>
                 </form>

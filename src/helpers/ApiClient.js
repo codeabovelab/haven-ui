@@ -33,7 +33,9 @@ export default class ApiClient {
             reject(body || err);
           } else {
             let res = body ? body : {};
-            res._res = response;
+            if (!(res instanceof Array)) {
+              res._res = response;
+            }
             resolve(res);
           }
         });

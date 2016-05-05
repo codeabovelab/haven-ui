@@ -4,6 +4,7 @@ import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import { Link, browserHistory } from 'react-router';
 import {ContainerLog} from '../../components/index';
+import {ContainerCreate} from '../../containers/index';
 
 @connect(
   state => ({
@@ -38,7 +39,7 @@ export default class ClusterDetail extends Component {
   additionalComponent = null;
 
   render() {
-    const {containers, clusters, params: {name}, deleteCluster} = this.props;
+    const {containers, clusters, params: {name}} = this.props;
     const cluster = clusters[name];
 
     if (!cluster) {
@@ -47,14 +48,6 @@ export default class ClusterDetail extends Component {
       );
     }
 
-
-    function handleDelete() {
-      confirm('Are you sure you want to remove this cluster?')
-        .then(() => {
-          deleteCluster(name)
-            .then(() => browserHistory.push('/clusters'));
-        }, () => null);
-    }
 
     const containersIds = cluster.containersList;
     const containersList = containersIds == null ? null : containersIds.map(id => containers[id]);
@@ -78,8 +71,11 @@ export default class ClusterDetail extends Component {
         </div>
         <div className="page-actions">
           <div className="btn-group">
-            <button className="btn btn-primary" disabled><i className="fa fa-plus"/> New Container</button>
-            <button className="btn btn-danger" onClick={handleDelete}><i className="fa fa-trash"/> Delete Cluster
+            <button className="btn btn-primary" onClick={this.createContainer.bind(this)}><i className="fa fa-plus"/>
+              {' '}New Container
+            </button>
+            <button className="btn btn-danger" onClick={this.deleteCluster.bind(this)}><i className="fa fa-trash"/>
+              {' '}Delete Cluster
             </button>
           </div>
         </div>
@@ -137,10 +133,17 @@ export default class ClusterDetail extends Component {
     );
   }
 
+  createContainer(event) {
+    const {clusters, params: {name}} = this.props;
+    let cluster = clusters[name];
+    let contentComponent = <ContainerCreate cluster={cluster}/>;
+    window.simpleModal({title: 'Create Container', contentComponent});
+  }
+
   showLog(event) {
     let container = this._getContainerByTarget(event.target);
-    let childComponent = <ContainerLog container={container}/>;
-    window.simpleModal({title: 'Logs', childComponent, size: 'xl'});
+    let bodyComponent = <ContainerLog container={container}/>;
+    window.simpleModal({title: 'Logs', bodyComponent, size: 'xl'});
   }
 
   startContainer(event) {
@@ -192,6 +195,15 @@ export default class ClusterDetail extends Component {
     let $tr = $(target).parents('tr');
     let id = $tr.data('id');
     return containers[id];
+  }
+
+  deleteCluster() {
+    const {params: {name}, deleteCluster} = this.props;
+    confirm('Are you sure you want to remove this cluster?')
+      .then(() => {
+        deleteCluster(name)
+          .then(() => browserHistory.push('/clusters'));
+      }, () => null);
   }
 
 
