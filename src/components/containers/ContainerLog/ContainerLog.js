@@ -16,7 +16,7 @@ export default class ContainerLog extends Component {
 
   componentWillMount() {
     const {container, loadLogs} = this.props;
-    loadLogs({cluster: container.cluster, containerId: container.id});
+    loadLogs(container);
   }
 
   render() {

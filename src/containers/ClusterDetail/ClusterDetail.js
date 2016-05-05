@@ -1,23 +1,29 @@
 import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
+import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import { Link, browserHistory } from 'react-router';
 import {ContainerLog} from '../../components/index';
-import {ConfirmDialog} from '../../components/index';
 
 @connect(
   state => ({
     clusters: state.clusters,
     containers: state.containers
-  }),
-  clusterActions)
+  }), {
+    loadContainers: clusterActions.loadContainers,
+    deleteCluster: clusterActions.deleteCluster,
+    startContainer: containerActions.start,
+    stopContainer: containerActions.stop
+  })
 export default class ClusterDetail extends Component {
   static propTypes = {
     clusters: PropTypes.object,
     containers: PropTypes.object,
     params: PropTypes.object,
     loadContainers: PropTypes.func.isRequired,
-    deleteCluster: PropTypes.func.isRequired
+    deleteCluster: PropTypes.func.isRequired,
+    startContainer: PropTypes.func.isRequired,
+    stopContainer: PropTypes.func.isRequired
   };
 
   componentDidMount() {
@@ -98,7 +104,11 @@ export default class ClusterDetail extends Component {
                   <td>{container.ports}</td>
                   <td>{container.status}</td>
                   <td className="td-actions">
-                    <i className="fa fa-eye" onClick={this.showLog.bind(this)}/> | <i className="fa fa-stop" disabled/>
+                    <i className="fa fa-eye" onClick={this.showLog.bind(this)}/>
+                    {!container.run &&
+                    <span> | <i className="fa fa-play" onClick={this.startContainer.bind(this)}/></span>}
+                    {container.run &&
+                    <span> | <i className="fa fa-stop" onClick={this.stopContainer.bind(this)}/></span>}
                     {' '}| <i className="fa fa-trash" disabled/>
                   </td>
                 </tr>
@@ -122,8 +132,26 @@ export default class ClusterDetail extends Component {
     this.setState({additionalComponent: <ContainerLog container={container}/>});
   }
 
-  stopContainer(event) {
+  startContainer(event) {
+    const {startContainer, loadContainers, params: {name}} = this.props;
     let container = this._getContainerByTarget(event.target);
+    confirm('Are you sure you want to start container?')
+      .then(() => {
+        startContainer(container).catch(() => null)
+          .then(() => loadContainers(name));
+      })
+      .catch(() => null);// confirm cancel
+  }
+
+  stopContainer(event) {
+    const {stopContainer, loadContainers, params: {name}} = this.props;
+    let container = this._getContainerByTarget(event.target);
+    confirm('Are you sure you want to stop container?')
+      .then(() => {
+        stopContainer(container).catch(() => null)
+          .then(() => loadContainers(name));
+      })
+      .catch(() => null);// confirm cancel
   }
 
   _getContainerByTarget(target) {
