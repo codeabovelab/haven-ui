@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import ReactDOM from 'react-dom';
 
 export default class ConfirmDialog extends Component {
   static propTypes = {
@@ -60,5 +61,25 @@ export default class ConfirmDialog extends Component {
       this.reject();
       this.finished = true;
     }
+  }
+
+  static initJs() {
+    window.confirm = (message, options = {}) => {
+      if (document.getElementById('confirm')) {
+        return Promise.reject();
+      }
+
+      let props = $.extend({message: message}, options);
+      let wrapper = document.body.appendChild(document.createElement('div'));
+      let component = ReactDOM.render(React.createElement(ConfirmDialog, props), wrapper);
+
+      function cleanup() {
+        ReactDOM.unmountComponentAtNode(wrapper);
+        setTimeout(() => wrapper.remove());
+      }
+
+      component.promise.then(cleanup, cleanup);
+      return component.promise;
+    };
   }
 }

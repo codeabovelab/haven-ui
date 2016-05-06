@@ -63,24 +63,7 @@ store.dispatch(loadAuth());
 store.dispatch(loadMenuLeft());
 
 (() => {
-  window.confirm = (message, options = {}) => {
-    if (document.getElementById('confirm')) {
-      return Promise.reject();
-    }
-
-    let props = $.extend({message: message}, options);
-    let wrapper = document.body.appendChild(document.createElement('div'));
-    let component = ReactDOM.render(React.createElement(ConfirmDialog, props), wrapper);
-
-    function cleanup() {
-      ReactDOM.unmountComponentAtNode(wrapper);
-      setTimeout(() => wrapper.remove());
-    }
-
-    component.promise.then(cleanup, cleanup);
-    return component.promise;
-  };
-
+  ConfirmDialog.initJs();
   SimpleModal.initJs(store);
 })();
 
