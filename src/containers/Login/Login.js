@@ -17,9 +17,12 @@ export default class Login extends Component {
   };
 
   componentDidMount() {
-    this.refs.username.value = 'admin';
-    this.refs.password.value = 'password';
-    this.refs.username.focus();
+    const {user} = this.props;
+    if (!user) {
+      this.refs.username.value = 'admin';
+      this.refs.password.value = 'password';
+      this.refs.username.focus();
+    }
   }
 
   handleSubmit = (event) => {
