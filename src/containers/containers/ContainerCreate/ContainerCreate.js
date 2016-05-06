@@ -95,7 +95,13 @@ export default class ContainerCreate extends Component {
                 )}
               </select>
             </div>
-            {EXTRA_FIELDS_KEYS.map(key => fieldComponent(key))}
+            <div className="row">
+              {EXTRA_FIELDS_KEYS.map(key =>
+                <div className="col-md-6">
+                  {fieldComponent(key)}
+                </div>
+              )}
+            </div>
           </form>
         </div>
         <div className="modal-footer">
