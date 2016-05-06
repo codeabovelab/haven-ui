@@ -1,10 +1,8 @@
-import Radium from 'radium';
 import React, {Component, PropTypes} from 'react';
 import { Link } from 'react-router';
-import {toggle} from 'redux/modules/menuLeft';
+import {toggle} from 'redux/modules/menuLeft/menuLeft';
 import { connect } from 'react-redux';
 
-//@Radium
 @connect(
   state => ({toggled: state.menuLeft.toggled}),
   {toggle}
@@ -16,19 +14,24 @@ export default class MenuLeft extends Component {
   };
 
   render() {
-    const s = require('./MenuLeft.scss');
     const {toggled, toggle} = this.props;
     return (
-      <div data-toggle={toggled} className={s.ml}>
-        <div className={s.mlHeader}>
-          <span className="pull-xs-right hidden-xs-down" onClick={toggle}><i className={'fa fa-bars ' + s['fa-bars']}/></span>
+      <div data-toggle={toggled} className="ml">
+        <div className="ml-header">
+          <span className="pull-xs-right hidden-xs-down" onClick={toggle}><i className="fa fa-bars"/></span>
         </div>
-        <div className={'nav nav-pills nav-stacked ' + s['nav-pills']}>
-          <li className={'nav-item ' + s['nav-item']}>
-            <Link to="/clusters" className={'nav-link ' + s['nav-link']}>Cluster List</Link>
+        <div className="nav nav-pills nav-stacked">
+          <li className="nav-item">
+            <Link to="/clusters" className="nav-link">
+              <span className="icon-container"><i className="fa fa-object-group"/></span>
+              <span className="label">Cluster List</span>
+            </Link>
           </li>
-          <li className={'nav-item ' + s['nav-item']}>
-            <Link to="/nodes" className={'nav-link ' + s['nav-link']}>Node List</Link>
+          <li className="nav-item">
+            <Link to="/nodes" className="nav-link">
+              <span className="icon-container"><i className="fa fa-server"/></span>
+              <span className="label">Node List</span>
+            </Link>
           </li>
         </div>
       </div>

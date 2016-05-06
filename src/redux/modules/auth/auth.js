@@ -26,11 +26,13 @@ export default function reducer(state = {}, action = {}) {
         };
       }
 
-      return {
+      let newState = {
         ...state,
         token: _.omit(action.result, '_res'),
         user: {name: action.result.userName}
       };
+      saveToLS(newState);
+      return newState;
     case ACTIONS.LOGIN_FAIL:
       return {
         ...state,

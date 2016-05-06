@@ -5,7 +5,7 @@ import {reducer as reduxAsyncConnect} from 'redux-async-connect';
 
 import auth from './auth/auth';
 import {reducer as form} from 'redux-form';
-import menuLeft from './menuLeft';
+import menuLeft from './menuLeft/menuLeft';
 import clusters from './clusters/clusters';
 import clustersUI from './clusters/clustersUI';
 import containers from './containers/containers';

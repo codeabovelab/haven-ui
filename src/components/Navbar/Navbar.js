@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import { Link } from 'react-router';
-import {toggle} from 'redux/modules/menuLeft';
+import {toggle} from 'redux/modules/menuLeft/menuLeft';
 import { connect } from 'react-redux';
 import { IndexLink } from 'react-router';
 import {logout} from 'redux/modules/auth/auth';

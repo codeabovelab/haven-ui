@@ -32,7 +32,6 @@ export default class Login extends Component {
       .then(() => {
         const {auth} = this.props;
         if (auth && auth.token) {
-          authActions.saveToLS(auth);
           iUsername.value = '';
           iPassword.value = '';
         }
