@@ -23,7 +23,7 @@ export default function reducer(state = {}, action = {}) {
 }
 
 function _containerUrl(container) {
-  return `/ui/api/clusters/${container.cluster}/containers/${container.id}`;
+  return `/ui/api/containers/${container.id}`;
 }
 export function loadLogs(container) {
   let url = _containerUrl(container);
@@ -37,7 +37,7 @@ export function loadLogs(container) {
 export function create(container) {
   return {
     types: [ACTIONS.CREATE, ACTIONS.CREATE_SUCCESS, ACTIONS.CREATE_FAIL],
-    promise: (client) => client.post(`/ui/api/clusters/${container.cluster}/containers/create`, {data: container})
+    promise: (client) => client.post(`/ui/api/containers/create`, {data: container})
   };
 }
 
