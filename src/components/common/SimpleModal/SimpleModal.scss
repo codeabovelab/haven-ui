@@ -1,3 +1,5 @@
-.xl {
-  width: 1000px;
+.modal {
+  :global(.xl) {
+    width: 1000px;
+  }
 }

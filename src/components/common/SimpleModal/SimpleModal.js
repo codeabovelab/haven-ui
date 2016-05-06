@@ -26,16 +26,13 @@ export default class SimpleModal extends Component {
     $el.on('hidden.bs.modal', () => this._resolveClose());
   }
 
-  childComponent = null;
-
   render() {
     let {size, message, title = "", bodyComponent, contentComponent} = this.props;
+    console.log('size', size);
     let s = require('./SimpleModal.scss');
-    let modalStyle = size ? s[size] : null;
-    modalStyle = modalStyle ? modalStyle : '';
     return (
-      <div id="simpleModal" className="modal">
-        <div className={"modal-dialog " + modalStyle}>
+      <div id="simpleModal" className={'modal ' + s.modal}>
+        <div className={"modal-dialog " + (size ? size : '')}>
           {contentComponent}
           {!contentComponent &&
           <div className="modal-content">
