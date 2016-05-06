@@ -4,7 +4,8 @@ import {connect} from 'react-redux';
 import {reduxForm} from 'redux-form';
 import {create} from 'redux/modules/containers/containers';
 import {loadNodes} from 'redux/modules/clusters/clusters';
-import {loadImages} from 'redux/modules/images/images';
+import {loadImages, loadImageTags} from 'redux/modules/images/images';
+import _ from 'lodash';
 
 const EXTRA_FIELDS = {
   containerName: {
@@ -34,10 +35,10 @@ const EXTRA_FIELDS_KEYS = Object.keys(EXTRA_FIELDS);
 @connect(state => ({
   clusters: state.clusters,
   images: state.images
-}), {create, loadNodes, loadImages})
+}), {create, loadNodes, loadImages, loadImageTags})
 @reduxForm({
   form: 'newContainer',
-  fields: ['image', 'node'].concat(EXTRA_FIELDS_KEYS)
+  fields: ['image', 'tag', 'node'].concat(EXTRA_FIELDS_KEYS)
 })
 export default class ContainerCreate extends Component {
   static propTypes = {
@@ -47,10 +48,11 @@ export default class ContainerCreate extends Component {
     create: PropTypes.func.isRequired,
     loadNodes: PropTypes.func.isRequired,
     loadImages: PropTypes.func.isRequired,
+    loadImageTags: PropTypes.func.isRequired,
     fields: PropTypes.object.isRequired,
     resetForm: PropTypes.func.isRequired
   };
-  static focusSelector = '#image-input';
+  static focusSelector = '#image-select';
 
   componentWillMount() {
     const {loadNodes, loadImages, cluster} = this.props;
@@ -61,10 +63,10 @@ export default class ContainerCreate extends Component {
   getImagesList() {
     let imagesList = [];
     const {images} = this.props;
-    Object.keys(images).forEach(register => {
-      let items = images[register];
-      items.forEach(image => {
-        let i = Object.assign({}, image, {label: `${register} | ${image.name}`});
+    Object.keys(images).forEach(registerName => {
+      let register = images[registerName];
+      _.forOwn(register, image => {
+        let i = Object.assign({}, image, {label: `${registerName} | ${image.name}`});
         imagesList.push(i);
       });
     });
@@ -78,6 +80,7 @@ export default class ContainerCreate extends Component {
     nodes = nodes ? nodes : [];
     let imagesList = this.getImagesList();
     let field;
+    let image = this.getCurrentImage();
     return (
       <div className="modal-content">
         <div className="modal-header">
@@ -91,10 +94,21 @@ export default class ContainerCreate extends Component {
             <div className="form-group" required>
               {(field = fields.image) && ''}
               <label>Image:</label>
-              <select id={ContainerCreate.focusSelector.replace('#', '')} className="form-control" {...field}>
+              <select id={ContainerCreate.focusSelector.replace('#', '')} className="form-control" {...field}
+                      onChange={e => {field.onChange(e); this.onImageChange.call(this, e);}}>
                 <option disabled/>
                 {imagesList && imagesList.map(image =>
-                  <option key={image.label} value={image.name}>{image.label}</option>
+                  <option key={image.label} value={image.name} data-register={image.register}>{image.label}</option>
+                )}
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Tag:</label>
+              {(field = fields.tag) && ''}
+              <select className="form-control" {...field}>
+                <option />
+                {image && image.tags && image.tags.map(tag =>
+                  <option key={tag} value={tag}>{tag}</option>
                 )}
               </select>
             </div>
@@ -133,6 +147,30 @@ export default class ContainerCreate extends Component {
           <input type="text" {...field} className="form-control"/>
         </div>
       );
+    }
+  }
+
+  getCurrentImage() {
+    const {images, fields} = this.props;
+    let imageName = fields.image.value;
+    if (!imageName) {
+      return null;
+    }
+    let image = null;
+    _.forOwn(images, register => {
+      if (register[imageName]) {
+        image = register[imageName];
+      }
+    });
+    return image;
+  }
+
+  onImageChange(event) {
+    const {loadImageTags} = this.props;
+    let option = event.target[event.target.selectedIndex];
+    let register = option.dataset.register;
+    if (register) {
+      loadImageTags({register, image: event.target.value});
     }
   }
 
