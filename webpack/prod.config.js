@@ -44,7 +44,7 @@ module.exports = {
     loaders: [
       {test: require.resolve("jquery"), loader: "expose?$!expose?jQuery"},
       {test: require.resolve("tether"), loader: "expose?Tether"},
-      {test: /\.jsx?$/, exclude: /node_modules/, loaders: [strip.loader('debug'), 'babel']},
+      {test: /\/src\/(?!js).*\.jsx?$/, exclude: /node_modules/, loaders: [strip.loader('debug'), 'babel']},
       {test: /\.json$/, loader: 'json-loader'},
       {test: /bootstrap[\/\\]dist[\/\\]js[\/\\]umd[\/\\]/, loader: 'imports?jQuery=jquery'},
       {
@@ -118,7 +118,7 @@ module.exports = {
     //
     // See: https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
-      template: 'static/index.html',
+      template: 'webpack/index.html',
       chunksSortMode: helpers.packageSort(['tether', 'global', 'main'])
     }),
 
