@@ -27,6 +27,7 @@ export default class Html extends Component {
     return (
       <html lang="en-us">
         <head>
+          <link href='https://fonts.googleapis.com/css?family=Roboto:400,400italic,500,700' rel='stylesheet' type='text/css' />
           {head.base.toComponent()}
           {head.title.toComponent()}
           {head.meta.toComponent()}
