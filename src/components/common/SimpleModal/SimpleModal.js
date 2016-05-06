@@ -4,9 +4,10 @@ import {Provider} from 'react-redux';
 
 export default class SimpleModal extends Component {
   static propTypes = {
-    size: PropTypes.string,
     message: PropTypes.string,
     title: PropTypes.string,
+    focus: PropTypes.string, //which element to focus
+    size: PropTypes.string, //xl|lg
     contentComponent: PropTypes.object,
     bodyComponent: PropTypes.object
   };
@@ -20,7 +21,7 @@ export default class SimpleModal extends Component {
 
 
   componentDidMount() {
-    const {focus = '.btn-primary'}  = this.props;
+    const {focus = '.btn-primary'} = this.props;
     let $el = $('#simpleModal');
     $el.modal('show');
     $el.find(focus).focus();
