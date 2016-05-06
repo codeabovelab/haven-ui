@@ -20,9 +20,10 @@ export default class SimpleModal extends Component {
 
 
   componentDidMount() {
+    const {focus = '.btn-primary'}  = this.props;
     let $el = $('#simpleModal');
     $el.modal('show');
-    $el.find('.btn-primary').focus();
+    $el.find(focus).focus();
     $el.on('hidden.bs.modal', () => this._resolveClose());
   }
 

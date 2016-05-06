@@ -50,15 +50,12 @@ export default class ContainerCreate extends Component {
     fields: PropTypes.object.isRequired,
     resetForm: PropTypes.func.isRequired
   };
+  static focusSelector = '#image-input';
 
   componentWillMount() {
     const {loadNodes, loadImages, cluster} = this.props;
     loadNodes(cluster.name);
     loadImages();
-  }
-
-  componentDidMount() {
-    this.refs.image.focus();//not working because wrapped in modal window
   }
 
   getImagesList() {
@@ -94,7 +91,7 @@ export default class ContainerCreate extends Component {
             <div className="form-group" required>
               {(field = fields.image) && ''}
               <label>Image:</label>
-              <select ref="image" className="form-control" {...field}>
+              <select id={ContainerCreate.focusSelector.replace('#', '')} className="form-control" {...field}>
                 <option disabled/>
                 {imagesList && imagesList.map(image =>
                   <option key={image.label} value={image.name}>{image.label}</option>
