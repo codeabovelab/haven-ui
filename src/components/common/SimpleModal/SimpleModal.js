@@ -28,7 +28,6 @@ export default class SimpleModal extends Component {
 
   render() {
     let {size, message, title = "", bodyComponent, contentComponent} = this.props;
-    console.log('size', size);
     let s = require('./SimpleModal.scss');
     return (
       <div id="simpleModal" className={'modal ' + s.modal}>
