@@ -3,7 +3,7 @@ import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import {reduxForm} from 'redux-form';
 import {create} from 'redux/modules/containers/containers';
-import {loadNodes} from 'redux/modules/clusters/clusters';
+import {loadNodes, loadContainers} from 'redux/modules/clusters/clusters';
 import {loadImages, loadImageTags} from 'redux/modules/images/images';
 import _ from 'lodash';
 
@@ -35,7 +35,7 @@ const EXTRA_FIELDS_KEYS = Object.keys(EXTRA_FIELDS);
 @connect(state => ({
   clusters: state.clusters,
   images: state.images
-}), {create, loadNodes, loadImages, loadImageTags})
+}), {create, loadNodes, loadImages, loadImageTags, loadContainers})
 @reduxForm({
   form: 'newContainer',
   fields: ['image', 'tag', 'node'].concat(EXTRA_FIELDS_KEYS)
@@ -50,7 +50,8 @@ export default class ContainerCreate extends Component {
     loadImages: PropTypes.func.isRequired,
     loadImageTags: PropTypes.func.isRequired,
     fields: PropTypes.object.isRequired,
-    resetForm: PropTypes.func.isRequired
+    resetForm: PropTypes.func.isRequired,
+    loadContainers: PropTypes.func.isRequired
   };
   static focusSelector = '#image-select';
 
@@ -95,7 +96,7 @@ export default class ContainerCreate extends Component {
               {(field = fields.image) && ''}
               <label>Image:</label>
               <select id={ContainerCreate.focusSelector.replace('#', '')} className="form-control" {...field}
-                      onChange={e => {field.onChange(e); this.onImageChange.call(this, e);}}>
+                      onChange={e => {fields.image.onChange(e); this.onImageChange.call(this, e);}}>
                 <option disabled/>
                 {imagesList && imagesList.map(image =>
                   <option key={image.label} value={image.name} data-register={image.register}>{image.label}</option>
@@ -181,14 +182,20 @@ export default class ContainerCreate extends Component {
   create() {
     const {fields, create, cluster, resetForm} = this.props;
     let container = {
-      cluster: cluster.name,
-      image: fields.image.value,
-      node: fields.node.value
+      cluster: cluster.name
     };
+
+    Object.keys(fields).forEach(key => {
+      let value = fields[key].value;
+      if (value) {
+        container[key] = value;
+      }
+    });
     return create(container)
       .then(() => {
         resetForm();
-        //return load();
+        window.simpleModal.close();
+        return loadContainers();
       })
       .catch();
   }

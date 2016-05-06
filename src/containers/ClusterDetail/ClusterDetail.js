@@ -137,13 +137,18 @@ export default class ClusterDetail extends Component {
     const {clusters, params: {name}} = this.props;
     let cluster = clusters[name];
     let contentComponent = <ContainerCreate cluster={cluster}/>;
-    window.simpleModal({title: 'Create Container', contentComponent, size: 'lg', focus: ContainerCreate.focusSelector});
+    window.simpleModal.show({
+      title: 'Create Container',
+      contentComponent,
+      size: 'lg',
+      focus: ContainerCreate.focusSelector
+    });
   }
 
   showLog(event) {
     let container = this._getContainerByTarget(event.target);
     let bodyComponent = <ContainerLog container={container}/>;
-    window.simpleModal({title: 'Logs', bodyComponent, size: 'xl'});
+    window.simpleModal.show({title: 'Logs', bodyComponent, size: 'xl'});
   }
 
   startContainer(event) {

@@ -68,12 +68,17 @@ export default class SimpleModal extends Component {
   }
 
   static initJs(store) {
-    window.simpleModal = (props = {}) => {
+    let component;
+
+    window.simpleModal = {
+      show, close
+    };
+
+    function show(props = {}) {
       if (document.getElementById('simpleModal')) {
         return Promise.reject();
       }
       let wrapper = document.body.appendChild(document.createElement('div'));
-      let component;
       let childComponent = <SimpleModal {...props} ref={(c) => component = c }/>;
       let provider = ReactDOM.render(
         <Provider store={store} key="simpleModalProvider">
@@ -87,6 +92,12 @@ export default class SimpleModal extends Component {
       }
 
       component.closePromise.then(cleanup);
-    };
+    }
+
+    function close() {
+      if (component) {
+        component.closeIt();
+      }
+    }
   }
 }
