@@ -23,6 +23,10 @@ const dest = document.getElementById('content');
 const store = createStore(history, client, window.__data);
 client.setStore(store);
 
+//loadAuth && loadMenuLeft should be before rendering
+store.dispatch(loadAuth());
+store.dispatch(loadMenuLeft());
+
 const component = (
   <Router render={(props) =>
         <ReduxAsyncConnect {...props} helpers={{client}} filter={item => !item.deferred} />
@@ -59,8 +63,6 @@ if (__DEVTOOLS__ && !window.devToolsExtension) {
   );
 }
 
-store.dispatch(loadAuth());
-store.dispatch(loadMenuLeft());
 
 (() => {
   ConfirmDialog.initJs();
