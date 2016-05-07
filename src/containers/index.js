@@ -7,3 +7,4 @@ export Login from './Login/Login';
 export LoginSuccess from './LoginSuccess/LoginSuccess';
 export NotFound from './NotFound/NotFound';
 export ContainerCreate from './containers/ContainerCreate/ContainerCreate';
+export ContainerScale from './containers/ContainerScale/ContainerScale';

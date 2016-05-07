@@ -11,8 +11,8 @@ import _ from 'lodash';
   containerActions)
 export default class ContainerLog extends Component {
   static propTypes = {
-    containers: PropTypes.object,
-    containersUI: PropTypes.object,
+    containers: PropTypes.object.isRequired,
+    containersUI: PropTypes.object.isRequired,
     container: PropTypes.object.isRequired,
     loadLogs: PropTypes.func.isRequired
   };

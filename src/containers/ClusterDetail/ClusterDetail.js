@@ -4,7 +4,7 @@ import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import { Link, browserHistory } from 'react-router';
 import {ContainerLog} from '../../components/index';
-import {ContainerCreate} from '../../containers/index';
+import {ContainerCreate, ContainerScale} from '../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
 
 @asyncConnect([{
@@ -125,6 +125,9 @@ export default class ClusterDetail extends Component {
                     {container.run &&
                     <span> | <i className="fa fa-refresh" title="Restart"
                                 onClick={this.restartContainer.bind(this)}/></span>}
+                    {container.run &&
+                    <span> | <i className="fa fa-plus-circle" title="Scale"
+                                onClick={this.scaleContainer.bind(this)}/></span>}
                     <span> | <i className="fa fa-trash" title="Remove"
                                 onClick={this.removeContainer.bind(this)}/></span>
                   </td>
@@ -149,7 +152,6 @@ export default class ClusterDetail extends Component {
     let cluster = clusters[name];
     let contentComponent = <ContainerCreate cluster={cluster}/>;
     window.simpleModal.show({
-      title: 'Create Container',
       contentComponent,
       size: 'lg',
       focus: ContainerCreate.focusSelector
@@ -195,6 +197,15 @@ export default class ClusterDetail extends Component {
       .catch(() => null);// confirm cancel
   }
 
+  scaleContainer(event) {
+    let container = this._getContainerByTarget(event.target);
+    let contentComponent = <ContainerScale container={container}/>;
+    window.simpleModal.show({
+      contentComponent,
+      focus: ContainerScale.focusSelector
+    });
+  }
+
   removeContainer(event) {
     const {removeContainer, loadContainers, params: {name}} = this.props;
     let container = this._getContainerByTarget(event.target);
@@ -206,12 +217,6 @@ export default class ClusterDetail extends Component {
       .catch(() => null);// confirm cancel
   }
 
-  _getContainerByTarget(target) {
-    const {containers} = this.props;
-    let $tr = $(target).parents('tr');
-    let id = $tr.data('id');
-    return containers[id];
-  }
 
   deleteCluster() {
     const {params: {name}, deleteCluster} = this.props;
@@ -220,6 +225,13 @@ export default class ClusterDetail extends Component {
         deleteCluster(name)
           .then(() => browserHistory.push('/clusters'));
       }, () => null);
+  }
+
+  _getContainerByTarget(target) {
+    const {containers} = this.props;
+    let $tr = $(target).parents('tr');
+    let id = $tr.data('id');
+    return containers[id];
   }
 
 

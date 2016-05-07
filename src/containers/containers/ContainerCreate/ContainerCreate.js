@@ -1,5 +1,4 @@
 import React, {Component, PropTypes} from 'react';
-import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import {reduxForm} from 'redux-form';
 import {create} from 'redux/modules/containers/containers';
@@ -180,10 +179,6 @@ export default class ContainerCreate extends Component {
     if (register) {
       loadImageTags({register, image: event.target.value});
     }
-  }
-
-  onOk() {
-    return this.create();
   }
 
   create() {
