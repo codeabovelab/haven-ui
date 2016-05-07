@@ -9,6 +9,7 @@ import menuLeft from './menuLeft/menuLeft';
 import clusters from './clusters/clusters';
 import clustersUI from './clusters/clustersUI';
 import containers from './containers/containers';
+import containersUI from './containers/containersUI';
 import nodes from './nodes/nodes';
 import nodesUI from './nodes/nodesUI';
 import images from './images/images';
@@ -26,5 +27,6 @@ export default combineReducers({
   images,
   //END models data
   clustersUI,
+  containersUI,
   nodesUI
 });
