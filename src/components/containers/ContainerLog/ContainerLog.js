@@ -39,7 +39,7 @@ export default class ContainerLog extends Component {
         <h5>{container.name}</h5>
         {loadingLogs &&
         <pre className="text-xs-center">
-          <i className="fa fa-spinner fa-5x fa-spin"/>
+          <i className="fa fa-spinner fa-5x fa-pulse"/>
         </pre>
         }
         {!loadingLogs &&

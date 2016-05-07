@@ -34,6 +34,7 @@ const EXTRA_FIELDS_KEYS = Object.keys(EXTRA_FIELDS);
 
 @connect(state => ({
   clusters: state.clusters,
+  containersUI: state.containersUI,
   images: state.images
 }), {create, loadNodes, loadImages, loadImageTags, loadContainers})
 @reduxForm({
@@ -43,6 +44,7 @@ const EXTRA_FIELDS_KEYS = Object.keys(EXTRA_FIELDS);
 export default class ContainerCreate extends Component {
   static propTypes = {
     clusters: PropTypes.object.isRequired,
+    containersUI: PropTypes.object.isRequired,
     images: PropTypes.object.isRequired,
     cluster: PropTypes.object.isRequired,
     create: PropTypes.func.isRequired,
@@ -75,20 +77,23 @@ export default class ContainerCreate extends Component {
   }
 
   render() {
-    const {clusters, cluster, fields} = this.props;
+    const {clusters, cluster, fields, containersUI} = this.props;
     let clusterDetailed = clusters[cluster.name];// to ensure loading of nodes with loadNodes;
     let nodes = clusterDetailed.nodesList;
     nodes = nodes ? nodes : [];
     let imagesList = this.getImagesList();
     let field;
     let image = this.getCurrentImage();
+    let creating = containersUI.new.creating;
     return (
       <div className="modal-content">
         <div className="modal-header">
           <button type="button" className="close" data-dismiss="modal">
             <span aria-hidden="true">&times;</span>
           </button>
-          <h4 className="modal-title">Create Container</h4>
+          <h4 className="modal-title">Create Container
+            {creating && <span>{' '}<i className="fa fa-spinner fa fa-pulse"/></span>}
+          </h4>
         </div>
         <div className="modal-body">
           <form>
@@ -133,7 +138,9 @@ export default class ContainerCreate extends Component {
           </form>
         </div>
         <div className="modal-footer">
-          <button type="button" className="btn btn-primary" onClick={this.create.bind(this)}>Create</button>
+          <button type="button" className="btn btn-primary" onClick={this.create.bind(this)} disabled={creating}>
+            Create
+          </button>
         </div>
       </div>
     );

@@ -1,7 +1,32 @@
 import {ACTIONS} from './actions';
-
-export default function reducer(state = {}, action = {}) {
+const initialState = {
+  new: {
+    creating: false
+  }
+};
+export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
+    case ACTIONS.CREATE:
+      return {
+        ...state,
+        new: {
+          creating: true
+        }
+      };
+    case ACTIONS.CREATE_SUCCESS:
+      return {
+        ...state,
+        new: {
+          creating: false
+        }
+      };
+    case ACTIONS.CREATE_FAIL:
+      return {
+        ...state,
+        new: {
+          creating: false
+        }
+      };
     case ACTIONS.LOAD_LOGS:
       return {
         ...state,
