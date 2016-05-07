@@ -180,7 +180,7 @@ export default class ContainerCreate extends Component {
   }
 
   create() {
-    const {fields, create, cluster, resetForm} = this.props;
+    const {fields, create, cluster, resetForm, loadContainers} = this.props;
     let container = {
       cluster: cluster.name
     };
@@ -195,7 +195,7 @@ export default class ContainerCreate extends Component {
       .then(() => {
         resetForm();
         window.simpleModal.close();
-        return loadContainers();
+        return loadContainers(cluster.name);
       })
       .catch();
   }
