@@ -5,7 +5,18 @@ import {connect} from 'react-redux';
 import { Link, browserHistory } from 'react-router';
 import {ContainerLog} from '../../components/index';
 import {ContainerCreate} from '../../containers/index';
+import { asyncConnect } from 'redux-async-connect';
 
+@asyncConnect([{
+  promise: ({store: {dispatch, getState}}) => {
+    const promises = [];
+
+    if (!clusterActions.isLoaded(getState())) {
+      promises.push(dispatch(clusterActions.load()));// actually we need just one cluster here, no API method for one
+    }
+    return Promise.all(promises);
+  }
+}])
 @connect(
   state => ({
     clusters: state.clusters,

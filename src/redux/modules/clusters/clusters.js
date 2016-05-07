@@ -31,6 +31,10 @@ export default function reducer(state = {}, action = {}) {
   }
 }
 
+export function isLoaded(globalState) {
+  return globalState.clusters && (Object.keys(globalState.clusters).length > 0);
+}
+
 export function load() {
   return {
     types: [ACTIONS.LOAD, ACTIONS.LOAD_SUCCESS, ACTIONS.LOAD_FAIL],
