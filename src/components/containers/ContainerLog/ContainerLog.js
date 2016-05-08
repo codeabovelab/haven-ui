@@ -30,20 +30,19 @@ export default class ContainerLog extends Component {
   }
 
   render() {
-    const s = require('./ContainerLog.scss');
     const {container, containers, containersUI} = this.props;
     let containerDetailed = containers[container.id];
     let loadingLogs = _.get(containersUI, `[${container.id}].loadingLogs`, false);
     return (
-      <div className={s.logs}>
+      <div>
         <h5>{container.name}</h5>
         {loadingLogs &&
-        <pre className="text-xs-center">
+        <div className="text-xs-center">
           <i className="fa fa-spinner fa-5x fa-pulse"/>
-        </pre>
+        </div>
         }
         {!loadingLogs &&
-        <pre>{containerDetailed.logs}</pre>
+        <div className="jumbotron-text">{containerDetailed.logs}</div>
         }
       </div>
     );

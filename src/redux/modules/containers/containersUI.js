@@ -27,6 +27,30 @@ export default function reducer(state = initialState, action = {}) {
           creating: false
         }
       };
+    case ACTIONS.LOAD_DETAILS:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          loadingDetails: true
+        }
+      };
+    case ACTIONS.LOAD_DETAILS_SUCCESS:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          loadingDetails: false
+        }
+      };
+    case ACTIONS.LOAD_DETAILS_FAIL:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          loadingDetails: false
+        }
+      };
     case ACTIONS.LOAD_LOGS:
       return {
         ...state,

@@ -10,3 +10,4 @@ export SimpleModal from './common/SimpleModal/SimpleModal';
 export MenuLeft from './MenuLeft/MenuLeft';
 export Navbar from './Navbar/Navbar';
 export ContainerLog from './containers/ContainerLog/ContainerLog';
+export ContainerDetails from './containers/ContainerDetails/ContainerDetails';

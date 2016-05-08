@@ -3,7 +3,7 @@ import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import { Link, browserHistory } from 'react-router';
-import {ContainerLog} from '../../components/index';
+import {ContainerLog, ContainerDetails} from '../../components/index';
 import {ContainerCreate, ContainerScale} from '../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
 
@@ -128,6 +128,8 @@ export default class ClusterDetail extends Component {
                     {container.run &&
                     <span> | <i className="fa fa-plus-circle" title="Scale"
                                 onClick={this.scaleContainer.bind(this)}/></span>}
+                    <span> | <i className="fa fa-info" title="Details"
+                                onClick={this.showDetails.bind(this)}/></span>
                     <span> | <i className="fa fa-trash" title="Remove"
                                 onClick={this.removeContainer.bind(this)}/></span>
                   </td>
@@ -204,6 +206,12 @@ export default class ClusterDetail extends Component {
       contentComponent,
       focus: ContainerScale.focusSelector
     });
+  }
+
+  showDetails(event) {
+    let container = this._getContainerByTarget(event.target);
+    let bodyComponent = <ContainerDetails container={container}/>;
+    window.simpleModal.show({title: 'Container Details', bodyComponent, size: 'xl'});
   }
 
   removeContainer(event) {

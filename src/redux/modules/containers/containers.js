@@ -9,6 +9,14 @@ export default function reducer(state = {}, action = {}) {
         ...state,
         ..._.keyBy(action.result, 'id')
       };
+    case ACTIONS.LOAD_DETAILS_SUCCESS:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          details: _.omit(action.result, '_res')
+        }
+      };
     case ACTIONS.LOAD_LOGS_SUCCESS:
       return {
         ...state,
@@ -74,6 +82,15 @@ export function scale(container, scaleFactor) {
     types: [ACTIONS.SCALE, ACTIONS.SCALE_SUCCESS, ACTIONS.SCALE_FAIL],
     id: container.id,
     promise: (client) => client.post(`${url}/scale`, {data: {scaleFactor: scaleFactor, id: container.id}})
+  };
+}
+
+export function loadDetails(container) {
+  let url = _containerUrl(container);
+  return {
+    types: [ACTIONS.LOAD_DETAILS, ACTIONS.LOAD_DETAILS_SUCCESS, ACTIONS.LOAD_DETAILS_FAIL],
+    id: container.id,
+    promise: (client) => client.get(`${url}/details`)
   };
 }
 
