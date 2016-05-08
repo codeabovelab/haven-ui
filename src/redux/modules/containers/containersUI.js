@@ -51,6 +51,30 @@ export default function reducer(state = initialState, action = {}) {
           loadingLogs: false
         }
       };
+    case ACTIONS.SCALE:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          scaling: true
+        }
+      };
+    case ACTIONS.SCALE_FAIL:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          scaling: false
+        }
+      };
+    case ACTIONS.SCALE_SUCCESS:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          scaling: false
+        }
+      };
     default:
       return state;
   }

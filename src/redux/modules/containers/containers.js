@@ -68,12 +68,12 @@ export function restart(container) {
   };
 }
 
-export function scale(container, instances) {
+export function scale(container, scaleFactor) {
   let url = _containerUrl(container);
   return {
     types: [ACTIONS.SCALE, ACTIONS.SCALE_SUCCESS, ACTIONS.SCALE_FAIL],
     id: container.id,
-    promise: (client) => client.post(`${url}/scale`, {data: {instances: instances}})
+    promise: (client) => client.post(`${url}/scale`, {data: {scaleFactor: scaleFactor, id: container.id}})
   };
 }
 
