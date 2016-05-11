@@ -88,6 +88,7 @@ module.exports = {
     loaders: [
       { test: require.resolve("jquery"), loader: "expose?$!expose?jQuery" },
       { test: require.resolve("tether"), loader: "expose?Tether" },
+      { test: /\.css$/, loader: 'style!css'},
       { test: /\/src\/(?!js).*\.jsx?$/, exclude: /node_modules/, loaders: ['babel?' + JSON.stringify(babelLoaderQuery), 'eslint-loader']},
       { test: /\.json$/, loader: 'json-loader' },
       // Bootstrap 4

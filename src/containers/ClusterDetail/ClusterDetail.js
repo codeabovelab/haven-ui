@@ -47,8 +47,6 @@ export default class ClusterDetail extends Component {
     loadContainers(name);
   }
 
-  additionalComponent = null;
-
   render() {
     const {containers, clusters, params: {name}} = this.props;
     const cluster = clusters[name];
@@ -147,7 +145,6 @@ export default class ClusterDetail extends Component {
         <div className="alert alert-info">
           No containers yet
         </div>}
-        {this.state && this.state.additionalComponent}
       </div>
     );
   }
