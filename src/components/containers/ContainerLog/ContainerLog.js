@@ -30,11 +30,15 @@ export default class ContainerLog extends Component {
   }
 
   render() {
+    let s = require('./ContainerLog.scss');
     const {container, containers, containersUI} = this.props;
     let containerDetailed = containers[container.id];
+    let logs = containerDetailed.logs;
+    logs = logs ? logs : "";
     let loadingLogs = _.get(containersUI, `[${container.id}].loadingLogs`, false);
+    let paragraphs = logs.split('\n').map(str => str.trim()).filter(str => str);
     return (
-      <div>
+      <div className={s.containerLog}>
         <h5>{container.name}</h5>
         {loadingLogs &&
         <div className="text-xs-center">
@@ -42,7 +46,9 @@ export default class ContainerLog extends Component {
         </div>
         }
         {!loadingLogs &&
-        <div className="jumbotron-text">{containerDetailed.logs}</div>
+        <div className="log jumbotron-text">
+          {paragraphs.map((str, key) => <p key={key}>{str}</p>)}
+        </div>
         }
       </div>
     );
