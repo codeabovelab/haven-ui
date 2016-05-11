@@ -13,20 +13,30 @@ const EXTRA_FIELDS = {
   restart: {
     label: 'Restart police'
   },
+  bindVolumes: {
+    label: 'Bind volumes'
+  },
   memory: {
-    label: 'Memory Limit'
+    label: 'Memory limit'
   },
   cpuQuota: {
-    type: 'number',
-    label: 'CPU Quota'
+    type: 'integer',
+    label: 'CPU quota',
+    min: 0,
+    description: "100 000 means 100% of 1 CPU. 0 also means 100% of 1 CPU."
   },
   cpuShares: {
-    type: 'number',
-    label: 'CPU Shares'
+    type: 'integer',
+    label: 'CPU shares',
+    min: 2,
+    description: "Default is 1024"
   },
   blkioWeight: {
-    type: 'number',
-    label: 'Blkio'
+    type: 'integer',
+    label: 'Blkio Weight',
+    min: 2,
+    max: 1000,
+    description: "Default is 500"
   }
 };
 const EXTRA_FIELDS_KEYS = Object.keys(EXTRA_FIELDS);
@@ -151,9 +161,28 @@ export default class ContainerCreate extends Component {
         <div className="form-group">
           <label>{property.label}:</label>
           {field.error && field.touched && <div className="text-danger">{field.error}</div>}
-          <input type="text" {...field} className="form-control"/>
+          {inputField(property, field)}
+          {property.description && <small className="text-muted">{property.description}</small>}
         </div>
       );
+    }
+
+    function inputField(property, field) {
+      switch (property.type) {
+        case 'integer':
+          return inputNumber(property, field);
+        default:
+          return inputText(property, field);
+      }
+    }
+
+    function inputText(property, field) {
+      return <input type="text" {...field} className="form-control"/>;
+    }
+
+    function inputNumber(property, field) {
+      let props = Object.assign({}, field, _.pick(property, ['min', 'max']));
+      return <input type="number" step="1" {...props} className="form-control"/>;
     }
   }
 
