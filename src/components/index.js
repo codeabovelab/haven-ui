@@ -11,3 +11,4 @@ export MenuLeft from './MenuLeft/MenuLeft';
 export Navbar from './Navbar/Navbar';
 export ContainerLog from './containers/ContainerLog/ContainerLog';
 export ContainerDetails from './containers/ContainerDetails/ContainerDetails';
+export ContainerStatistics from './containers/ContainerStatistics/ContainerStatistics';

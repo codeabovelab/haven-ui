@@ -3,7 +3,7 @@ import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import { Link, browserHistory } from 'react-router';
-import {ContainerLog, ContainerDetails} from '../../components/index';
+import {ContainerLog, ContainerDetails, ContainerStatistics} from '../../components/index';
 import {ContainerCreate, ContainerScale} from '../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
 
@@ -130,6 +130,9 @@ export default class ClusterDetail extends Component {
                                 onClick={this.scaleContainer.bind(this)}/></span>}
                     <span> | <i className="fa fa-info" title="Details"
                                 onClick={this.showDetails.bind(this)}/></span>
+                    {container.run &&
+                    <span> | <i className="fa fa-bar-chart" title="Stats"
+                                onClick={this.showStats.bind(this)}/></span>}
                     <span> | <i className="fa fa-trash" title="Remove"
                                 onClick={this.removeContainer.bind(this)}/></span>
                   </td>
@@ -214,6 +217,12 @@ export default class ClusterDetail extends Component {
     window.simpleModal.show({title: 'Container Details', bodyComponent, size: 'xl'});
   }
 
+  showStats(event) {
+    let container = this._getContainerByTarget(event.target);
+    let bodyComponent = <ContainerStatistics container={container}/>;
+    window.simpleModal.show({title: 'Container Statistics', bodyComponent, size: 'xl'});
+  }
+
   removeContainer(event) {
     const {removeContainer, loadContainers, params: {name}} = this.props;
     let container = this._getContainerByTarget(event.target);
@@ -224,7 +233,6 @@ export default class ClusterDetail extends Component {
       })
       .catch(() => null);// confirm cancel
   }
-
 
   deleteCluster() {
     const {params: {name}, deleteCluster} = this.props;

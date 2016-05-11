@@ -1,5 +1,8 @@
 .containerLog {
   :global(.log) {
     white-space: pre;
+    p:last-child {
+      margin-bottom: 0;
+    }
   }
 }

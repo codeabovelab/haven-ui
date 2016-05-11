@@ -25,6 +25,14 @@ export default function reducer(state = {}, action = {}) {
           logs: action.result._res.text
         }
       };
+    case ACTIONS.LOAD_STATISTICS_SUCCESS:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          statistics: action.result._res.text
+        }
+      };
     default:
       return state;
   }
@@ -91,6 +99,15 @@ export function loadDetails(container) {
     types: [ACTIONS.LOAD_DETAILS, ACTIONS.LOAD_DETAILS_SUCCESS, ACTIONS.LOAD_DETAILS_FAIL],
     id: container.id,
     promise: (client) => client.get(`${url}/details`)
+  };
+}
+
+export function loadStatistics(container) {
+  let url = _containerUrl(container);
+  return {
+    types: [ACTIONS.LOAD_STATISTICS, ACTIONS.LOAD_STATISTICS_SUCCESS, ACTIONS.LOAD_STATISTICS_FAIL],
+    id: container.id,
+    promise: (client) => client.get(`${url}/statistics`)
   };
 }
 
