@@ -2,13 +2,6 @@ import React, {Component, PropTypes} from 'react';
 import {loadStatistics} from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import _ from 'lodash';
-const GROUPS = {
-  cpu: {label: "CPU (hh:mm:ss)"},
-  memory: {label: "Memory"},
-  network: {label: 'IO'}
-};
-const GROUPS_KEYS = Object.keys(GROUPS);
-const GROUPS_WITH_OTHER = Object.assign({}, GROUPS, {other: {label: 'Other'}});
 
 @connect(
   state => ({
@@ -30,18 +23,14 @@ export default class ContainerStatistics extends Component {
   }
 
   render() {
+    let s = require('./ContainerStatistics.scss');
     const {container, containers, containersUI} = this.props;
     let containerDetailed = containers[container.id];
     let loadingStatistics = _.get(containersUI, `[${container.id}].loadingStatistics`, false);
-    let statistics = containerDetailed.statistics ? containerDetailed.statistics : {};
-    let groups = _.groupBy(statistics, (stat) => {
-      for (let name of GROUPS_KEYS) {
-        if (stat.includes(name)) return name;
-      }
-      return 'other';
-    });
+    let stats = containerDetailed.statistics ? containerDetailed.statistics : {};
+
     return (
-      <div>
+      <div className={s.stats}>
         <h5>{container.name}</h5>
         {loadingStatistics &&
         <div className="text-xs-center">
@@ -49,15 +38,78 @@ export default class ContainerStatistics extends Component {
         </div>
         }
         {!loadingStatistics &&
-        <div className="jumbotron-text">
-          {_.values(groups, (group, key) =>
-            <div key={key}>
-              <h6>{GROUPS_WITH_OTHER[key].label}</h6>
+        <div className="data jumbotron-text">
+          <div>
+            <h5>Memory</h5>
+            <div>
+              <div><label>Usage MB:</label> {stats.memoryMBUsage}</div>
+              <div><label>Max Usage MB:</label> {stats.memoryMBMaxUsage}</div>
+              <div><label>Limit MB:</label> {stats.memoryMBLimit}</div>
+              <div><label>Memory %:</label> {stats.memoryPercentage}</div>
             </div>
-          )}
+          </div>
+          <div>
+            <h5>CPU Table</h5>
+            <div>
+              <div><label>Total Usage:</label> {stats.cpuTotalUsage}</div>
+              <div><label>Kernel:</label> {stats.cpuKernel}</div>
+              <div><label>User:</label> {stats.cpuUser}</div>
+              <div><label>System:</label> {stats.cpuSystem}</div>
+            </div>
+          </div>
+          <div>
+            <h5>Networks</h5>
+            {this.printNetworks(stats.networks)}
+          </div>
         </div>
         }
       </div>
     );
   }
+
+
+  printNetworks(networks) {
+    const fields = {
+      rx_bytes: {label: 'Rx KBytes'},
+      rx_packets: {label: 'Rx Packets'},
+      rx_errors: {label: 'Rx Errors'},
+      rx_dropped: {label: 'Rx Dropped'},
+      tx_bytes: {label: 'Tx KBytes'},
+      tx_packets: {label: 'Tx Packets'},
+      tx_errors: {label: 'Tx Errors'},
+      tx_dropped: {label: 'Tx Dropped'}
+    };
+    let fieldsNames = Object.keys(fields);
+
+    let els = [];
+    _.forOwn(networks, (network, name) => {
+      let values = prepareValues(network);
+      let el = (
+        <div className="network" key={name}>
+          <h6>{name}</h6>
+          <div>
+            {fieldsNames.map(fieldName => <div key={fieldName}><label>{fieldLabel(fieldName)}:</label> {values[fieldName]}</div>)}
+          </div>
+        </div>
+      );
+      els.push(el);
+    });
+    return <div>{els}</div>;
+
+    function fieldLabel(name) {
+      return _.get(fields, `${name}.label`, name);
+    }
+
+    function prepareValues(net) {
+      let network = Object.assign({}, net);
+      if (network.rx_bytes) {
+        network.rx_bytes = Math.round(network.rx_bytes / 1024);
+      }
+      if (network.tx_bytes) {
+        network.tx_bytes = Math.round(network.tx_bytes / 1024);
+      }
+      return network;
+    }
+  }
+
 }

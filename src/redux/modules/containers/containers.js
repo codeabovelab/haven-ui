@@ -30,7 +30,7 @@ export default function reducer(state = {}, action = {}) {
         ...state,
         [action.id]: {
           ...state[action.id],
-          statistics: action.result._res.text
+          statistics: _.omit(action.result, '_res')
         }
       };
     default:
