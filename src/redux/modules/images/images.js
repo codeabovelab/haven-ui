@@ -18,7 +18,8 @@ export default function reducer(state = {}, action = {}) {
 function mapLoadImagesToState(data) {
   let state = {};
   data.forEach(register => {
-    state[register.name] = _.keyBy(register.repositories.map(name => ({name, register: register.name})), 'name');
+    let images = register.repositories.map(name => ({name, register: register.name}));
+    state[register.name] = _.keyBy(images, 'name');
   });
   return state;
 }

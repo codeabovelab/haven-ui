@@ -18,6 +18,13 @@ export default function reducer(state = {}, action = {}) {
           containersList: action.result.map(container => container.id)
         }
       };
+    case ACTIONS.LOAD_DEFAULT_PARAMS_SUCCESS:
+      let defaultParams = Object.assign({[action.image]: {}}, state[action.id].defaultParams);
+      defaultParams[action.image][action.tag] = _.omit(action.result, '_res');
+      return {
+        ...state,
+        [action.id]: {...state[action.id], defaultParams}
+      };
     case ACTIONS.LOAD_NODES_SUCCESS:
       return {
         ...state,
@@ -74,3 +81,12 @@ export function loadNodes(clusterId) {
   };
 }
 
+export function loadDefaultParams({clusterId, image, tag}) {
+  return {
+    types: [ACTIONS.LOAD_DEFAULT_PARAMS, ACTIONS.LOAD_DEFAULT_PARAMS_SUCCESS, ACTIONS.LOAD_DEFAULT_PARAMS_FAIL],
+    id: clusterId,
+    image: image,
+    tag: tag,
+    promise: (client) => client.get(`/ui/api/clusters/${clusterId}/defaultparams/${image}/${tag}/`)
+  };
+}

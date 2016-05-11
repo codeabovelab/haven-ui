@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {reduxForm} from 'redux-form';
 import {create} from 'redux/modules/containers/containers';
-import {loadNodes, loadContainers} from 'redux/modules/clusters/clusters';
+import {loadNodes, loadContainers, loadDefaultParams} from 'redux/modules/clusters/clusters';
 import {loadImages, loadImageTags} from 'redux/modules/images/images';
 import _ from 'lodash';
 
@@ -45,7 +45,7 @@ const EXTRA_FIELDS_KEYS = Object.keys(EXTRA_FIELDS);
   clusters: state.clusters,
   containersUI: state.containersUI,
   images: state.images
-}), {create, loadNodes, loadImages, loadImageTags, loadContainers})
+}), {create, loadNodes, loadImages, loadImageTags, loadContainers, loadDefaultParams})
 @reduxForm({
   form: 'newContainer',
   fields: ['image', 'tag', 'node'].concat(EXTRA_FIELDS_KEYS)
@@ -62,7 +62,8 @@ export default class ContainerCreate extends Component {
     loadImageTags: PropTypes.func.isRequired,
     fields: PropTypes.object.isRequired,
     resetForm: PropTypes.func.isRequired,
-    loadContainers: PropTypes.func.isRequired
+    loadContainers: PropTypes.func.isRequired,
+    loadDefaultParams: PropTypes.func.isRequired
   };
   static focusSelector = '#image-select';
 
@@ -120,7 +121,8 @@ export default class ContainerCreate extends Component {
             <div className="form-group">
               <label>Tag:</label>
               {(field = fields.tag) && ''}
-              <select className="form-control" {...field}>
+              <select className="form-control" {...field}
+                      onChange={e => {fields.tag.onChange(e); this.onTagChange.call(this, e);}}>
                 <option />
                 {image && image.tags && image.tags.map(tag =>
                   <option key={tag} value={tag}>{tag}</option>
@@ -207,6 +209,24 @@ export default class ContainerCreate extends Component {
     let register = option.dataset.register;
     if (register) {
       loadImageTags({register, image: event.target.value});
+    }
+  }
+
+  onTagChange(event) {
+    const {cluster, loadDefaultParams, fields} = this.props;
+    let image = fields.image.value;
+    let tag = event.target.value;
+    if (tag && image) {
+      loadDefaultParams({clusterId: cluster.name, image, tag})
+        .then((defaultParams) => {
+          _.forOwn(defaultParams, (value, key) => {
+            if (['tag'].indexOf(key) > -1) return;
+
+            if (fields[key] !== undefined && !fields[key].value) {
+              fields[key].onChange(value);
+            }
+          });
+        });
     }
   }
 
