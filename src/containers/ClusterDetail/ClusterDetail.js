@@ -67,12 +67,6 @@ export default class ClusterDetail extends Component {
           <Link to="/clusters">Clusters</Link> / {name}
         </h1>
         <div className="page-info-group">
-          {cluster.environment &&
-          <div>
-            <label>Env:</label>
-            <value>{cluster.environment}</value>
-          </div>
-          }
           <div>
             <label># of Containers:</label>
             <value>{containersList && containersList.length}</value>

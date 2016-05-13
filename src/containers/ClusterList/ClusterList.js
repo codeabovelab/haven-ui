@@ -16,7 +16,7 @@ import clusterValidation from './clusterValidation';
 @reduxForm({
   form: 'newCluster',
   validate: clusterValidation,
-  fields: ['env', 'name']
+  fields: ['name']
 })
 export default class ClusterList extends Component {
   static propTypes = {
@@ -41,8 +41,7 @@ export default class ClusterList extends Component {
 
     function handleCreate() {
       let name = fields.name.value;
-      let env = fields.env.value;
-      create({name, env})
+      create({name})
         .then(() => {
           resetForm();
           $('#newCluster').modal('hide');
@@ -53,7 +52,7 @@ export default class ClusterList extends Component {
 
     function showModal() {
       $('#newCluster').modal('show');
-      $('#input-env').focus();
+      $('#input-name').focus();
     }
 
     let field;
@@ -75,7 +74,6 @@ export default class ClusterList extends Component {
             <thead>
             <tr>
               <th>Cluster Name</th>
-              <th>Environment</th>
               <th># of Containers</th>
               <th># of Nodes</th>
             </tr>
@@ -86,7 +84,6 @@ export default class ClusterList extends Component {
                 <td>
                   <Link to={"/clusters/" + cluster.name}>{cluster.name}</Link>
                 </td>
-                <td>{cluster.environment}</td>
                 <td>{cluster.containers}</td>
                 <td>{cluster.nodes}</td>
               </tr>)}
@@ -105,16 +102,10 @@ export default class ClusterList extends Component {
               <div className="modal-body">
                 <form>
                   <div className="form-group" required>
-                    <label>Environment:</label>
-                    {(field = fields.env) && ''}
-                    {field.error && field.touched && <div className="text-danger">{field.error}</div>}
-                    <input id="input-env" type="text" {...field} className="form-control"/>
-                  </div>
-                  <div className="form-group" required>
                     {(field = fields.name) && ''}
                     <label>Cluster name:</label>
                     {field.error && field.touched && <div className="text-danger">{field.error}</div>}
-                    <input type="text" {...field} className="form-control"/>
+                    <input id="input-name" type="text" {...field} className="form-control"/>
                   </div>
                   <div className="text-danger">{createError}</div>
                 </form>
