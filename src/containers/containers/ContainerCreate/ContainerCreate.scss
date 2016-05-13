@@ -1,0 +1,18 @@
+.containerCreate {
+  label {
+    margin-bottom: 0;
+  }
+  :global(.field-publish) {
+    :global(.field-header) {
+      border-bottom: 1px solid #666;
+      a {
+        margin-left: 0.5rem;
+      }
+    }
+    :global(.field-body) {
+      :global(.row) {
+        margin-top: 0.5rem;
+      }
+    }
+  }
+}

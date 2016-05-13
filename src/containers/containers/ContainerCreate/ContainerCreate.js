@@ -67,6 +67,11 @@ export default class ContainerCreate extends Component {
   };
   static focusSelector = '#image-select';
 
+  constructor(...params) {
+    super(...params);
+    this.state = {publish: [{port1: '', port2: ''}]};
+  }
+
   componentWillMount() {
     const {loadNodes, loadImages, cluster} = this.props;
     loadNodes(cluster.name);
@@ -87,6 +92,7 @@ export default class ContainerCreate extends Component {
   }
 
   render() {
+    let s = require('./ContainerCreate.scss');
     const {clusters, cluster, fields, containersUI} = this.props;
     let clusterDetailed = clusters[cluster.name];// to ensure loading of nodes with loadNodes;
     let nodes = clusterDetailed.nodesList;
@@ -96,7 +102,7 @@ export default class ContainerCreate extends Component {
     let image = this.getCurrentImage();
     let creating = containersUI.new.creating;
     return (
-      <div className="modal-content">
+      <div className={'modal-content ' + s.containerCreate}>
         <div className="modal-header">
           <button type="button" className="close" data-dismiss="modal">
             <span aria-hidden="true">&times;</span>
@@ -146,6 +152,7 @@ export default class ContainerCreate extends Component {
                 </div>
               )}
             </div>
+            {this.publishField()}
           </form>
         </div>
         <div className="modal-footer">
@@ -155,6 +162,7 @@ export default class ContainerCreate extends Component {
         </div>
       </div>
     );
+
 
     function fieldComponent(name) {
       let property = EXTRA_FIELDS[name];
@@ -186,6 +194,43 @@ export default class ContainerCreate extends Component {
       let props = Object.assign({}, field, _.pick(property, ['min', 'max']));
       return <input type="number" step="1" {...props} className="form-control"/>;
     }
+  }
+
+  publishField() {
+    let items = this.state.publish;
+    return (
+      <div className="field-publish">
+        <div className="field-header">
+          <label>Publish</label>
+          <a onClick={this.addPublishItem.bind(this)}><i className="fa fa-plus-circle"/></a>
+        </div>
+        <div className="field-body">
+          {items.map((item, key) => <div className="row" key={key}>
+            <div className="col-sm-6">
+              <input type="number" onChange={handleChange.bind(this, key, 'port1')} className="form-control"
+                     placeholder="Port"/>
+            </div>
+            <div className="col-sm-6">
+              <input type="number" onChange={handleChange.bind(this, key, 'port2')} className="form-control"
+                     placeholder="Port"/>
+            </div>
+          </div>)}
+        </div>
+      </div>
+    );
+
+    function handleChange(i, type, event) {
+      let state = Object.assign({}, this.state);
+      state.publish[i][type] = event.target.value;
+      this.setState(state);
+    }
+  }
+
+  addPublishItem() {
+    this.setState({
+      ...this.state,
+      publish: [...this.state.publish, {port1: '', port2: ''}]
+    });
   }
 
   getCurrentImage() {
@@ -242,6 +287,7 @@ export default class ContainerCreate extends Component {
         container[key] = value;
       }
     });
+    container.publish = this.getPublish();
     return create(container)
       .then(() => {
         resetForm();
@@ -249,5 +295,16 @@ export default class ContainerCreate extends Component {
         return loadContainers(cluster.name);
       })
       .catch();
+  }
+
+  getPublish() {
+    let publish = this.state.publish;
+    let res = {};
+    publish.forEach(item => {
+      if (item.port1 && item.port2) {
+        res[item.port1] = item.port2;
+      }
+    });
+    return res;
   }
 }
