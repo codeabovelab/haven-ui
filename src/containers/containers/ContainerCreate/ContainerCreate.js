@@ -69,7 +69,10 @@ export default class ContainerCreate extends Component {
 
   constructor(...params) {
     super(...params);
-    this.state = {publish: [{port1: '', port2: ''}]};
+    this.state = {
+      publish: [{field1: '', field2: ''}],
+      environment: [{field1: '', field2: ''}]
+    };
   }
 
   componentWillMount() {
@@ -152,7 +155,8 @@ export default class ContainerCreate extends Component {
                 </div>
               )}
             </div>
-            {this.publishField()}
+            {this.fieldPublish()}
+            {this.fieldEnvironment()}
           </form>
         </div>
         <div className="modal-footer">
@@ -194,43 +198,6 @@ export default class ContainerCreate extends Component {
       let props = Object.assign({}, field, _.pick(property, ['min', 'max']));
       return <input type="number" step="1" {...props} className="form-control"/>;
     }
-  }
-
-  publishField() {
-    let items = this.state.publish;
-    return (
-      <div className="field-publish">
-        <div className="field-header">
-          <label>Publish</label>
-          <a onClick={this.addPublishItem.bind(this)}><i className="fa fa-plus-circle"/></a>
-        </div>
-        <div className="field-body">
-          {items.map((item, key) => <div className="row" key={key}>
-            <div className="col-sm-6">
-              <input type="number" onChange={handleChange.bind(this, key, 'port1')} className="form-control"
-                     placeholder="Port"/>
-            </div>
-            <div className="col-sm-6">
-              <input type="number" onChange={handleChange.bind(this, key, 'port2')} className="form-control"
-                     placeholder="Port"/>
-            </div>
-          </div>)}
-        </div>
-      </div>
-    );
-
-    function handleChange(i, type, event) {
-      let state = Object.assign({}, this.state);
-      state.publish[i][type] = event.target.value;
-      this.setState(state);
-    }
-  }
-
-  addPublishItem() {
-    this.setState({
-      ...this.state,
-      publish: [...this.state.publish, {port1: '', port2: ''}]
-    });
   }
 
   getCurrentImage() {
@@ -288,6 +255,7 @@ export default class ContainerCreate extends Component {
       }
     });
     container.publish = this.getPublish();
+    container.environment = this.getEnvironment();
     return create(container)
       .then(() => {
         resetForm();
@@ -297,14 +265,97 @@ export default class ContainerCreate extends Component {
       .catch();
   }
 
+  fieldPublish() {
+    let items = this.state.publish;
+    return (
+      <div className="field-publish">
+        <div className="field-header">
+          <label>Publish</label>
+          <a onClick={this.addPublishItem.bind(this)}><i className="fa fa-plus-circle"/></a>
+        </div>
+        <div className="field-body">
+          {items.map((item, key) => <div className="row" key={key}>
+            <div className="col-sm-6">
+              <input type="number" onChange={handleChange.bind(this, key, 'field1')} className="form-control"
+                     placeholder="Port"/>
+            </div>
+            <div className="col-sm-6">
+              <input type="number" onChange={handleChange.bind(this, key, 'field2')} className="form-control"
+                     placeholder="Port"/>
+            </div>
+          </div>)}
+        </div>
+      </div>
+    );
+
+    function handleChange(i, type, event) {
+      let state = Object.assign({}, this.state);
+      state.publish[i][type] = event.target.value;
+      this.setState(state);
+    }
+  }
+
+  addPublishItem() {
+    this.setState({
+      ...this.state,
+      publish: [...this.state.publish, {field1: '', field2: ''}]
+    });
+  }
+
   getPublish() {
-    let publish = this.state.publish;
-    let res = {};
-    publish.forEach(item => {
-      if (item.port1 && item.port2) {
-        res[item.port1] = item.port2;
+    return this.getMapField('publish');
+  }
+
+  fieldEnvironment() {
+    let items = this.state.environment;
+    return (
+      <div className="field-environment">
+        <div className="field-header">
+          <label>Environment</label>
+          <a onClick={this.addEnvironmentItem.bind(this)}><i className="fa fa-plus-circle"/></a>
+        </div>
+        <div className="field-body">
+          {items.map((item, key) => <div className="row" key={key}>
+            <div className="col-sm-6">
+              <input type="text" onChange={handleChange.bind(this, key, 'field1')} className="form-control"
+                     placeholder=""/>
+            </div>
+            <div className="col-sm-6">
+              <input type="text" onChange={handleChange.bind(this, key, 'field2')} className="form-control"
+                     placeholder=""/>
+            </div>
+          </div>)}
+        </div>
+      </div>
+    );
+
+    function handleChange(i, type, event) {
+      let state = Object.assign({}, this.state);
+      state.environment[i][type] = event.target.value;
+      this.setState(state);
+    }
+  }
+
+  addEnvironmentItem() {
+    this.setState({
+      ...this.state,
+      environment: [...this.state.environment, {field1: '', field2: ''}]
+    });
+  }
+
+  getEnvironment() {
+    return this.getMapField('environment');
+  }
+
+  getMapField(field) {
+    let list = this.state[field];
+    let map = {};
+    list.forEach(item => {
+      if (item.field1 && item.field2) {
+        map[item.field1] = item.field2;
       }
     });
-    return res;
+    return map;
   }
+
 }
