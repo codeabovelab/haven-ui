@@ -10,9 +10,6 @@ const EXTRA_FIELDS = {
   containerName: {
     label: 'Container name'
   },
-  restart: {
-    label: 'Restart police'
-  },
   bindVolumes: {
     label: 'Bind volumes'
   },
@@ -48,7 +45,7 @@ const EXTRA_FIELDS_KEYS = Object.keys(EXTRA_FIELDS);
 }), {create, loadNodes, loadImages, loadImageTags, loadContainers, loadDefaultParams})
 @reduxForm({
   form: 'newContainer',
-  fields: ['image', 'tag', 'node'].concat(EXTRA_FIELDS_KEYS)
+  fields: ['image', 'tag', 'node', 'restart', 'restartRetries'].concat(EXTRA_FIELDS_KEYS)
 })
 export default class ContainerCreate extends Component {
   static propTypes = {
@@ -76,9 +73,10 @@ export default class ContainerCreate extends Component {
   }
 
   componentWillMount() {
-    const {loadNodes, loadImages, cluster} = this.props;
+    const {loadNodes, loadImages, cluster, fields} = this.props;
     loadNodes(cluster.name);
     loadImages();
+    fields.restart.value = 'no';
   }
 
   getImagesList() {
@@ -157,6 +155,7 @@ export default class ContainerCreate extends Component {
             </div>
             {this.fieldPublish()}
             {this.fieldEnvironment()}
+            {this.fieldRestart()}
           </form>
         </div>
         <div className="modal-footer">
@@ -248,7 +247,8 @@ export default class ContainerCreate extends Component {
       cluster: cluster.name
     };
 
-    Object.keys(fields).forEach(key => {
+    let fieldNames = ['image', 'tag', 'node'].concat(EXTRA_FIELDS_KEYS);
+    fieldNames.forEach(key => {
       let value = fields[key].value;
       if (value) {
         container[key] = value;
@@ -256,6 +256,7 @@ export default class ContainerCreate extends Component {
     });
     container.publish = this.getPublish();
     container.environment = this.getEnvironment();
+    container.restart = this.getRestart();
     return create(container)
       .then(() => {
         resetForm();
@@ -358,4 +359,39 @@ export default class ContainerCreate extends Component {
     return map;
   }
 
+  fieldRestart() {
+    let {fields: {restart, restartRetries}} = this.props;
+    let values = ['no', 'on-failure', 'always', 'unless-stopped'];
+    return (
+      <div className="field-restart">
+        <div className="field-header">
+          <label>Restart policy:</label>
+        </div>
+        <div className="field-body">
+          <div className="row">
+            <div className="col-sm-6">
+              <select className="form-control" {...restart}>
+                {values.map(value =>
+                  <option key={value} value={value}>{value}</option>
+                )}
+              </select>
+            </div>
+            {(restart.value === "on-failure") && <div className="col-sm-6">
+              <input {...restartRetries} type="number" step="1" min="0"
+                                         className="form-control" placeholder="max retries"/>
+            </div>}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  getRestart() {
+    let {fields: {restart, restartRetries}} = this.props;
+    let value = restart.value;
+    if (restart.value === "on-failure" && restartRetries.value) {
+      value += `[:${restartRetries.value}]`;
+    }
+    return value;
+  }
 }
