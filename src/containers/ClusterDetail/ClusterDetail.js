@@ -87,7 +87,7 @@ export default class ClusterDetail extends Component {
         <div>
           <h2>Containers</h2>
           <div className="table-responsive">
-            <table className="table table-striped table-sm">
+            <table className="table table-striped table-bordered table-sm">
               <thead>
               <tr>
                 <th>Name</th>
