@@ -50,24 +50,35 @@ export default class DockTable extends Component {
     const {groups} = this.state;
     let columns = this.columns;
     _.forOwn(groups, (group, groupName) => {
-      groupEls.push(
-        <tbody key={groupName}>
-        <tr className="tr-group">
-          <td colSpan={columns.length + 1}>
-            {group.opened && <i className="fa fa-plus" onClick={this.toggleGroup.bind(this, groupName)}/>}
-            {!group.opened && <i className="fa fa-minus" onClick={this.toggleGroup.bind(this, groupName)}/>}
-            {groupName} <span className="text-muted">({group.rows.length})</span>
-          </td>
-        </tr>
-        {group.opened && group.rows.map((model, i) =>
-
-          <tr key={i} className="tr-value" {...model.__attributes}>
-            <td/>
+      if (group.rows.length === 1) {
+        let model = group.rows[0];
+        groupEls.push(
+          <tbody key={groupName}>
+          <tr className="tr-value" {...model.__attributes}>
+            {DockTable.tdRender(this.groupByColumn.name, model)}
             {columns.map(column => DockTable.tdRender(column.name, model))}
           </tr>
-        )}
-        </tbody>
-      );
+          </tbody>);
+      } else {
+        groupEls.push(
+          <tbody key={groupName}>
+          <tr className="tr-group">
+            <td colSpan={columns.length + 1}>
+              {group.opened && <i className="fa fa-minus" onClick={this.toggleGroup.bind(this, groupName)}/>}
+              {!group.opened && <i className="fa fa-plus" onClick={this.toggleGroup.bind(this, groupName)}/>}
+              {groupName} <span className="text-muted">({group.rows.length})</span>
+            </td>
+          </tr>
+          {group.opened && group.rows.map((model, i) =>
+
+            <tr key={i} className="tr-value" {...model.__attributes}>
+              <td/>
+              {columns.map(column => DockTable.tdRender(column.name, model))}
+            </tr>
+          )}
+          </tbody>
+        );
+      }
     });
 
 
