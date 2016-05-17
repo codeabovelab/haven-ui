@@ -3,10 +3,12 @@ import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import { Link, browserHistory } from 'react-router';
-import {ContainerLog, ContainerDetails, ContainerStatistics} from '../../components/index';
+import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable} from '../../components/index';
 import {ContainerCreate, ContainerScale} from '../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
 
+
+const COLUMNS = [{name: 'name'}, {name: 'image'}, {name: 'node'}, {name: 'ports'}, {name: 'status'}];
 @asyncConnect([{
   promise: ({store: {dispatch, getState}}) => {
     const promises = [];
@@ -135,6 +137,7 @@ export default class ClusterDetail extends Component {
           </div>
         </div>
         }
+        {containersList && <DockTable columns={COLUMNS} rows={containersList} groupBy="node"/>}
         {containersList && containersList.length === 0 &&
         <div className="alert alert-info">
           No containers yet

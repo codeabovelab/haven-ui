@@ -1,0 +1,11 @@
+@import "../../../css/variables";
+
+.dockTable {
+  tbody tr:global(.tr-group) {
+    :global(.fa) {
+      cursor: pointer;
+      margin-right: 0.5rem;
+      color: $link-color;
+    }
+  }
+}
