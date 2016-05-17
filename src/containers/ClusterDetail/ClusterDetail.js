@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
+import {containersList as containersListMock} from 'redux/modules/containers/containers.mock.js';
 import {connect} from 'react-redux';
 import { Link, browserHistory } from 'react-router';
 import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable} from '../../components/index';
@@ -8,7 +9,10 @@ import {ContainerCreate, ContainerScale} from '../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
 
 
-const COLUMNS = [{name: 'name'}, {name: 'image'}, {name: 'node'}, {name: 'ports'}, {name: 'status'}];
+const COLUMNS = [{name: 'name'}, {name: 'image'}, {name: 'node'}, {
+  name: 'ports',
+  label: 'Ports Mapping'
+}, {name: 'status'}, {name: 'actions'}];
 @asyncConnect([{
   promise: ({store: {dispatch, getState}}) => {
     const promises = [];
@@ -50,6 +54,7 @@ export default class ClusterDetail extends Component {
   }
 
   render() {
+    let s = require('./ClusterDetail.scss');
     const {containers, clusters, params: {name}} = this.props;
     const cluster = clusters[name];
 
@@ -61,17 +66,20 @@ export default class ClusterDetail extends Component {
 
 
     const containersIds = cluster.containersList;
-    const containersList = containersIds == null ? null : containersIds.map(id => containers[id]);
+    const rows = containersIds == null ? null : containersIds.map(id => containers[id]);
+    let mockRows = containersListMock();
+    this.additionalData(rows);
+    this.additionalData(mockRows);
 
     return (
-      <div className="container-fluid">
+      <div className={"container-fluid " + s.clusterDetail}>
         <h1>
           <Link to="/clusters">Clusters</Link> / {name}
         </h1>
         <div className="page-info-group">
           <div>
             <label># of Containers:</label>
-            <value>{containersList && containersList.length}</value>
+            <value>{rows && rows.length}</value>
           </div>
         </div>
         <div className="page-actions">
@@ -85,65 +93,58 @@ export default class ClusterDetail extends Component {
           </div>
         </div>
         <div className="clearfix"></div>
-        {containersList && containersList.length > 0 &&
+        {rows && rows.length > 0 &&
         <div>
           <h2>Containers</h2>
-          <div className="table-responsive">
-            <table className="table table-striped table-bordered table-sm">
-              <thead>
-              <tr>
-                <th>Name</th>
-                <th>Image Name</th>
-                <th>Node Name</th>
-                <th>Port Mapping</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-              </thead>
-              <tbody>
-              {containersList.map(container =>
-                <tr key={container.name} data-id={container.id}>
-                  <td>{container.name}</td>
-                  <td>{container.image}</td>
-                  <td>{container.node}</td>
-                  <td>{container.ports}</td>
-                  <td>{container.status}</td>
-                  <td className="td-actions">
-                    <i className="fa fa-eye" data-toggle="tooltip" data-placement="top" title="Show Logs"
-                       onClick={this.showLog.bind(this)}/>
-                    {!container.run &&
-                    <span> | <i className="fa fa-play" data-toggle="tooltip" title="Start"
-                                onClick={this.startContainer.bind(this)}/></span>}
-                    {container.run &&
-                    <span> | <i className="fa fa-stop" title="Stop" onClick={this.stopContainer.bind(this)}/></span>}
-                    {container.run &&
-                    <span> | <i className="fa fa-refresh" title="Restart"
-                                onClick={this.restartContainer.bind(this)}/></span>}
-                    {container.run &&
-                    <span> | <i className="fa fa-plus-circle" title="Scale"
-                                onClick={this.scaleContainer.bind(this)}/></span>}
-                    <span> | <i className="fa fa-info" title="Details"
-                                onClick={this.showDetails.bind(this)}/></span>
-                    {container.run &&
-                    <span> | <i className="fa fa-bar-chart" title="Stats"
-                                onClick={this.showStats.bind(this)}/></span>}
-                    <span> | <i className="fa fa-trash" title="Remove"
-                                onClick={this.removeContainer.bind(this)}/></span>
-                  </td>
-                </tr>
-              )}
-              </tbody>
-            </table>
-          </div>
+          <DockTable columns={COLUMNS} rows={rows} groupBy="node"/>
+          <h2>Containers</h2>
+          <DockTable columns={COLUMNS} rows={mockRows} groupBy="node"/>
         </div>
         }
-        {containersList && <DockTable columns={COLUMNS} rows={containersList} groupBy="node"/>}
-        {containersList && containersList.length === 0 &&
+        {rows && rows.length === 0 &&
         <div className="alert alert-info">
           No containers yet
         </div>}
       </div>
     );
+  }
+
+  additionalData(rows) {
+    if (rows) {
+      rows.forEach(row => {
+        row.__attributes = {'data-id': row.id};
+        if (row.run) {
+          row.__attributes['data-running'] = true;
+        }
+        row.actions = this.tdActions.bind(this);
+      });
+    }
+  }
+
+  tdActions(row) {
+    return (
+      <td className="td-actions" key="actions">
+        <i className="fa fa-eye" data-toggle="tooltip" data-placement="top" title="Show Logs"
+           onClick={this.showLog.bind(this)}/>
+        {!row.run &&
+        <span> | <i className="fa fa-play" data-toggle="tooltip" title="Start"
+                    onClick={this.startContainer.bind(this)}/></span>}
+        {row.run &&
+        <span> | <i className="fa fa-stop" title="Stop" onClick={this.stopContainer.bind(this)}/></span>}
+        {row.run &&
+        <span> | <i className="fa fa-refresh" title="Restart"
+                    onClick={this.restartContainer.bind(this)}/></span>}
+        {row.run &&
+        <span> | <i className="fa fa-plus-circle" title="Scale"
+                    onClick={this.scaleContainer.bind(this)}/></span>}
+                    <span> | <i className="fa fa-info" title="Details"
+                                onClick={this.showDetails.bind(this)}/></span>
+        {row.run &&
+        <span> | <i className="fa fa-bar-chart" title="Stats"
+                    onClick={this.showStats.bind(this)}/></span>}
+                    <span> | <i className="fa fa-trash" title="Remove"
+                                onClick={this.removeContainer.bind(this)}/></span>
+      </td>);
   }
 
   createContainer(event) {

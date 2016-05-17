@@ -70,6 +70,7 @@
     "expose-loader": "^0.7.1",
     "express": "^4.13.3",
     "express-session": "^1.12.1",
+    "faker": "^3.1.0",
     "file-loader": "^0.8.5",
     "hoist-non-react-statics": "^1.0.3",
     "html-webpack-plugin": "^2.16.0",

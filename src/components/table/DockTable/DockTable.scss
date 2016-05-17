@@ -2,9 +2,10 @@
 
 .dockTable {
   tbody tr:global(.tr-group) {
+    background-color: darken($gray-lighter, 5%);
     :global(.fa) {
       cursor: pointer;
-      margin-right: 0.5rem;
+      margin-right: 0.3rem;
       color: $link-color;
     }
   }
