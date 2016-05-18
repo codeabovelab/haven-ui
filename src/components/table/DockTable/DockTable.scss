@@ -1,12 +1,20 @@
 @import "../../../css/variables";
 
 .dockTable {
+  $local-margin: 0.3rem;
   tbody tr:global(.tr-group) {
     background-color: darken($gray-lighter, 5%);
-    :global(.fa) {
+    :global(.group-title) {
       cursor: pointer;
-      margin-right: 0.3rem;
       color: $link-color;
+    }
+    :global(.fa) {
+      margin-right: 0.3rem;
+    }
+  }
+  :global(.tr-single-value) {
+    :global(td:first-child) {
+      padding-left: 1rem + $local-margin;
     }
   }
 }

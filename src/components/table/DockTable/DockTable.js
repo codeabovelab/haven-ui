@@ -54,7 +54,7 @@ export default class DockTable extends Component {
         let model = group.rows[0];
         groupEls.push(
           <tbody key={groupName}>
-          <tr className="tr-value" {...model.__attributes}>
+          <tr className="tr-value tr-single-value" {...model.__attributes}>
             {DockTable.tdRender(this.groupByColumn.name, model)}
             {columns.map(column => DockTable.tdRender(column.name, model))}
           </tr>
@@ -64,9 +64,12 @@ export default class DockTable extends Component {
           <tbody key={groupName}>
           <tr className="tr-group">
             <td colSpan={columns.length + 1}>
-              {group.opened && <i className="fa fa-minus" onClick={this.toggleGroup.bind(this, groupName)}/>}
-              {!group.opened && <i className="fa fa-plus" onClick={this.toggleGroup.bind(this, groupName)}/>}
-              {groupName} <span className="text-muted">({group.rows.length})</span>
+              <span className="group-title" onClick={this.toggleGroup.bind(this, groupName)}>
+              {group.opened && <i className="fa fa-minus"/>}
+                {!group.opened && <i className="fa fa-plus"/>}
+                {groupName}
+              </span>
+              <span className="text-muted">{' '}({group.rows.length})</span>
             </td>
           </tr>
           {group.opened && group.rows.map((model, i) =>
