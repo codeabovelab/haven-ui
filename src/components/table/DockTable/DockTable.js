@@ -90,7 +90,7 @@ export default class DockTable extends Component {
         <div className="table-responsive">
           {groupBy && this.groupsRender()}
         </div>
-        {this.renderNavigation()}
+        {this.renderPagination()}
       </div>
     );
   }
@@ -173,7 +173,7 @@ export default class DockTable extends Component {
     return td;
   }
 
-  renderNavigation() {
+  renderPagination() {
     const {pageCurrent} = this.state;
     const MAX_PAGES_LINKS = 5;
 
@@ -192,14 +192,18 @@ export default class DockTable extends Component {
     }
 
     pagesNumbers = pagesNumbers.filter(pageNumber => pageNumber <= this.pageTotal);
+    while ((pagesNumbers.length < MAX_PAGES_LINKS) && (pagesNumbers[0] > 1)) {
+      //if array is small like 5,6,7 - let's add few more links at start
+      pagesNumbers.unshift(pagesNumbers[0] - 1);
+    }
 
     return (
-      <div>
-        <div>Showing {from} to {to} of {this.total} entries</div>
+      <div className="pagination-wrapper">
+        <div className="pagination-showing text-muted">Showing {from} to {to} of {this.total} entries</div>
         <nav>
           <ul className="pagination">
-            <li className="page-item">
-              <a className="page-link" href="#" aria-label="Previous">
+            <li className={"page-item " + (pageCurrent === 1 ? 'disabled' : '')}>
+              <a className="page-link" onClick={this.changePage.bind(this, pageCurrent - 1)} aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
                 <span className="sr-only">Previous</span>
               </a>
@@ -211,8 +215,8 @@ export default class DockTable extends Component {
                 </li>
               );
             })}
-            <li className="page-item">
-              <a className="page-link" href="#" aria-label="Next">
+            <li className={"page-item " + (pageCurrent === this.pageTotal ? 'disabled' : '')}>
+              <a className="page-link" onClick={this.changePage.bind(this, pageCurrent + 1)} aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
                 <span className="sr-only">Next</span>
               </a>
@@ -224,12 +228,14 @@ export default class DockTable extends Component {
   }
 
   changePage(pageNumber) {
-    if (this.state.pageCurrent !== pageNumber) {
-      this.setState({
-        ...this.state,
-        pageCurrent: pageNumber
-      });
-      this.generateCurrentGroups(pageNumber);
+    if ((pageNumber < 1) || (this.state.pageCurrent === pageNumber) || (pageNumber > this.pageTotal)) {
+      return;
     }
+
+    this.setState({
+      ...this.state,
+      pageCurrent: pageNumber
+    });
+    this.generateCurrentGroups(pageNumber);
   }
 }

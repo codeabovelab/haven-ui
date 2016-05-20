@@ -2,6 +2,9 @@
 
 .dockTable {
   $local-margin: 0.3rem;
+  table {
+    margin-bottom: 0;
+  }
   tbody tr:global(.tr-group) {
     background-color: darken($gray-lighter, 5%);
     :global(.group-title) {
@@ -15,6 +18,19 @@
   :global(.tr-single-value) {
     :global(td:first-child) {
       padding-left: 1rem + $local-margin;
+    }
+  }
+  :global(.pagination-wrapper) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    :global(.pagination-showing) {
+      flex-grow: 0;
+    }
+    nav {
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
     }
   }
 }
