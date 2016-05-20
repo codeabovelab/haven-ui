@@ -3,7 +3,7 @@ import faker from 'faker';
 export function containersList() {
   let data = [];
 
-  for (let i = 0; i < 15; i++) {
+  for (let i = 0; i < 45; i++) {
     data.push(generateContainer());
   }
   return data;

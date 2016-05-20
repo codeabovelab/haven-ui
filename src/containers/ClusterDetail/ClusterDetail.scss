@@ -2,6 +2,6 @@
 
 .clusterDetail {
   :global(tr.tr-value:not([data-running])) td {
-    background-color: lighten($brand-warning, 30%);
+    background-color: lighten($brand-warning, 35%);
   }
 }

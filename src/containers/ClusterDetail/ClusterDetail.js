@@ -96,8 +96,6 @@ export default class ClusterDetail extends Component {
         {rows && rows.length > 0 &&
         <div>
           <h2>Containers</h2>
-          <DockTable columns={COLUMNS} rows={rows} groupBy="node"/>
-          <h2>Containers</h2>
           <DockTable columns={COLUMNS} rows={mockRows} groupBy="node"/>
         </div>
         }
