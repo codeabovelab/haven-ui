@@ -13,6 +13,8 @@ const COLUMNS = [{name: 'name'}, {name: 'image'}, {name: 'node'}, {
   name: 'ports',
   label: 'Ports Mapping'
 }, {name: 'status'}, {name: 'actions'}];
+COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
+
 @asyncConnect([{
   promise: ({store: {dispatch, getState}}) => {
     const promises = [];

@@ -16,12 +16,16 @@
   table {
     margin-bottom: 0;
   }
-  thead :global(.sorting:after) {
-    content: "\F0DC";
-    float: right;
-    font-size: 0.9rem;
-    font-family: FontAwesome;
-    color: rgba(50, 50, 50, .5);
+  thead {
+    th:global(.sortable) {
+      cursor: pointer;
+      :global(.sorting) {
+        float: right;
+        :global(.fa-sort) {
+          color: rgba(50, 50, 50, .5);
+        }
+      }
+    }
   }
   tbody tr:global(.tr-group) {
     background-color: darken($gray-lighter, 5%);

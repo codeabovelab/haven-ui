@@ -15,6 +15,7 @@ export default class DockTable extends Component {
   pagesTotal = 0; // before filtering
   groupByColumn;
   pageSize = 10;
+  sortBy = "";
 
 
   //after filtering and sorting
@@ -34,6 +35,8 @@ export default class DockTable extends Component {
       pageCurrent: 1,
       groupsState: {},
       closedGroups: {},
+      sortingColumn: "",
+      sortingOrder: 'ASC',
       query: ""
     };
 
@@ -67,7 +70,7 @@ export default class DockTable extends Component {
   }
 
   groupsRender() {
-    const {closedGroups} = this.state;
+    const {sortingColumn, sortingOrder, closedGroups} = this.state;
     const groupEls = [];
     let columns = this.columns;
     this.currentGroups.forEach(group => {
@@ -105,14 +108,26 @@ export default class DockTable extends Component {
       }
     });
 
-
     return (
       <table className="table table-bordered table-striped table-sm">
         <thead>
         <tr>
           {this.groupByColumn && <th>{DockTable.columnLabel(this.groupByColumn)}</th>}
-          {columns && columns.map(column => <th className="sorting"
-                                                key={column.name}>{DockTable.columnLabel(column)}</th>)}
+          {columns && columns.map(column => (
+            <th key={column.name} className={column.sortable ? 'sortable' : ''}
+            onClick={this.toggleSorting.bind(this, column.name)}>
+              {DockTable.columnLabel(column)}
+              {column.sortable && (<span className="sorting">
+                {sortingColumn !== column.name && <i className="fa fa-sort"/>}
+                {sortingColumn === column.name && (
+                  <span>
+                    {sortingOrder === 'ASC' && <i className="fa fa-sort-asc"/>}
+                    {sortingOrder === 'DESC' && <i className="fa fa-sort-desc"/>}
+                  </span>
+                )}
+              </span>)}
+            </th>
+          ))}
         </tr>
         </thead>
         {groupEls}
@@ -178,6 +193,19 @@ export default class DockTable extends Component {
       group.currentRows = group.rows.slice(-leftToAdd);
       this.currentGroups.push(group);
     }
+  }
+
+  toggleSorting(columnName) {
+    let {sortingColumn, sortingOrder} = this.state;
+    if (sortingColumn !== columnName) {
+      console.log('not equal', sortingColumn, columnName);
+      sortingColumn = columnName;
+      sortingOrder = 'ASC';
+    } else {
+      sortingOrder = sortingOrder === 'ASC' ? 'DESC' : 'ASC';
+    }
+
+    this.setState({...this.state, sortingColumn, sortingOrder});
   }
 
   toggleGroup(groupName) {
@@ -288,7 +316,7 @@ export default class DockTable extends Component {
     if (!query) {
       return rows;
     }
-    let q = query.toLowerCase();
+    let q = query.trim().toLowerCase();
 
     return rows.filter(row => {
       let data = _.pick(row, columnsNames);
