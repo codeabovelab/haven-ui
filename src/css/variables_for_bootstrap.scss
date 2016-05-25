@@ -3,3 +3,6 @@ $enable-flex: true;
 
 $font-family-sans-serif: -apple-system, "Helvetica Neue", Roboto, Arial, sans-serif;
 
+$gray-lighter: #eceeef;
+$table-border-color: darken($gray-lighter, 10%);
+

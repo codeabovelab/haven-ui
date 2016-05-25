@@ -3,43 +3,133 @@ import _ from 'lodash';
 
 export default class DockTable extends Component {
   static propTypes = {
+    title: PropTypes.string,
     columns: PropTypes.array.isRequired,
     rows: PropTypes.array.isRequired,
     groupBy: PropTypes.string
   };
 
-  groups;
+
+  //general
   groupByColumn;
-  columns;
   pageSize = 10;
+
+  //after filtering and sorting
+  query = "";
+  groups;
+  columns;
   pageTotal = 1;
   total = 0;
+
+  //for current page
   currentGroups = [];
 
+  //noinspection JSDuplicatedDeclaration
   constructor(...params) {
     super(...params);
-    const {rows, groupBy, columns} = this.props;
+    this.state = {
+      pageCurrent: 1,
+      groupsState: {},
+      closedGroups: {},
+      query: ""
+    };
+
+    const {groupBy, columns} = this.props;
+    this.columns = columns.filter(column => column.name !== groupBy);
+    this.groupByColumn = columns.find(column => column.name === groupBy);
+    this.applyFilteringAndSorting();
+  }
+
+  render() {
+    if (this.query !== this.state.query) {
+      this.applyFilteringAndSorting();
+    }
+    const s = require('./DockTable.scss');
+    const {groupBy, title} = this.props;
+    return (
+      <div className={s.dockTable}>
+        <div className="docktable-header">
+          <h2>{title}</h2>
+          <input className="form-control form-control-sm input-search" onChange={this.queryChange.bind(this)}
+                 placeholder="Search"/>
+        </div>
+        <div className="table-responsive">
+          {groupBy && this.groupsRender()}
+        </div>
+        {this.renderPagination()}
+      </div>
+    );
+  }
+
+  groupsRender() {
+    const {closedGroups} = this.state;
+    const groupEls = [];
+    let columns = this.columns;
+    this.currentGroups.forEach(group => {
+      let closed = _.get(closedGroups, group.key, false);
+      if (group.rows.length === 1) {
+        let model = group.rows[0];
+        groupEls.push(
+          <tbody key={group.key}>
+          <tr className="tr-value tr-single-value" {...model.__attributes}>
+            {DockTable.tdRender(this.groupByColumn.name, model)}
+            {columns.map(column => DockTable.tdRender(column.name, model))}
+          </tr>
+          </tbody>);
+      } else {
+        groupEls.push(
+          <tbody key={group.key}>
+          <tr className="tr-group">
+            <td colSpan={columns.length + 1}>
+              <span className="group-title" onClick={this.toggleGroup.bind(this, group.key)}>
+              {!closed && <i className="fa fa-minus"/>}
+                {closed && <i className="fa fa-plus"/>}
+                {group.key}
+              </span>
+              <span className="text-muted">{' '}({group.rows.length})</span>
+            </td>
+          </tr>
+          {!closed && group.currentRows.map((model, i) =>
+            <tr key={i} className="tr-value" {...model.__attributes}>
+              <td/>
+              {columns.map(column => DockTable.tdRender(column.name, model))}
+            </tr>
+          )}
+          </tbody>
+        );
+      }
+    });
+
+
+    return (
+      <table className="table table-bordered table-striped table-sm">
+        <thead>
+        <tr>
+          {this.groupByColumn && <th>{DockTable.columnLabel(this.groupByColumn)}</th>}
+          {columns && columns.map(column => <th className="sorting"
+                                                key={column.name}>{DockTable.columnLabel(column)}</th>)}
+        </tr>
+        </thead>
+        {groupEls}
+      </table>
+    );
+  }
+
+  applyFilteringAndSorting() {
+    const {rows, groupBy} = this.props;
     this.total = rows.length;
     let groups = null;
     if (groupBy) {
       groups = _.groupBy(rows, groupBy);
       groups = _.mapValues(groups, (rows, key) => ({rows: rows, opened: true, key: key}));
     }
-    this.columns = columns.filter(column => column.name !== groupBy);
-    this.groupByColumn = columns.find(column => column.name === groupBy);
     this.groups = groups;
     this.pageTotal = Math.max(1, Math.ceil(rows.length / this.pageSize));
-
-    this.state = {
-      pageCurrent: 1,
-      groupsState: {}
-    };
     this.generateCurrentGroups();
   }
 
   generateCurrentGroups(page = null) {
     const pageCurrent = page ? page : this.state.pageCurrent;
-    console.log('generating groups for page', pageCurrent);
     this.currentGroups = [];
     if (this.groups.length === 0) {
       return;
@@ -82,75 +172,11 @@ export default class DockTable extends Component {
     }
   }
 
-  render() {
-    const s = require('./DockTable.scss');
-    const {groupBy} = this.props;
-    return (
-      <div className={s.dockTable}>
-        <div className="table-responsive">
-          {groupBy && this.groupsRender()}
-        </div>
-        {this.renderPagination()}
-      </div>
-    );
-  }
-
-  groupsRender() {
-    const groupEls = [];
-    let columns = this.columns;
-    this.currentGroups.forEach(group => {
-      if (group.rows.length === 1) {
-        let model = group.rows[0];
-        groupEls.push(
-          <tbody key={group.key}>
-          <tr className="tr-value tr-single-value" {...model.__attributes}>
-            {DockTable.tdRender(this.groupByColumn.name, model)}
-            {columns.map(column => DockTable.tdRender(column.name, model))}
-          </tr>
-          </tbody>);
-      } else {
-        groupEls.push(
-          <tbody key={group.key}>
-          <tr className="tr-group">
-            <td colSpan={columns.length + 1}>
-              <span className="group-title" onClick={this.toggleGroup.bind(this, group.key)}>
-              {group.opened && <i className="fa fa-minus"/>}
-                {!group.opened && <i className="fa fa-plus"/>}
-                {group.key}
-              </span>
-              <span className="text-muted">{' '}({group.rows.length})</span>
-            </td>
-          </tr>
-          {group.opened && group.currentRows.map((model, i) =>
-            <tr key={i} className="tr-value" {...model.__attributes}>
-              <td/>
-              {columns.map(column => DockTable.tdRender(column.name, model))}
-            </tr>
-          )}
-          </tbody>
-        );
-      }
-    });
-
-
-    return (
-      <table className="table table-bordered table-striped table-sm">
-        <thead>
-        <tr>
-          {this.groupByColumn && <th>{DockTable.columnLabel(this.groupByColumn)}</th>}
-          {columns && columns.map(column => <th key={column.name}>{DockTable.columnLabel(column)}</th>)}
-        </tr>
-        </thead>
-        {groupEls}
-      </table>
-    );
-  }
-
   toggleGroup(groupName) {
-    let group = this.state.groups[groupName];
+    let closed = _.get(this.state.closedGroups, groupName, false);
     this.setState({
       ...this.state,
-      groups: {...this.state.groups, [groupName]: {...group, opened: !group.opened}}
+      closedGroups: {...this.state.closedGroups, [groupName]: !closed}
     });
   }
 
@@ -237,5 +263,9 @@ export default class DockTable extends Component {
       pageCurrent: pageNumber
     });
     this.generateCurrentGroups(pageNumber);
+  }
+
+  queryChange(e) {
+    console.log('query changed', e.target.value);
   }
 }
