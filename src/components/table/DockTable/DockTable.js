@@ -15,6 +15,7 @@ export default class DockTable extends Component {
   total = 0; // before filtering
   pagesTotal = 0; // before filtering
   pageSize = 10;
+  columnsMap = {};
 
 
   //currently showing
@@ -42,6 +43,7 @@ export default class DockTable extends Component {
   constructor(...params) {
     super(...params);
     const {rows, groupBy, columns} = this.props;
+    this.columnsMap = _.keyBy(columns, 'name');
     this.state = {
       currentPage: 1,
       groupBy: groupBy,
@@ -124,7 +126,7 @@ export default class DockTable extends Component {
         <tbody>
         {this.currentRows.map((model, i) => (
           <tr className="tr-value" key={i} {...model.__attributes}>
-            {columns.map(column => DockTable.tdRender(column.name, model))}
+            {columns.map(column => this.tdRender(column.name, model))}
           </tr>
         ))}
         {emptyTrs.map((value, i) => (
@@ -286,11 +288,14 @@ export default class DockTable extends Component {
     return column.name[0].toUpperCase() + column.name.slice(1);
   }
 
-  static tdRender(key, model) {
+  tdRender(key, model) {
+    let render = this.columnsMap[key].render;
     let field = model[key];
     let td = null;
     if (typeof field === 'function') {
       td = field(model);
+    } else if (render) {
+      td = render(model);
     } else {
       td = <td key={key}>{field}</td>;
     }
@@ -308,8 +313,8 @@ export default class DockTable extends Component {
         groupEls.push(
           <tbody key={group.key}>
           <tr className="tr-value tr-single-value" {...model.__attributes}>
-            {DockTable.tdRender(this.groupByColumn.name, model)}
-            {columns.map(column => DockTable.tdRender(column.name, model))}
+            {this.tdRender(this.groupByColumn.name, model)}
+            {columns.map(column => this.tdRender(column.name, model))}
           </tr>
           </tbody>);
       } else {
@@ -328,7 +333,7 @@ export default class DockTable extends Component {
           {!closed && group.currentRows.map((model, i) =>
             <tr key={i} className="tr-value" {...model.__attributes}>
               <td/>
-              {columns.map(column => DockTable.tdRender(column.name, model))}
+              {columns.map(column => this.tdRender(column.name, model))}
             </tr>
           )}
           </tbody>

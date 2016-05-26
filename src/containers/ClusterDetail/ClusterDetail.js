@@ -9,12 +9,24 @@ import {ContainerCreate, ContainerScale} from '../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
 
 
-const COLUMNS = [{name: 'name'}, {name: 'image'}, {name: 'node'}, {
-  name: 'ports',
-  label: 'Ports Mapping'
-}, {name: 'status'}, {name: 'actions'}];
+const COLUMNS = [{name: 'name'}, {name: 'image', render: renderTdImage},
+  {name: 'node'}, {name: 'ports', label: 'Ports Mapping'}, {name: 'status'}, {name: 'actions'}];
 COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
 const GROUP_BY_SELECT = ['node', 'image', 'status'];
+
+function renderTdImage(row) {
+  const MAX_LENGTH = 30;
+  let image = row.image;
+  let length = image.length;
+  let title = "";
+  if (length >= MAX_LENGTH + 5) {
+    image = image.substring(0, MAX_LENGTH) + '...';
+    title = row.image;
+  }
+  return (
+    <td key="image" title={title}>{image}</td>
+  );
+}
 
 @asyncConnect([{
   promise: ({store: {dispatch, getState}}) => {
@@ -97,9 +109,16 @@ export default class ClusterDetail extends Component {
         </div>
         <div className="clearfix"></div>
         {rows && rows.length > 0 &&
-        <div className="containers">
-          <DockTable columns={COLUMNS} rows={mockRows} title="Containers" groupBy="node"
-                     groupBySelect={GROUP_BY_SELECT}/>
+        <div>
+          <div className="containers">
+            <DockTable columns={COLUMNS} rows={rows} title="Containers" groupBy="node"
+                       groupBySelect={GROUP_BY_SELECT}/>
+          </div>
+          <br />
+          <div className="containers">
+            <DockTable columns={COLUMNS} rows={mockRows} title="Containers" groupBy="node"
+                       groupBySelect={GROUP_BY_SELECT}/>
+          </div>
         </div>
         }
         {rows && rows.length === 0 &&
