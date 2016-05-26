@@ -79,11 +79,16 @@ export default class DockTable extends Component {
 
           {groupBySelect && (
             <div className="select-container">
-              <select ref="groupBy" className="form-control" defaultValue={groupBy}
-                      onChange={this.groupByChange.bind(this)}>
-                <option/>
-                {groupBySelect.map(groupBy => <option key={groupBy} value={groupBy}>{groupBy}</option>)}
-              </select>
+              <form className="form-inline">
+                <div className="form-group">
+                  <label>Group by: </label>
+                  <select ref="groupBy" className="form-control" defaultValue={groupBy}
+                          onChange={this.groupByChange.bind(this)}>
+                    <option value=""/>
+                    {groupBySelect.map(groupBy => <option key={groupBy} value={groupBy}>{groupBy}</option>)}
+                  </select>
+                </div>
+              </form>
             </div>
           )}
         </div>
@@ -244,6 +249,7 @@ export default class DockTable extends Component {
     }
 
     this.setState({...this.state, sortingColumn, sortingOrder, groupBy: ""});
+    this.refs.groupBy.value = "";
   }
 
   groupByChange(event) {

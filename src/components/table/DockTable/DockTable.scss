@@ -13,9 +13,12 @@
     }
     :global(.select-container) {
       flex-grow: 1;
-      select {
-        max-width: 15rem;
+      form {
         float: right;
+      }
+      select {
+        width: 15rem;
+        margin-left: 0.7rem;
       }
     }
   }
