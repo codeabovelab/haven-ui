@@ -14,6 +14,7 @@ const COLUMNS = [{name: 'name'}, {name: 'image'}, {name: 'node'}, {
   label: 'Ports Mapping'
 }, {name: 'status'}, {name: 'actions'}];
 COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
+const GROUP_BY_SELECT = ['node', 'image', 'status'];
 
 @asyncConnect([{
   promise: ({store: {dispatch, getState}}) => {
@@ -97,7 +98,8 @@ export default class ClusterDetail extends Component {
         <div className="clearfix"></div>
         {rows && rows.length > 0 &&
         <div>
-          <DockTable columns={COLUMNS} rows={mockRows} title="Containers" groupBy="node"/>
+          <DockTable columns={COLUMNS} rows={mockRows} title="Containers" groupBy="node"
+                     groupBySelect={GROUP_BY_SELECT}/>
         </div>
         }
         {rows && rows.length === 0 &&
