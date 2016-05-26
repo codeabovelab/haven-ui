@@ -97,7 +97,7 @@ export default class ClusterDetail extends Component {
         </div>
         <div className="clearfix"></div>
         {rows && rows.length > 0 &&
-        <div>
+        <div className="containers">
           <DockTable columns={COLUMNS} rows={mockRows} title="Containers" groupBy="node"
                      groupBySelect={GROUP_BY_SELECT}/>
         </div>
