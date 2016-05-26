@@ -41,7 +41,7 @@ export default class DockTable extends Component {
   //noinspection JSDuplicatedDeclaration
   constructor(...params) {
     super(...params);
-    const {rows, groupBy} = this.props;
+    const {rows, groupBy, columns} = this.props;
     this.state = {
       currentPage: 1,
       groupBy: groupBy,
@@ -51,6 +51,7 @@ export default class DockTable extends Component {
       query: ""
     };
 
+    this.allColumns = columns;
     this.total = rows.length;
     this.pagesTotal = Math.max(1, Math.ceil(this.total / this.pageSize));
     this.applyGroup();
@@ -140,7 +141,6 @@ export default class DockTable extends Component {
     } else {
       this.groupByColumn = null;
       this.columnsWithoutGroup = null;
-      this.allColumns = columns;
     }
     this.applyFilteringAndSorting();
   }
