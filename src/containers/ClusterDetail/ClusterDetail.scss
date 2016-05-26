@@ -4,6 +4,23 @@
   :global(.containers) {
     :global(tr.tr-value:not([data-running])) td {
       background-color: lighten($brand-warning, 35%);
+      &[data-column="status"] {
+        color: #f00;
+        text-transform: capitalize;
+      }
+    }
+    td[data-column="image"], td[data-column="ports"] {
+      width: 30%;
+    }
+    td[data-column="name"] {
+      width: 20%;
+    }
+    td[data-column="node"] {
+      width: 9rem;
+    }
+    td[data-column="status"] {
+      width: 9rem;
+      color: green;
     }
     td:last-child {
       width: 11rem;

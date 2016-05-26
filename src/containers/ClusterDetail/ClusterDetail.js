@@ -115,6 +115,8 @@ export default class ClusterDetail extends Component {
                        groupBySelect={GROUP_BY_SELECT}/>
           </div>
           <br />
+          <hr />
+          <br />
           <div className="containers">
             <DockTable columns={COLUMNS} rows={mockRows} title="Containers" groupBy="node"
                        groupBySelect={GROUP_BY_SELECT}/>

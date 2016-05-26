@@ -297,7 +297,7 @@ export default class DockTable extends Component {
     } else if (render) {
       td = render(model);
     } else {
-      td = <td key={key}>{field}</td>;
+      td = <td key={key} data-column={key}>{field}</td>;
     }
     return td;
   }
