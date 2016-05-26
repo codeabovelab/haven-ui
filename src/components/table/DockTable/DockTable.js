@@ -97,7 +97,7 @@ export default class DockTable extends Component {
 
   renderGroups() {
     return (
-      <table className="table table-bordered table-striped table-sm">
+      <table className="table table-bordered table-sm">
         {this.renderHeaderGroups()}
         {this.renderGroupsBodies()}
       </table>
@@ -113,11 +113,11 @@ export default class DockTable extends Component {
     let emptyTrs = new Array(emptyTrsNumber);
     emptyTrs.fill(1);
     return (
-      <table className="table table-bordered table-striped table-sm">
+      <table className="table table-bordered table-sm">
         {this.renderHeaderNoGroups()}
         <tbody>
         {this.currentRows.map((model, i) => (
-          <tr key={i}>
+          <tr className="tr-value" key={i} {...model.__attributes}>
             {columns.map(column => DockTable.tdRender(column.name, model))}
           </tr>
         ))}
