@@ -159,6 +159,12 @@ export default class DockTable extends Component {
     let filteredRows = this.filterRows(this.query, rows, columnNames);
     this.filteredTotal = filteredRows.length;
     this.pagesNumber = Math.max(1, Math.ceil(this.filteredTotal / this.pageSize));
+    if (this.state.currentPage > this.pagesNumber) {
+      this.setState({
+        ...this.state,
+        currentPage: 1
+      });
+    }
 
     let groups;
     let sortedRows;
