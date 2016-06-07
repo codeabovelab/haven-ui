@@ -112,7 +112,7 @@ export default class NodesList extends Component {
                 <tr key={node.name}>
                   <td>{node.name}</td>
                   <td>{node.ip}</td>
-                  <td>{node.containers.length}</td>
+                  <td>{node.containers && node.containers.length}</td>
                   <td/>
                   <td/>
                   <td/>
