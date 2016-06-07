@@ -1,6 +1,8 @@
 import {ACTIONS} from './actions';
 import _ from 'lodash';
 import {Cluster} from '../../models/common/Cluster';
+import config from '../../../config';
+import {loadContainers as mockLoadContainers} from './clusters.mock.js';
 
 export default function reducer(state = {}, action = {}) {
   switch (action.type) {
@@ -65,6 +67,9 @@ export function deleteCluster(clusterId) {
 }
 
 export function loadContainers(clusterId) {
+  if (config.mock) {
+    return mockLoadContainers(clusterId);
+  }
   return {
     types: [ACTIONS.LOAD_CONTAINERS, ACTIONS.LOAD_CONTAINERS_SUCCESS, ACTIONS.LOAD_CONTAINERS_FAIL],
     id: clusterId,

@@ -1,7 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
-import {containersList as containersListMock} from 'redux/modules/containers/containers.mock.js';
 import {connect} from 'react-redux';
 import { Link, browserHistory } from 'react-router';
 import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable} from '../../components/index';
@@ -82,9 +81,7 @@ export default class ClusterDetail extends Component {
 
     const containersIds = cluster.containersList;
     const rows = containersIds == null ? null : containersIds.map(id => containers[id]);
-    let mockRows = containersListMock();
     this.additionalData(rows);
-    this.additionalData(mockRows);
 
     return (
       <div className={"container-fluid " + s.clusterDetail}>
@@ -112,13 +109,6 @@ export default class ClusterDetail extends Component {
         <div>
           <div className="containers">
             <DockTable columns={COLUMNS} rows={rows} title="Containers" groupBy="node"
-                       groupBySelect={GROUP_BY_SELECT}/>
-          </div>
-          <br />
-          <hr />
-          <br />
-          <div className="containers">
-            <DockTable columns={COLUMNS} rows={mockRows} title="Containers" groupBy="node"
                        groupBySelect={GROUP_BY_SELECT}/>
           </div>
         </div>
