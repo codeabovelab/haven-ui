@@ -4,8 +4,9 @@ import {
   App,
   Home,
   ClusterList,
-  NodesList,
   ClusterDetail,
+  NodesList,
+  ImagesList,
   Login,
   LoginSuccess,
   NotFound,
@@ -39,6 +40,7 @@ export default (store) => {
         <Route path="clusters" component={ClusterList}/>
         <Route path="clusters/:name" component={ClusterDetail}/>
         <Route path="nodes" component={NodesList}/>
+        <Route path="images" component={ImagesList}/>
       </Route>
 
       { /* Public Routes */ }

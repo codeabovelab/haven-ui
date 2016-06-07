@@ -12,7 +12,7 @@ import clusterValidation from './clusterValidation';
     clusters: state.clusters,
     clustersIds: state.clustersUI.list,
     createError: state.clustersUI.createError
-  }), dispatch => bindActionCreators({create, load}, dispatch))
+  }), {create, load})
 @reduxForm({
   form: 'newCluster',
   validate: clusterValidation,
