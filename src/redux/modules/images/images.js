@@ -27,7 +27,7 @@ function mapLoadImagesToState(data) {
 export function loadImages() {
   return {
     types: [ACTIONS.LOAD_IMAGES, ACTIONS.LOAD_IMAGES_SUCCESS, ACTIONS.LOAD_IMAGES_FAIL],
-    promise: (client) => client.get(`/ui/api/listCatalogs`)
+    promise: (client) => client.get(`/ui/api/images/listCatalogs`)
   };
 }
 

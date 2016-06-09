@@ -21,7 +21,7 @@ export default class MenuLeft extends Component {
           <span className="pull-xs-right hidden-xs-down" onClick={toggle}><i className="fa fa-bars"/></span>
         </div>
         <div className="nav nav-pills nav-stacked">
-          <li className="nav-item" title="CLusters">
+          <li className="nav-item" title="Clusters">
             <Link to="/clusters" className="nav-link">
               <span className="icon-container"><i className="fa fa-object-group"/></span>
               <span className="label">Cluster List</span>

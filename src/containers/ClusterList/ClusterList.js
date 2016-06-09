@@ -5,7 +5,13 @@ import { Link } from 'react-router';
 import {bindActionCreators} from 'redux';
 import {reduxForm} from 'redux-form';
 import clusterValidation from './clusterValidation';
+import {DockTable} from '../../components/index';
 
+const COLUMNS = [{name: 'name', label: 'Cluster Name'}, {name: 'containers', label: '# of Containers'},
+  {name: 'nodes', label: '# of Nodes'}];
+COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
+
+const GROUP_BY_SELECT = ['name'];
 
 @connect(
   state => ({
@@ -90,6 +96,8 @@ export default class ClusterList extends Component {
             </tbody>
           </table>
         </div>
+        {clustersList &&
+        <DockTable columns={COLUMNS} rows={clustersList} groupBy="name" groupBySelect={GROUP_BY_SELECT} title=""/>}
         <div id="newCluster" className="modal">
           <div className="modal-dialog" role="document">
             <div className="modal-content">
