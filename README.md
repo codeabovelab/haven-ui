@@ -9,7 +9,7 @@
 `npm install`
 
 ## Development
-To start dev server - `npm run dev`
+To start dev server - `./start.sh`
 
 Then access it via [http://localhost:3000](http://localhost:3000)
 
