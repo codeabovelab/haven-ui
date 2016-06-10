@@ -159,7 +159,7 @@ export default class ClusterDetail extends Component {
       </td>);
   }
 
-  createContainer(event) {
+  createContainer() {
     const {clusters, params: {name}} = this.props;
     let cluster = clusters[name];
     let contentComponent = <ContainerCreate cluster={cluster}/>;

@@ -3,7 +3,7 @@ import {loadImages} from 'redux/modules/images/images';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {reduxForm} from 'redux-form';
-import {DockTable} from '../../components/index';
+import {DockTable, RegisterAdd} from '../../components/index';
 import _ from 'lodash';
 
 const COLUMNS = [{name: 'register'}, {name: 'name'}];
@@ -61,7 +61,7 @@ export default class ImagesList extends Component {
         </div>
         <div className="clearfix">
           <div className="page-actions">
-            <button className="btn btn-primary" disabled><i className="fa fa-plus"/> Add registry
+            <button className="btn btn-primary" onclic={this.addRegister.bind(this)}><i className="fa fa-plus"/> Add registry
             </button>
           </div>
         </div>
@@ -81,5 +81,13 @@ export default class ImagesList extends Component {
         </div>
       </div>
     );
+  }
+
+  addRegister() {
+    let contentComponent = <RegisterAdd/>;
+    window.simpleModal.show({
+      contentComponent
+      //focus: ContainerCreate.focusSelector
+    });
   }
 }
