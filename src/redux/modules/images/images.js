@@ -17,9 +17,18 @@ export default function reducer(state = {}, action = {}) {
 
 function mapLoadImagesToState(data) {
   let state = {};
-  data.forEach(register => {
-    let images = register.repositories.map(name => ({name, register: register.name}));
-    state[register.name] = _.keyBy(images, 'name');
+  data.forEach(image => {
+    let matches = image.name.match(/^([^\/]+)\/(.*)$/);
+    if (matches.length >= 3) {
+      let register = matches[1];
+      let name = matches[2];
+      //let images = register.repositories.map(name => ({name, register}));
+      let imageObject = {name, register};
+      if (!state[register]) {
+        state[register] = {};
+      }
+      state[register][name] = imageObject;
+    }
   });
   return state;
 }
@@ -27,7 +36,7 @@ function mapLoadImagesToState(data) {
 export function loadImages() {
   return {
     types: [ACTIONS.LOAD_IMAGES, ACTIONS.LOAD_IMAGES_SUCCESS, ACTIONS.LOAD_IMAGES_FAIL],
-    promise: (client) => client.get(`/ui/api/images/listCatalogs`)
+    promise: (client) => client.get('/ui/api/images/')
   };
 }
 
