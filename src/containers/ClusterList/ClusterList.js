@@ -7,11 +7,20 @@ import {reduxForm} from 'redux-form';
 import clusterValidation from './clusterValidation';
 import {DockTable} from '../../components/index';
 
-const COLUMNS = [{name: 'name', label: 'Cluster Name'}, {name: 'containers', label: '# of Containers'},
+const COLUMNS = [{name: 'name', label: 'Cluster Name', render: nameRender}, {
+  name: 'containers',
+  label: '# of Containers'
+},
   {name: 'nodes', label: '# of Nodes'}];
 COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
 
-const GROUP_BY_SELECT = ['name'];
+function nameRender(cluster) {
+  return (
+    <td key="name">
+      <Link to={'/clusters/' + cluster.name}>{cluster.name}</Link>
+    </td>
+  );
+}
 
 @connect(
   state => ({
@@ -75,29 +84,9 @@ export default class ClusterList extends Component {
           <button className="btn btn-primary" onClick={showModal}><i className="fa fa-plus"/> New Cluster
           </button>
         </div>
-        <div className="table-responsive">
-          <table className="table table-bordered table-striped">
-            <thead>
-            <tr>
-              <th>Cluster Name</th>
-              <th># of Containers</th>
-              <th># of Nodes</th>
-            </tr>
-            </thead>
-            <tbody>
-            {clustersList && clustersList.map(cluster =>
-              <tr key={cluster.name}>
-                <td>
-                  <Link to={"/clusters/" + cluster.name}>{cluster.name}</Link>
-                </td>
-                <td>{cluster.containers}</td>
-                <td>{cluster.nodes}</td>
-              </tr>)}
-            </tbody>
-          </table>
-        </div>
+        <div className="clearfix"></div>
         {clustersList &&
-        <DockTable columns={COLUMNS} rows={clustersList} groupBy="name" groupBySelect={GROUP_BY_SELECT} title=""/>}
+        <DockTable columns={COLUMNS} rows={clustersList} title=""/>}
         <div id="newCluster" className="modal">
           <div className="modal-dialog" role="document">
             <div className="modal-content">

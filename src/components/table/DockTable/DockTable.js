@@ -257,7 +257,9 @@ export default class DockTable extends Component {
     }
 
     this.setState({...this.state, sortingColumn, sortingOrder, groupBy: ""});
-    this.refs.groupBy.value = "";
+    if (this.refs.groupBy) {
+      this.refs.groupBy.value = "";
+    }
   }
 
   groupByChange(event) {
