@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 import multireducer from 'multireducer';
-import { routeReducer } from 'react-router-redux';
+import { routerReducer } from 'react-router-redux';
 import {reducer as reduxAsyncConnect} from 'redux-async-connect';
 
 import auth from './auth/auth';
@@ -16,7 +16,7 @@ import images from './images/images';
 import imagesUI from './images/imagesUI';
 
 export default combineReducers({
-  routing: routeReducer,
+  routing: routerReducer,
   reduxAsyncConnect,
   auth,
   form,

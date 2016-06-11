@@ -4,7 +4,7 @@ import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
 import Helmet from 'react-helmet';
 import { MenuLeft, Navbar } from 'components';
-import { routeActions } from 'react-router-redux';
+import { routerActions } from 'react-router-redux';
 import config from '../../config';
 import { asyncConnect } from 'redux-async-connect';
 
@@ -17,7 +17,7 @@ import { asyncConnect } from 'redux-async-connect';
 @connect(
   state => ({user: state.auth.user}),
   {
-    pushState: routeActions.push
+    pushState: routerActions.push
   })
 export default class App extends Component {
   static propTypes = {

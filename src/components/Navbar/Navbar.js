@@ -4,12 +4,12 @@ import {toggle} from 'redux/modules/menuLeft/menuLeft';
 import { connect } from 'react-redux';
 import { IndexLink } from 'react-router';
 import {logout} from 'redux/modules/auth/auth';
-import { routeActions } from 'react-router-redux';
+import { routerActions } from 'react-router-redux';
 import config from '../../config';
 
 @connect(
   state => ({user: state.auth.user}),
-  {logout, pushState: routeActions.push})
+  {logout, pushState: routerActions.push})
 export default class Navbar extends Component {
   static propTypes = {
     user: PropTypes.object,
