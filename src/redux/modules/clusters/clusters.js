@@ -68,7 +68,6 @@ export function deleteCluster(clusterId) {
 
 export function loadContainers(clusterId) {
   if (config.mock || true) {
-    console.log('loading containers');
     return mockLoadContainers(clusterId);
   }
   return {

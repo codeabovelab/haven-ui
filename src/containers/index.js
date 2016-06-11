@@ -9,6 +9,6 @@ export ClusterDetail from './clusters/ClusterDetail/ClusterDetail';
 export ClusterAdd from './clusters/ClusterAdd/ClusterAdd';
 export ContainerCreate from './containers/ContainerCreate/ContainerCreate';
 export ContainerScale from './containers/ContainerScale/ContainerScale';
-export NodesList from './NodesList/NodesList';
+export NodesList from './nodes/NodesList/NodesList';
 export ImagesList from './images/ImagesList/ImagesList';
 export RegisterAdd from './images/RegisterAdd/RegisterAdd';

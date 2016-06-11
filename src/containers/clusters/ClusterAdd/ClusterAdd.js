@@ -55,7 +55,7 @@ export default class ClusterAdd extends Component {
 
     function fieldComponent() {
       let field = fields.name;
-      return (<div lassName="form-group" required>
+      return (<div className="form-group" required>
         <label>Name</label>
         {field.error && field.touched && field.value && <div className="text-danger">{field.error}</div>}
         {inputText(field)}
