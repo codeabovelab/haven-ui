@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {reduxForm} from 'redux-form';
 import {addRegister} from 'redux/modules/images/images';
+import registerValidation from './registerValidation';
 import _ from 'lodash';
 
 const FIELDS = {
@@ -16,11 +17,16 @@ const FIELDS = {
     type: 'integer',
     min: 1
   },
+  secured: {
+    label: 'Secured',
+    type: 'secured'
+  },
   username: {
     label: 'Username'
   },
   password: {
-    label: 'Password'
+    label: 'Password',
+    type: 'password'
   }
 };
 @connect(state => ({
@@ -28,7 +34,8 @@ const FIELDS = {
 }), {addRegister})
 @reduxForm({
   form: 'registerAdd',
-  fields: ['name', 'host', 'port', 'username', 'password']
+  validate: registerValidation,
+  fields: ['name', 'host', 'port', 'username', 'password', 'secured']
 })
 export default class RegisterAdd extends Component {
   static propTypes = {
@@ -60,6 +67,7 @@ export default class RegisterAdd extends Component {
             {fieldComponent('name')}
             {fieldComponent('host')}
             {fieldComponent('port')}
+            {inputSecured('secured')}
             {fieldComponent('username')}
             {fieldComponent('password')}
           </form>
@@ -88,6 +96,8 @@ export default class RegisterAdd extends Component {
           return inputNumber(property, field);
         case 'password':
           return inputPassword(property, field);
+        case 'secured':
+          return inputSecured(property, field);
         default:
           return inputText(property, field);
       }
@@ -105,13 +115,26 @@ export default class RegisterAdd extends Component {
       let props = Object.assign({}, field, _.pick(property, ['min', 'max']));
       return <input type="number" step="1" {...props} className="form-control"/>;
     }
+
+    function inputSecured(fieldName) {
+      let property = FIELDS[fieldName];
+      let field = fields[fieldName];
+      return (<div className="checkbox">
+        <label>
+          <input type="checkbox" {...field}/>
+          {property.label}
+        </label>
+      </div>);
+    }
   }
 
   addRegister() {
     const {addRegister, fields, resetForm} = this.props;
-    let register = {
-      name: fields.name.value
-    };
+    let all = ['name', 'host', 'port', 'secured', 'username', 'password'];
+    let register = {};
+    all.forEach(fieldName => register[fieldName] = fields[fieldName].value);
+    register.secured = !!register.secured;
+
     return addRegister(register)
       .then(() => {
         resetForm();

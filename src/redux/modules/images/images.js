@@ -49,9 +49,9 @@ export function loadImageTags({image, register}) {
   };
 }
 
-export function addRegister(container) {
+export function addRegister(register) {
   return {
     types: [ACTIONS.ADD_REGISTER, ACTIONS.ADD_REGISTER_SUCCESS, ACTIONS.ADD_REGISTER_FAIL],
-    promise: (client) => client.post(`/ui/api/containers/create`, {data: container})
+    promise: (client) => client.put(`/ui/api/registries`, {params: register})
   };
 }
