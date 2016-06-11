@@ -74,12 +74,16 @@ export default class DockTable extends Component {
       this.generateCurrentPageData();
     }
     const s = require('./DockTable.scss');
-    const {title, groupBy, groupBySelect} = this.props;
+    const {title, groupBy, groupBySelect, size} = this.props;
+    let formControlSm = ' ';
+    if (size && size === DockTable.SIZES.SM) {
+      formControlSm += 'table-sm';
+    }
     return (
       <div className={s.dockTable}>
         <div className="docktable-header">
-          <h2>{title}</h2>
-          <input className="form-control form-control-sm input-search" onChange={this.queryChange.bind(this)}
+          {title && <h2>{title}</h2>}
+          <input className={"form-control input-search" + formControlSm} onChange={this.queryChange.bind(this)}
                  placeholder="Search"/>
 
           {groupBySelect && (
@@ -107,8 +111,13 @@ export default class DockTable extends Component {
   }
 
   renderGroups() {
+    const {size} = this.props;
+    let classes = ' ';
+    if (size && size === DockTable.SIZES.SM) {
+      classes += 'table-sm';
+    }
     return (
-      <table className="table table-bordered table-sm">
+      <table className={"table table-bordered" + classes}>
         {this.renderHeaderGroups()}
         {this.renderGroupsBodies()}
       </table>
