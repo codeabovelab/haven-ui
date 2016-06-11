@@ -138,7 +138,7 @@ export default class DockTable extends Component {
       classes += 'table-sm';
     }
     return (
-      <table className={"table table-bordered" + classes}>
+      <table className={"table table-bordered table-striped" + classes}>
         {this.renderHeaderNoGroups()}
         <tbody>
         {this.currentRows.map((model, i) => (
