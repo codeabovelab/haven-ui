@@ -11,7 +11,7 @@
     "start-dev": "better-npm-run start-dev",
     "watch-client": "better-npm-run watch-client",
     "dev": "concurrent --kill-others \"npm run watch-client\" \"npm run start-dev\"",
-    "s3upload": "npm run build && aws s3 cp ./dist/ s3://dockmaster.stage --recursive --region us-east-1",
+    "s3upload": "npm run build && aws s3 cp ./dist/ s3://dm.klyukin.net --recursive --region us-east-1",
     "test": "karma start"
   },
   "betterScripts": {
