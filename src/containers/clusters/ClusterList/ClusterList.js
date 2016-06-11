@@ -42,7 +42,6 @@ export default class ClusterList extends Component {
     const {clusters, clustersIds} = this.props;
     const clustersList = clustersIds !== null ? clustersIds.map(id => clusters[id]) : null;
 
-    let field;
     return (
       <div className="container-fluid">
         <h1>Cluster List</h1>

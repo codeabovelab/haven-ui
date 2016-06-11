@@ -25,6 +25,7 @@ export default class ImagesList extends Component {
   componentDidMount() {
     const {loadImages} = this.props;
     loadImages();
+    $('.input-search').focus();
   }
 
   getImagesList() {

@@ -65,6 +65,7 @@ export default class ClusterDetail extends Component {
   componentDidMount() {
     const {loadContainers, params: {name}} = this.props;
     loadContainers(name);
+    $('.input-search').focus();
   }
 
   render() {
