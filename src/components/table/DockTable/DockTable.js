@@ -7,8 +7,11 @@ export default class DockTable extends Component {
     columns: PropTypes.array.isRequired,
     rows: PropTypes.array.isRequired,
     groupBy: PropTypes.string,
-    groupBySelect: PropTypes.array
+    groupBySelect: PropTypes.array,
+    size: PropTypes.string
   };
+
+  static SIZES = {SM: 'SM'};
 
 
   //general
@@ -114,14 +117,19 @@ export default class DockTable extends Component {
 
   renderNoGroups() {
     const columns = this.allColumns;
+    const {size} = this.props;
     let emptyTrsNumber = 0;
     if (this.currentPage !== 1) {
       emptyTrsNumber = this.pageSize - this.currentRows.length;
     }
     let emptyTrs = new Array(emptyTrsNumber);
     emptyTrs.fill(1);
+    let classes = ' ';
+    if (size && size === DockTable.SIZES.SM) {
+      classes += 'table-sm';
+    }
     return (
-      <table className="table table-bordered table-sm">
+      <table className={"table table-bordered" + classes}>
         {this.renderHeaderNoGroups()}
         <tbody>
         {this.currentRows.map((model, i) => (

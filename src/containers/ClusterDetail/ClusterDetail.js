@@ -109,7 +109,7 @@ export default class ClusterDetail extends Component {
         <div>
           <div className="containers">
             <DockTable columns={COLUMNS} rows={rows} title="Containers" groupBy="node"
-                       groupBySelect={GROUP_BY_SELECT}/>
+                       groupBySelect={GROUP_BY_SELECT} size={DockTable.SIZES.SM}/>
           </div>
         </div>
         }
