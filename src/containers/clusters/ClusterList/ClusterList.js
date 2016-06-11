@@ -5,20 +5,11 @@ import { Link } from 'react-router';
 import {DockTable} from '../../../components/index';
 import {ClusterAdd} from '../../index';
 
-const COLUMNS = [{name: 'name', label: 'Cluster Name', render: nameRender}, {
-  name: 'containers',
-  label: '# of Containers'
-},
+const COLUMNS = [
+  {name: 'name', label: 'Cluster Name', render: nameRender},
+  {name: 'containers', label: '# of Containers'},
   {name: 'nodes', label: '# of Nodes'}];
 COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
-
-function nameRender(cluster) {
-  return (
-    <td key="name">
-      <Link to={'/clusters/' + cluster.name}>{cluster.name}</Link>
-    </td>
-  );
-}
 
 @connect(
   state => ({
@@ -58,7 +49,7 @@ export default class ClusterList extends Component {
         </div>
         <div className="clearfix"></div>
         {clustersList &&
-        <DockTable columns={COLUMNS} rows={clustersList} title=""/>}
+        <DockTable columns={COLUMNS} rows={clustersList}/>}
       </div>
     );
   }
@@ -71,3 +62,12 @@ export default class ClusterList extends Component {
     });
   }
 }
+
+function nameRender(cluster) {
+  return (
+    <td key="name">
+      <Link to={'/clusters/' + cluster.name}>{cluster.name}</Link>
+    </td>
+  );
+}
+

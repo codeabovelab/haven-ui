@@ -2,6 +2,20 @@ import React, {Component, PropTypes} from 'react';
 import {load} from 'redux/modules/nodes/nodes';
 import {connect} from 'react-redux';
 import NodeAdd from '../NodeAdd/NodeAdd';
+import {DockTable} from '../../../components/index';
+
+const COLUMNS = [
+  {name: 'name', label: 'Node Name'},
+  {name: 'ip', label: 'Internal IP'},
+  {name: 'containers', label: '# of Containers'},
+  {name: 'health'},
+  {name: 'cpu', label: '# of CPU'},
+  {name: 'memory', label: 'Memory Usage'},
+  {name: 'cluster', label: 'Assigned Cluster'},
+  {name: 'actions', render: actionsRender}
+];
+
+COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
 
 @connect(
   state => ({
@@ -18,6 +32,7 @@ export default class NodesList extends Component {
   componentDidMount() {
     const {load} = this.props;
     load();
+    $('.input-search').focus();
   }
 
   render() {
@@ -42,37 +57,9 @@ export default class NodesList extends Component {
             <button className="btn btn-primary" onClick={this.addNode.bind(this)}><i className="fa fa-plus"/> Add Node
             </button>
           </div>
-          <div className="table-responsive">
-            <table className="table table-bordered table-striped">
-              <thead>
-              <tr>
-                <th>Node Name</th>
-                <th>Internal IP</th>
-                <th># of Containers</th>
-                <th>Health</th>
-                <th># of CPU</th>
-                <th>Memory Usage</th>
-                <th>Assigned cluster</th>
-                <th>Actions</th>
-              </tr>
-              </thead>
-              <tbody>
-              {nodesList && nodesList.map(node =>
-                <tr key={node.name}>
-                  <td>{node.name}</td>
-                  <td>{node.ip}</td>
-                  <td>{node.containers && node.containers.length}</td>
-                  <td/>
-                  <td/>
-                  <td/>
-                  <td/>
-                  <td className="td-actions">
-                    <i className="fa fa-pencil" disabled/> | <i className="fa fa-trash" disabled/>
-                  </td>
-                </tr>)}
-              </tbody>
-            </table>
-          </div>
+          <div className="clearfix"></div>
+          {nodesList &&
+          <DockTable columns={COLUMNS} rows={nodesList}/>}
         </div>
       </div>
     );
@@ -85,4 +72,12 @@ export default class NodesList extends Component {
       focus: NodeAdd.focusSelector
     });
   }
+}
+
+function actionsRender() {
+  return (
+    <td key="actions" className="td-actions">
+      <i className="fa fa-pencil" disabled/> | <i className="fa fa-trash" disabled/>
+    </td>
+  );
 }
