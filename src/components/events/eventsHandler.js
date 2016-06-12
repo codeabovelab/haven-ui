@@ -1,6 +1,8 @@
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 
+//toastr.options.preventDuplicates = true;
+
 let store = null;
 export class EventsHandler {
   static setStore(s) {

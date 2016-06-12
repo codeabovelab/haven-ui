@@ -38,11 +38,19 @@ export default class Dashboard extends Component {
 
         <div className="container-fluid">
           <div className="row">
-            {events &&
-            (<div className="col-sm-6 events">
-              <h3>Events</h3>
-              {events.map(this.renderEvent.bind(this))}
-            </div>)}
+            <div className="col-sm-6"></div>
+            <div className="col-sm-6">
+              {events &&
+              (<div className="card events">
+                  <div className="card-block">
+                    <h4 className="card-title"><i className="fa fa-bell"/> Events</h4>
+                    <ul className="list-group list-group-flush">
+                      {events.map(this.renderEvent.bind(this))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -53,12 +61,12 @@ export default class Dashboard extends Component {
     if (event.info) {
       return this.renderInfoEvent(event);
     }
-    return <div></div>;
+    return <li className="list-group-item"/>;
   }
 
   renderInfoEvent(event) {
     let info = event.info;
-    return (<div className="alert alert-info">
+    return (<li className="list-group-item">
       <div>
         <strong>{info.name}</strong>&nbsp;
         {JSON.stringify(_.omit(info, ['name', 'created']))}
@@ -66,6 +74,6 @@ export default class Dashboard extends Component {
       <div className="text-xs-right">
         <small className="text-muted"><TimeAgo date={event.created}/></small>
       </div>
-    </div>);
+    </li>);
   }
 }
