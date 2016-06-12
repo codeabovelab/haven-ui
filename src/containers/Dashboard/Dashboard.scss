@@ -1,10 +1,5 @@
 $cyan: #33e0ff;
 $humility: #777;
-.home {
-  dd {
-    margin-bottom: 15px;
-  }
-}
 
 .masthead {
   background: #2d2d2d;
@@ -22,7 +17,7 @@ $humility: #777;
     vertical-align: middle;
     p {
       line-height: $size;
-      margin: 0px;
+      margin: 0;
     }
     img {
       width: 75%;
@@ -44,18 +39,8 @@ $humility: #777;
   p {
     margin: 10px;
   }
-  .humility {
-    color: $humility;
-    a {
-      color: $humility;
-    }
-  }
-  .github {
-    font-size: 1.5em;
-  }
 }
 
-.counterContainer {
-  text-align: center;
-  margin: 20px;
+:global(.events) {
+  margin-top: 1rem;
 }

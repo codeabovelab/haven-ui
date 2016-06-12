@@ -14,6 +14,7 @@ import nodes from './nodes/nodes';
 import nodesUI from './nodes/nodesUI';
 import images from './images/images';
 import imagesUI from './images/imagesUI';
+import events from './events/events';
 
 export default combineReducers({
   routing: routerReducer,
@@ -30,5 +31,6 @@ export default combineReducers({
   //END models data
   clustersUI,
   containersUI,
-  nodesUI
+  nodesUI,
+  events
 });

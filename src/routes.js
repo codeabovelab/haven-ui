@@ -2,7 +2,7 @@ import React from 'react';
 import {IndexRoute, Route} from 'react-router';
 import {
   App,
-  Home,
+  Dashboard,
   ClusterList,
   ClusterDetail,
   NodesList,
@@ -34,7 +34,7 @@ export default (store) => {
       <Route onEnter={requireLogin}>
         { /* Routes requiring login */ }
         { /* Home (main) route */ }
-        <IndexRoute component={Home}/>
+        <IndexRoute component={Dashboard}/>
 
         <Route path="loginSuccess" component={LoginSuccess}/>
         <Route path="clusters" component={ClusterList}/>
