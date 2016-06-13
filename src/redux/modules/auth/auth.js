@@ -14,7 +14,7 @@ export default function reducer(state = {}, action = {}) {
         loginError: null
       };
     case ACTIONS.LOGIN_SUCCESS:
-      if (!action.result) {
+      if (!action.result || !action.result.userName) {
         /* workaround till API fixed
          * that actually means there was redirect
          */
@@ -34,11 +34,12 @@ export default function reducer(state = {}, action = {}) {
       saveToLS(newState);
       return newState;
     case ACTIONS.LOGIN_FAIL:
+      let error = _.get(action, 'error.error', action.error);
       return {
         ...state,
         token: null,
         user: null,
-        loginError: action.error
+        loginError: error
       };
     case ACTIONS.LOGOUT_SUCCESS:
       return {

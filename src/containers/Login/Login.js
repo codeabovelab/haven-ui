@@ -1,17 +1,16 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import Helmet from 'react-helmet';
-import * as authActions from 'redux/modules/auth/auth';
+import {login, logout} from 'redux/modules/auth/auth';
 
 @connect(
   state => ({user: state.auth.user, auth: state.auth, loginError: state.auth.loginError}),
-  authActions)
+  {login, logout})
 export default class Login extends Component {
   static propTypes = {
     user: PropTypes.object,
     auth: PropTypes.object,
     loginError: PropTypes.string,
-    loadFromLS: PropTypes.func.isRequired,
     login: PropTypes.func.isRequired,
     logout: PropTypes.func.isRequired
   };

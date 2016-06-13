@@ -23,5 +23,5 @@ export function connectEvents(store) {
     });
   });
   //mock
-  eventsMock();
+  eventsMock(store);
 }
