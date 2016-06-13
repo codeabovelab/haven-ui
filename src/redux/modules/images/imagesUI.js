@@ -1,7 +1,8 @@
 import {ACTIONS} from './actions';
 const initialState = {
   new_register: {
-    adding: false
+    adding: false,
+    error: null
   }
 };
 export default function reducer(state = initialState, action = {}) {
@@ -10,21 +11,24 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state,
         new_register: {
-          adding: true
+          adding: true,
+          error: null
         }
       };
     case ACTIONS.ADD_REGISTER_SUCCESS:
       return {
         ...state,
         new_register: {
-          adding: false
+          adding: false,
+          error: null
         }
       };
     case ACTIONS.ADD_REGISTER_FAIL:
       return {
         ...state,
         new_register: {
-          adding: false
+          adding: false,
+          error: "Cannot add registry"
         }
       };
     default:

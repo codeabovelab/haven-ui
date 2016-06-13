@@ -42,14 +42,14 @@ export default class RegisterAdd extends Component {
     addRegister: PropTypes.func.isRequired,
     fields: PropTypes.object.isRequired,
     resetForm: PropTypes.func.isRequired,
-    imagesUI: PropTypes.object.isRequired
+    imagesUI: PropTypes.object.isRequired,
+    valid: PropTypes.bool.isRequired
   };
 
   static focusSelector = '[name=name]';
 
   render() {
-    const {fields, imagesUI} = this.props;
-    let adding = imagesUI.new_register.adding;
+    const {fields, imagesUI: {new_register: {adding, error}}, valid} = this.props;
     let field;
 
     return (
@@ -70,10 +70,12 @@ export default class RegisterAdd extends Component {
             {inputSecured('secured')}
             {fieldComponent('username')}
             {fieldComponent('password')}
+            <div className="text-danger">{error}</div>
           </form>
         </div>
         <div className="modal-footer">
-          <button type="button" className="btn btn-primary" onClick={this.addRegister.bind(this)} disabled={adding}>
+          <button type="button" className="btn btn-primary" onClick={this.addRegister.bind(this)}
+                  disabled={adding || !valid}>
             <i className="fa fa-plus"/> Add
           </button>
         </div>
