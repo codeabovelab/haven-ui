@@ -59,7 +59,7 @@ export default class RegisterAdd extends Component {
             <span aria-hidden="true">&times;</span>
           </button>
           <h4 className="modal-title">Add Register
-            {adding && <span>{' '}<i className="fa fa-spinner fa fa-pulse"/></span>}
+            {adding && <span>{' '}<i className="fa fa-spinner fa-pulse"/></span>}
           </h4>
         </div>
         <div className="modal-body">
@@ -87,7 +87,7 @@ export default class RegisterAdd extends Component {
       return (<div key={fieldName} className="form-group" required>
         {(field = fields[fieldName]) && ''}
         <label>{property.label}</label>
-        {field.error && field.touched && <div className="text-danger">{field.error}</div>}
+        {field.error && field.value && field.touched && <div className="text-danger">{field.error}</div>}
         {inputField(property, field)}
       </div>);
     }

@@ -14,11 +14,13 @@ const GROUP_BY_SELECT = ['register', 'name'];
 
 @connect(
   state => ({
-    images: state.images
+    images: state.images,
+    imagesUI: state.imagesUI
   }), {loadImages})
 export default class ImagesList extends Component {
   static propTypes = {
     images: PropTypes.object,
+    imagesUI: PropTypes.object,
     loadImages: PropTypes.func.isRequired
   };
 
@@ -45,8 +47,19 @@ export default class ImagesList extends Component {
   }
 
   render() {
+    const {loading, loadingError} = this.props.imagesUI;
     let rows = this.getImagesList();
     let registers = this.getRegisters();
+    let showLoading = false;
+    let showError = false;
+    let showData = false;
+    if (loadingError) {
+      showError = true;
+    } else if (loading && (!rows || rows.length === 0)) {
+      showLoading = true;
+    } else {
+      showData = true;
+    }
 
     return (
       <div className="container-fluid">
@@ -68,7 +81,8 @@ export default class ImagesList extends Component {
             </button>
           </div>
         </div>
-        <div>
+        {showLoading && (<div className="text-xs-center"><i className="fa fa-spinner fa-pulse fa-5x"/></div>)}
+        {showData && <div>
           {rows && rows.length > 0 &&
           <div>
             <div className="containers">
@@ -81,7 +95,8 @@ export default class ImagesList extends Component {
           <div className="alert alert-info">
             No images yet
           </div>}
-        </div>
+        </div>}
+        {showError && <div className="alert alert-danger">{loadingError}</div>}
       </div>
     );
   }

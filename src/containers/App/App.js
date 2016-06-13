@@ -33,11 +33,9 @@ export default class App extends Component {
   componentWillReceiveProps(nextProps) {
     if (!this.props.user && nextProps.user) {
       // login
-      console.log('going to dashboard');
       this.props.pushState('/dashboard');
     } else if (this.props.user && !nextProps.user) {
       // logout
-      console.log('going to login');
       this.props.pushState('/login');
     }
   }
