@@ -57,16 +57,16 @@ export default class Dashboard extends Component {
     );
   }
 
-  renderEvent(event) {
+  renderEvent(event, i) {
     if (event.info) {
-      return this.renderInfoEvent(event);
+      return this.renderInfoEvent(event, i);
     }
     return <li className="list-group-item"/>;
   }
 
-  renderInfoEvent(event) {
+  renderInfoEvent(event, i) {
     let info = event.info;
-    return (<li className="list-group-item">
+    return (<li key={i} className="list-group-item">
       <div>
         <strong>{info.name}</strong>&nbsp;
         {JSON.stringify(_.omit(info, ['name', 'created']))}
