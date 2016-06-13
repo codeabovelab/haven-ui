@@ -21,21 +21,27 @@ export default class MenuLeft extends Component {
           <span className="pull-xs-right hidden-xs-down" onClick={toggle}><i className="fa fa-bars"/></span>
         </div>
         <div className="nav nav-pills nav-stacked">
+          <li className="nav-item" title="Dashboard">
+            <Link to="/" className="nav-link">
+              <i className="fa fa-tachometer fa-fw"/>
+              <span className="label">Dashboard</span>
+            </Link>
+          </li>
           <li className="nav-item" title="Clusters">
             <Link to="/clusters" className="nav-link">
-              <span className="icon-container"><i className="fa fa-object-group"/></span>
+              <i className="fa fa-object-group fa-fw"/>
               <span className="label">Cluster List</span>
             </Link>
           </li>
           <li className="nav-item" title="Nodes">
             <Link to="/nodes" className="nav-link">
-              <span className="icon-container"><i className="fa fa-server"/></span>
+              <i className="fa fa-server fa-fw"/>
               <span className="label">Node List</span>
             </Link>
           </li>
           <li className="nav-item" title="Images">
             <Link to="/images" className="nav-link">
-              <span className="icon-container"><i className="fa fa-file-o"/></span>
+              <i className="fa fa-file-o fa-fw"/>
               <span className="label">Image List</span>
             </Link>
           </li>

@@ -57,10 +57,6 @@ $local-border: 1px solid lighten($brand-secondary, 10);
       .nav-link {
         color: #fff;
         white-space: nowrap; //not take 2 lines while toggling
-        .icon-container {
-          display: inline-block;
-          width: 1.1rem;
-        }
       }
     }
     .nav-item:first-child {
