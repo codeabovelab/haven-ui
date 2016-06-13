@@ -36,6 +36,7 @@ export default (store) => {
         { /* Home (main) route */ }
         <IndexRoute component={Dashboard}/>
 
+        <Route path="dashboard" component={Dashboard}/>
         <Route path="loginSuccess" component={LoginSuccess}/>
         <Route path="clusters" component={ClusterList}/>
         <Route path="clusters/:name" component={ClusterDetail}/>

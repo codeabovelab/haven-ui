@@ -35,7 +35,7 @@ export default class Navbar extends Component {
           </li>
         </ul>
         <span className="brand-container">
-          <IndexLink to="/" className="navbar-brand">{config.app.title}</IndexLink>
+          <IndexLink to="/dashboard" className="navbar-brand">{config.app.title}</IndexLink>
         </span>
         <ul className="nav navbar-nav pull-xs-right">
           {!user &&

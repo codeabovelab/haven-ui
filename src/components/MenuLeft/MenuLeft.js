@@ -22,7 +22,7 @@ export default class MenuLeft extends Component {
         </div>
         <div className="nav nav-pills nav-stacked">
           <li className="nav-item" title="Dashboard">
-            <Link to="/" className="nav-link">
+            <Link to="/dashboard" className="nav-link">
               <i className="fa fa-tachometer fa-fw"/>
               <span className="label">Dashboard</span>
             </Link>
