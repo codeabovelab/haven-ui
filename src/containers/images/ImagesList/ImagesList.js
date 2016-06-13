@@ -81,7 +81,12 @@ export default class ImagesList extends Component {
             </button>
           </div>
         </div>
-        {showLoading && (<div className="text-xs-center"><i className="fa fa-spinner fa-pulse fa-5x"/></div>)}
+        {showLoading && (
+          <div className="text-xs-center">
+            <i className="fa fa-spinner fa-pulse fa-5x"/>
+            <h5>Loading...</h5>
+          </div>
+        )}
         {showData && <div>
           {rows && rows.length > 0 &&
           <div>
