@@ -1,7 +1,12 @@
 import {ACTIONS} from './actions';
 import _ from 'lodash';
 
-export default function reducer(state = {}, action = {}) {
+const initialState = {
+  byRegistry: {},
+  all: []
+};
+
+export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
     case ACTIONS.LOAD_IMAGES_SUCCESS:
       return _.merge({}, state, mapLoadImagesToState(action.result));
@@ -16,19 +21,14 @@ export default function reducer(state = {}, action = {}) {
 }
 
 function mapLoadImagesToState(data) {
-  let state = {};
+  let state = {all: data, byRegistry: {}};
+  let byRegistry = state.byRegistry;
   data.forEach(image => {
-    let matches = image.name.match(/^([^\/]+)\/(.*)$/);
-    if (matches.length >= 3) {
-      let register = matches[1];
-      let name = matches[2];
-      //let images = register.repositories.map(name => ({name, register}));
-      let imageObject = {name, register};
-      if (!state[register]) {
-        state[register] = {};
-      }
-      state[register][name] = imageObject;
+    let registry = image.registry;
+    if (!byRegistry[registry]) {
+      byRegistry[registry] = {};
     }
+    byRegistry[registry][image.name] = image;
   });
   return state;
 }
@@ -47,12 +47,5 @@ export function loadImageTags({image, register}) {
     image: image,
     register: register,
     promise: (client) => client.get(`/ui/api/images/tags`, {params: {id: imageId}})
-  };
-}
-
-export function addRegister(register) {
-  return {
-    types: [ACTIONS.ADD_REGISTER, ACTIONS.ADD_REGISTER_SUCCESS, ACTIONS.ADD_REGISTER_FAIL],
-    promise: (client) => client.put(`/ui/api/registries`, {data: register})
   };
 }

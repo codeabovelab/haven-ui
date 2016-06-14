@@ -1,26 +1,27 @@
 import {ACTIONS} from './actions';
 const initialState = {
-  loading: false,
-  loadingError: null
+  adding: false,
+  addingError: null
 };
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
-    case ACTIONS.LOAD_IMAGES:
+    case ACTIONS.ADD_REGISTER:
       return {
         ...state,
-        loading: true,
-        loadingError: null
+        adding: true,
+        addingError: null
       };
-    case ACTIONS.LOAD_IMAGES_SUCCESS:
+    case ACTIONS.ADD_REGISTER_SUCCESS:
       return {
         ...state,
-        loading: false
+        adding: false,
+        addingError: null
       };
-    case ACTIONS.LOAD_IMAGES_FAIL:
+    case ACTIONS.ADD_REGISTER_FAIL:
       return {
         ...state,
-        loading: false,
-        loadingError: "Cannot load images"
+        adding: false,
+        addingError: "Cannot add registry"
       };
     default:
       return state;

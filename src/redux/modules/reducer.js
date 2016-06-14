@@ -14,6 +14,8 @@ import nodes from './nodes/nodes';
 import nodesUI from './nodes/nodesUI';
 import images from './images/images';
 import imagesUI from './images/imagesUI';
+import registries from './registries/registries';
+import registriesUI from './registries/registriesUI';
 import events from './events/events';
 
 export default combineReducers({
@@ -27,10 +29,12 @@ export default combineReducers({
   containers,
   nodes,
   images,
-  imagesUI,
+  registries,
+  events,
   //END models data
+  imagesUI,
+  registriesUI,
   clustersUI,
   containersUI,
-  nodesUI,
-  events
+  nodesUI
 });

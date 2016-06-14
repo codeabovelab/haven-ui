@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {reduxForm} from 'redux-form';
-import {addRegister} from 'redux/modules/images/images';
+import {addRegister} from 'redux/modules/registries/registries';
 import registerValidation from './registerValidation';
 import _ from 'lodash';
 
@@ -30,7 +30,7 @@ const FIELDS = {
   }
 };
 @connect(state => ({
-  imagesUI: state.imagesUI
+  registriesUI: state.registriesUI
 }), {addRegister})
 @reduxForm({
   form: 'registerAdd',
@@ -49,7 +49,7 @@ export default class RegisterAdd extends Component {
   static focusSelector = '[name=name]';
 
   render() {
-    const {fields, imagesUI: {new_register: {adding, error}}, valid} = this.props;
+    const {fields, imagesUI: {adding, addingError}, valid} = this.props;
     let field;
 
     return (
@@ -70,7 +70,7 @@ export default class RegisterAdd extends Component {
             {inputSecured('secured')}
             {fieldComponent('username')}
             {fieldComponent('password')}
-            <div className="text-danger">{error}</div>
+            <div className="text-danger">{addingError}</div>
           </form>
         </div>
         <div className="modal-footer">

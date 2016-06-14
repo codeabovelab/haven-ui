@@ -7,10 +7,10 @@ import {DockTable} from '../../../components/index';
 import {RegisterAdd} from '../../index';
 import _ from 'lodash';
 
-const COLUMNS = [{name: 'register'}, {name: 'name'}];
+const COLUMNS = [{name: 'registry'}, {name: 'name'}];
 
 COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
-const GROUP_BY_SELECT = ['register', 'name'];
+const GROUP_BY_SELECT = ['registry', 'name'];
 
 @connect(
   state => ({
@@ -30,25 +30,13 @@ export default class ImagesList extends Component {
     $('.input-search').focus();
   }
 
-  getImagesList() {
-    let imagesList = [];
-    const {images} = this.props;
-    Object.keys(images).forEach(registerName => {
-      let register = images[registerName];
-      _.forOwn(register, image => {
-        imagesList.push(image);
-      });
-    });
-    return imagesList;
-  }
-
   getRegisters() {
-    return Object.keys(this.props.images);
+    return Object.keys(this.props.images.byRegistry);
   }
 
   render() {
     const {loading, loadingError} = this.props.imagesUI;
-    let rows = this.getImagesList();
+    let rows = this.props.images.all;
     let registers = this.getRegisters();
     let showLoading = false;
     let showError = false;
@@ -91,7 +79,7 @@ export default class ImagesList extends Component {
           {rows && rows.length > 0 &&
           <div>
             <div className="containers">
-              <DockTable columns={COLUMNS} rows={rows} title="Images" groupBy="register"
+              <DockTable columns={COLUMNS} rows={rows} title="Images" groupBy="registry"
                          groupBySelect={GROUP_BY_SELECT}/>
             </div>
           </div>
