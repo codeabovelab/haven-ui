@@ -42,14 +42,14 @@ export default class RegisterAdd extends Component {
     addRegister: PropTypes.func.isRequired,
     fields: PropTypes.object.isRequired,
     resetForm: PropTypes.func.isRequired,
-    imagesUI: PropTypes.object.isRequired,
+    registriesUI: PropTypes.object.isRequired,
     valid: PropTypes.bool.isRequired
   };
 
   static focusSelector = '[name=name]';
 
   render() {
-    const {fields, imagesUI: {adding, addingError}, valid} = this.props;
+    const {fields, registriesUI: {adding, addingError}, valid} = this.props;
     let field;
 
     return (

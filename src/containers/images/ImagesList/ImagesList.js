@@ -15,12 +15,16 @@ const GROUP_BY_SELECT = ['registry', 'name'];
 @connect(
   state => ({
     images: state.images,
-    imagesUI: state.imagesUI
+    imagesUI: state.imagesUI,
+    registries: state.registries,
+    registriesUI: state.registriesUI
   }), {loadImages})
 export default class ImagesList extends Component {
   static propTypes = {
-    images: PropTypes.object,
-    imagesUI: PropTypes.object,
+    images: PropTypes.object.isRequired,
+    imagesUI: PropTypes.object.isRequired,
+    registries: PropTypes.array.isRequired,
+    registriesUI: PropTypes.object.isRequired,
     loadImages: PropTypes.func.isRequired
   };
 
@@ -36,8 +40,9 @@ export default class ImagesList extends Component {
 
   render() {
     const {loading, loadingError} = this.props.imagesUI;
+    const {registries, registriesUI} = this.props;
+
     let rows = this.props.images.all;
-    let registers = this.getRegisters();
     let showLoading = false;
     let showError = false;
     let showData = false;
@@ -59,7 +64,7 @@ export default class ImagesList extends Component {
           </div>
           <div>
             <label># of Registers:</label>
-            <value>{registers.length}</value>
+            <value>{registriesUI.loaded && <span>{registries.length}</span>}</value>
           </div>
         </div>
         <div className="clearfix">

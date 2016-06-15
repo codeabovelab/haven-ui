@@ -1,7 +1,8 @@
 import {ACTIONS} from './actions';
 const initialState = {
   adding: false,
-  addingError: null
+  addingError: null,
+  loaded: false
 };
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
@@ -22,6 +23,11 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         adding: false,
         addingError: "Cannot add registry"
+      };
+    case ACTIONS.LOAD_REGISTRIES_SUCCESS:
+      return {
+        ...state,
+        loaded: true
       };
     default:
       return state;
