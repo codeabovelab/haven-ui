@@ -1,7 +1,7 @@
 import {ACTIONS} from './actions';
 import _ from 'lodash';
 
-export default function reducer(state = {}, action = {}) {
+export default function reducer(state = [], action = {}) {
   switch (action.type) {
     case ACTIONS.LOAD_REGISTRIES_SUCCESS:
       return action.result;

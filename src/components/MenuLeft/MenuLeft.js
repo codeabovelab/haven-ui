@@ -45,6 +45,12 @@ export default class MenuLeft extends Component {
               <span className="label">Image List</span>
             </Link>
           </li>
+          <li className="nav-item" title="Registries">
+            <Link to="/registries" className="nav-link">
+              <i className="fa fa-list fa-fw"/>
+              <span className="label">Registries List</span>
+            </Link>
+          </li>
         </div>
       </div>
     );

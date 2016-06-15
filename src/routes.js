@@ -7,6 +7,7 @@ import {
   ClusterDetail,
   NodesList,
   ImagesList,
+  RegistriesList,
   Login,
   LoginSuccess,
   NotFound,
@@ -42,6 +43,7 @@ export default (store) => {
         <Route path="clusters/:name" component={ClusterDetail}/>
         <Route path="nodes" component={NodesList}/>
         <Route path="images" component={ImagesList}/>
+        <Route path="registries" component={RegistriesList}/>
       </Route>
 
       { /* Public Routes */ }
