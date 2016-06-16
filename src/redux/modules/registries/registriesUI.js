@@ -8,19 +8,19 @@ const initialState = {
 };
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
-    case ACTIONS.ADD_REGISTER:
+    case ACTIONS.ADD_REGISTRY:
       return {
         ...state,
         adding: true,
         addingError: null
       };
-    case ACTIONS.ADD_REGISTER_SUCCESS:
+    case ACTIONS.ADD_REGISTRY_SUCCESS:
       return {
         ...state,
         adding: false,
         addingError: null
       };
-    case ACTIONS.ADD_REGISTER_FAIL:
+    case ACTIONS.ADD_REGISTRY_FAIL:
       return {
         ...state,
         adding: false,

@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {reduxForm} from 'redux-form';
-import {addRegister} from 'redux/modules/registries/registries';
+import {addRegistry} from 'redux/modules/registries/registries';
 import registerValidation from './registerValidation';
 import _ from 'lodash';
 
@@ -31,7 +31,7 @@ const FIELDS = {
 };
 @connect(state => ({
   registriesUI: state.registriesUI
-}), {addRegister})
+}), {addRegistry})
 @reduxForm({
   form: 'registerAdd',
   validate: registerValidation,
@@ -39,7 +39,7 @@ const FIELDS = {
 })
 export default class RegisterAdd extends Component {
   static propTypes = {
-    addRegister: PropTypes.func.isRequired,
+    addRegistry: PropTypes.func.isRequired,
     fields: PropTypes.object.isRequired,
     resetForm: PropTypes.func.isRequired,
     registriesUI: PropTypes.object.isRequired,
@@ -74,7 +74,7 @@ export default class RegisterAdd extends Component {
           </form>
         </div>
         <div className="modal-footer">
-          <button type="button" className="btn btn-primary" onClick={this.addRegister.bind(this)}
+          <button type="button" className="btn btn-primary" onClick={this.addRegistry.bind(this)}
                   disabled={adding || !valid}>
             <i className="fa fa-plus"/> Add
           </button>
@@ -130,14 +130,14 @@ export default class RegisterAdd extends Component {
     }
   }
 
-  addRegister() {
-    const {addRegister, fields, resetForm} = this.props;
+  addRegistry() {
+    const {addRegistry, fields, resetForm} = this.props;
     let all = ['name', 'host', 'port', 'secured', 'username', 'password'];
     let register = {};
     all.forEach(fieldName => register[fieldName] = fields[fieldName].value);
     register.secured = !!register.secured;
 
-    return addRegister(register)
+    return addRegistry(register)
       .then(() => {
         resetForm();
         window.simpleModal.close();

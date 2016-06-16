@@ -4,8 +4,10 @@ import {load as loadRegistries} from 'redux/modules/registries/registries';
 import {DockTable} from '../../../components/index';
 import {RegisterAdd} from '../../index';
 import _ from 'lodash';
+import {removeRegistry} from 'redux/modules/registries/registries';
 
-const COLUMNS = [{name: 'name'}, {name: 'inactive', render: inactiveRender}, {name: 'errorMessage', label: 'Error', render: errorMessageRender}];
+const COLUMNS = [{name: 'name'}, {name: 'inactive', render: inactiveRender},
+  {name: 'errorMessage', label: 'Error', render: errorMessageRender}, {name: 'actions'}];
 
 COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
 
@@ -13,13 +15,19 @@ COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
   state => ({
     registries: state.registries,
     registriesUI: state.registriesUI
-  }), {loadRegistries})
+  }), {loadRegistries,})
 export default class RegistriesList extends Component {
   static propTypes = {
     registries: PropTypes.array.isRequired,
     registriesUI: PropTypes.object.isRequired,
     loadRegistries: PropTypes.func.isRequired
   };
+
+  constructor(...params) {
+    super(...params);
+    let actionColumn = COLUMNS.find(column => column.name === 'actions');
+    actionColumn.render = this.renderActions.bind(this);
+  }
 
   componentDidMount() {
     const {loadRegistries} = this.props;
@@ -89,11 +97,38 @@ export default class RegistriesList extends Component {
       focus: RegisterAdd.focusSelector
     });
   }
+
+  renderActions(registry) {
+    return (<td key="actions" className="td-actions">
+      <i className="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Show Logs"
+         onClick={this.showLog.bind(this)}/>
+      | <i className="fa fa-trash" data-toggle="tooltip" title="Start"
+           onClick={this.removeRegistry.bind(this)}/>
+    </td>);
+  }
+
+  removeRegistry(event) {
+    const {removeRegistry, loadRegistries} = this.props;
+    let registry = this._getRegistryByTarget(event.target);
+    confirm('Are you sure you want to remove registry?')
+      .then(() => {
+        removeRegistry(registyr.name).catch(() => null);
+        //.then(() => loadContainers(name));
+      })
+      .catch(() => null);// confirm cancel
+  }
+
+  _getRegistryByTarget(target) {
+    const {registries} = this.props;
+    let $tr = $(target).parents('tr');
+    let name = $tr.data('name');
+    return registries.find(registry => registry.name === name);
+  }
 }
 
 function inactiveRender(registry) {
   let inactive = registry.active ? "" : "yes";
-  return <td>{inactive}</td>;
+  return <td key="inactive">{inactive}</td>;
 }
 
 function errorMessageRender(registry) {
@@ -107,3 +142,4 @@ function errorMessageRender(registry) {
     <td key="errorMessage" title={error}>{errorShort}</td>
   );
 }
+
