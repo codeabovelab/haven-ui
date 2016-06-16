@@ -15,12 +15,13 @@ COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
   state => ({
     registries: state.registries,
     registriesUI: state.registriesUI
-  }), {loadRegistries,})
+  }), {loadRegistries, removeRegistry})
 export default class RegistriesList extends Component {
   static propTypes = {
     registries: PropTypes.array.isRequired,
     registriesUI: PropTypes.object.isRequired,
-    loadRegistries: PropTypes.func.isRequired
+    loadRegistries: PropTypes.func.isRequired,
+    removeRegistry: PropTypes.func.isRequired
   };
 
   constructor(...params) {
@@ -112,8 +113,8 @@ export default class RegistriesList extends Component {
     let registry = this._getRegistryByTarget(event.target);
     confirm('Are you sure you want to remove registry?')
       .then(() => {
-        removeRegistry(registyr.name).catch(() => null);
-        //.then(() => loadContainers(name));
+        removeRegistry(registry.name).catch(() => null)
+          .then(() => loadRegistries());
       })
       .catch(() => null);// confirm cancel
   }
