@@ -40,7 +40,6 @@ export default class RegistriesList extends Component {
     const {loading, loadingError} = this.props.registriesUI;
     const {registries, registriesUI} = this.props;
 
-    console.log('render', registries);
     let rows = [...registries];
     this.additionalData(rows);
     let showLoading = false;
@@ -141,7 +140,8 @@ export default class RegistriesList extends Component {
   _getRegistryByTarget(target) {
     const {registries} = this.props;
     let $tr = $(target).parents('tr');
-    let name = $tr.data('name');
+    //$tr.data() will return previous data if one row was removed
+    let name = $tr.attr('data-name');
     return registries.find(registry => registry.name === name);
   }
 }
