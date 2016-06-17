@@ -45,7 +45,7 @@ export default class DockTable extends Component {
   //noinspection JSDuplicatedDeclaration
   constructor(...params) {
     super(...params);
-    const {rows, groupBy, columns} = this.props;
+    const {groupBy, columns} = this.props;
     this.columnsMap = _.keyBy(columns, 'name');
     this.state = {
       currentPage: 1,
@@ -57,18 +57,26 @@ export default class DockTable extends Component {
     };
 
     this.allColumns = columns;
-    this.total = rows.length;
+    this.initInputData(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.initInputData(nextProps);
+  }
+
+  initInputData(props) {
+    this.total = props.rows.length;
     this.pagesTotal = Math.max(1, Math.ceil(this.total / this.pageSize));
-    this.applyGroup();
+    this.applyGroup(props);
   }
 
   render() {
     if (this.groupBy !== this.state.groupBy) {
-      this.applyGroup();
+      this.applyGroup(this.props);
     }
     if ((this.query !== this.state.query) ||
       (this.sorting !== `${this.state.sortingColumn} ${this.state.sortingOrder}`)) {
-      this.applyFilteringAndSorting();
+      this.applyFilteringAndSorting(this.props);
     }
     if (this.currentPage !== this.state.currentPage) {
       this.generateCurrentPageData();
@@ -154,8 +162,8 @@ export default class DockTable extends Component {
     );
   }
 
-  applyGroup() {
-    const {columns} = this.props;
+  applyGroup(props) {
+    const {columns} = props;
     let groupBy = this.state.groupBy;
     this.groupBy = groupBy;
     if (groupBy) {
@@ -166,14 +174,14 @@ export default class DockTable extends Component {
       this.groupByColumn = null;
       this.columnsWithoutGroup = null;
     }
-    this.applyFilteringAndSorting();
+    this.applyFilteringAndSorting(props);
   }
 
-  applyFilteringAndSorting() {
+  applyFilteringAndSorting(props) {
     this.query = this.state.query;
     const {sortingColumn, sortingOrder} = this.state;
     this.sorting = `${sortingColumn} ${sortingOrder}`;
-    const {rows, columns} = this.props;
+    const {rows, columns} = props;
     let columnNames = columns.map(column => column.name);
     let filteredRows = this.filterRows(this.query, rows, columnNames);
     this.filteredTotal = filteredRows.length;
