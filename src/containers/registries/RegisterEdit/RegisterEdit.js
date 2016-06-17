@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {reduxForm} from 'redux-form';
-import {addRegistry, load as loadRegistries} from 'redux/modules/registries/registries';
+import {addRegistry, editRegistry, load as loadRegistries} from 'redux/modules/registries/registries';
 import registerValidation from './registerValidation';
 import _ from 'lodash';
 
@@ -31,14 +31,15 @@ const FIELDS = {
 };
 @connect(state => ({
   registriesUI: state.registriesUI
-}), {addRegistry, loadRegistries})
+}), {addRegistry, editRegistry, loadRegistries})
 @reduxForm({
-  form: 'registerAdd',
+  form: 'registerEdit',
   validate: registerValidation,
   fields: ['name', 'host', 'port', 'username', 'password', 'secured']
 })
-export default class RegisterAdd extends Component {
+export default class RegisterEdit extends Component {
   static propTypes = {
+    registry: PropTypes.object,
     addRegistry: PropTypes.func.isRequired,
     loadRegistries: PropTypes.func.isRequired,
     fields: PropTypes.object.isRequired,
@@ -47,10 +48,19 @@ export default class RegisterAdd extends Component {
     valid: PropTypes.bool.isRequired
   };
 
+  componentWillMount() {
+    const {registry, fields} = this.props;
+    if (registry) {
+      let properties = ['name', 'host', 'port', 'username', 'password'];
+      properties.forEach(property => fields[property].value = registry[property]);
+      fields.secured.value = registry.protocol.toLowerCase() === 'https';
+    }
+  }
+
   static focusSelector = '[name=name]';
 
   render() {
-    const {fields, registriesUI: {adding, addingError}, valid} = this.props;
+    const {registry, fields, registriesUI: {adding, addingError}, valid} = this.props;
     let field;
 
     return (
@@ -59,13 +69,13 @@ export default class RegisterAdd extends Component {
           <button type="button" className="close" data-dismiss="modal">
             <span aria-hidden="true">&times;</span>
           </button>
-          <h4 className="modal-title">Add Register
+          <h4 className="modal-title">{registry ? registry.name : 'Add Register'}
             {adding && <span>{' '}<i className="fa fa-spinner fa-pulse"/></span>}
           </h4>
         </div>
         <div className="modal-body">
           <form>
-            {fieldComponent('name')}
+            {!registry && fieldComponent('name')}
             {fieldComponent('host')}
             {fieldComponent('port')}
             {inputSecured('secured')}
@@ -75,9 +85,10 @@ export default class RegisterAdd extends Component {
           </form>
         </div>
         <div className="modal-footer">
-          <button type="button" className="btn btn-primary" onClick={this.addRegistry.bind(this)}
+          <button type="button" className="btn btn-primary" onClick={this.editRegistry.bind(this)}
                   disabled={adding || !valid}>
-            <i className="fa fa-plus"/> Add
+            {!registry && <span><i className="fa fa-plus"/> Add</span>}
+            {registry && <span><i className="fa fa-save"/> Save</span>}
           </button>
         </div>
       </div>
@@ -131,15 +142,22 @@ export default class RegisterAdd extends Component {
     }
   }
 
-  addRegistry() {
-    const {addRegistry, loadRegistries, fields, resetForm} = this.props;
+  editRegistry() {
+    const {registry, addRegistry, loadRegistries, fields, resetForm} = this.props;
     let all = ['name', 'host', 'port', 'secured', 'username', 'password'];
-    let register = {};
-    all.forEach(fieldName => register[fieldName] = fields[fieldName].value);
-    register.protocol = register.secured ? 'HTTPS' : 'HTTP';
-    delete register.secured;
+    let data = {};
+    all.forEach(fieldName => data[fieldName] = fields[fieldName].value);
+    data.protocol = data.secured ? 'HTTPS' : 'HTTP';
+    delete data.secured;
 
-    return addRegistry(register)
+    let promise = null;
+    if (registry){
+      data.name = registry.name;
+      promise = editRegistry(data);
+    }  else {
+      promise = addRegistry(data);
+    }
+    return promise(data)
       .then(() => {
         loadRegistries();
         resetForm();

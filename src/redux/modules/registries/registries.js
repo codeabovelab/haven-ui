@@ -24,6 +24,13 @@ export function addRegistry(register) {
   };
 }
 
+export function editRegistry(data) {
+  return {
+    types: [ACTIONS.EDIT_REGISTRY, ACTIONS.EDIT_REGISTRY_SUCCESS, ACTIONS.EDIT_REGISTRY_FAIL],
+    promise: (client) => client.put(`/ui/api/registries/edit`, {data})
+  };
+}
+
 export function removeRegistry(name) {
   return {
     types: [ACTIONS.REMOVE_REGISTRY, ACTIONS.REMOVE_REGISTRY_SUCCESS, ACTIONS.REMOVE_REGISTRY_FAIL],
@@ -31,9 +38,3 @@ export function removeRegistry(name) {
   };
 }
 
-export function editRegistry(data) {
-  return {
-    types: [ACTIONS.EDIT_REGISTRY, ACTIONS.EDIT_REGISTRY_SUCCESS, ACTIONS.EDIT_REGISTRY_FAIL],
-    promise: (client) => client.put(`/ui/api/registries/edit`, {data})
-  };
-}

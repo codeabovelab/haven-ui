@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {load as loadRegistries} from 'redux/modules/registries/registries';
 import {DockTable} from '../../../components/index';
-import {RegisterAdd} from '../../index';
+import {RegisterEdit} from '../../index';
 import _ from 'lodash';
 import {removeRegistry} from 'redux/modules/registries/registries';
 
@@ -63,7 +63,7 @@ export default class RegistriesList extends Component {
         </div>
         <div className="clearfix">
           <div className="page-actions">
-            <button className="btn btn-primary" onClick={this.addRegister.bind(this)}><i className="fa fa-plus"/> Add
+            <button className="btn btn-primary" onClick={this.editRegister.bind(this)}><i className="fa fa-plus"/> Add
               registry
             </button>
           </div>
@@ -100,26 +100,23 @@ export default class RegistriesList extends Component {
     }
   }
 
-  addRegister() {
-    let contentComponent = <RegisterAdd/>;
+  editRegister(registry = null) {
+    let contentComponent = <RegisterEdit registry={registry}/>;
     window.simpleModal.show({
       contentComponent,
-      focus: RegisterAdd.focusSelector
+      focus: RegisterEdit.focusSelector
     });
   }
 
-  editRegister() {
-    let contentComponent = <RegisterAdd/>;
-    window.simpleModal.show({
-      contentComponent,
-      focus: RegisterAdd.focusSelector
-    });
+  editRegisterEvent(event) {
+    let registry = this._getRegistryByTarget(event.target);
+    this.editRegister(registry);
   }
 
   renderActions(registry) {
     return (<td key="actions" className="td-actions">
       <i className="fa fa-pencil" title="Edit"
-         onClick={this.editRegister.bind(this)}/>
+         onClick={this.editRegisterEvent.bind(this)}/>
       <span> | </span>
       <i className="fa fa-trash" title="Remove"
          onClick={this.removeRegistry.bind(this)}/>

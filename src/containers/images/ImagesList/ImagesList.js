@@ -3,7 +3,7 @@ import {loadImages} from 'redux/modules/images/images';
 import {load as loadRegistries} from 'redux/modules/registries/registries';
 import {connect} from 'react-redux';
 import {DockTable} from '../../../components/index';
-import {RegisterAdd} from '../../index';
+import {RegisterEdit} from '../../index';
 import _ from 'lodash';
 
 const COLUMNS = [{name: 'registry'}, {name: 'name'}];
@@ -97,10 +97,10 @@ export default class ImagesList extends Component {
   }
 
   addRegister() {
-    let contentComponent = <RegisterAdd/>;
+    let contentComponent = <RegisterEdit/>;
     window.simpleModal.show({
       contentComponent,
-      focus: RegisterAdd.focusSelector
+      focus: RegisterEdit.focusSelector
     });
   }
 }

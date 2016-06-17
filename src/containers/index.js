@@ -12,4 +12,4 @@ export ContainerScale from './containers/ContainerScale/ContainerScale';
 export NodesList from './nodes/NodesList/NodesList';
 export ImagesList from './images/ImagesList/ImagesList';
 export RegistriesList from './registries/RegistriesList/RegistriesList';
-export RegisterAdd from './registries/RegisterAdd/RegisterAdd';
+export RegisterEdit from './registries/RegisterEdit/RegisterEdit';
