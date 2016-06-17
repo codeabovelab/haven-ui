@@ -11,7 +11,6 @@ export default function reducer(state = [], action = {}) {
 }
 
 export function load() {
-  console.log('just loading registries');
   return {
     types: [ACTIONS.LOAD_REGISTRIES, ACTIONS.LOAD_REGISTRIES_SUCCESS, ACTIONS.LOAD_REGISTRIES_FAIL],
     promise: (client) => client.get('/ui/api/registries/')
