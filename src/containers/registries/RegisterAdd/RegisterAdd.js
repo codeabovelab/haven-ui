@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {reduxForm} from 'redux-form';
-import {addRegistry} from 'redux/modules/registries/registries';
+import {addRegistry, load as loadRegistries} from 'redux/modules/registries/registries';
 import registerValidation from './registerValidation';
 import _ from 'lodash';
 
@@ -31,7 +31,7 @@ const FIELDS = {
 };
 @connect(state => ({
   registriesUI: state.registriesUI
-}), {addRegistry})
+}), {addRegistry, loadRegistries})
 @reduxForm({
   form: 'registerAdd',
   validate: registerValidation,
@@ -40,6 +40,7 @@ const FIELDS = {
 export default class RegisterAdd extends Component {
   static propTypes = {
     addRegistry: PropTypes.func.isRequired,
+    loadRegistries: PropTypes.func.isRequired,
     fields: PropTypes.object.isRequired,
     resetForm: PropTypes.func.isRequired,
     registriesUI: PropTypes.object.isRequired,
@@ -131,14 +132,16 @@ export default class RegisterAdd extends Component {
   }
 
   addRegistry() {
-    const {addRegistry, fields, resetForm} = this.props;
+    const {addRegistry, loadRegistries, fields, resetForm} = this.props;
     let all = ['name', 'host', 'port', 'secured', 'username', 'password'];
     let register = {};
     all.forEach(fieldName => register[fieldName] = fields[fieldName].value);
-    register.secured = !!register.secured;
+    register.protocol = register.secured ? 'HTTPS' : 'HTTP';
+    delete register.secured;
 
     return addRegistry(register)
       .then(() => {
+        loadRegistries();
         resetForm();
         window.simpleModal.close();
       })

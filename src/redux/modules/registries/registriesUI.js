@@ -2,6 +2,8 @@ import {ACTIONS} from './actions';
 const initialState = {
   adding: false,
   addingError: null,
+  editing: false,
+  editingError: null,
   loading: false,
   loadingError: null,
   loaded: false
@@ -25,6 +27,24 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         adding: false,
         addingError: "Cannot add registry"
+      };
+    case ACTIONS.EDIT_REGISTRY:
+      return {
+        ...state,
+        editing: true,
+        editingError: null
+      };
+    case ACTIONS.EDIT_REGISTRY_SUCCESS:
+      return {
+        ...state,
+        editing: false,
+        editingError: null
+      };
+    case ACTIONS.EDIT_REGISTRY_FAIL:
+      return {
+        ...state,
+        editing: false,
+        editingError: "Cannot update registry"
       };
     case ACTIONS.LOAD_REGISTRIES:
       return {

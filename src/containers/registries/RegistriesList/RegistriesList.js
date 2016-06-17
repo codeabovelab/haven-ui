@@ -40,7 +40,9 @@ export default class RegistriesList extends Component {
     const {loading, loadingError} = this.props.registriesUI;
     const {registries, registriesUI} = this.props;
 
-    let rows = registries;
+    console.log('render', registries);
+    let rows = [...registries];
+    this.additionalData(rows);
     let showLoading = false;
     let showError = false;
     let showData = false;
@@ -91,7 +93,23 @@ export default class RegistriesList extends Component {
     );
   }
 
+  additionalData(rows) {
+    if (rows) {
+      rows.forEach(row => {
+        row.__attributes = {'data-name': row.name};
+      });
+    }
+  }
+
   addRegister() {
+    let contentComponent = <RegisterAdd/>;
+    window.simpleModal.show({
+      contentComponent,
+      focus: RegisterAdd.focusSelector
+    });
+  }
+
+  editRegister() {
     let contentComponent = <RegisterAdd/>;
     window.simpleModal.show({
       contentComponent,
@@ -101,10 +119,11 @@ export default class RegistriesList extends Component {
 
   renderActions(registry) {
     return (<td key="actions" className="td-actions">
-      <i className="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Show Logs"
-         onClick={this.showLog.bind(this)}/>
-      | <i className="fa fa-trash" data-toggle="tooltip" title="Start"
-           onClick={this.removeRegistry.bind(this)}/>
+      <i className="fa fa-pencil" title="Edit"
+         onClick={this.editRegister.bind(this)}/>
+      <span> | </span>
+      <i className="fa fa-trash" title="Remove"
+         onClick={this.removeRegistry.bind(this)}/>
     </td>);
   }
 
