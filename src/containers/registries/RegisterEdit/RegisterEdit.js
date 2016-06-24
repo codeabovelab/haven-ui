@@ -53,7 +53,9 @@ export default class RegisterEdit extends Component {
     if (registry) {
       let properties = ['name', 'host', 'port', 'username', 'password'];
       properties.forEach(property => fields[property].value = registry[property]);
-      fields.secured.value = registry.protocol.toLowerCase() === 'https';
+      if (registry.protocol) {
+        fields.secured.value = registry.protocol.toLowerCase() === 'https';
+      }
     }
   }
 
@@ -62,7 +64,6 @@ export default class RegisterEdit extends Component {
   render() {
     const {registry, fields, registriesUI: {adding, addingError}, valid} = this.props;
     let field;
-
     return (
       <div className="modal-content">
         <div className="modal-header">
@@ -95,9 +96,9 @@ export default class RegisterEdit extends Component {
     );
 
     function fieldComponent(fieldName) {
+      let field = fields[fieldName];
       let property = FIELDS[fieldName];
       return (<div key={fieldName} className="form-group" required>
-        {(field = fields[fieldName]) && ''}
         <label>{property.label}</label>
         {field.error && field.value && field.touched && <div className="text-danger">{field.error}</div>}
         {inputField(property, field)}
@@ -151,10 +152,10 @@ export default class RegisterEdit extends Component {
     delete data.secured;
 
     let promise = null;
-    if (registry){
+    if (registry) {
       data.name = registry.name;
       promise = editRegistry(data);
-    }  else {
+    } else {
       promise = addRegistry(data);
     }
     return promise(data)

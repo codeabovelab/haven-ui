@@ -63,7 +63,7 @@ export default class RegistriesList extends Component {
         </div>
         <div className="clearfix">
           <div className="page-actions">
-            <button className="btn btn-primary" onClick={this.editRegister.bind(this)}><i className="fa fa-plus"/> Add
+            <button className="btn btn-primary" onClick={this.editRegister.bind(this, null)}><i className="fa fa-plus"/> Add
               registry
             </button>
           </div>
