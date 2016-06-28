@@ -41,6 +41,7 @@ export default class RegisterEdit extends Component {
   static propTypes = {
     registry: PropTypes.object,
     addRegistry: PropTypes.func.isRequired,
+    editRegistry: PropTypes.func.isRequired,
     loadRegistries: PropTypes.func.isRequired,
     fields: PropTypes.object.isRequired,
     resetForm: PropTypes.func.isRequired,
@@ -48,15 +49,19 @@ export default class RegisterEdit extends Component {
     valid: PropTypes.bool.isRequired
   };
 
-  componentWillMount() {
+  constructor(...params) {
+    super(...params);
     const {registry, fields} = this.props;
     if (registry) {
       let properties = ['name', 'host', 'port', 'username', 'password'];
-      properties.forEach(property => fields[property].value = registry[property]);
+      properties.forEach(property => fields[property].onChange(registry[property]));
       if (registry.protocol) {
         fields.secured.value = registry.protocol.toLowerCase() === 'https';
       }
     }
+  }
+
+  componentWillMount() {
   }
 
   static focusSelector = '[name=name]';
@@ -144,7 +149,7 @@ export default class RegisterEdit extends Component {
   }
 
   editRegistry() {
-    const {registry, addRegistry, loadRegistries, fields, resetForm} = this.props;
+    const {registry, addRegistry, editRegistry, loadRegistries, fields, resetForm} = this.props;
     let all = ['name', 'host', 'port', 'secured', 'username', 'password'];
     let data = {};
     all.forEach(fieldName => data[fieldName] = fields[fieldName].value);
@@ -158,12 +163,11 @@ export default class RegisterEdit extends Component {
     } else {
       promise = addRegistry(data);
     }
-    return promise(data)
-      .then(() => {
-        loadRegistries();
-        resetForm();
-        window.simpleModal.close();
-      })
-      .catch();
+    return promise.then(() => {
+      loadRegistries();
+      resetForm();
+      window.simpleModal.close();
+    })
+    .catch();
   }
 }

@@ -27,7 +27,7 @@ export function addRegistry(register) {
 export function editRegistry(data) {
   return {
     types: [ACTIONS.EDIT_REGISTRY, ACTIONS.EDIT_REGISTRY_SUCCESS, ACTIONS.EDIT_REGISTRY_FAIL],
-    promise: (client) => client.put(`/ui/api/registries/edit`, {data})
+    promise: (client) => client.put(`/ui/api/registries`, {data})
   };
 }
 
