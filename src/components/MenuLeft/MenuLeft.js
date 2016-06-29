@@ -16,7 +16,6 @@ export default class MenuLeft extends Component {
 
   render() {
     const {toggled, toggle} = this.props;
-    console.log(this.props);
 
     let sidemenu = (
       <div />
