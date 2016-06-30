@@ -67,21 +67,23 @@ export function deleteCluster(clusterId) {
 }
 
 export function loadContainers(clusterId) {
-  if (config.mock || true) {
-    return mockLoadContainers(clusterId);
-  }
+  // if (config.mock || true) {
+  //   return mockLoadContainers(clusterId);
+  // }
+  let encClusterId = encodeURIComponent(clusterId);
   return {
     types: [ACTIONS.LOAD_CONTAINERS, ACTIONS.LOAD_CONTAINERS_SUCCESS, ACTIONS.LOAD_CONTAINERS_FAIL],
     id: clusterId,
-    promise: (client) => client.get(`/ui/api/clusters/${clusterId}/containers`)
+    promise: (client) => client.get(`/ui/api/clusters/${encClusterId}/containers`)
   };
 }
 
 export function loadNodes(clusterId) {
+  let encClusterId = encodeURIComponent(clusterId);
   return {
     types: [ACTIONS.LOAD_NODES, ACTIONS.LOAD_NODES_SUCCESS, ACTIONS.LOAD_NODES_FAIL],
     id: clusterId,
-    promise: (client) => client.get(`/ui/api/clusters/${clusterId}/nodes`)
+    promise: (client) => client.get(`/ui/api/clusters/${encClusterId}/nodes`)
   };
 }
 
