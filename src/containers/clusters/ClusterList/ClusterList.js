@@ -34,22 +34,25 @@ export default class ClusterList extends Component {
     const clustersList = clustersIds !== null ? clustersIds.map(id => clusters[id]) : null;
 
     return (
-      <div className="container-fluid">
-        <h1>Cluster List</h1>
-        <div className="page-info-group">
-          <div>
-            <label># of Clusters:</label>
-            <value>{clustersList && clustersList.length}</value>
+      <div className="panel">
+        <div className="panel-body">
+          <div className="panel-content">
+            <div className="page-info-group">
+              <div>
+                <label># of Clusters:</label>
+                <value>{clustersList && clustersList.length}</value>
+              </div>
+            </div>
+            <div className="page-actions">
+              <button className="btn btn-primary" onClick={this.createCluster.bind(this)}><i className="fa fa-plus"/> New
+                Cluster
+              </button>
+            </div>
+            <div className="clearfix"></div>
+            {clustersList &&
+            <DockTable columns={COLUMNS} rows={clustersList}/>}
           </div>
         </div>
-        <div className="page-actions">
-          <button className="btn btn-primary" onClick={this.createCluster.bind(this)}><i className="fa fa-plus"/> New
-            Cluster
-          </button>
-        </div>
-        <div className="clearfix"></div>
-        {clustersList &&
-        <DockTable columns={COLUMNS} rows={clustersList}/>}
       </div>
     );
   }

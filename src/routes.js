@@ -31,26 +31,26 @@ export default (store) => {
    * Please keep routes in alphabetical order
    */
   return (
-    <Route path="/" component={App}>
+    <Route name="Home" path="/" component={App}>
       <Route onEnter={requireLogin}>
         { /* Routes requiring login */ }
         { /* Home (main) route */ }
-        <IndexRoute component={Dashboard}/>
+        <IndexRoute name="Dashboard" component={Dashboard}/>
 
-        <Route path="dashboard" component={Dashboard}/>
-        <Route path="loginSuccess" component={LoginSuccess}/>
-        <Route path="clusters" component={ClusterList}/>
-        <Route path="clusters/:name" component={ClusterDetail}/>
-        <Route path="nodes" component={NodesList}/>
-        <Route path="images" component={ImagesList}/>
-        <Route path="registries" component={RegistriesList}/>
+        <Route name="Dashboard" path="dashboard" component={Dashboard}/>
+        <Route name="Login Successful" path="loginSuccess" component={LoginSuccess}/>
+        <Route name="Clusters" path="clusters" component={ClusterList}/>
+        <Route name="Cluster Details" path="clusters/:name" component={ClusterDetail}/>
+        <Route name="Nodes List" path="nodes" component={NodesList}/>
+        <Route name="Images List" path="images" component={ImagesList}/>
+        <Route name="Registries" path="registries" component={RegistriesList}/>
       </Route>
 
       { /* Public Routes */ }
-      <Route path="login" component={Login}/>
+      <Route name="Login" path="login" component={Login}/>
 
       { /* Catch all route */ }
-      <Route path="*" component={NotFound} status={404}/>
+      <Route name="Not Found" path="*" component={NotFound} status={404}/>
     </Route>
   );
 };

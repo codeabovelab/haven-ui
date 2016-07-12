@@ -53,41 +53,44 @@ export default class RegistriesList extends Component {
       showData = true;
     }
     return (
-      <div className="container-fluid">
-        <h1>Registries</h1>
-        <div className="page-info-group">
-          <div>
-            <label># of Registries:</label>
-            <value>{registriesUI.loaded && <span>{registries.length}</span>}</value>
-          </div>
-        </div>
-        <div className="clearfix">
-          <div className="page-actions">
-            <button className="btn btn-primary" onClick={this.editRegister.bind(this, null)}><i className="fa fa-plus"/> Add
-              registry
-            </button>
-          </div>
-        </div>
-        {showLoading && (
-          <div className="text-xs-center">
-            <i className="fa fa-spinner fa-pulse fa-5x"/>
-            <h5>Loading...</h5>
-          </div>
-        )}
-        {showData && <div>
-          {rows && rows.length > 0 &&
-          <div>
-            <div className="containers">
-              <DockTable columns={COLUMNS} rows={rows}/>
+      <div className="panel">
+        <div className="panel-body">
+          <div className="panel-content">
+            <div className="page-info-group">
+              <div>
+                <label># of Registries:</label>
+                <value>{registriesUI.loaded && <span>{registries.length}</span>}</value>
+              </div>
             </div>
+            <div className="clearfix">
+              <div className="page-actions">
+                <button className="btn btn-primary" onClick={this.editRegister.bind(this, null)}><i className="fa fa-plus"/> Add
+                  registry
+                </button>
+              </div>
+            </div>
+            {showLoading && (
+              <div className="text-xs-center">
+                <i className="fa fa-spinner fa-pulse fa-5x"/>
+                <h5>Loading...</h5>
+              </div>
+            )}
+            {showData && <div>
+              {rows && rows.length > 0 &&
+              <div>
+                <div className="containers">
+                  <DockTable columns={COLUMNS} rows={rows}/>
+                </div>
+              </div>
+              }
+              {rows && rows.length === 0 &&
+              <div className="alert alert-info">
+                No Registries yet
+              </div>}
+            </div>}
+            {showError && <div className="alert alert-danger">{loadingError}</div>}
           </div>
-          }
-          {rows && rows.length === 0 &&
-          <div className="alert alert-info">
-            No Registries yet
-          </div>}
-        </div>}
-        {showError && <div className="alert alert-danger">{loadingError}</div>}
+        </div>
       </div>
     );
   }

@@ -40,28 +40,29 @@ export default class NodesList extends Component {
     const nodesList = nodesIds !== null ? nodesIds.map(id => nodes[id]) : null;
 
     return (
-      <div className="container-fluid">
-        <div>
-          <h1>Node List</h1>
-          <div className="page-info-group">
-            <div>
-              <label>
-                # of Nodes:
-              </label>
-              <value>
-                {nodesList && nodesList.length}
-              </value>
+      <div className="panel">
+        <div className="panel-body">
+          <div className="panel-content">
+            <div className="page-info-group">
+              <div>
+                <label>
+                  # of Nodes:
+                </label>
+                <value>
+                  {nodesList && nodesList.length}
+                </value>
+              </div>
             </div>
-          </div>
-          <div className="page-actions">
-            <button className="btn btn-primary" onClick={this.addNode.bind(this)}><i className="fa fa-plus"/> Add Node
-            </button>
-          </div>
-          <div className="clearfix"></div>
-          {nodesList &&
-          <DockTable columns={COLUMNS} rows={nodesList}/>}
+            <div className="page-actions">
+              <button className="btn btn-primary" onClick={this.addNode.bind(this)}><i className="fa fa-plus"/> Add Node
+              </button>
+            </div>
+            <div className="clearfix"></div>
+            {nodesList &&
+            <DockTable columns={COLUMNS} rows={nodesList}/>}
         </div>
       </div>
+    </div>
     );
   }
 
