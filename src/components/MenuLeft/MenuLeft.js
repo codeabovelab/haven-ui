@@ -31,24 +31,28 @@ export default class MenuLeft extends Component {
                 <span>Dashboard</span>
               </Link>
             </li>
+
             <li className="al-sidebar-list-item" title="Clusters">
               <Link to="/clusters" className="al-sidebar-list-link">
                 <i className="fa fa-object-group fa-fw"/>
                 <span>Cluster List</span>
               </Link>
             </li>
+
             <li className="al-sidebar-list-item" title="Nodes">
               <Link to="/nodes" className="al-sidebar-list-link">
                 <i className="fa fa-server fa-fw"/>
                 <span>Node List</span>
               </Link>
             </li>
+
             <li className="al-sidebar-list-item" title="Images">
               <Link to="/images" className="al-sidebar-list-link">
                 <i className="fa fa-file-o fa-fw"/>
                 <span>Image List</span>
               </Link>
             </li>
+
             <li className="al-sidebar-list-item" title="Registries">
               <Link to="/registries" className="al-sidebar-list-link">
                 <i className="fa fa-list fa-fw"/>
@@ -56,12 +60,6 @@ export default class MenuLeft extends Component {
               </Link>
             </li>
           </ul>
-
-          <div className="ml-header">
-            <span className="pull-xs-right hidden-xs-down" onClick={toggle}><i className="fa fa-bars"/></span>
-          </div>
-          <div className="nav nav-pills nav-stacked">
-          </div>
         </aside>
       );
     }
