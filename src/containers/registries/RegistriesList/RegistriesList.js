@@ -6,10 +6,33 @@ import {RegisterEdit} from '../../index';
 import _ from 'lodash';
 import {removeRegistry} from 'redux/modules/registries/registries';
 
-const COLUMNS = [{name: 'name'}, {name: 'inactive', render: inactiveRender},
-  {name: 'errorMessage', label: 'Error', render: errorMessageRender}, {name: 'actions'}];
-
-COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
+const COLUMNS = [
+  {
+    name: 'name',
+    label: 'Name',
+    sortable: true
+  },
+  {
+    name: 'port',
+    label: 'Port',
+    sortable: true
+  },
+  {
+    name: 'protocol',
+    label: 'Protocol',
+    sortable: true
+  },
+  {
+    name: 'errorMessage',
+    label: 'Error',
+    sortable: true,
+    render: errorMessageRender
+  },
+  {
+    name: 'actions',
+    label: 'Actions'
+  }
+];
 
 @connect(
   state => ({
