@@ -6,9 +6,19 @@ import {DockTable} from '../../../components/index';
 import {RegisterEdit} from '../../index';
 import _ from 'lodash';
 
-const COLUMNS = [{name: 'registry'}, {name: 'name'}];
+const COLUMNS = [
+  {
+    name: 'registry',
+    label: 'Registry',
+    sortable: true
+  },
+  {
+    name: 'name',
+    label: 'Name',
+    sortable: true
+  }
+];
 
-COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
 const GROUP_BY_SELECT = ['registry', 'name'];
 
 @connect(

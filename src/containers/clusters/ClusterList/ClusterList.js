@@ -6,10 +6,22 @@ import {DockTable} from '../../../components/index';
 import {ClusterAdd} from '../../index';
 
 const COLUMNS = [
-  {name: 'name', label: 'Cluster Name', render: nameRender},
-  {name: 'containers', label: '# of Containers'},
-  {name: 'nodes', label: '# of Nodes'}];
-COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
+  {
+    name: 'name',
+    label: 'Cluster Name',
+    sortable: true,
+    render: nameRender
+  },
+  {
+    name: 'containers',
+    label: '# of Containers',
+    sortable: true
+  },
+  {
+    name: 'nodes',
+    label: '# of Nodes'
+  }
+];
 
 @connect(
   state => ({
