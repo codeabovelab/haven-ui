@@ -65,6 +65,7 @@ export default class ImagesList extends Component {
                 <value>{registriesUI.loaded && <span>{registries.length}</span>}</value>
               </div>
             </div>
+
             <div className="clearfix">
               <div className="page-actions">
                 <button className="btn btn-primary" onClick={this.addRegister.bind(this)}><i className="fa fa-plus"/> Add
@@ -72,27 +73,39 @@ export default class ImagesList extends Component {
                 </button>
               </div>
             </div>
+
             {showLoading && (
               <div className="text-xs-center">
                 <i className="fa fa-spinner fa-pulse fa-5x"/>
                 <h5>Loading...</h5>
               </div>
             )}
-            {showData && <div>
-              {rows && rows.length > 0 &&
+
+            {showData && (
               <div>
-                <div className="containers">
-                  <DockTable columns={COLUMNS} rows={rows} title="Images" groupBy="registry"
-                             groupBySelect={GROUP_BY_SELECT}/>
-                </div>
+                {rows && rows.length > 0 && (
+                  <div>
+                    <div className="containers">
+                      <DockTable columns={COLUMNS}
+                                 rows={rows}
+                                 title="Images"
+                                 groupBy="registry"
+                                 groupBySelect={GROUP_BY_SELECT} />
+                    </div>
+                  </div>
+                )}
+
+                {rows && rows.length === 0 && (
+                  <div className="alert alert-info">
+                    No images yet
+                  </div>
+                )}
               </div>
-              }
-              {rows && rows.length === 0 &&
-              <div className="alert alert-info">
-                No images yet
-              </div>}
-            </div>}
-            {showError && <div className="alert alert-danger">{loadingError}</div>}
+            )}
+
+            {showError && (
+              <div className="alert alert-danger">{loadingError}</div>
+            )}
           </div>
         </div>
       </div>

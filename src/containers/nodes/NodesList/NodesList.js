@@ -53,13 +53,20 @@ export default class NodesList extends Component {
                 </value>
               </div>
             </div>
+
             <div className="page-actions">
-              <button className="btn btn-primary" onClick={this.addNode.bind(this)}><i className="fa fa-plus"/> Add Node
+              <button className="btn btn-primary"
+                      onClick={this.addNode.bind(this)}>
+                <i className="fa fa-plus" />
+                Add Node
               </button>
             </div>
+
             <div className="clearfix"></div>
-            {nodesList &&
-            <DockTable columns={COLUMNS} rows={nodesList}/>}
+
+            {nodesList && (
+              <DockTable columns={COLUMNS} rows={nodesList} />
+            )}
         </div>
       </div>
     </div>

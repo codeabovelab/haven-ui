@@ -29,10 +29,14 @@ export default class Dashboard extends Component {
           <div className="row">
             <div className="col-sm-6"></div>
             <div className="col-sm-6">
-              {events &&
-              (<div className="card events">
+              {events && (
+                <div className="card events">
                   <div className="card-block">
-                    <h4 className="card-title"><i className="fa fa-bell"/> Events</h4>
+                    <h4 className="card-title">
+                      <i className="fa fa-bell"/>
+                      Events
+                    </h4>
+
                     <ul className="list-group list-group-flush">
                       {events.map(this.renderEvent.bind(this))}
                     </ul>

@@ -43,14 +43,20 @@ export default class ClusterList extends Component {
                 <value>{clustersList && clustersList.length}</value>
               </div>
             </div>
+
             <div className="page-actions">
-              <button className="btn btn-primary" onClick={this.createCluster.bind(this)}><i className="fa fa-plus"/> New
-                Cluster
+              <button className="btn btn-primary"
+                      onClick={this.createCluster.bind(this)}>
+                <i className="fa fa-plus" />
+                New Cluster
               </button>
             </div>
+
             <div className="clearfix"></div>
-            {clustersList &&
-            <DockTable columns={COLUMNS} rows={clustersList}/>}
+
+            {clustersList && (
+              <DockTable columns={COLUMNS} rows={clustersList} />
+            )}
           </div>
         </div>
       </div>

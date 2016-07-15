@@ -6,7 +6,7 @@ import Helmet from 'react-helmet';
 import { MenuLeft, Navbar } from 'components';
 import { routerActions } from 'react-router-redux';
 import config from '../../config';
-import {Breadcrumbs} from '../../components/common/breadcrumbs/Breadcrumbs';
+import {Breadcrumbs} from '../../components/common/Breadcrumbs/Breadcrumbs';
 import { asyncConnect } from 'redux-async-connect';
 
 @asyncConnect([{
@@ -44,25 +44,33 @@ export default class App extends Component {
   }
 
   render() {
-    console.log('this.props', this.props);
-    return (
-      <div className="app">
-        <Helmet {...config.app.head}/>
+    let pageTitle = this.props.routes[this.props.routes.length - 1].name;
+    let rootClass = this.props.user ? "" : " menu-collapsed";
 
-        <MenuLeft/>
+    return (
+      <div className={"app" + rootClass}>
+        <Helmet {...config.app.head} />
+
+        {this.props.user && (
+          <MenuLeft />
+        )}
 
         <Navbar />
 
         <div className="al-main">
           <div className="al-content">
-            <div className="content-top clearfix">
-              <h1 className="al-title ng-binding">{this.props.routes[this.props.routes.length - 1].name}</h1>
+            {this.props.user && (
+              <div className="content-top clearfix">
+                <h1 className="al-title ng-binding">
+                  {pageTitle}
+                </h1>
 
-              <Breadcrumbs
-                routes={this.props.routes}
-                params={this.props.params}
-              />
-            </div>
+                <Breadcrumbs
+                  routes={this.props.routes}
+                  params={this.props.params}
+                />
+              </div>
+            )}
 
             {this.props.children}
           </div>
@@ -71,7 +79,9 @@ export default class App extends Component {
         <footer className="al-footer clearfix">
           <div className="al-footer-right"></div>
           <div className="al-footer-main clearfix">
-            <div className="al-copy">&copy; {(new Date()).getFullYear()} Dockmaster</div>
+            <div className="al-copy">
+              &copy; {(new Date()).getFullYear()} Dockmaster
+            </div>
           </div>
         </footer>
       </div>
