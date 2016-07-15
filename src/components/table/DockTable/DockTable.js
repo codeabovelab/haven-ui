@@ -492,19 +492,33 @@ export default class DockTable extends Component {
 
   renderHeaderTh(column) {
     const {sortingColumn, sortingOrder} = this.state;
+
+    let thAttr = {};
+    if (column.width) {
+      thAttr.width = column.width;
+    }
+
     return (
-      <th key={column.name} className={column.sortable ? 'sortable' : ''}
-          onClick={column.sortable && this.toggleSorting.bind(this, column.name)}>
+      <th key={column.name}
+          className={column.sortable ? 'sortable' : ''}
+          onClick={column.sortable && this.toggleSorting.bind(this, column.name)} {...thAttr}>
+
         {DockTable.columnLabel(column)}
-        {column.sortable && (<span className="sorting">
-                {sortingColumn !== column.name && <i className="fa fa-sort"/>}
-          {sortingColumn === column.name && (
-            <span>
-                    {sortingOrder === 'asc' && <i className="fa fa-sort-asc"/>}
-              {sortingOrder === 'desc' && <i className="fa fa-sort-desc"/>}
-                  </span>
-          )}
-              </span>)}
+
+        {column.sortable && (
+          <span className="sorting">
+            {sortingColumn !== column.name && (
+              <i className="fa fa-sort"/>
+            )}
+
+            {sortingColumn === column.name && (
+              <span>
+                {sortingOrder === 'asc' && <i className="fa fa-sort-asc"/>}
+                {sortingOrder === 'desc' && <i className="fa fa-sort-desc"/>}
+              </span>
+            )}
+          </span>
+        )}
       </th>
     );
   }

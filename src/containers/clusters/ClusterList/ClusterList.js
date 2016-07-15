@@ -55,7 +55,9 @@ export default class ClusterList extends Component {
             <div className="clearfix"></div>
 
             {clustersList && (
-              <DockTable columns={COLUMNS} rows={clustersList} />
+              <DockTable columns={COLUMNS}
+                         rows={clustersList}
+              />
             )}
           </div>
         </div>

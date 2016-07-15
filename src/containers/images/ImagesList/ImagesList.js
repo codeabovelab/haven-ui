@@ -88,7 +88,6 @@ export default class ImagesList extends Component {
                     <div className="containers">
                       <DockTable columns={COLUMNS}
                                  rows={rows}
-                                 title="Images"
                                  groupBy="registry"
                                  groupBySelect={GROUP_BY_SELECT} />
                     </div>

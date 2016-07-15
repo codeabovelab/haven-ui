@@ -5,17 +5,27 @@ import NodeAdd from '../NodeAdd/NodeAdd';
 import {DockTable} from '../../../components/index';
 
 const COLUMNS = [
-  {name: 'name', label: 'Node Name'},
-  {name: 'ip', label: 'Internal IP'},
-  {name: 'containers', label: '# of Containers'},
-  {name: 'health'},
-  {name: 'cpu', label: '# of CPU'},
-  {name: 'memory', label: 'Memory Usage'},
-  {name: 'cluster', label: 'Assigned Cluster'},
-  {name: 'actions', render: actionsRender}
+  {
+    name: 'name',
+    label: 'Name',
+    width: '20%',
+    sortable: true
+  },
+  {
+    name: 'address',
+    label: 'Address',
+    width: '20%',
+    sortable: true
+  },
+  {
+    name: 'Health',
+    width: '50%'
+  },
+  {
+    name: 'Actions',
+    render: actionsRender
+  }
 ];
-
-COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
 
 @connect(
   state => ({
@@ -65,7 +75,9 @@ export default class NodesList extends Component {
             <div className="clearfix"></div>
 
             {nodesList && (
-              <DockTable columns={COLUMNS} rows={nodesList} />
+              <DockTable columns={COLUMNS}
+                         rows={nodesList}
+              />
             )}
         </div>
       </div>
