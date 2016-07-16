@@ -10,11 +10,13 @@ const COLUMNS = [
   {
     name: 'registry',
     label: 'Registry',
+    width: '50%',
     sortable: true
   },
   {
     name: 'name',
     label: 'Name',
+    width: '50%',
     sortable: true
   }
 ];
@@ -65,17 +67,6 @@ export default class ImagesList extends Component {
       <div className="panel">
         <div className="panel-body">
           <div className="panel-content">
-            <div className="page-info-group">
-              <div>
-                <label># of Images:</label>
-                <value>{rows.length}</value>
-              </div>
-              <div>
-                <label># of Registries:</label>
-                <value>{registriesUI.loaded && <span>{registries.length}</span>}</value>
-              </div>
-            </div>
-
             <div className="clearfix">
               <div className="page-actions">
                 <button className="btn btn-primary" onClick={this.addRegister.bind(this)}><i className="fa fa-plus"/> Add

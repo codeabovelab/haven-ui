@@ -3,6 +3,7 @@ import {load} from 'redux/modules/nodes/nodes';
 import {connect} from 'react-redux';
 import NodeAdd from '../NodeAdd/NodeAdd';
 import {DockTable} from '../../../components/index';
+import {ButtonToolbar, SplitButton, Button, MenuItem} from 'react-bootstrap';
 
 const COLUMNS = [
   {
@@ -19,10 +20,11 @@ const COLUMNS = [
   },
   {
     name: 'Health',
-    width: '50%'
+    width: '40%'
   },
   {
     name: 'Actions',
+    width: '20%',
     render: actionsRender
   }
 ];
@@ -53,24 +55,13 @@ export default class NodesList extends Component {
       <div className="panel">
         <div className="panel-body">
           <div className="panel-content">
-            <div className="page-info-group">
-              <div>
-                <label>
-                  # of Nodes:
-                </label>
-                <value>
-                  {nodesList && nodesList.length}
-                </value>
-              </div>
-            </div>
-
-            <div className="page-actions">
-              <button className="btn btn-primary"
+            <ButtonToolbar className="page-actions">
+              <Button bsStyle="primary"
                       onClick={this.addNode.bind(this)}>
                 <i className="fa fa-plus" />
                 Add Node
-              </button>
-            </div>
+              </Button>
+            </ButtonToolbar>
 
             <div className="clearfix"></div>
 
@@ -97,7 +88,16 @@ export default class NodesList extends Component {
 function actionsRender() {
   return (
     <td key="actions" className="td-actions">
-      <i className="fa fa-pencil" disabled/> | <i className="fa fa-trash" disabled/>
+      <ButtonToolbar>
+        <SplitButton bsStyle="info"
+                     title="Edit">
+
+          <MenuItem eventKey="1">Edit</MenuItem>
+          <MenuItem divider />
+          <MenuItem eventKey="2">Delete</MenuItem>
+
+        </SplitButton>
+      </ButtonToolbar>
     </td>
   );
 }

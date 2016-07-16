@@ -8,6 +8,7 @@ import { routerActions } from 'react-router-redux';
 import config from '../../config';
 import {Breadcrumbs} from '../../components/common/Breadcrumbs/Breadcrumbs';
 import { asyncConnect } from 'redux-async-connect';
+//require('bootstrap/dist/css/bootstrap.css');
 
 @asyncConnect([{
   promise: ({store: {dispatch, getState}}) => {

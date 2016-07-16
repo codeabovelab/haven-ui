@@ -5,6 +5,7 @@
       & > th {
         border-bottom: 1px solid $border-light;
         white-space: nowrap;
+        vertical-align: middle;
         &:first-child {
           text-align: center;
         }
@@ -20,9 +21,12 @@
         padding-top: 1px;
       }
       & > td {
-        padding: 0px 8px;
-        line-height: 35px;
+        padding: 8px;
+        line-height: normal;
         border-top: 1px solid $border-light;
+        &.td-actions {
+          white-space: nowrap;
+        }
         &:first-child {
           text-align: center;
         }
