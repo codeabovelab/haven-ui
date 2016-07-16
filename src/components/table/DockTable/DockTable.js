@@ -89,7 +89,7 @@ export default class DockTable extends Component {
     }
     return (
       <div className={s.dockTable}>
-        <div className="docktable-header">
+        <div className="docktable-header clearfix">
           {title && <h2>{title}</h2>}
 
           <input className={"form-control input-search" + formControlSm}
