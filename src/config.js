@@ -15,7 +15,7 @@ module.exports = Object.assign({
   //apiHost: '178.62.246.249',
   //apiPort: 8762,
   apiHost: 'hb1.codeabovelab.com',
-  apiPort: 8761,
+  apiPort: 80,
   eventServer: 'hb1.codeabovelab.com:8761/ui/stomp',
   mock: false,
   app: {

@@ -3,19 +3,31 @@ import {load} from 'redux/modules/nodes/nodes';
 import {connect} from 'react-redux';
 import NodeAdd from '../NodeAdd/NodeAdd';
 import {DockTable} from '../../../components/index';
+import {ButtonToolbar, SplitButton, Button, MenuItem} from 'react-bootstrap';
 
 const COLUMNS = [
-  {name: 'name', label: 'Node Name'},
-  {name: 'ip', label: 'Internal IP'},
-  {name: 'containers', label: '# of Containers'},
-  {name: 'health'},
-  {name: 'cpu', label: '# of CPU'},
-  {name: 'memory', label: 'Memory Usage'},
-  {name: 'cluster', label: 'Assigned Cluster'},
-  {name: 'actions', render: actionsRender}
+  {
+    name: 'name',
+    label: 'Name',
+    width: '20%',
+    sortable: true
+  },
+  {
+    name: 'address',
+    label: 'Address',
+    width: '20%',
+    sortable: true
+  },
+  {
+    name: 'Health',
+    width: '40%'
+  },
+  {
+    name: 'Actions',
+    width: '20%',
+    render: actionsRender
+  }
 ];
-
-COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
 
 @connect(
   state => ({
@@ -40,28 +52,27 @@ export default class NodesList extends Component {
     const nodesList = nodesIds !== null ? nodesIds.map(id => nodes[id]) : null;
 
     return (
-      <div className="container-fluid">
-        <div>
-          <h1>Node List</h1>
-          <div className="page-info-group">
-            <div>
-              <label>
-                # of Nodes:
-              </label>
-              <value>
-                {nodesList && nodesList.length}
-              </value>
-            </div>
-          </div>
-          <div className="page-actions">
-            <button className="btn btn-primary" onClick={this.addNode.bind(this)}><i className="fa fa-plus"/> Add Node
-            </button>
-          </div>
-          <div className="clearfix"></div>
-          {nodesList &&
-          <DockTable columns={COLUMNS} rows={nodesList}/>}
+      <div className="panel">
+        <div className="panel-body">
+          <div className="panel-content">
+            <ButtonToolbar className="page-actions">
+              <Button bsStyle="primary"
+                      onClick={this.addNode.bind(this)}>
+                <i className="fa fa-plus" />
+                Add Node
+              </Button>
+            </ButtonToolbar>
+
+            <div className="clearfix"></div>
+
+            {nodesList && (
+              <DockTable columns={COLUMNS}
+                         rows={nodesList}
+              />
+            )}
         </div>
       </div>
+    </div>
     );
   }
 
@@ -77,7 +88,16 @@ export default class NodesList extends Component {
 function actionsRender() {
   return (
     <td key="actions" className="td-actions">
-      <i className="fa fa-pencil" disabled/> | <i className="fa fa-trash" disabled/>
+      <ButtonToolbar>
+        <SplitButton bsStyle="info"
+                     title="Edit">
+
+          <MenuItem eventKey="1">Edit</MenuItem>
+          <MenuItem divider />
+          <MenuItem eventKey="2">Delete</MenuItem>
+
+        </SplitButton>
+      </ButtonToolbar>
     </td>
   );
 }

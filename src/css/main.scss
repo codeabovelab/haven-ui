@@ -1,6 +1,29 @@
 @import "../../node_modules/toastr/build/toastr.min.css";
 @import "./variables";
 @import "bootstrap/_bootstrap";
-@import "layout/general";
-@import "layout/layout";
-@import "layout/menuLeft";
+//@import "layout/general";
+//@import "layout/layout";
+//@import "layout/menuLeft";
+
+@import "theme/conf/mixins";
+@import "theme/conf/colorScheme/mint";
+@import "theme/conf/variables";
+
+@import "theme/bootstrap-overrides/_panel";
+@import "theme/bootstrap-overrides/_tabs";
+
+@import "theme/_buttons";
+@import "theme/_icons";
+@import "theme/_layout";
+@import "theme/_preloader";
+@import "theme/_labels";
+@import "theme/_table";
+@import "theme/_tree";
+@import "theme/components/_accordion";
+@import "theme/components/_backTop";
+@import "theme/components/_baWizard";
+@import "theme/components/_contentTop";
+@import "theme/components/_msgCenter";
+@import "theme/components/_pageTop";
+@import "theme/components/_sidebar";
+@import "theme/components/_widgets";

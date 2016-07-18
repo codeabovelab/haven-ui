@@ -89,30 +89,37 @@ export default class DockTable extends Component {
     }
     return (
       <div className={s.dockTable}>
-        <div className="docktable-header">
+        <div className="docktable-header clearfix">
           {title && <h2>{title}</h2>}
-          <input className={"form-control input-search" + formControlSm} onChange={this.queryChange.bind(this)}
-                 placeholder="Search"/>
+
+          <input className={"form-control input-search" + formControlSm}
+                 onChange={this.queryChange.bind(this)}
+                 placeholder="Search" />
 
           {groupBySelect && (
             <div className="select-container">
               <form className="form-inline">
                 <div className="form-group">
                   <label>Group by: </label>
-                  <select ref="groupBy" className="form-control" defaultValue={groupBy}
+                  <select ref="groupBy"
+                          className="form-control"
+                          defaultValue={groupBy}
                           onChange={this.groupByChange.bind(this)}>
                     <option value=""/>
-                    {groupBySelect.map(groupBy => <option key={groupBy} value={groupBy}>{groupBy}</option>)}
+                    {groupBySelect.map(groupBy => (<option key={groupBy} value={groupBy}>{groupBy}</option>))}
                   </select>
                 </div>
               </form>
             </div>
           )}
         </div>
+
         <div className="table-responsive">
           {this.groups && this.renderGroups()}
+
           {this.sortedRows && this.renderNoGroups()}
         </div>
+
         {this.renderPagination()}
       </div>
     );
@@ -492,19 +499,34 @@ export default class DockTable extends Component {
 
   renderHeaderTh(column) {
     const {sortingColumn, sortingOrder} = this.state;
+
+    let thAttr = {};
+    if (column.width) {
+      thAttr.width = column.width;
+    }
+
     return (
-      <th key={column.name} className={column.sortable ? 'sortable' : ''}
-          onClick={column.sortable && this.toggleSorting.bind(this, column.name)}>
+      <th key={column.name}
+          className={column.sortable ? 'sortable' : ''}
+          onClick={column.sortable && this.toggleSorting.bind(this, column.name)}
+          {...thAttr}>
+
         {DockTable.columnLabel(column)}
-        {column.sortable && (<span className="sorting">
-                {sortingColumn !== column.name && <i className="fa fa-sort"/>}
-          {sortingColumn === column.name && (
-            <span>
-                    {sortingOrder === 'asc' && <i className="fa fa-sort-asc"/>}
-              {sortingOrder === 'desc' && <i className="fa fa-sort-desc"/>}
-                  </span>
-          )}
-              </span>)}
+
+        {column.sortable && (
+          <span className="sorting">
+            {sortingColumn !== column.name && (
+              <i className="fa fa-sort"/>
+            )}
+
+            {sortingColumn === column.name && (
+              <span>
+                {sortingOrder === 'asc' && <i className="fa fa-sort-asc"/>}
+                {sortingOrder === 'desc' && <i className="fa fa-sort-desc"/>}
+              </span>
+            )}
+          </span>
+        )}
       </th>
     );
   }

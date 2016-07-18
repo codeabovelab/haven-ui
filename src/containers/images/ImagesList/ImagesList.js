@@ -6,9 +6,21 @@ import {DockTable} from '../../../components/index';
 import {RegisterEdit} from '../../index';
 import _ from 'lodash';
 
-const COLUMNS = [{name: 'registry'}, {name: 'name'}];
+const COLUMNS = [
+  {
+    name: 'registry',
+    label: 'Registry',
+    width: '50%',
+    sortable: true
+  },
+  {
+    name: 'name',
+    label: 'Name',
+    width: '50%',
+    sortable: true
+  }
+];
 
-COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
 const GROUP_BY_SELECT = ['registry', 'name'];
 
 @connect(
@@ -52,46 +64,50 @@ export default class ImagesList extends Component {
     }
 
     return (
-      <div className="container-fluid">
-        <h1>Images</h1>
-        <div className="page-info-group">
-          <div>
-            <label># of Images:</label>
-            <value>{rows.length}</value>
-          </div>
-          <div>
-            <label># of Registries:</label>
-            <value>{registriesUI.loaded && <span>{registries.length}</span>}</value>
-          </div>
-        </div>
-        <div className="clearfix">
-          <div className="page-actions">
-            <button className="btn btn-primary" onClick={this.addRegister.bind(this)}><i className="fa fa-plus"/> Add
-              registry
-            </button>
-          </div>
-        </div>
-        {showLoading && (
-          <div className="text-xs-center">
-            <i className="fa fa-spinner fa-pulse fa-5x"/>
-            <h5>Loading...</h5>
-          </div>
-        )}
-        {showData && <div>
-          {rows && rows.length > 0 &&
-          <div>
-            <div className="containers">
-              <DockTable columns={COLUMNS} rows={rows} title="Images" groupBy="registry"
-                         groupBySelect={GROUP_BY_SELECT}/>
+      <div className="panel">
+        <div className="panel-body">
+          <div className="panel-content">
+            <div className="clearfix">
+              <div className="page-actions">
+                <button className="btn btn-primary" onClick={this.addRegister.bind(this)}><i className="fa fa-plus"/> Add
+                  registry
+                </button>
+              </div>
             </div>
+
+            {showLoading && (
+              <div className="text-xs-center">
+                <i className="fa fa-spinner fa-pulse fa-5x"/>
+                <h5>Loading...</h5>
+              </div>
+            )}
+
+            {showData && (
+              <div>
+                {rows && rows.length > 0 && (
+                  <div>
+                    <div className="containers">
+                      <DockTable columns={COLUMNS}
+                                 rows={rows}
+                                 groupBy="registry"
+                                 groupBySelect={GROUP_BY_SELECT} />
+                    </div>
+                  </div>
+                )}
+
+                {rows && rows.length === 0 && (
+                  <div className="alert alert-info">
+                    No images yet
+                  </div>
+                )}
+              </div>
+            )}
+
+            {showError && (
+              <div className="alert alert-danger">{loadingError}</div>
+            )}
           </div>
-          }
-          {rows && rows.length === 0 &&
-          <div className="alert alert-info">
-            No images yet
-          </div>}
-        </div>}
-        {showError && <div className="alert alert-danger">{loadingError}</div>}
+        </div>
       </div>
     );
   }

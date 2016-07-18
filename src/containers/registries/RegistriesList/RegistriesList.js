@@ -5,11 +5,35 @@ import {DockTable} from '../../../components/index';
 import {RegisterEdit} from '../../index';
 import _ from 'lodash';
 import {removeRegistry} from 'redux/modules/registries/registries';
+import {ButtonToolbar, SplitButton, Button, MenuItem} from 'react-bootstrap';
 
-const COLUMNS = [{name: 'name'}, {name: 'inactive', render: inactiveRender},
-  {name: 'errorMessage', label: 'Error', render: errorMessageRender}, {name: 'actions'}];
-
-COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
+const COLUMNS = [
+  {
+    name: 'name',
+    label: 'Name',
+    sortable: true
+  },
+  {
+    name: 'port',
+    label: 'Port',
+    sortable: true
+  },
+  {
+    name: 'protocol',
+    label: 'Protocol',
+    sortable: true
+  },
+  {
+    name: 'errorMessage',
+    label: 'Error',
+    sortable: true,
+    render: errorMessageRender
+  },
+  {
+    name: 'actions',
+    label: 'Actions'
+  }
+];
 
 @connect(
   state => ({
@@ -53,41 +77,50 @@ export default class RegistriesList extends Component {
       showData = true;
     }
     return (
-      <div className="container-fluid">
-        <h1>Registries</h1>
-        <div className="page-info-group">
-          <div>
-            <label># of Registries:</label>
-            <value>{registriesUI.loaded && <span>{registries.length}</span>}</value>
-          </div>
-        </div>
-        <div className="clearfix">
-          <div className="page-actions">
-            <button className="btn btn-primary" onClick={this.editRegister.bind(this, null)}><i className="fa fa-plus"/> Add
-              registry
-            </button>
-          </div>
-        </div>
-        {showLoading && (
-          <div className="text-xs-center">
-            <i className="fa fa-spinner fa-pulse fa-5x"/>
-            <h5>Loading...</h5>
-          </div>
-        )}
-        {showData && <div>
-          {rows && rows.length > 0 &&
-          <div>
-            <div className="containers">
-              <DockTable columns={COLUMNS} rows={rows}/>
+      <div className="panel">
+        <div className="panel-body">
+          <div className="panel-content">
+            <div className="clearfix">
+              <div className="page-actions">
+                <button className="btn btn-primary"
+                        onClick={this.editRegister.bind(this, null)}>
+                  <i className="fa fa-plus"/>
+                  Add registry
+                </button>
+              </div>
             </div>
+
+            {showLoading && (
+              <div className="text-xs-center">
+                <i className="fa fa-spinner fa-pulse fa-5x"/>
+                <h5>Loading...</h5>
+              </div>
+            )}
+
+            {showData && (
+              <div>
+                {rows && rows.length > 0 && (
+                  <div>
+                    <div className="containers">
+                      <DockTable columns={COLUMNS}
+                                 rows={rows} />
+                    </div>
+                  </div>
+                )}
+
+                {rows && rows.length === 0 && (
+                  <div className="alert alert-info">
+                    No Registries yet
+                  </div>
+                )}
+              </div>
+            )}
+
+            {showError && (
+              <div className="alert alert-danger">{loadingError}</div>
+            )}
           </div>
-          }
-          {rows && rows.length === 0 &&
-          <div className="alert alert-info">
-            No Registries yet
-          </div>}
-        </div>}
-        {showError && <div className="alert alert-danger">{loadingError}</div>}
+        </div>
       </div>
     );
   }
@@ -115,11 +148,17 @@ export default class RegistriesList extends Component {
 
   renderActions(registry) {
     return (<td key="actions" className="td-actions">
-      <i className="fa fa-pencil" title="Edit"
-         onClick={this.editRegisterEvent.bind(this)}/>
-      <span> | </span>
-      <i className="fa fa-trash" title="Remove"
-         onClick={this.removeRegistry.bind(this)}/>
+      <ButtonToolbar>
+        <SplitButton bsStyle="info"
+                     title="Edit"
+                     onClick={this.editRegisterEvent.bind(this)}>
+
+          <MenuItem eventKey="1" onClick={this.editRegisterEvent.bind(this)}>Edit</MenuItem>
+          <MenuItem divider />
+          <MenuItem eventKey="2" onClick={this.removeRegistry.bind(this)}>Delete</MenuItem>
+
+        </SplitButton>
+      </ButtonToolbar>
     </td>);
   }
 

@@ -22,9 +22,6 @@ module.exports = {
   devtool: 'source-map',
   context: path.resolve(__dirname, '..'),
   entry: {
-    'tether': [
-      'tether'
-    ],
     "global": [
       './src/js/_global.js'
     ],
@@ -46,7 +43,8 @@ module.exports = {
       {test: require.resolve("tether"), loader: "expose?Tether"},
       {test: /\/src\/(?!js).*\.jsx?$/, exclude: /node_modules/, loaders: [strip.loader('debug'), 'babel']},
       {test: /\.json$/, loader: 'json-loader'},
-      {test: /bootstrap[\/\\]dist[\/\\]js[\/\\]umd[\/\\]/, loader: 'imports?jQuery=jquery'},
+      // Bootstrap 3
+      { test:/bootstrap-sass[\/\\]assets[\/\\]javascripts[\/\\]/, loader: 'imports?jQuery=jquery' },
       {
         test: /\.scss$/,
         loader: ExtractTextPlugin.extract('style', 'css?modules&importLoaders=2&sourceMap!autoprefixer?browsers=last 2 version!sass?outputStyle=expanded&sourceMap=true&sourceMapContents=true')

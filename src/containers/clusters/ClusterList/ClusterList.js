@@ -6,10 +6,22 @@ import {DockTable} from '../../../components/index';
 import {ClusterAdd} from '../../index';
 
 const COLUMNS = [
-  {name: 'name', label: 'Cluster Name', render: nameRender},
-  {name: 'containers', label: '# of Containers'},
-  {name: 'nodes', label: '# of Nodes'}];
-COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
+  {
+    name: 'name',
+    label: 'Cluster Name',
+    sortable: true,
+    render: nameRender
+  },
+  {
+    name: 'containers',
+    label: '# of Containers',
+    sortable: true
+  },
+  {
+    name: 'nodes',
+    label: '# of Nodes'
+  }
+];
 
 @connect(
   state => ({
@@ -34,22 +46,33 @@ export default class ClusterList extends Component {
     const clustersList = clustersIds !== null ? clustersIds.map(id => clusters[id]) : null;
 
     return (
-      <div className="container-fluid">
-        <h1>Cluster List</h1>
-        <div className="page-info-group">
-          <div>
-            <label># of Clusters:</label>
-            <value>{clustersList && clustersList.length}</value>
+      <div className="panel">
+        <div className="panel-body">
+          <div className="panel-content">
+            <div className="page-info-group">
+              <div>
+                <label># of Clusters:</label>
+                <value>{clustersList && clustersList.length}</value>
+              </div>
+            </div>
+
+            <div className="page-actions">
+              <button className="btn btn-primary"
+                      onClick={this.createCluster.bind(this)}>
+                <i className="fa fa-plus" />
+                New Cluster
+              </button>
+            </div>
+
+            <div className="clearfix"></div>
+
+            {clustersList && (
+              <DockTable columns={COLUMNS}
+                         rows={clustersList}
+              />
+            )}
           </div>
         </div>
-        <div className="page-actions">
-          <button className="btn btn-primary" onClick={this.createCluster.bind(this)}><i className="fa fa-plus"/> New
-            Cluster
-          </button>
-        </div>
-        <div className="clearfix"></div>
-        {clustersList &&
-        <DockTable columns={COLUMNS} rows={clustersList}/>}
       </div>
     );
   }

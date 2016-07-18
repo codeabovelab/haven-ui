@@ -24,26 +24,19 @@ export default class Dashboard extends Component {
     return (
       <div className={styles.home}>
         <Helmet title="Home"/>
-        <div className={styles.masthead}>
-          <div className="container">
-            <div className={styles.logo}>
-              <p>
-                <img src={logoImage}/>
-              </p>
-            </div>
-            <h1>{config.app.title}</h1>
-
-          </div>
-        </div>
 
         <div className="container-fluid">
           <div className="row">
             <div className="col-sm-6"></div>
             <div className="col-sm-6">
-              {events &&
-              (<div className="card events">
+              {events && (
+                <div className="card events">
                   <div className="card-block">
-                    <h4 className="card-title"><i className="fa fa-bell"/> Events</h4>
+                    <h4 className="card-title">
+                      <i className="fa fa-bell"/>
+                      Events
+                    </h4>
+
                     <ul className="list-group list-group-flush">
                       {events.map(this.renderEvent.bind(this))}
                     </ul>
