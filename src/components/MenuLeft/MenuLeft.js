@@ -30,28 +30,28 @@ export default class MenuLeft extends Component {
           <li className="al-sidebar-list-item" title="Clusters">
             <Link to="/clusters" className="al-sidebar-list-link">
               <i className="fa fa-object-group fa-fw"/>
-              <span>Cluster List</span>
+              <span>Clusters</span>
             </Link>
           </li>
 
           <li className="al-sidebar-list-item" title="Nodes">
             <Link to="/nodes" className="al-sidebar-list-link">
               <i className="fa fa-server fa-fw"/>
-              <span>Node List</span>
+              <span>Nodes</span>
             </Link>
           </li>
 
           <li className="al-sidebar-list-item" title="Images">
             <Link to="/images" className="al-sidebar-list-link">
               <i className="fa fa-file-o fa-fw"/>
-              <span>Image List</span>
+              <span>Images</span>
             </Link>
           </li>
 
           <li className="al-sidebar-list-item" title="Registries">
             <Link to="/registries" className="al-sidebar-list-link">
               <i className="fa fa-list fa-fw"/>
-              <span>Registries List</span>
+              <span>Registries</span>
             </Link>
           </li>
         </ul>
