@@ -9,8 +9,35 @@ import { asyncConnect } from 'redux-async-connect';
 import {Dropdown, SplitButton, ButtonToolbar, MenuItem} from 'react-bootstrap';
 
 
-const COLUMNS = [{name: 'name'}, {name: 'image', render: renderTdImage},
-  {name: 'node'}, {name: 'ports', label: 'Ports Mapping'}, {name: 'status'}, {name: 'actions'}];
+const COLUMNS = [
+  {
+    name: 'name'
+  },
+
+  {
+    name: 'image',
+    render: renderTdImage
+  },
+
+  {
+    name: 'node'
+  },
+
+  {
+    name: 'ports',
+    label: 'Ports Mapping'
+  },
+
+  {
+    name: 'status'
+  },
+
+  {
+    name: 'actions',
+    width: '15%'
+  }
+];
+
 COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
 const GROUP_BY_SELECT = ['node', 'image', 'status'];
 
