@@ -23,10 +23,10 @@ const COLUMNS = [
     name: 'node'
   },
 
-  {
-    name: 'ports',
-    label: 'Ports Mapping'
-  },
+  // {
+  //   name: 'ports',
+  //   label: 'Ports Mapping'
+  // },
 
   {
     name: 'status'
