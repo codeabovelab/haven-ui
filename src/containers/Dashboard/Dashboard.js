@@ -4,6 +4,7 @@ import Helmet from 'react-helmet';
 import {connect} from 'react-redux';
 import TimeAgo from 'react-timeago';
 import _ from 'lodash';
+import {Row, Col, Panel} from 'react-bootstrap';
 
 @connect(
   state => ({
@@ -24,6 +25,68 @@ export default class Dashboard extends Component {
     return (
       <div className={styles.home}>
         <Helmet title="Home"/>
+
+        <Row className="pie-charts">
+          <div className="pie-chart-item-container">
+            <div className="pie-chart-item">
+              <Panel>
+                <div className="chart" data-percent="60"> <span className="percent"></span> </div>
+
+                <div className="description">
+                  <div>Metric #1</div>
+                  <div className="description-stats">Metric 1 stats</div>
+                </div>
+
+                <i className="chart-icon i-{{ ::chart.icon }}"></i>
+              </Panel>
+            </div>
+          </div>
+
+          <div className="pie-chart-item-container">
+            <div className="pie-chart-item">
+              <Panel>
+                <div className="chart" data-percent="60"> <span className="percent"></span> </div>
+
+                <div className="description">
+                  <div>Metric #2</div>
+                  <div className="description-stats">Metric 2 stats</div>
+                </div>
+
+                <i className="chart-icon i-{{ ::chart.icon }}"></i>
+              </Panel>
+            </div>
+          </div>
+
+          <div className="pie-chart-item-container">
+            <div className="pie-chart-item">
+              <Panel>
+                <div className="chart" data-percent="60"> <span className="percent"></span> </div>
+
+                <div className="description">
+                  <div>Metric #3</div>
+                  <div className="description-stats">Metric 3 stats</div>
+                </div>
+
+                <i className="chart-icon i-{{ ::chart.icon }}"></i>
+              </Panel>
+            </div>
+          </div>
+
+          <div className="pie-chart-item-container">
+            <div className="pie-chart-item">
+              <Panel>
+                <div className="chart" data-percent="60"> <span className="percent"></span> </div>
+
+                <div className="description">
+                  <div>Metric #4</div>
+                  <div className="description-stats">Metric 4 stats</div>
+                </div>
+
+                <i className="chart-icon i-{{ ::chart.icon }}"></i>
+              </Panel>
+            </div>
+          </div>
+        </Row>
 
         <div className="container-fluid">
           <div className="row">
