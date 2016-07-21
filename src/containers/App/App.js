@@ -66,10 +66,12 @@ export default class App extends Component {
                   {pageTitle}
                 </h1>
 
-                <Breadcrumbs
-                  routes={this.props.routes}
-                  params={this.props.params}
-                />
+                {false && (
+                  <Breadcrumbs
+                    routes={this.props.routes}
+                    params={this.props.params}
+                  />
+                )}
               </div>
             )}
 

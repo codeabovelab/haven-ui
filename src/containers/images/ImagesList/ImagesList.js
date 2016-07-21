@@ -4,6 +4,7 @@ import {load as loadRegistries} from 'redux/modules/registries/registries';
 import {connect} from 'react-redux';
 import {DockTable} from '../../../components/index';
 import {RegisterEdit} from '../../index';
+import {Label} from 'react-bootstrap';
 import _ from 'lodash';
 
 const COLUMNS = [
@@ -18,6 +19,12 @@ const COLUMNS = [
     label: 'Name',
     width: '50%',
     sortable: true
+  },
+  {
+    name: 'tags',
+    label: 'Tags',
+    width: '15%',
+    render: tagsRender
   }
 ];
 
@@ -30,6 +37,7 @@ const GROUP_BY_SELECT = ['registry', 'name'];
     registries: state.registries,
     registriesUI: state.registriesUI
   }), {loadImages, loadRegistries})
+
 export default class ImagesList extends Component {
   static propTypes = {
     images: PropTypes.object.isRequired,
@@ -42,8 +50,10 @@ export default class ImagesList extends Component {
 
   componentDidMount() {
     const {loadImages, loadRegistries} = this.props;
+
     loadImages();
     loadRegistries();
+
     $('.input-search').focus();
   }
 
@@ -55,6 +65,7 @@ export default class ImagesList extends Component {
     let showLoading = false;
     let showError = false;
     let showData = false;
+
     if (loadingError) {
       showError = true;
     } else if (loading && (!rows || rows.length === 0)) {
@@ -67,14 +78,6 @@ export default class ImagesList extends Component {
       <div className="panel">
         <div className="panel-body">
           <div className="panel-content">
-            <div className="clearfix">
-              <div className="page-actions">
-                <button className="btn btn-primary" onClick={this.addRegister.bind(this)}><i className="fa fa-plus"/> Add
-                  registry
-                </button>
-              </div>
-            </div>
-
             {showLoading && (
               <div className="text-xs-center">
                 <i className="fa fa-spinner fa-pulse fa-5x"/>
@@ -119,4 +122,16 @@ export default class ImagesList extends Component {
       focus: RegisterEdit.focusSelector
     });
   }
+}
+
+function tagsRender(image) {
+  return (
+    <td key="tags">
+      {image.tags.map((tag) => {
+        return (
+          <Label bsStyle="info">{tag}</Label>
+        );
+      })}
+    </td>
+  );
 }
