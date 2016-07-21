@@ -29,7 +29,8 @@ const COLUMNS = [
   // },
 
   {
-    name: 'status'
+    name: 'status',
+    width: '15%'
   },
 
   {
