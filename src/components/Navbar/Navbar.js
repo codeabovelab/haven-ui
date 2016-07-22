@@ -31,7 +31,7 @@ export default class Navbar extends Component {
         <a href="" className="al-logo clearfix"><span>Dock</span>master</a>
         <a href className="collapse-menu-link" ba-sidebar-toggle-menu></a>
 
-        <ul className="al-msg-center clearfix">
+        {false && <ul className="al-msg-center clearfix">
           <li uib-dropdown>
             <a href uib-dropdown-toggle>
               <i className="fa fa-bell-o"></i><span>0</span>
@@ -70,6 +70,7 @@ export default class Navbar extends Component {
             </div>
           </li>
         </ul>
+        }
 
         <Dropdown className="user-profile">
           <Dropdown.Toggle>
