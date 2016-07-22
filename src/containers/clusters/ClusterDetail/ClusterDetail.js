@@ -6,10 +6,39 @@ import { Link, browserHistory } from 'react-router';
 import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable} from '../../../components/index';
 import {ContainerCreate, ContainerScale} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
+import {Dropdown, SplitButton, ButtonToolbar, MenuItem} from 'react-bootstrap';
 
 
-const COLUMNS = [{name: 'name'}, {name: 'image', render: renderTdImage},
-  {name: 'node'}, {name: 'ports', label: 'Ports Mapping'}, {name: 'status'}, {name: 'actions'}];
+const COLUMNS = [
+  {
+    name: 'name'
+  },
+
+  {
+    name: 'image',
+    render: renderTdImage
+  },
+
+  {
+    name: 'node'
+  },
+
+  // {
+  //   name: 'ports',
+  //   label: 'Ports Mapping'
+  // },
+
+  {
+    name: 'status',
+    width: '15%'
+  },
+
+  {
+    name: 'actions',
+    width: '15%'
+  }
+];
+
 COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
 const GROUP_BY_SELECT = ['node', 'image', 'status'];
 
@@ -85,6 +114,9 @@ export default class ClusterDetail extends Component {
     this.additionalData(rows);
 
     return (
+      <div className="panel">
+        <div className="panel-body">
+          <div className="panel-content">
       <div className={"container-fluid " + s.clusterDetail}>
         <h1>
           <Link to="/clusters">Clusters</Link> / {name}
@@ -119,6 +151,9 @@ export default class ClusterDetail extends Component {
           No containers yet
         </div>}
       </div>
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -137,26 +172,35 @@ export default class ClusterDetail extends Component {
   tdActions(row) {
     return (
       <td className="td-actions" key="actions">
-        <i className="fa fa-eye" data-toggle="tooltip" data-placement="top" title="Show Logs"
-           onClick={this.showLog.bind(this)}/>
-        {!row.run &&
-        <span> | <i className="fa fa-play" data-toggle="tooltip" title="Start"
-                    onClick={this.startContainer.bind(this)}/></span>}
-        {row.run &&
-        <span> | <i className="fa fa-stop" title="Stop" onClick={this.stopContainer.bind(this)}/></span>}
-        {row.run &&
-        <span> | <i className="fa fa-refresh" title="Restart"
-                    onClick={this.restartContainer.bind(this)}/></span>}
-        {row.run &&
-        <span> | <i className="fa fa-plus-circle" title="Scale"
-                    onClick={this.scaleContainer.bind(this)}/></span>}
-                    <span> | <i className="fa fa-info" title="Details"
-                                onClick={this.showDetails.bind(this)}/></span>
-        {row.run &&
-        <span> | <i className="fa fa-bar-chart" title="Stats"
-                    onClick={this.showStats.bind(this)}/></span>}
-                    <span> | <i className="fa fa-trash" title="Remove"
-                                onClick={this.removeContainer.bind(this)}/></span>
+        <ButtonToolbar bsStyle="default">
+          <SplitButton bsStyle="info"
+                       title="Show Log"
+                       onClick={this.showLog.bind(this)}>
+
+            <MenuItem eventKey="1" onClick={this.showLog.bind(this)}>Show Log</MenuItem>
+            <MenuItem divider />
+            {!row.run && (
+              <MenuItem eventKey="2" onClick={this.startContainer.bind(this)}>Start</MenuItem>
+            )}
+            {row.run && (
+              <MenuItem eventKey="3" onClick={this.stopContainer.bind(this)}>Stop</MenuItem>
+            )}
+            {row.run && (
+              <MenuItem eventKey="4" onClick={this.restartContainer.bind(this)}>Restart</MenuItem>
+            )}
+            <MenuItem divider />
+            {row.run && (
+              <MenuItem eventKey="5" onClick={this.scaleContainer.bind(this)}>Scale</MenuItem>
+            )}
+            <MenuItem eventKey="6" onClick={this.showDetails.bind(this)}>Details</MenuItem>
+            {row.run && (
+              <MenuItem eventKey="7" onClick={this.showStats.bind(this)}>Stats</MenuItem>
+            )}
+            <MenuItem divider />
+            <MenuItem eventKey="8" onClick={this.removeContainer.bind(this)}>Delete</MenuItem>
+
+          </SplitButton>
+        </ButtonToolbar>
       </td>);
   }
 

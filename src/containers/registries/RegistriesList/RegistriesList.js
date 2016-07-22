@@ -11,16 +11,25 @@ const COLUMNS = [
   {
     name: 'name',
     label: 'Name',
+    width: '10%',
+    sortable: true
+  },
+  {
+    name: 'host',
+    label: 'Host',
+    width: '20%',
     sortable: true
   },
   {
     name: 'port',
     label: 'Port',
+    width: '3%',
     sortable: true
   },
   {
     name: 'protocol',
     label: 'Protocol',
+    width: '3%',
     sortable: true
   },
   {
@@ -31,7 +40,8 @@ const COLUMNS = [
   },
   {
     name: 'actions',
-    label: 'Actions'
+    label: 'Actions',
+    width: '15%'
   }
 ];
 
@@ -40,6 +50,7 @@ const COLUMNS = [
     registries: state.registries,
     registriesUI: state.registriesUI
   }), {loadRegistries, removeRegistry})
+
 export default class RegistriesList extends Component {
   static propTypes = {
     registries: PropTypes.array.isRequired,
@@ -66,9 +77,11 @@ export default class RegistriesList extends Component {
 
     let rows = [...registries];
     this.additionalData(rows);
+
     let showLoading = false;
     let showError = false;
     let showData = false;
+
     if (loadingError) {
       showError = true;
     } else if (loading && (!rows || rows.length === 0)) {
@@ -76,6 +89,7 @@ export default class RegistriesList extends Component {
     } else {
       showData = true;
     }
+
     return (
       <div className="panel">
         <div className="panel-body">
