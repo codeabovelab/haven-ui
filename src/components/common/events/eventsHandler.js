@@ -10,7 +10,7 @@ export class EventsHandler {
 
   static dispatch(event) {
     if (event && event.info) {
-      toastr.info(JSON.stringify(event.info));
+      //toastr.info(JSON.stringify(event.info));
       store.dispatch({type: 'events/NEW', event: event});
     }
   }

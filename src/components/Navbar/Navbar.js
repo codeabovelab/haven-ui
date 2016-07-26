@@ -31,47 +31,6 @@ export default class Navbar extends Component {
         <a href="" className="al-logo clearfix"><span>Dock</span>master</a>
         <a href className="collapse-menu-link" ba-sidebar-toggle-menu></a>
 
-        {false && <ul className="al-msg-center clearfix">
-          <li uib-dropdown>
-            <a href uib-dropdown-toggle>
-              <i className="fa fa-bell-o"></i><span>0</span>
-
-              <div className="notification-ring"></div>
-            </a>
-
-            <div uib-dropdown-menu className="top-dropdown-menu">
-              <i className="dropdown-arr"></i>
-
-              <div className="header clearfix">
-                <strong>Notifications</strong>
-                <a href>Mark All as Read</a>
-                <a href>Settings</a>
-              </div>
-              <div className="msg-list">
-              </div>
-              <a href>See all notifications</a>
-            </div>
-          </li>
-          <li uib-dropdown>
-            <a href className="msg" uib-dropdown-toggle>
-              <i className="fa fa-envelope-o"></i><span>0</span>
-              <div className="notification-ring"></div>
-            </a>
-            <div uib-dropdown-menu className="top-dropdown-menu">
-              <i className="dropdown-arr"></i>
-              <div className="header clearfix">
-                <strong>Messages</strong>
-                <a href>Mark All as Read</a>
-                <a href>Settings</a>
-              </div>
-              <div className="msg-list">
-              </div>
-              <a href>See all messages</a>
-            </div>
-          </li>
-        </ul>
-        }
-
         <Dropdown className="user-profile">
           <Dropdown.Toggle>
             <a className="profile-toggle-link">
@@ -79,7 +38,7 @@ export default class Navbar extends Component {
             </a>
           </Dropdown.Toggle>
 
-          <Dropdown.Menu>
+          <Dropdown.Menu pullRight>
             <MenuItem eventKey="1">Profile</MenuItem>
             <MenuItem eventKey="2">Settings</MenuItem>
             <MenuItem eventKey="3">Sign out</MenuItem>

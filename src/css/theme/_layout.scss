@@ -17,9 +17,6 @@ body {
   font: 14px/16px $font-family;
   color: $default-text;
   background-color: $body-bg;
-  &.blur-theme {
-    @include main-background();
-  }
 }
 
 body.mobile{
@@ -236,7 +233,8 @@ a {
   }
 
   .al-main {
-    height: 100%;
+    height: calc(100% - 40px);
+    overflow: auto;
   }
 
   .al-content {

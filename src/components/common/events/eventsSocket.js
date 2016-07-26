@@ -1,6 +1,6 @@
 import {Stomp} from 'stompjs/lib/stomp.min.js';
 import SockJS from 'sockjs-client';
-import config from '../../config';
+import config from '../../../config';
 import {EventsHandler} from './eventsHandler';
 import {eventsMock} from './eventsMock';
 

@@ -30,8 +30,11 @@ a.al-logo {
 
 .user-profile {
   float: right;
-  min-width: 230px;
-  margin-top: 10px;
+  margin-top: 4px;
+
+  .btn-default {
+    background: #fff;
+  }
 }
 
 .al-user-profile {

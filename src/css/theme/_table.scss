@@ -25,7 +25,9 @@
         line-height: normal;
         border-top: 1px solid $border-light;
         &.td-actions {
-          white-space: nowrap;
+          .btn-group {
+            display: flex;
+          }
         }
         &:first-child {
           text-align: center;

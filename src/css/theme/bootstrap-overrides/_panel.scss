@@ -40,13 +40,6 @@ $panel-heading-font-size: 16px;
   }
 }
 
-.panel.panel-blur {
-  $blurredBgUrl: $images-root + 'blur-bg-blurred.jpg';
-  background: url($blurredBgUrl);
-  transition: none;
-  background-attachment: fixed;
-}
-
 .panel {
   > .panel-body {
     padding: 15px 22px;
@@ -65,16 +58,30 @@ $panel-heading-font-size: 16px;
 .panel-heading, .panel-footer {
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
   box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.12);
-  height: $panel-title-height;
   font-size: $panel-heading-font-size;
   $vertical-padding: ($panel-title-height - $panel-heading-font-size) / 2;
   padding: $vertical-padding 22px;
 }
 
 .panel-title {
+  display: table;
+  width: 100%;
   font-weight: $font-normal;
   text-transform: uppercase;
-  opacity: 0.9;
+  vertical-align: middle;
+  > h3 {
+    display: table-cell;
+    vertical-align: middle;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: normal;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+  }
+  > .btn-toolbar {
+    display: table-cell;
+  }
 }
 
 .panel-default {
@@ -86,6 +93,12 @@ $panel-heading-font-size: 16px;
   }
 }
 
+
+.panel-default {
+  > .panel-heading {
+    background-color: transparent;
+  }
+}
 
 .panel-primary {
   > .panel-heading {

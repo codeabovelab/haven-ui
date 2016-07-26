@@ -14,7 +14,7 @@ import useScroll from 'scroll-behavior/lib/useStandardScroll';
 import {loadFromLS as loadAuth} from 'redux/modules/auth/auth';
 import {loadFromLS as loadMenuLeft} from 'redux/modules/menuLeft/menuLeft';
 import {ConfirmDialog, SimpleModal} from './components/index';
-import {connectEvents} from './components/events/eventsSocket';
+import {connectEvents} from './components/common/events/eventsSocket';
 
 import getRoutes from './routes';
 
