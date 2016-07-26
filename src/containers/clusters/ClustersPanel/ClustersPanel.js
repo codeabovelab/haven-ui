@@ -21,7 +21,7 @@ export default class ClustersPanel extends Component {
   statisticsMetrics = [
     {
       type: 'number',
-      title: 'Active Clusters'
+      title: 'Clusters Running'
     },
     {
       type: 'number',
@@ -33,7 +33,7 @@ export default class ClustersPanel extends Component {
     },
     {
       type: 'number',
-      title: 'Error Events in last 10 mins'
+      title: 'Errors in last 24 hours'
     }
   ];
 

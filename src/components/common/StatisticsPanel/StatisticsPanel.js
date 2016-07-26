@@ -9,7 +9,6 @@ export default class StatisticsPanel extends React.Component {
   };
 
   render() {
-    console.log('props', this.props);
     return (
       <Row>
         {this.props.metrics && this.props.metrics.map((metric, index) => {
