@@ -18,6 +18,25 @@ export default class ClustersPanel extends Component {
     load: PropTypes.func.isRequired
   };
 
+  statisticsMetrics = [
+    {
+      type: 'number',
+      title: 'Active Clusters'
+    },
+    {
+      type: 'number',
+      title: 'Running Nodes'
+    },
+    {
+      type: 'number',
+      title: 'Running Containers'
+    },
+    {
+      type: 'number',
+      title: 'Error Events in last 10 mins'
+    }
+  ];
+
   componentDidMount() {
     const {load} = this.props;
     load();
@@ -27,6 +46,22 @@ export default class ClustersPanel extends Component {
   render() {
     const {clusters, clustersIds} = this.props;
     const clustersList = clustersIds !== null ? clustersIds.map(id => clusters[id]) : null;
+
+    let clusterCount = 0;
+    let runningNodes = 0;
+    let runningContainers = 0;
+    let errorCount = 0;
+
+    if (clustersIds) {
+      clusterCount = clustersIds.length || 0;
+    }
+
+    if (clustersList && clustersList.length > 0) {
+      clustersList.forEach((cluster) => {
+        runningNodes += cluster.nodes.on || 0;
+        runningContainers += cluster.containers.on || 0;
+      });
+    }
 
     const clustersHeaderBar = (
       <div className="clearfix">
@@ -52,9 +87,9 @@ export default class ClustersPanel extends Component {
 
     return (
       <div>
-        <StatisticsPanel>
-          test
-        </StatisticsPanel>
+        <StatisticsPanel metrics={this.statisticsMetrics}
+                         values={[clusterCount, runningNodes, runningContainers, errorCount]}
+        />
 
         <ClustersList loading={typeof clustersList === "undefined"}
                       data={clustersList}

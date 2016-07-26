@@ -241,3 +241,24 @@ a {
     height: 100%;
   }
 }
+
+
+.metric-row {
+  display: table;
+  width: 100%;
+
+  & > .metric-value {
+    display: table-cell;
+    width: 30%;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 2.5em;
+  }
+
+  & > .metric-label {
+    display: table-cell;
+    height: 4em;
+    width: 70%;
+    vertical-align: middle;
+  }
+}
