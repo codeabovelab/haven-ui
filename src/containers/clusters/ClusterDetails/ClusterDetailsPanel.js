@@ -6,7 +6,7 @@ import { Link, browserHistory } from 'react-router';
 import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, StatisticsPanel} from '../../../components/index';
 import {ContainerCreate, ContainerScale} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
-import {Dropdown, SplitButton, ButtonToolbar, MenuItem} from 'react-bootstrap';
+import {Dropdown, SplitButton, ButtonToolbar, MenuItem, Panel, ProgressBar} from 'react-bootstrap';
 
 
 const COLUMNS = [
@@ -146,6 +146,18 @@ export default class ClusterDetailsPanel extends Component {
       });
     }
 
+    const jobsHeaderBar = (
+      <div className="clearfix">
+        <h3>Jobs</h3>
+      </div>
+    );
+
+    const eventsHeaderBar = (
+      <div className="clearfix">
+        <h3>Events</h3>
+      </div>
+    );
+
     return (
       <div>
         <StatisticsPanel metrics={this.statisticsMetrics}
@@ -160,12 +172,6 @@ export default class ClusterDetailsPanel extends Component {
             <Link to="/clusters">Clusters</Link> / {name}
           </h1>
 
-          <div className="page-info-group">
-            <div>
-              <label># of Containers:</label>
-              <value>{rows && rows.length}</value>
-            </div>
-          </div>
           <div className="page-actions">
             <div className="btn-group">
               <button className="btn btn-primary" onClick={this.createContainer.bind(this)}><i className="fa fa-plus"/>
@@ -193,6 +199,18 @@ export default class ClusterDetailsPanel extends Component {
             </div>
           </div>
         </div>
+
+        <Panel header={jobsHeaderBar}>
+          {!rows && (
+            <ProgressBar active now={100} />
+          )}
+        </Panel>
+
+        <Panel header={eventsHeaderBar}>
+          {!rows && (
+            <ProgressBar active now={100} />
+          )}
+        </Panel>
       </div>
     );
   }
