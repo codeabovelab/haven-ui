@@ -78,7 +78,7 @@ function renderTdImage(row) {
     restartContainer: containerActions.restart,
     removeContainer: containerActions.remove
   })
-export default class ClusterDetail extends Component {
+export default class ClusterDetailsPanel extends Component {
   static propTypes = {
     clusters: PropTypes.object,
     containers: PropTypes.object,
@@ -98,7 +98,7 @@ export default class ClusterDetail extends Component {
   }
 
   render() {
-    let s = require('./ClusterDetail.scss');
+    let s = require('./ClusterDetailsPanel.scss');
     const {containers, clusters, params: {name}} = this.props;
     const cluster = clusters[name];
 

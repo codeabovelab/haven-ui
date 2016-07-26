@@ -4,9 +4,9 @@ export Login from './Login/Login';
 export LoginSuccess from './LoginSuccess/LoginSuccess';
 export NotFound from './NotFound/NotFound';
 
-export ClusterList from './clusters/ClusterList/ClusterList';
-export ClusterDetail from './clusters/ClusterDetail/ClusterDetail';
-export ClusterAdd from './clusters/ClusterAdd/ClusterAdd';
+export ClustersPanel from './clusters/ClustersPanel/ClustersPanel';
+export ClusterDetailsPanel from './clusters/ClusterDetails/ClusterDetailsPanel';
+export ClusterAdd from '../components/clusters/ClusterAdd';
 export ContainerCreate from './containers/ContainerCreate/ContainerCreate';
 export ContainerScale from './containers/ContainerScale/ContainerScale';
 export NodesList from './nodes/NodesList/NodesList';
