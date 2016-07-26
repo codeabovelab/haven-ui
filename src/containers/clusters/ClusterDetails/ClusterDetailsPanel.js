@@ -3,7 +3,7 @@ import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import { Link, browserHistory } from 'react-router';
-import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable} from '../../../components/index';
+import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, StatisticsPanel} from '../../../components/index';
 import {ContainerCreate, ContainerScale} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
 import {Dropdown, SplitButton, ButtonToolbar, MenuItem} from 'react-bootstrap';
@@ -91,6 +91,25 @@ export default class ClusterDetailsPanel extends Component {
     removeContainer: PropTypes.func.isRequired
   };
 
+  statisticsMetrics = [
+    {
+      type: 'number',
+      title: 'Containers Running'
+    },
+    {
+      type: 'number',
+      title: 'Nodes in the Cluster'
+    },
+    {
+      type: 'number',
+      title: 'Running Jobs'
+    },
+    {
+      type: 'number',
+      title: 'Errors in last 24 hours'
+    }
+  ];
+
   componentDidMount() {
     const {loadContainers, params: {name}} = this.props;
     loadContainers(name);
@@ -113,44 +132,65 @@ export default class ClusterDetailsPanel extends Component {
     const rows = containersIds == null ? null : containersIds.map(id => containers[id]);
     this.additionalData(rows);
 
-    return (
-      <div className="panel">
-        <div className="panel-body">
-          <div className="panel-content">
-      <div className={"container-fluid " + s.clusterDetail}>
-        <h1>
-          <Link to="/clusters">Clusters</Link> / {name}
-        </h1>
-        <div className="page-info-group">
-          <div>
-            <label># of Containers:</label>
-            <value>{rows && rows.length}</value>
-          </div>
-        </div>
-        <div className="page-actions">
-          <div className="btn-group">
-            <button className="btn btn-primary" onClick={this.createContainer.bind(this)}><i className="fa fa-plus"/>
-              {' '}New Container
-            </button>
-            <button className="btn btn-danger" onClick={this.deleteCluster.bind(this)}><i className="fa fa-trash"/>
-              {' '}Delete Cluster
-            </button>
-          </div>
-        </div>
-        <div className="clearfix"></div>
-        {rows && rows.length > 0 &&
-        <div>
-          <div className="containers">
-            <DockTable columns={COLUMNS} rows={rows} title="Containers" groupBy="node"
-                       groupBySelect={GROUP_BY_SELECT} size={DockTable.SIZES.SM}/>
-          </div>
-        </div>
+    let runningContainers = 0;
+    let runningNodes = 0;
+    let runningJobs = 0;
+    let errorCount = 0;
+
+
+    if (rows && rows.length > 0) {
+      rows.forEach((container) => {
+        if (container.run) {
+          runningContainers++;
         }
-        {rows && rows.length === 0 &&
-        <div className="alert alert-info">
-          No containers yet
-        </div>}
-      </div>
+      });
+    }
+
+    return (
+      <div>
+        <StatisticsPanel metrics={this.statisticsMetrics}
+                         values={[runningContainers, runningNodes, runningJobs, errorCount]}
+        />
+
+        <div className="panel">
+          <div className="panel-body">
+            <div className="panel-content">
+        <div className={"container-fluid " + s.clusterDetail}>
+          <h1>
+            <Link to="/clusters">Clusters</Link> / {name}
+          </h1>
+
+          <div className="page-info-group">
+            <div>
+              <label># of Containers:</label>
+              <value>{rows && rows.length}</value>
+            </div>
+          </div>
+          <div className="page-actions">
+            <div className="btn-group">
+              <button className="btn btn-primary" onClick={this.createContainer.bind(this)}><i className="fa fa-plus"/>
+                {' '}New Container
+              </button>
+              <button className="btn btn-danger" onClick={this.deleteCluster.bind(this)}><i className="fa fa-trash"/>
+                {' '}Delete Cluster
+              </button>
+            </div>
+          </div>
+          <div className="clearfix"></div>
+          {rows && rows.length > 0 &&
+          <div>
+            <div className="containers">
+              <DockTable columns={COLUMNS} rows={rows} title="Containers" groupBy="node"
+                         groupBySelect={GROUP_BY_SELECT} size={DockTable.SIZES.SM}/>
+            </div>
+          </div>
+          }
+          {rows && rows.length === 0 &&
+          <div className="alert alert-info">
+            No containers yet
+          </div>}
+        </div>
+            </div>
           </div>
         </div>
       </div>
