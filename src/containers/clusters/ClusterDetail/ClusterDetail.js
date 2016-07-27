@@ -278,7 +278,7 @@ export default class ClusterDetail extends Component {
   removeContainer(event) {
     const {removeContainer, loadContainers, params: {name}} = this.props;
     let container = this._getContainerByTarget(event.target);
-    confirm('Are you sure you want to remove container?')
+    confirm('Are you sure you want to remove this container?')
       .then(() => {
         removeContainer(container).catch(() => null)
           .then(() => loadContainers(name));
