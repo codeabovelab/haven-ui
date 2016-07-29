@@ -23,6 +23,11 @@ export default class ClustersList extends Component {
       width: '30%'
     },
     {
+      name: 'features',
+      label: 'Features',
+      width: '20%'
+    },
+    {
       name: 'nodes',
       label: 'No of Nodes',
       width: '15%',
@@ -37,8 +42,7 @@ export default class ClustersList extends Component {
     {
       name: 'alerts',
       label: '# of Alerts',
-      width: '15%',
-      render: this.containersRender
+      width: '15%'
     }
   ];
 
