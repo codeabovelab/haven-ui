@@ -26,7 +26,8 @@ export default class ClustersList extends Component {
     {
       name: 'features',
       label: 'Features',
-      width: '20%'
+      width: '20%',
+      render: this.featuresRender
     },
     {
       name: 'nodes',

@@ -48,7 +48,6 @@ export default class DashboardNodesList extends Component {
             <DockTable columns={this.COLUMNS}
                        rows={this.props.data}
                        searchable={false}
-                       striped={false}
             />
           )}
         </Panel>
