@@ -46,9 +46,9 @@ export default class ContainerLog extends Component {
         </div>
         }
         {!loadingLogs &&
-        <div className="log jumbotron-text">
-          {paragraphs.map((str, key) => <p key={key}>{str}</p>)}
-        </div>
+        <textarea className="log" readOnly>
+          {logs}
+        </textarea>
         }
       </div>
     );

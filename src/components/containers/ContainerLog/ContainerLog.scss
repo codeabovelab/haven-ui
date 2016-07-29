@@ -1,8 +1,11 @@
 .containerLog {
   :global(.log) {
     white-space: pre;
-    p {
-      margin-bottom: 0;
-    }
+    font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+    font-size: 0.8em;
+    width: 100%;
+    min-height: 500px;
+    margin: 0;
+    resize: none;
   }
 }
