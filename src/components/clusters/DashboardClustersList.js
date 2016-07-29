@@ -14,6 +14,7 @@ export default class ClustersList extends Component {
       name: 'title',
       label: 'Name',
       sortable: true,
+      width: '10%',
       render: this.titleRender
     },
     {
@@ -30,19 +31,16 @@ export default class ClustersList extends Component {
     {
       name: 'nodes',
       label: 'No of Nodes',
-      width: '15%',
       render: this.nodesRender
     },
     {
       name: 'containers',
       label: '# of Containers',
-      width: '15%',
       render: this.containersRender
     },
     {
       name: 'alerts',
-      label: '# of Alerts',
-      width: '15%'
+      label: '# of Alerts'
     }
   ];
 
@@ -59,6 +57,7 @@ export default class ClustersList extends Component {
           {(this.props.data && !this.props.loading) && (
             <DockTable columns={this.COLUMNS}
                        rows={this.props.data}
+                       searchable={false}
             />
           )}
         </Panel>
