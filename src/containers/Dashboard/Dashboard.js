@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 import TimeAgo from 'react-timeago';
 import _ from 'lodash';
 import {Row, Col, Panel} from 'react-bootstrap';
-import {DockTable, StatisticsPanel, DashboardNodesList} from '../../components';
+import {DockTable, StatisticsPanel, DashboardNodesList, DashboardClustersList} from '../../components';
 import {load as loadClusters} from 'redux/modules/clusters/clusters';
 import {load as loadNodes} from 'redux/modules/nodes/nodes';
 
@@ -60,7 +60,7 @@ export default class Dashboard extends Component {
     // require the logo image both from client and server
     const logoImage = require('./logo.png');
 
-    const activeclusters = 0;
+    let activeClusters = 0;
     let runningNodes = 0;
     const runningContainers = 0;
     const errorCount = 0;
@@ -68,6 +68,12 @@ export default class Dashboard extends Component {
     let top5Memory = [];
     let top5CPU = [];
     let top5Network = [];
+
+    if (this.props.clusters) {
+      const clusters = Object.values(this.props.clusters);
+      console.log('clusters', clusters);
+      activeClusters = clusters.length;
+    }
 
     if (this.props.nodes) {
       const nodes = Object.values(this.props.nodes);
@@ -96,12 +102,21 @@ export default class Dashboard extends Component {
       runningNodes = nodes.length;
     }
 
+    let clusters;
+    if (this.props.clusters) {
+      clusters = Object.values(this.props.clusters);
+    }
+
     return (
       <div className={styles.home}>
         <Helmet title="Home"/>
 
         <StatisticsPanel metrics={this.statisticsMetrics}
-                         values={[activeclusters, runningNodes, runningContainers, errorCount]}
+                         values={[activeClusters, runningNodes, runningContainers, errorCount]}
+        />
+
+        <DashboardClustersList loading={typeof this.props.clusters === "undefined"}
+                               data={clusters}
         />
 
         <Row>

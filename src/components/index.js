@@ -18,3 +18,4 @@ export ContainerDetails from './containers/ContainerDetails/ContainerDetails';
 export ContainerStatistics from './containers/ContainerStatistics/ContainerStatistics';
 
 export DashboardNodesList from './nodes/DashboardNodesList/DashboardNodesList';
+export DashboardClustersList from '../components/clusters/DashboardClustersList';
