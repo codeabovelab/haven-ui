@@ -5,110 +5,133 @@ import {connect} from 'react-redux';
 import TimeAgo from 'react-timeago';
 import _ from 'lodash';
 import {Row, Col, Panel} from 'react-bootstrap';
+import {DockTable, StatisticsPanel, DashboardNodesList} from '../../components';
+import {load as loadClusters} from 'redux/modules/clusters/clusters';
+import {load as loadNodes} from 'redux/modules/nodes/nodes';
 
 @connect(
   state => ({
+    clusters: state.clusters,
+    nodes: state.nodes,
     lastEvents: state.events.last
-  }))
+  }), {loadClusters, loadNodes})
 export default class Dashboard extends Component {
   static propTypes = {
-    lastEvents: PropTypes.array
+    lastEvents: PropTypes.array,
+    clusters: PropTypes.object,
+    nodes: PropTypes.object,
+    loadClusters: PropTypes.func.isRequired,
+    loadNodes: PropTypes.func.isRequired
   };
 
+  statisticsMetrics = [
+    {
+      type: 'number',
+      title: 'Clusters Running'
+    },
+    {
+      type: 'number',
+      title: 'Running Nodes'
+    },
+    {
+      type: 'number',
+      title: 'Running Containers'
+    },
+    {
+      type: 'number',
+      title: 'Errors in last 24 hours'
+    }
+  ];
+
+  componentDidMount() {
+    const {loadClusters, loadNodes} = this.props;
+
+    loadClusters();
+    loadNodes();
+  }
+
   render() {
+    console.log(this.props);
+
     const {lastEvents} = this.props;
     let events = lastEvents ? lastEvents.slice(0, 20) : null;
 
     const styles = require('./Dashboard.scss');
     // require the logo image both from client and server
     const logoImage = require('./logo.png');
+
+    const activeclusters = 0;
+    let runningNodes = 0;
+    const runningContainers = 0;
+    const errorCount = 0;
+
+    let top5Memory = [];
+    let top5CPU = [];
+    let top5Network = [];
+
+    if (this.props.nodes) {
+      const nodes = Object.values(this.props.nodes);
+
+      console.log('nodes', nodes);
+      top5Memory = nodes.filter((el) => typeof el.health !== "undefined").sort((a, b) => {
+        if (a.health.sysMemUsed > b.health.sysMemUsed) {
+          return -1;
+        } else if (a.health.sysMemUsed < b.health.sysMemUsed) {
+          return 1;
+        }
+
+        return 0;
+      });
+
+      top5CPU = nodes.filter((el) => typeof el.health !== "undefined").sort((a, b) => {
+        if (a.health.sysCpuLoad > b.health.sysCpuLoad) {
+          return -1;
+        } else if (a.health.sysCpuLoad < b.health.sysCpuLoad) {
+          return 1;
+        }
+
+        return 0;
+      });
+
+      runningNodes = nodes.length;
+    }
+
     return (
       <div className={styles.home}>
         <Helmet title="Home"/>
 
-        <Row className="pie-charts">
-          <div className="pie-chart-item-container">
-            <div className="pie-chart-item">
-              <Panel>
-                <div className="chart" data-percent="60"> <span className="percent"></span> </div>
+        <StatisticsPanel metrics={this.statisticsMetrics}
+                         values={[activeclusters, runningNodes, runningContainers, errorCount]}
+        />
 
-                <div className="description">
-                  <div>Metric #1</div>
-                  <div className="description-stats">Metric 1 stats</div>
-                </div>
+        <Row>
+          <Col sm={4}>
+            <DashboardNodesList title="Top 5 Memory Usage Nodes"
+                                count={5}
+                                metric="sysMemUsed"
+                                metricTitle="Memory Usage"
+                                data={top5Memory}
+            />
+          </Col>
 
-                <i className="chart-icon i-{{ ::chart.icon }}"></i>
-              </Panel>
-            </div>
-          </div>
+          <Col sm={4}>
+            <DashboardNodesList title="Top 5 CPU Usage Nodes"
+                                count={5}
+                                metric="sysCpuLoad"
+                                metricTitle="CPU Usage"
+                                data={top5CPU}
+            />
+          </Col>
 
-          <div className="pie-chart-item-container">
-            <div className="pie-chart-item">
-              <Panel>
-                <div className="chart" data-percent="60"> <span className="percent"></span> </div>
-
-                <div className="description">
-                  <div>Metric #2</div>
-                  <div className="description-stats">Metric 2 stats</div>
-                </div>
-
-                <i className="chart-icon i-{{ ::chart.icon }}"></i>
-              </Panel>
-            </div>
-          </div>
-
-          <div className="pie-chart-item-container">
-            <div className="pie-chart-item">
-              <Panel>
-                <div className="chart" data-percent="60"> <span className="percent"></span> </div>
-
-                <div className="description">
-                  <div>Metric #3</div>
-                  <div className="description-stats">Metric 3 stats</div>
-                </div>
-
-                <i className="chart-icon i-{{ ::chart.icon }}"></i>
-              </Panel>
-            </div>
-          </div>
-
-          <div className="pie-chart-item-container">
-            <div className="pie-chart-item">
-              <Panel>
-                <div className="chart" data-percent="60"> <span className="percent"></span> </div>
-
-                <div className="description">
-                  <div>Metric #4</div>
-                  <div className="description-stats">Metric 4 stats</div>
-                </div>
-
-                <i className="chart-icon i-{{ ::chart.icon }}"></i>
-              </Panel>
-            </div>
-          </div>
+          <Col sm={4}>
+            <DashboardNodesList title="Top 5 Network Usage Nodes"
+                                count={5}
+                                metric="sysMemUsed"
+                                metricTitle="Network (I/O)"
+                                data={top5Network}
+            />
+          </Col>
         </Row>
-
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-sm-6"></div>
-            <div className="col-sm-6">
-              {events && (
-                <div className="card events">
-                  <div className="card-block">
-                    <h4 className="card-title">
-                      <i className="fa fa-bell"/>
-                      Events
-                    </h4>
-
-                    <ul className="list-group list-group-flush">
-                      {events.map(this.renderEvent.bind(this))}
-                    </ul>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
       </div>
     );
   }
