@@ -8,7 +8,14 @@ export default class DockTable extends Component {
     rows: PropTypes.array.isRequired,
     groupBy: PropTypes.string,
     groupBySelect: PropTypes.array,
+    searchable: PropTypes.boolean,
+    striped: PropTypes.boolean,
     size: PropTypes.string
+  };
+
+  static defaultProps = {
+    searchable: true,
+    striped: true
   };
 
   static SIZES = {SM: 'SM'};
@@ -44,8 +51,9 @@ export default class DockTable extends Component {
 
   //noinspection JSDuplicatedDeclaration
   constructor(...params) {
+    console.log('constructor', params);
     super(...params);
-    const {groupBy, columns} = this.props;
+    const {groupBy, columns, searchable} = this.props;
     this.columnsMap = _.keyBy(columns, 'name');
     this.state = {
       currentPage: 1,
@@ -82,7 +90,7 @@ export default class DockTable extends Component {
       this.generateCurrentPageData();
     }
     const s = require('./DockTable.scss');
-    const {title, groupBy, groupBySelect, size} = this.props;
+    const {title, groupBy, groupBySelect, size, searchable} = this.props;
     let formControlSm = ' ';
     if (size && size === DockTable.SIZES.SM) {
       formControlSm += 'table-sm';
@@ -90,11 +98,16 @@ export default class DockTable extends Component {
     return (
       <div className={s.dockTable}>
         <div className="docktable-header clearfix">
-          {title && <h2>{title}</h2>}
+          {title && (
+            <h2>{title}</h2>
+          )}
 
-          <input className={"form-control input-search" + formControlSm}
-                 onChange={this.queryChange.bind(this)}
-                 placeholder="Search" />
+          {searchable && (
+            <input className={"form-control input-search" + formControlSm}
+                   onChange={this.queryChange.bind(this)}
+                   placeholder="Search"
+            />
+          )}
 
           {groupBySelect && (
             <div className="select-container">
@@ -139,19 +152,24 @@ export default class DockTable extends Component {
 
   renderNoGroups() {
     const columns = this.allColumns;
-    const {size} = this.props;
+    const {size, striped} = this.props;
     let emptyTrsNumber = 0;
     if (this.currentPage !== 1) {
       emptyTrsNumber = this.pageSize - this.currentRows.length;
     }
     let emptyTrs = new Array(emptyTrsNumber);
     emptyTrs.fill(1);
-    let classes = ' ';
-    if (size && size === DockTable.SIZES.SM) {
-      classes += 'table-sm';
+
+    let classes = '';
+    if (striped) {
+      classes += ' table-striped';
     }
+    if (size && size === DockTable.SIZES.SM) {
+      classes += ' table-sm';
+    }
+
     return (
-      <table className={"table table-bordered table-striped" + classes}>
+      <table className={"table table-bordered" + classes}>
         {this.renderHeaderNoGroups()}
         <tbody>
         {this.currentRows.map((model, i) => (
