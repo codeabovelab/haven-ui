@@ -5,7 +5,7 @@ import {
   Dashboard,
   ClustersPanel,
   ClusterDetailsPanel,
-  NodesList,
+  NodesPanel,
   ImagesList,
   RegistriesList,
   Login,
@@ -41,8 +41,8 @@ export default (store) => {
         <Route name="Login Successful" path="loginSuccess" component={LoginSuccess}/>
         <Route name="Clusters" path="clusters" component={ClustersPanel}/>
         <Route name="Cluster :name" path="clusters/:name" component={ClusterDetailsPanel}/>
-        <Route name="Nodes List" path="nodes" component={NodesList}/>
-        <Route name="Images List" path="images" component={ImagesList}/>
+        <Route name="Nodes" path="nodes" component={NodesPanel}/>
+        <Route name="Images" path="images" component={ImagesList}/>
         <Route name="Registries" path="registries" component={RegistriesList}/>
       </Route>
 
