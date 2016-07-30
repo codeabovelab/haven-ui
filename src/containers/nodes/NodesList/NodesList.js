@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {load} from 'redux/modules/nodes/nodes';
 import {connect} from 'react-redux';
 import NodeAdd from '../NodeAdd/NodeAdd';
-import {DockTable} from '../../../components/index';
+import {DockTable, StatisticsPanel} from '../../../components/index';
 import {ButtonToolbar, SplitButton, Button, MenuItem} from 'react-bootstrap';
 
 const COLUMNS = [
@@ -19,7 +19,8 @@ const COLUMNS = [
     sortable: true
   },
   {
-    name: 'Health',
+    name: 'health',
+    label: 'Health Status',
     width: '40%'
   },
   {
@@ -41,6 +42,20 @@ export default class NodesList extends Component {
     load: PropTypes.func.isRequired
   };
 
+  statisticsMetrics = [
+    {
+      type: 'number',
+      title: 'Nodes Running'
+    },
+    {
+      type: 'number',
+      title: 'Nodes Stopped'
+    },
+    {
+      type: 'number',
+      title: 'Nodes Total'
+    }
+  ];
   componentDidMount() {
     const {load} = this.props;
     load();
@@ -50,26 +65,44 @@ export default class NodesList extends Component {
   render() {
     const {nodes, nodesIds} = this.props;
     const nodesList = nodesIds !== null ? nodesIds.map(id => nodes[id]) : null;
+    console.log(nodes);
+    let totalNodes = (nodesList !== null ? nodesList.length : 0);
+    let runningNodes = 0;
+    let stoppedNodes = 0;
 
+    if (totalNodes > 0) {
+      nodesList.forEach((node) => {
+        if (node.health != null) {
+          runningNodes++;
+        } else {
+          stoppedNodes++;
+        }
+      });
+    }
     return (
-      <div className="panel">
-        <div className="panel-body">
-          <div className="panel-content">
-            <ButtonToolbar className="page-actions">
-              <Button bsStyle="primary"
-                      onClick={this.addNode.bind(this)}>
-                <i className="fa fa-plus" />
-                Add Node
-              </Button>
-            </ButtonToolbar>
+      <div>
+        <StatisticsPanel metrics={this.statisticsMetrics}
+        values={[runningNodes, stoppedNodes, totalNodes]}
+        />
+        <div className="panel">
+          <div className="panel-body">
+            <div className="panel-content">
+              <ButtonToolbar className="page-actions">
+                <Button bsStyle="primary"
+                        onClick={this.addNode.bind(this)}>
+                  <i className="fa fa-plus" />
+                  Add Node
+                </Button>
+              </ButtonToolbar>
 
-            <div className="clearfix"></div>
+              <div className="clearfix"></div>
 
-            {nodesList && (
-              <DockTable columns={COLUMNS}
-                         rows={nodesList}
-              />
-            )}
+              {nodesList && (
+                <DockTable columns={COLUMNS}
+                           rows={nodesList}
+                />
+              )}
+          </div>
         </div>
       </div>
     </div>

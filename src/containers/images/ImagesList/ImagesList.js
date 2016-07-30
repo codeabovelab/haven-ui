@@ -2,22 +2,22 @@ import React, {Component, PropTypes} from 'react';
 import {loadImages} from 'redux/modules/images/images';
 import {load as loadRegistries} from 'redux/modules/registries/registries';
 import {connect} from 'react-redux';
-import {DockTable} from '../../../components/index';
+import {DockTable, StatisticsPanel} from '../../../components/index';
 import {RegisterEdit} from '../../index';
-import {Label} from 'react-bootstrap';
+import {Label, Badge, ButtonToolbar, SplitButton, MenuItem} from 'react-bootstrap';
 import _ from 'lodash';
 
 const COLUMNS = [
   {
     name: 'registry',
-    label: 'Registry',
-    width: '50%',
+    label: 'Registry Address',
+    width: '40%',
     sortable: true
   },
   {
     name: 'name',
     label: 'Name',
-    width: '50%',
+    width: '35%',
     sortable: true
   },
   {
@@ -25,6 +25,11 @@ const COLUMNS = [
     label: 'Tags',
     width: '15%',
     render: tagsRender
+  },
+  {
+    name: 'Actions',
+    width: '10%',
+    render: actionsRender
   }
 ];
 
@@ -48,6 +53,13 @@ export default class ImagesList extends Component {
     loadRegistries: PropTypes.func.isRequired
   };
 
+  statisticsMetrics = [
+    {
+      type: 'number',
+      title: 'Images Running'
+    }
+  ];
+
   componentDidMount() {
     const {loadImages, loadRegistries} = this.props;
 
@@ -65,7 +77,13 @@ export default class ImagesList extends Component {
     let showLoading = false;
     let showError = false;
     let showData = false;
+    let runningImages = 0;
 
+    if (rows && rows.length > 0) {
+      rows.forEach((image) => {
+        runningImages++;
+      });
+    }
     if (loadingError) {
       showError = true;
     } else if (loading && (!rows || rows.length === 0)) {
@@ -75,40 +93,45 @@ export default class ImagesList extends Component {
     }
 
     return (
-      <div className="panel">
-        <div className="panel-body">
-          <div className="panel-content">
-            {showLoading && (
-              <div className="text-xs-center">
-                <i className="fa fa-spinner fa-pulse fa-5x"/>
-                <h5>Loading...</h5>
-              </div>
-            )}
+      <div>
+        <StatisticsPanel metrics={this.statisticsMetrics}
+        values={[runningImages]}
+        />
+        <div className="panel">
+          <div className="panel-body">
+            <div className="panel-content">
+              {showLoading && (
+                <div className="text-xs-center">
+                  <i className="fa fa-spinner fa-pulse fa-5x"/>
+                  <h5>Loading...</h5>
+                </div>
+              )}
 
-            {showData && (
-              <div>
-                {rows && rows.length > 0 && (
-                  <div>
-                    <div className="containers">
-                      <DockTable columns={COLUMNS}
-                                 rows={rows}
-                                 groupBy="registry"
-                                 groupBySelect={GROUP_BY_SELECT} />
+              {showData && (
+                <div>
+                  {rows && rows.length > 0 && (
+                    <div>
+                      <div className="containers">
+                        <DockTable columns={COLUMNS}
+                                   rows={rows}
+                                   groupBy="registry"
+                                   groupBySelect={GROUP_BY_SELECT} />
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {rows && rows.length === 0 && (
-                  <div className="alert alert-info">
-                    No images yet
-                  </div>
-                )}
-              </div>
-            )}
+                  {rows && rows.length === 0 && (
+                    <div className="alert alert-info">
+                      No images yet
+                    </div>
+                  )}
+                </div>
+              )}
 
-            {showError && (
-              <div className="alert alert-danger">{loadingError}</div>
-            )}
+              {showError && (
+                <div className="alert alert-danger">{loadingError}</div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -134,4 +157,18 @@ function tagsRender(image) {
       })}
     </td>
   );
+}
+
+function actionsRender() {
+  return (
+    <td key="actions" className="td-actions">
+    <ButtonToolbar bsStyle="default">
+    <SplitButton bsStyle="info" title="Info">
+    <MenuItem eventKey="1">Information</MenuItem>
+    <MenuItem divider />
+    <MenuItem eventKey="2">Delete</MenuItem>
+    </SplitButton>
+    </ButtonToolbar>
+    </td>
+);
 }

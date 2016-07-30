@@ -46,7 +46,7 @@ export default class ClustersList extends Component {
   render() {
     const panelHeader = (
       <div className="clearfix">
-        <h3>Clusters</h3>
+        <h3>Cluster List</h3>
 
         <ButtonToolbar>
           <Button
