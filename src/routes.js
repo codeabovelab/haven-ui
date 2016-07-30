@@ -6,7 +6,7 @@ import {
   ClustersPanel,
   ClusterDetailsPanel,
   NodesPanel,
-  ImagesList,
+  ImagesPanel,
   RegistriesList,
   Login,
   LoginSuccess,
@@ -42,7 +42,7 @@ export default (store) => {
         <Route name="Clusters" path="clusters" component={ClustersPanel}/>
         <Route name="Cluster :name" path="clusters/:name" component={ClusterDetailsPanel}/>
         <Route name="Nodes" path="nodes" component={NodesPanel}/>
-        <Route name="Images" path="images" component={ImagesList}/>
+        <Route name="Images" path="images" component={ImagesPanel}/>
         <Route name="Registries" path="registries" component={RegistriesList}/>
       </Route>
 

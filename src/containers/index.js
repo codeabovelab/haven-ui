@@ -10,6 +10,6 @@ export ClusterAdd from '../components/clusters/ClusterAdd';
 export ContainerCreate from './containers/ContainerCreate/ContainerCreate';
 export ContainerScale from './containers/ContainerScale/ContainerScale';
 export NodesPanel from './nodes/NodesPanel/NodesPanel';
-export ImagesList from './images/ImagesList/ImagesList';
+export ImagesPanel from './images/ImagesPanel/ImagesPanel';
 export RegistriesList from './registries/RegistriesList/RegistriesList';
 export RegisterEdit from './registries/RegisterEdit/RegisterEdit';
