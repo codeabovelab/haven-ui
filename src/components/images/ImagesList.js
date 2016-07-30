@@ -55,6 +55,11 @@ export default class ImagesList extends Component {
                   groupBy="registry"
                   groupBySelect={GROUP_BY_SELECT} />
       )}
+      {this.props.data && this.props.data.length === 0 && (
+        <div className="alert alert-info">
+          No Images yet
+        </div>
+      )}
       </Panel>
     );
   }
