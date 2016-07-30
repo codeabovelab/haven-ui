@@ -54,7 +54,6 @@ export default class NodesPanel extends Component {
         }
       });
     }
-    
     return (
       <div>
         <StatisticsPanel metrics={this.statisticsMetrics}
