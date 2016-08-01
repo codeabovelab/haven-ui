@@ -10,6 +10,8 @@ export ConfirmDialog from './common/ConfirmDialog/ConfirmDialog';
 export SimpleModal from './common/SimpleModal/SimpleModal';
 export StatisticsPanel from './common/StatisticsPanel/StatisticsPanel';
 export ClustersList from './clusters/ClustersList';
+export NodesList from './nodes/NodesList';
+export ImagesList from './images/ImagesList';
 export OnOff from './common/OnOff/OnOff';
 export MenuLeft from './MenuLeft/MenuLeft';
 export Navbar from './Navbar/Navbar';

@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {load as loadRegistries} from 'redux/modules/registries/registries';
-import {DockTable} from '../../../components/index';
+import {DockTable, StatisticsPanel} from '../../../components/index';
 import {RegisterEdit} from '../../index';
 import _ from 'lodash';
 import {removeRegistry} from 'redux/modules/registries/registries';
@@ -11,7 +11,7 @@ const COLUMNS = [
   {
     name: 'name',
     label: 'Name',
-    width: '10%',
+    width: '15%',
     sortable: true
   },
   {
@@ -21,20 +21,8 @@ const COLUMNS = [
     sortable: true
   },
   {
-    name: 'port',
-    label: 'Port',
-    width: '3%',
-    sortable: true
-  },
-  {
-    name: 'protocol',
-    label: 'Protocol',
-    width: '3%',
-    sortable: true
-  },
-  {
     name: 'errorMessage',
-    label: 'Error',
+    label: 'Status',
     sortable: true,
     render: errorMessageRender
   },
@@ -59,6 +47,12 @@ export default class RegistriesList extends Component {
     removeRegistry: PropTypes.func.isRequired
   };
 
+  statisticsMetrics = [
+    {
+      type: 'number',
+      title: 'Registry Connected'
+    }
+  ];
   constructor(...params) {
     super(...params);
     let actionColumn = COLUMNS.find(column => column.name === 'actions');
@@ -81,6 +75,7 @@ export default class RegistriesList extends Component {
     let showLoading = false;
     let showError = false;
     let showData = false;
+    let connectedRegistries = rows.length;
 
     if (loadingError) {
       showError = true;
@@ -91,48 +86,53 @@ export default class RegistriesList extends Component {
     }
 
     return (
-      <div className="panel">
-        <div className="panel-body">
-          <div className="panel-content">
-            <div className="clearfix">
-              <div className="page-actions">
-                <button className="btn btn-primary"
-                        onClick={this.editRegister.bind(this, null)}>
-                  <i className="fa fa-plus"/>
-                  Add registry
-                </button>
+      <div>
+        <StatisticsPanel metrics={this.statisticsMetrics}
+        values={[connectedRegistries]}
+        />
+        <div className="panel">
+          <div className="panel-body">
+            <div className="panel-content">
+              <div className="clearfix">
+                <div className="page-actions">
+                  <button className="btn btn-primary"
+                          onClick={this.editRegister.bind(this, null)}>
+                    <i className="fa fa-plus"/>
+                    Add registry
+                  </button>
+                </div>
               </div>
-            </div>
 
-            {showLoading && (
-              <div className="text-xs-center">
-                <i className="fa fa-spinner fa-pulse fa-5x"/>
-                <h5>Loading...</h5>
-              </div>
-            )}
+              {showLoading && (
+                <div className="text-xs-center">
+                  <i className="fa fa-spinner fa-pulse fa-5x"/>
+                  <h5>Loading...</h5>
+                </div>
+              )}
 
-            {showData && (
-              <div>
-                {rows && rows.length > 0 && (
-                  <div>
-                    <div className="containers">
-                      <DockTable columns={COLUMNS}
-                                 rows={rows} />
+              {showData && (
+                <div>
+                  {rows && rows.length > 0 && (
+                    <div>
+                      <div className="containers">
+                        <DockTable columns={COLUMNS}
+                                   rows={rows} />
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {rows && rows.length === 0 && (
-                  <div className="alert alert-info">
-                    No Registries yet
-                  </div>
-                )}
-              </div>
-            )}
+                  {rows && rows.length === 0 && (
+                    <div className="alert alert-info">
+                      No Registries yet
+                    </div>
+                  )}
+                </div>
+              )}
 
-            {showError && (
-              <div className="alert alert-danger">{loadingError}</div>
-            )}
+              {showError && (
+                <div className="alert alert-danger">{loadingError}</div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -204,12 +204,14 @@ function inactiveRender(registry) {
 function errorMessageRender(registry) {
   const MAX_LEN = 60;
   let error = registry.errorMessage;
-  let errorShort = "";
-  if (error) {
+  let errorShort = "Connected";
+  let msgStyle = "";
+  if (error != null) {
+    msgStyle = "alert alert-danger";
     errorShort = error.length > MAX_LEN + 3 ? error.slice(0, MAX_LEN) + '...' : error;
   }
   return (
-    <td key="errorMessage" title={error}>{errorShort}</td>
+      <td key="errorMessage" title={error} className={msgStyle}>{errorShort}</td>
   );
 }
 
