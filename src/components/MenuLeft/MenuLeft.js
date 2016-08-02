@@ -34,6 +34,13 @@ export default class MenuLeft extends Component {
             </Link>
           </li>
 
+          <li className="al-sidebar-list-item" title="Containers">
+            <Link to="/clusters/all" className="al-sidebar-list-link">
+              <i className="fa fa-object-group fa-fw"/>
+              <span>Containers</span>
+            </Link>
+          </li>
+
           <li className="al-sidebar-list-item" title="Nodes">
             <Link to="/nodes" className="al-sidebar-list-link">
               <i className="fa fa-server fa-fw"/>
