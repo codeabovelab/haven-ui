@@ -7,7 +7,7 @@ import {
   ClusterDetailsPanel,
   NodesPanel,
   ImagesPanel,
-  RegistriesList,
+  RegistriesPanel,
   Login,
   LoginSuccess,
   NotFound,
@@ -43,7 +43,7 @@ export default (store) => {
         <Route name="Cluster :name" path="clusters/:name" component={ClusterDetailsPanel}/>
         <Route name="Nodes" path="nodes" component={NodesPanel}/>
         <Route name="Images" path="images" component={ImagesPanel}/>
-        <Route name="Registries" path="registries" component={RegistriesList}/>
+        <Route name="Registries" path="registries" component={RegistriesPanel}/>
       </Route>
 
       { /* Public Routes */ }

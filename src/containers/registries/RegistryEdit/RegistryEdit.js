@@ -33,11 +33,11 @@ const FIELDS = {
   registriesUI: state.registriesUI
 }), {addRegistry, editRegistry, loadRegistries})
 @reduxForm({
-  form: 'registerEdit',
+  form: 'registryEdit',
   validate: registerValidation,
   fields: ['name', 'host', 'port', 'username', 'password', 'secured']
 })
-export default class RegisterEdit extends Component {
+export default class RegistryEdit extends Component {
   static propTypes = {
     registry: PropTypes.object,
     addRegistry: PropTypes.func.isRequired,

@@ -20,15 +20,19 @@ export default class NodesPanel extends Component {
   statisticsMetrics = [
     {
       type: 'number',
-      title: 'Nodes Running'
+      title: 'Node Running',
+      titles: 'Nodes Running'
     },
     {
       type: 'number',
-      title: 'Nodes Stopped'
+      title: 'Node Stopped',
+      titles: 'Nodes Stopped'
     },
     {
       type: 'number',
-      title: 'Nodes Total'
+      title: 'Node Total',
+      titles: 'Nodes Total'
+
     }
   ];
   componentDidMount() {

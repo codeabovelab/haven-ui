@@ -3,7 +3,7 @@ import {loadImages} from 'redux/modules/images/images';
 import {load as loadRegistries} from 'redux/modules/registries/registries';
 import {connect} from 'react-redux';
 import {DockTable, ImagesList, StatisticsPanel} from '../../../components/index';
-import {RegisterEdit} from '../../index';
+import {RegistryEdit} from '../../index';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem} from 'react-bootstrap';
 import _ from 'lodash';
 
@@ -28,7 +28,8 @@ export default class ImagesPanel extends Component {
   statisticsMetrics = [
     {
       type: 'number',
-      title: 'Images Running'
+      title: 'Image Running',
+      titles: 'Images Running',
     }
   ];
 
@@ -67,10 +68,10 @@ export default class ImagesPanel extends Component {
   }
 
   addRegister() {
-    let contentComponent = <RegisterEdit/>;
+    let contentComponent = <RegistryEdit/>;
     window.simpleModal.show({
       contentComponent,
-      focus: RegisterEdit.focusSelector
+      focus: RegistryEdit.focusSelector
     });
   }
 }
