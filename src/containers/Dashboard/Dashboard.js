@@ -28,7 +28,7 @@ export default class Dashboard extends Component {
     {
       type: 'number',
       title: 'Cluster Running',
-      titles: 'Cluster Running'
+      titles: 'Clusters Running'
     },
     {
       type: 'number',
