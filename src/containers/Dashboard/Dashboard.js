@@ -27,19 +27,23 @@ export default class Dashboard extends Component {
   statisticsMetrics = [
     {
       type: 'number',
-      title: 'Clusters Running'
+      title: 'Cluster Running',
+      titles: 'Cluster Running'
     },
     {
       type: 'number',
-      title: 'Running Nodes'
+      title: 'Running Node',
+      titles: 'Running Nodes'
     },
     {
       type: 'number',
-      title: 'Running Containers'
+      title: 'Running Container',
+      titles: 'Running Containers'
     },
     {
       type: 'number',
-      title: 'Errors in last 24 hours'
+      title: 'Errors in last 24 hour',
+      titles: 'Error in last 24 hours'
     }
   ];
 
