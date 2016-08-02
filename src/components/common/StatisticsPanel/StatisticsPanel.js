@@ -21,7 +21,7 @@ export default class StatisticsPanel extends React.Component {
                   </div>
 
                   <div className="metric-label">
-                    {metric.title}
+                    {this.props.values[index] > 1 ? metric.titles : metric.title}
                   </div>
                 </div>
               </Panel>

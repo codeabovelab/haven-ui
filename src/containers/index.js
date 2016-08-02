@@ -11,5 +11,5 @@ export ContainerCreate from './containers/ContainerCreate/ContainerCreate';
 export ContainerScale from './containers/ContainerScale/ContainerScale';
 export NodesPanel from './nodes/NodesPanel/NodesPanel';
 export ImagesPanel from './images/ImagesPanel/ImagesPanel';
-export RegistriesList from './registries/RegistriesList/RegistriesList';
-export RegisterEdit from './registries/RegisterEdit/RegisterEdit';
+export RegistriesPanel from './registries/RegistriesPanel/RegistriesPanel';
+export RegistryEdit from './registries/RegistryEdit/RegistryEdit';
