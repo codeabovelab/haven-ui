@@ -22,7 +22,7 @@ export default class MenuLeft extends Component {
         <ul className="al-sidebar-list">
           <li className="al-sidebar-list-item" title="Dashboard">
             <Link to="/dashboard" className="al-sidebar-list-link">
-              <i className="ion-android-home"></i>
+              <i className="fa fa-tachometer"></i>
               <span>Dashboard</span>
             </Link>
           </li>
@@ -36,7 +36,7 @@ export default class MenuLeft extends Component {
 
           <li className="al-sidebar-list-item" title="Containers">
             <Link to="/clusters/all" className="al-sidebar-list-link">
-              <i className="fa fa-object-group fa-fw"/>
+              <i className="fa fa-square-o"/>
               <span>Containers</span>
             </Link>
           </li>
