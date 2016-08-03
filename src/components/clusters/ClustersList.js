@@ -7,7 +7,8 @@ export default class ClustersList extends Component {
   static propTypes = {
     data: PropTypes.array,
     loading: PropTypes.bool,
-    onNewCluster: PropTypes.func
+    onNewCluster: PropTypes.func,
+    onActionInvoke: PropTypes.func
   };
 
   COLUMNS = [
@@ -39,7 +40,7 @@ export default class ClustersList extends Component {
     {
       name: 'Actions',
       width: '50px',
-      render: this.actionsRender
+      render: this.actionsRender.bind(this)
     }
   ];
 
@@ -122,20 +123,21 @@ export default class ClustersList extends Component {
     );
   }
 
-  actionsRender() {
+  actionsRender(cluster) {
     return (
       <td key="actions" className="td-actions">
         <ButtonToolbar bsStyle="default">
           <SplitButton bsStyle="info"
                        title="Edit"
-                       pullRight>
+                       pullRight
+          >
 
-            <MenuItem eventKey="1">Edit</MenuItem>
+            <MenuItem onClick={this.props.onActionInvoke.bind(this, "edit", cluster.name)}>Edit</MenuItem>
             <MenuItem divider />
-            <MenuItem eventKey="2">Information</MenuItem>
-            <MenuItem eventKey="3">Config</MenuItem>
+            <MenuItem onClick={this.props.onActionInvoke.bind(this, "information", cluster.name)}>Information</MenuItem>
+            <MenuItem onClick={this.props.onActionInvoke.bind(this, "config", cluster.name)}>Config</MenuItem>
             <MenuItem divider />
-            <MenuItem eventKey="7">Delete</MenuItem>
+            <MenuItem onClick={this.props.onActionInvoke.bind(this, "delete", cluster.name)}>Delete</MenuItem>
 
           </SplitButton>
         </ButtonToolbar>

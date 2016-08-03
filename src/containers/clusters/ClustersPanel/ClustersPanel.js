@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import { Link } from 'react-router';
 import {DockTable, ClustersList, StatisticsPanel} from '../../../components';
 import {ClusterAdd} from '../../index';
-import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar} from 'react-bootstrap';
+import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Modal} from 'react-bootstrap';
 
 @connect(
   state => ({
@@ -43,6 +43,9 @@ export default class ClustersPanel extends Component {
 
   componentDidMount() {
     const {load} = this.props;
+
+    this.state = {};
+
     load();
     $('.input-search').focus();
   }
@@ -96,7 +99,8 @@ export default class ClustersPanel extends Component {
 
         <ClustersList loading={typeof clustersList === "undefined"}
                       data={clustersList}
-                      onNewCluster={this.createCluster.bind()}
+                      onNewCluster={this.createCluster.bind(this)}
+                      onActionInvoke={this.onActionInvoke.bind(this)}
         />
 
         <Panel header={eventsHeaderBar}>
@@ -104,8 +108,53 @@ export default class ClustersPanel extends Component {
             <ProgressBar active now={100} />
           )}
         </Panel>
+
+        {(this.state && this.state.clusterActionDialog) && (
+          <Modal show="true" bsSize="large">
+            <Modal.Header closeButton>
+              <Modal.Title>Modal heading</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              {this.state.clusterActionDialog}
+            </Modal.Body>
+          </Modal>
+        )}
       </div>
     );
+  }
+
+  onActionInvoke(action, cluster, event) {
+    switch (action) {
+      case "edit":
+        this.setState({
+          clusterActionDialog: (
+            <ClusterAdd cluster={cluster} />
+          )
+        });
+        return;
+
+      case "information":
+        this.setState({
+          clusterActionDialog: (
+            <ClusterAdd cluster={cluster} />
+          )
+        });
+        return;
+
+      case "config":
+        this.setState({
+          clusterActionDialog: (
+            <ClusterAdd cluster={cluster} />
+          )
+        });
+        return;
+
+      case "delete":
+        return;
+
+      default:
+        return;
+    }
   }
 
   createCluster() {
