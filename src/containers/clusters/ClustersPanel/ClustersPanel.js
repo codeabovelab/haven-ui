@@ -49,7 +49,7 @@ export default class ClustersPanel extends Component {
 
   render() {
     const {clusters, clustersIds} = this.props;
-    const clustersList = clustersIds !== null ? clustersIds.map(id => clusters[id]) : null;
+    const clustersList = clustersIds !== null ? clustersIds.filter(id => !(['all', 'orphans'].includes(id))).map(id => clusters[id]) : null;
 
     let clusterCount = 0;
     let runningNodes = 0;
