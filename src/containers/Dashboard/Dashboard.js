@@ -76,7 +76,7 @@ export default class Dashboard extends Component {
 
     if (this.props.clusters) {
       const clusters = clustersList;
-      console.log('clusters', clusters);
+      //console.log('clusters', clusters);
       activeClusters = clusters.length;
     }
 
@@ -88,7 +88,7 @@ export default class Dashboard extends Component {
     if (this.props.nodes) {
       const nodes = Object.values(this.props.nodes);
 
-      console.log('nodes', nodes);
+      //console.log('nodes', nodes);
       top5Memory = nodes.filter((el) => typeof el.health !== "undefined").sort((a, b) => {
         if (a.health.sysMemUsed > b.health.sysMemUsed) {
           return -1;
