@@ -24,26 +24,28 @@ export default class Navbar extends Component {
   };
 
   render() {
-    const {user, logout} = this.props;
+    const {user} = this.props;
 
     return (
       <div className="page-top clearfix" scroll-position="scrolled" max-height="50">
         <a href="" className="al-logo clearfix"><span>Dock</span>master</a>
         <a href className="collapse-menu-link" ba-sidebar-toggle-menu></a>
 
-        <Dropdown className="user-profile">
-          <Dropdown.Toggle>
-            <a className="profile-toggle-link">
-              <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y&s=45" />
-            </a>
-          </Dropdown.Toggle>
+        {user && (
+          <Dropdown className="user-profile">
+            <Dropdown.Toggle>
+              <a className="profile-toggle-link">
+                <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y&s=45" />
+              </a>
+            </Dropdown.Toggle>
 
-          <Dropdown.Menu pullRight>
-            <MenuItem eventKey="1">Profile</MenuItem>
-            <MenuItem eventKey="2">Settings</MenuItem>
-            <MenuItem onClick={this.handleLogout}>Sign out</MenuItem>
-          </Dropdown.Menu>
-        </Dropdown>
+            <Dropdown.Menu pullRight>
+              <MenuItem eventKey="1">Profile</MenuItem>
+              <MenuItem eventKey="2">Settings</MenuItem>
+              <MenuItem onClick={this.handleLogout}>Sign out</MenuItem>
+            </Dropdown.Menu>
+          </Dropdown>
+        )}
       </div>
     );
   }
