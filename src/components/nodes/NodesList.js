@@ -24,9 +24,17 @@ export default class NodesList extends Component {
       sortable: true
     },
     {
+      name: 'cluster',
+      label: 'Cluster',
+      width: '10%',
+      sortable: true,
+      render: this.clusterRender
+    },
+    {
       name: 'health',
       label: 'Health Status',
-      width: '40%'
+      width: '30%',
+      render: this.healthRender
     },
     {
       name: 'Actions',
@@ -66,18 +74,43 @@ export default class NodesList extends Component {
     );
   }
 
+  healthRender(registry) {
+    return (
+      <td>
+        {(registry.health.healthy) && (
+          <Label bsStyle="success">Healthy</Label>
+        )}
+        {(!registry.health.healthy) && (
+          <Label bsStyle="warning">Not Healthy</Label>
+        )}
+      </td>
+    );
+  }
+  clusterRender(registry) {
+    return (
+      <td>
+        {(registry.cluster != null) && (
+          <Link to={`/clusters/${registry.cluster}`}>{registry.cluster}</Link>
+        )}
+        {(registry.cluster == null) && (
+          <label>None</label>
+        )}
+      </td>
+    );
+  }
+
   actionsRender() {
     return (
       <td key="actions" className="td-actions">
-      <ButtonToolbar bsStyle="default">
-      <SplitButton bsStyle="info"
-    title="Edit">
-      <MenuItem eventKey="1">Edit</MenuItem>
-      <MenuItem divider />
-    <MenuItem eventKey="2">Delete</MenuItem>
-      </SplitButton>
-      </ButtonToolbar>
+        <ButtonToolbar bsStyle="default">
+          <SplitButton bsStyle="info"
+                       title="Edit">
+            <MenuItem eventKey="1">Edit</MenuItem>
+            <MenuItem divider />
+            <MenuItem eventKey="2">Delete</MenuItem>
+          </SplitButton>
+        </ButtonToolbar>
       </td>
-  );
+    );
   }
 }
