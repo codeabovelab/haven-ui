@@ -51,7 +51,6 @@ export default class DockTable extends Component {
 
   //noinspection JSDuplicatedDeclaration
   constructor(...params) {
-    console.log('constructor', params);
     super(...params);
     const {groupBy, columns, searchable} = this.props;
     this.columnsMap = _.keyBy(columns, 'name');
