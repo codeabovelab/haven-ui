@@ -56,11 +56,9 @@ export default class ClustersPanel extends Component {
     let runningContainers = 0;
     let errorCount = 0;
 
-    if (clustersIds) {
-      clusterCount = clustersIds.length || 0;
-    }
-
     if (clustersList && clustersList.length > 0) {
+      clusterCount = clustersList.length || 0;
+
       clustersList.forEach((cluster) => {
         runningNodes += cluster.nodes.on || 0;
         runningContainers += cluster.containers.on || 0;
