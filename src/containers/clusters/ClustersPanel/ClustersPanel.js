@@ -50,6 +50,7 @@ export default class ClustersPanel extends Component {
   render() {
     const {clusters, clustersIds} = this.props;
     const clustersList = clustersIds !== null ? clustersIds.filter(id => !(['all', 'orphans'].includes(id))).map(id => clusters[id]) : null;
+    const clustersAll = clustersIds !== null ? clustersIds.filter(id => id === 'all').map(id => clusters[id]) : null;
 
     let clusterCount = 0;
     let runningNodes = 0;
@@ -59,7 +60,7 @@ export default class ClustersPanel extends Component {
     if (clustersList && clustersList.length > 0) {
       clusterCount = clustersList.length || 0;
 
-      clustersList.forEach((cluster) => {
+      clustersAll.forEach((cluster) => {
         runningNodes += cluster.nodes.on || 0;
         runningContainers += cluster.containers.on || 0;
       });

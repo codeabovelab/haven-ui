@@ -64,7 +64,7 @@ export default class Dashboard extends Component {
 
     let activeClusters = 0;
     let runningNodes = 0;
-    const runningContainers = 0;
+    let runningContainers = 0;
     const errorCount = 0;
 
     let top5Memory = [];
@@ -72,12 +72,18 @@ export default class Dashboard extends Component {
     let top5Network = [];
 
     let clustersList = Object.values(this.props.clusters).filter((cluster) => (cluster.features && cluster.features.includes("SWARM")));
+    let clustersAll = Object.values(this.props.clusters).filter((cluster) => cluster.name === 'all');
 
     if (this.props.clusters) {
       const clusters = clustersList;
       console.log('clusters', clusters);
       activeClusters = clusters.length;
     }
+
+    clustersAll.forEach((cluster) => {
+      runningContainers += cluster.containers.on || 0;
+      runningNodes += cluster.nodes.on || 0;
+    });
 
     if (this.props.nodes) {
       const nodes = Object.values(this.props.nodes);
@@ -112,8 +118,6 @@ export default class Dashboard extends Component {
 
         return 0;
       });
-
-      runningNodes = nodes.length;
     }
 
     let clusters;
