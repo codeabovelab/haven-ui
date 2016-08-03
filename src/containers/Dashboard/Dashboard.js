@@ -71,8 +71,10 @@ export default class Dashboard extends Component {
     let top5CPU = [];
     let top5Network = [];
 
+    let clustersList = Object.values(this.props.clusters).filter((cluster) => (cluster.features && cluster.features.includes("SWARM")));
+
     if (this.props.clusters) {
-      const clusters = Object.values(this.props.clusters);
+      const clusters = clustersList;
       console.log('clusters', clusters);
       activeClusters = clusters.length;
     }
@@ -116,7 +118,7 @@ export default class Dashboard extends Component {
 
     let clusters;
     if (this.props.clusters) {
-      clusters = Object.values(this.props.clusters);
+      clusters = clustersList;
     }
 
     return (
