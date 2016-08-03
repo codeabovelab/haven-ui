@@ -55,8 +55,6 @@ export default class Dashboard extends Component {
   }
 
   render() {
-    console.log(this.props);
-
     const {lastEvents} = this.props;
     let events = lastEvents ? lastEvents.slice(0, 20) : null;
 

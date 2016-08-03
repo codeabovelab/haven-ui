@@ -6,7 +6,6 @@ export default function reducer(state = {}, action = {}) {
 
   switch (action.type) {
     case ACTIONS.LOAD_SUCCESS:
-      console.log('LOAD_SUCCESS', action.result);
       result = action.result.map((node) => {
         let result = node;
 
@@ -15,7 +14,6 @@ export default function reducer(state = {}, action = {}) {
 
         if (node.health && node.health.net) {
           _.reduce(node.health.net, (res, value, key) => {
-            console.log(res, value, key);
             netIn += value.bytesIn;
             netOut += value.bytesOut;
 
