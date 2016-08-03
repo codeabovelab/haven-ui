@@ -103,6 +103,16 @@ export default class Dashboard extends Component {
         return 0;
       });
 
+      top5Network = nodes.filter((el) => typeof el.health !== "undefined").sort((a, b) => {
+        if (a.health.netTotal > b.health.netTotal) {
+          return -1;
+        } else if (a.health.netTotal < b.health.netTotal) {
+          return 1;
+        }
+
+        return 0;
+      });
+
       runningNodes = nodes.length;
     }
 
@@ -145,7 +155,7 @@ export default class Dashboard extends Component {
           <Col sm={4}>
             <DashboardNodesList title="Top 5 Network Usage Nodes"
                                 count={5}
-                                metric="sysMemUsed"
+                                metric="networkIO"
                                 metricTitle="Network (I/O)"
                                 data={top5Network}
             />

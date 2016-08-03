@@ -57,11 +57,17 @@ export default class DashboardNodesList extends Component {
 
   metricRender(node) {
     let metricValue = node.health[this.props.metric];
+
     if (this.props.metric === "sysMemUsed") {
       metricValue = (node.health[this.props.metric] / 1024 / 1024 / 1024).toFixed(1);
       metricValue = `${metricValue} GB`;
     }
 
+    if (this.props.metric === "networkIO") {
+      let metricValueIn = (node.health.netIn / 1024 / 1024 / 1024).toFixed(1);
+      let metricValueOut = (node.health.netOut / 1024 / 1024 / 1024).toFixed(1);
+      metricValue = `${metricValueIn}G/${metricValueOut}G`;
+    }
 
     return (
       <td key="metric">
