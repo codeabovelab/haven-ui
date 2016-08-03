@@ -4,11 +4,15 @@
     & > tr {
       & > th {
         border-bottom: 1px solid $border-light;
-        white-space: nowrap;
         vertical-align: middle;
+        &.nowrap {
+          white-space: nowrap;
+        }
+        /*
         &:first-child {
           text-align: center;
         }
+        */
         &:last-child {
           padding-right: 16px;
         }
@@ -29,9 +33,11 @@
             display: flex;
           }
         }
+        /*
         &:first-child {
           text-align: center;
         }
+        */
         &:last-child {
           padding-right: 16px !important;
         }
