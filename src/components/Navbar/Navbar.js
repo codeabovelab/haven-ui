@@ -24,7 +24,7 @@ export default class Navbar extends Component {
   };
 
   render() {
-    const {user} = this.props;
+    const {user, logout} = this.props;
 
     return (
       <div className="page-top clearfix" scroll-position="scrolled" max-height="50">
@@ -41,7 +41,7 @@ export default class Navbar extends Component {
           <Dropdown.Menu pullRight>
             <MenuItem eventKey="1">Profile</MenuItem>
             <MenuItem eventKey="2">Settings</MenuItem>
-            <MenuItem eventKey="3">Sign out</MenuItem>
+            <MenuItem onClick={this.handleLogout}>Sign out</MenuItem>
           </Dropdown.Menu>
         </Dropdown>
       </div>
