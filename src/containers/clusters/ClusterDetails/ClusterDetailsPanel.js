@@ -150,21 +150,6 @@ export default class ClusterDetailsPanel extends Component {
       });
     }
 
-    const jobsHeaderBar = (
-      <div className="clearfix">
-        <h3>Jobs</h3>
-
-        <ButtonToolbar>
-          <Button
-            bsStyle="primary"
-          >
-            <i className="fa fa-plus" />&nbsp;
-            New Job
-          </Button>
-        </ButtonToolbar>
-      </div>
-    );
-
     const eventsHeaderBar = (
       <div className="clearfix">
         <h3>Events</h3>
@@ -215,12 +200,6 @@ export default class ClusterDetailsPanel extends Component {
             </div>
           </div>
         </div>
-
-        <Panel header={jobsHeaderBar}>
-          {!rows && (
-            <ProgressBar active now={100} />
-          )}
-        </Panel>
 
         <Panel header={eventsHeaderBar}>
           {!rows && (
