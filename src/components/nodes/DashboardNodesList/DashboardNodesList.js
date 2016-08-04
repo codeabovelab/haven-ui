@@ -69,6 +69,9 @@ export default class DashboardNodesList extends Component {
       metricValue = `${metricValueIn}G/${metricValueOut}G`;
     }
 
+    if (this.props.metric === "sysCpuLoad") {
+      metricValue = metricValue + '%';
+    }
     return (
       <td key="metric">
         {metricValue}
