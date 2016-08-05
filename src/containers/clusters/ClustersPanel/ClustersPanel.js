@@ -112,10 +112,6 @@ export default class ClustersPanel extends Component {
         {(this.state && this.state.clusterActionDialog) && (
           <Dialog title={this.state.actionTitle}
                   size="large"
-                  errors={[
-                    "Please enter value here",
-                    "Server error during submission"
-                  ]}
                   show
           >
             {this.state.clusterActionDialog}
