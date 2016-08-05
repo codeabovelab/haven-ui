@@ -35,13 +35,11 @@ export default class ClusterAdd extends Component {
     onHide: PropTypes.func.isRequired
   };
 
-  doSubmit() {
-    console.log(this, arguments);
-  }
-
   onSubmit() {
-    console.log('onSubmit', this.props);
-    this.props.handleSubmit();
+    const { fields } = this.props;
+    console.log('onSubmit', this, this.props);
+
+    return this.props.create(fields.name.value);
   }
 
   render() {
@@ -54,10 +52,10 @@ export default class ClusterAdd extends Component {
               submitting={this.props.submitting}
               allowSubmit={this.props.valid}
               onReset={this.props.resetForm}
-              onSubmit={this.onSubmit.bind(this)}
+              onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}
               onHide={this.props.onHide}
       >
-        <form onSubmit={this.onSubmit.bind(this)}>
+        <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
           <FormGroup validationState={fields.name.error ? "error" : ""}>
             <ControlLabel>Name</ControlLabel>
 

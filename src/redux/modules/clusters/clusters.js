@@ -51,7 +51,7 @@ export function load() {
   };
 }
 
-export function create({name}) {
+export function create(name) {
   return {
     types: [ACTIONS.CREATE, ACTIONS.CREATE_SUCCESS, ACTIONS.CREATE_FAIL],
     promise: (client) => client.put(`/ui/api/clusters/${name}`, {data: {}})
