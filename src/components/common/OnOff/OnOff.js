@@ -11,13 +11,19 @@ export default class OnOff extends Component {
   render() {
     return (
       <p>
-        <Glyphicon glyph="chevron-up" className="text-success" />
-        &nbsp;
-        <a className="text-success">{this.props.on}</a>
+        <a className="on-off text-success" href="">
+          <Glyphicon glyph="chevron-up" className="text-success" />
+          &nbsp;
+          {this.props.on}
+        </a>
+
         &nbsp;&nbsp;&nbsp;
-        <Glyphicon glyph="chevron-down" className="text-danger" />
-        &nbsp;
-        <a className="text-danger">{this.props.off}</a>
+
+        <a className="on-off text-danger" href="">
+          <Glyphicon glyph="chevron-down" className="text-danger" />
+          &nbsp;
+          {this.props.off}
+        </a>
       </p>
     );
   }

@@ -7,6 +7,7 @@ export default class Dialog extends Component {
 
   static propTypes = {
     show: PropTypes.bool.isRequired,
+    backdrop: PropTypes.bool,
     focus: PropTypes.bool,
     title: PropTypes.string.required,
     size: PropTypes.string,
@@ -27,6 +28,7 @@ export default class Dialog extends Component {
     return (
       <Modal show={this.props.show}
              bsSize={this.props.size || this.DEFAULT_DIALOG_SIZE}
+             backdrop={this.props.focus || true}
              enforceFocus={this.props.focus || true}
       >
 
