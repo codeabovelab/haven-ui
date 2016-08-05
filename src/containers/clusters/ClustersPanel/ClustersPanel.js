@@ -139,7 +139,6 @@ export default class ClustersPanel extends Component {
 
       case "edit":
         this.setState({
-          actionTitle: "Edit Cluster",
           clusterActionDialog: (
             <ClusterAdd title="Edit Cluster"
                         cluster={cluster}
@@ -151,7 +150,6 @@ export default class ClustersPanel extends Component {
 
       case "information":
         this.setState({
-          actionTitle: "Information",
           clusterActionDialog: (
             <ClusterAdd title="Information"
                         cluster={cluster}
@@ -163,9 +161,11 @@ export default class ClustersPanel extends Component {
 
       case "config":
         this.setState({
-          actionTitle: "Configuration",
           clusterActionDialog: (
-            <ClusterAdd cluster={cluster} />
+            <ClusterAdd title="Configuration"
+                        cluster={cluster}
+                        onHide={this.onHideDialog.bind(this)}
+            />
           )
         });
         return;

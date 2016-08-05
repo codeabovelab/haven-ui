@@ -2,9 +2,9 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {reduxForm} from 'redux-form';
 import {load, create} from 'redux/modules/clusters/clusters';
-import clusterValidation from './clusterValidation';
 import {Dialog} from 'components';
-import {FormGroup, FormControl, ControlLabel, Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar} from 'react-bootstrap';
+import {FormGroup, FormControl, ControlLabel, HelpBlock} from 'react-bootstrap';
+import {createValidator, required} from 'utils/validation';
 import _ from 'lodash';
 
 @connect(state => ({
@@ -16,7 +16,9 @@ import _ from 'lodash';
     'name',
     'description'
   ],
-  validate: clusterValidation,
+  validate: createValidator({
+    name: [required]
+  })
 })
 export default class ClusterAdd extends Component {
   static propTypes = {
@@ -33,7 +35,14 @@ export default class ClusterAdd extends Component {
     onHide: PropTypes.func.isRequired
   };
 
-  static focusSelector = '[name=name]';
+  doSubmit() {
+    console.log(this, arguments);
+  }
+
+  onSubmit() {
+    console.log('onSubmit', this.props);
+    this.props.handleSubmit();
+  }
 
   render() {
     const { fields } = this.props;
@@ -45,11 +54,11 @@ export default class ClusterAdd extends Component {
               submitting={this.props.submitting}
               allowSubmit={this.props.valid}
               onReset={this.props.resetForm}
-              onSubmit={this.props.handleSubmit}
+              onSubmit={this.onSubmit.bind(this)}
               onHide={this.props.onHide}
       >
-        <form>
-          <FormGroup>
+        <form onSubmit={this.onSubmit.bind(this)}>
+          <FormGroup validationState={fields.name.error ? "error" : ""}>
             <ControlLabel>Name</ControlLabel>
 
             <FormControl type="text"
@@ -57,9 +66,13 @@ export default class ClusterAdd extends Component {
             />
 
             <FormControl.Feedback />
+
+            {fields.name.error && (
+              <HelpBlock>{fields.name.error}</HelpBlock>
+            )}
           </FormGroup>
 
-          <FormGroup>
+          <FormGroup validationState={fields.description.error ? "error" : ""}>
             <ControlLabel>Description</ControlLabel>
 
             <FormControl type="text"
@@ -67,6 +80,10 @@ export default class ClusterAdd extends Component {
             />
 
             <FormControl.Feedback />
+
+            {fields.description.error && (
+              <HelpBlock>{fields.description.error}</HelpBlock>
+            )}
           </FormGroup>
         </form>
       </Dialog>
