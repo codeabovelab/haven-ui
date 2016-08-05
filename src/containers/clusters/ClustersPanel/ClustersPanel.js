@@ -3,7 +3,7 @@ import {load} from 'redux/modules/clusters/clusters';
 import {connect} from 'react-redux';
 import { Link } from 'react-router';
 import {DockTable, ClustersList, StatisticsPanel, Dialog} from '../../../components';
-import {ClusterAdd, ClusterConfig} from '../../index';
+import {ClusterAdd, ClusterConfig, ClusterInformation} from '../../index';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar} from 'react-bootstrap';
 
 @connect(
@@ -151,9 +151,9 @@ export default class ClustersPanel extends Component {
       case "information":
         this.setState({
           actionDialog: (
-            <ClusterAdd title="Information"
-                        cluster={cluster}
-                        onHide={this.onHideDialog.bind(this)}
+            <ClusterInformation title="Information"
+                                cluster={cluster}
+                                onHide={this.onHideDialog.bind(this)}
             />
           )
         });

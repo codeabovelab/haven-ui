@@ -13,6 +13,24 @@ export default function reducer(state = {}, action = {}) {
       });
       return _.merge({}, state, _.keyBy(clusters, 'name'));
 
+    case ACTIONS.CONFIG_SUCCESS:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          configuration: action.result
+        }
+      };
+
+    case ACTIONS.INFORMATION_SUCCESS:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          information: action.result
+        }
+      };
+
     case ACTIONS.LOAD_CONTAINERS_SUCCESS:
       return {
         ...state,
@@ -73,7 +91,16 @@ export function deleteCluster(clusterId) {
 export function clusterConfig(clusterId) {
   return {
     types: [ACTIONS.CONFIG, ACTIONS.CONFIG_SUCCESS, ACTIONS.CONFIG_FAIL],
+    id: clusterId,
     promise: (client) => client.get(`/ui/api/clusters/${clusterId}/config`)
+  };
+}
+
+export function clusterInformation(clusterId) {
+  return {
+    types: [ACTIONS.INFORMATION, ACTIONS.INFORMATION_SUCCESS, ACTIONS.INFORMATION_FAIL],
+    id: clusterId,
+    promise: (client) => client.get(`/ui/api/clusters/${clusterId}/info`)
   };
 }
 
