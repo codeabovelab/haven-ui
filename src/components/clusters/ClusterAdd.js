@@ -20,37 +20,26 @@ export default class ClusterAdd extends Component {
     fields: PropTypes.object.isRequired,
     resetForm: PropTypes.func.isRequired,
     createError: PropTypes.string,
-    valid: PropTypes.bool.isRequired
+    valid: PropTypes.bool.isRequired,
+    cluster: PropTypes.object
   };
 
   static focusSelector = '[name=name]';
 
   render() {
-    const {fields, valid} = this.props;
+    const {fields, valid, cluster} = this.props;
     let creating = false;
+    console.log('cluster', cluster);
 
     return (
-      <div className="modal-content">
-        <div className="modal-header">
-          <button type="button" className="close" data-dismiss="modal">
-            <span aria-hidden="true">&times;</span>
-          </button>
-          <h4 className="modal-title">New Cluster
-            {creating && <span>{' '}<i className="fa fa-spinner fa fa-pulse"/></span>}
-          </h4>
-        </div>
-        <div className="modal-body">
-          <form>
-            {fieldComponent()}
-          </form>
-        </div>
-        <div className="modal-footer">
-          <button type="button" className="btn btn-primary" onClick={this.addCluster.bind(this)}
-                  disabled={creating || !valid}>
-            <i className="fa fa-plus"/> Add
-          </button>
-        </div>
-      </div>
+      <form>
+        {fieldComponent()}
+
+        <button type="button" className="btn btn-primary" onClick={this.addCluster.bind(this)}
+                disabled={creating || !valid}>
+          <i className="fa fa-plus"/> Add
+        </button>
+      </form>
     );
 
     function fieldComponent() {

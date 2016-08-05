@@ -2,9 +2,9 @@ import React, {Component, PropTypes} from 'react';
 import {load} from 'redux/modules/clusters/clusters';
 import {connect} from 'react-redux';
 import { Link } from 'react-router';
-import {DockTable, ClustersList, StatisticsPanel} from '../../../components';
+import {DockTable, ClustersList, StatisticsPanel, Dialog} from '../../../components';
 import {ClusterAdd} from '../../index';
-import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Modal} from 'react-bootstrap';
+import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar} from 'react-bootstrap';
 
 @connect(
   state => ({
@@ -110,14 +110,16 @@ export default class ClustersPanel extends Component {
         </Panel>
 
         {(this.state && this.state.clusterActionDialog) && (
-          <Modal show="true" bsSize="large">
-            <Modal.Header closeButton>
-              <Modal.Title>Modal heading</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              {this.state.clusterActionDialog}
-            </Modal.Body>
-          </Modal>
+          <Dialog title={this.state.actionTitle}
+                  size="large"
+                  errors={[
+                    "Please enter value here",
+                    "Server error during submission"
+                  ]}
+                  show
+          >
+            {this.state.clusterActionDialog}
+          </Dialog>
         )}
       </div>
     );
@@ -127,6 +129,7 @@ export default class ClustersPanel extends Component {
     switch (action) {
       case "edit":
         this.setState({
+          actionTitle: "Edit Cluster",
           clusterActionDialog: (
             <ClusterAdd cluster={cluster} />
           )
@@ -135,6 +138,7 @@ export default class ClustersPanel extends Component {
 
       case "information":
         this.setState({
+          actionTitle: "Information",
           clusterActionDialog: (
             <ClusterAdd cluster={cluster} />
           )
@@ -143,6 +147,7 @@ export default class ClustersPanel extends Component {
 
       case "config":
         this.setState({
+          actionTitle: "Configuration",
           clusterActionDialog: (
             <ClusterAdd cluster={cluster} />
           )

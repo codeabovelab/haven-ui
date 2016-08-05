@@ -5,6 +5,8 @@
  *
  */
 
+export Dialog from './common/Dialog/Dialog';
+
 export DockTable from './common/table/DockTable/DockTable';
 export ConfirmDialog from './common/ConfirmDialog/ConfirmDialog';
 export SimpleModal from './common/SimpleModal/SimpleModal';

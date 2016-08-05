@@ -112,29 +112,4 @@ export default class ClustersList extends Component {
       </td>
     );
   }
-
-  actionsRender() {
-    return (
-      <td key="actions" className="td-actions">
-        <ButtonToolbar bsStyle="default">
-          <SplitButton bsStyle="info"
-                       title="Edit"
-                       pullRight>
-
-            <MenuItem eventKey="1">Edit</MenuItem>
-            <MenuItem divider />
-            <MenuItem eventKey="2">Information</MenuItem>
-            <MenuItem eventKey="3">Config</MenuItem>
-            <MenuItem divider />
-            <MenuItem eventKey="4">Containers</MenuItem>
-            <MenuItem eventKey="5">Nodes</MenuItem>
-            <MenuItem eventKey="6">Registries</MenuItem>
-            <MenuItem divider />
-            <MenuItem eventKey="7">Delete</MenuItem>
-
-          </SplitButton>
-        </ButtonToolbar>
-      </td>
-    );
-  }
 }
