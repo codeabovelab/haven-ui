@@ -12,7 +12,6 @@ export default class ActionMenu extends Component {
   };
 
   handleClick(action, subject) {
-    console.log('handleClick', action, subject);
     this.props.actionHandler(action, subject);
   }
 
@@ -27,8 +26,6 @@ export default class ActionMenu extends Component {
   }
 
   render() {
-    console.log('this.props', this.props);
-
     if (this.props.actions && this.props.actions.length > 0) {
       let defaultAction = this.getDefaultAction();
 
