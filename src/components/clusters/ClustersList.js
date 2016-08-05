@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {Link} from 'react-router';
-import {DockTable, OnOff} from '../index';
+import {DockTable, OnOff, ActionMenu} from '../index';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Glyphicon} from 'react-bootstrap';
 
 export default class ClustersList extends Component {
@@ -41,6 +41,28 @@ export default class ClustersList extends Component {
       name: 'Actions',
       width: '50px',
       render: this.actionsRender.bind(this)
+    }
+  ];
+
+  ACTIONS = [
+    {
+      key: "edit",
+      title: "Edit",
+      default: true
+    },
+    null,
+    {
+      key: "information",
+      title: "Information"
+    },
+    {
+      key: "config",
+      title: "Config"
+    },
+    null,
+    {
+      key: "delete",
+      title: "Delete"
     }
   ];
 
@@ -126,21 +148,10 @@ export default class ClustersList extends Component {
   actionsRender(cluster) {
     return (
       <td key="actions" className="td-actions">
-        <ButtonToolbar bsStyle="default">
-          <SplitButton bsStyle="info"
-                       title="Edit"
-                       pullRight
-          >
-
-            <MenuItem onClick={this.props.onActionInvoke.bind(this, "edit", cluster.name)}>Edit</MenuItem>
-            <MenuItem divider />
-            <MenuItem onClick={this.props.onActionInvoke.bind(this, "information", cluster.name)}>Information</MenuItem>
-            <MenuItem onClick={this.props.onActionInvoke.bind(this, "config", cluster.name)}>Config</MenuItem>
-            <MenuItem divider />
-            <MenuItem onClick={this.props.onActionInvoke.bind(this, "delete", cluster.name)}>Delete</MenuItem>
-
-          </SplitButton>
-        </ButtonToolbar>
+        <ActionMenu subject={cluster.name}
+                    actions={this.ACTIONS}
+                    actionHandler={this.props.onActionInvoke.bind(this)}
+        />
       </td>
     );
   }

@@ -16,6 +16,7 @@ export NodesList from './nodes/NodesList';
 export ImagesList from './images/ImagesList';
 export RegistriesList from './registries/RegistriesList';
 export OnOff from './common/OnOff/OnOff';
+export ActionMenu from './common/ActionMenu/ActionMenu';
 export MenuLeft from './MenuLeft/MenuLeft';
 export Navbar from './Navbar/Navbar';
 export ContainerLog from './containers/ContainerLog/ContainerLog';
