@@ -29,10 +29,13 @@ export default class Dialog extends Component {
     allowSubmit: PropTypes.bool,
     submitting: PropTypes.bool,
 
+    hideOk: PropTypes.bool,
+    hideCancel: PropTypes.bool,
+
     okTitle: PropTypes.string,
     cancelTitle: PropTypes.string,
 
-    children: PropTypes.object.isRequired,
+    children: PropTypes.any.isRequired,
   };
 
   render() {
@@ -74,19 +77,23 @@ export default class Dialog extends Component {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button bsStyle="primary"
-                  disabled={this.props.submitting || !this.props.allowSubmit}
-                  onClick={this.props.onSubmit}
-          >
-            {this.props.okTitle || this.DEFAULT_OK_TITLE}
-          </Button>
+          {!this.props.hideOk && (
+            <Button bsStyle="primary"
+                    disabled={this.props.submitting || (typeof this.props.allowSubmit !== "undefined" && !this.props.allowSubmit)}
+                    onClick={this.props.onSubmit}
+            >
+              {this.props.okTitle || this.DEFAULT_OK_TITLE}
+            </Button>
+          )}
 
-          <Button bsStyle="default"
-                  disabled={this.props.submitting}
-                  onClick={this.props.onHide}
-          >
-            {this.props.cancelTitle || this.DEFAULT_CANCEL_TITLE}
-          </Button>
+          {!this.props.hideCancel && (
+            <Button bsStyle="default"
+                    disabled={this.props.submitting}
+                    onClick={this.props.onHide}
+            >
+              {this.props.cancelTitle || this.DEFAULT_CANCEL_TITLE}
+            </Button>
+          )}
         </Modal.Footer>
       </Modal>
     );

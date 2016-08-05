@@ -3,7 +3,7 @@ import {load} from 'redux/modules/clusters/clusters';
 import {connect} from 'react-redux';
 import { Link } from 'react-router';
 import {DockTable, ClustersList, StatisticsPanel, Dialog} from '../../../components';
-import {ClusterAdd} from '../../index';
+import {ClusterAdd, ClusterConfig} from '../../index';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar} from 'react-bootstrap';
 
 @connect(
@@ -109,9 +109,9 @@ export default class ClustersPanel extends Component {
           )}
         </Panel>
 
-        {(this.state && this.state.clusterActionDialog) && (
+        {(this.state && this.state.actionDialog) && (
           <div>
-            {this.state.clusterActionDialog}
+            {this.state.actionDialog}
           </div>
         )}
       </div>
@@ -120,7 +120,7 @@ export default class ClustersPanel extends Component {
 
   onHideDialog() {
     this.setState({
-      clusterActionDialog: undefined
+      actionDialog: undefined
     });
   }
 
@@ -128,7 +128,7 @@ export default class ClustersPanel extends Component {
     switch (action) {
       case "create":
         this.setState({
-          clusterActionDialog: (
+          actionDialog: (
             <ClusterAdd title="Create a New Cluster"
                         cluster={undefined}
                         onHide={this.onHideDialog.bind(this)}
@@ -139,7 +139,7 @@ export default class ClustersPanel extends Component {
 
       case "edit":
         this.setState({
-          clusterActionDialog: (
+          actionDialog: (
             <ClusterAdd title="Edit Cluster"
                         cluster={cluster}
                         onHide={this.onHideDialog.bind(this)}
@@ -150,7 +150,7 @@ export default class ClustersPanel extends Component {
 
       case "information":
         this.setState({
-          clusterActionDialog: (
+          actionDialog: (
             <ClusterAdd title="Information"
                         cluster={cluster}
                         onHide={this.onHideDialog.bind(this)}
@@ -161,10 +161,10 @@ export default class ClustersPanel extends Component {
 
       case "config":
         this.setState({
-          clusterActionDialog: (
-            <ClusterAdd title="Configuration"
-                        cluster={cluster}
-                        onHide={this.onHideDialog.bind(this)}
+          actionDialog: (
+            <ClusterConfig title="Configuration"
+                           cluster={cluster}
+                           onHide={this.onHideDialog.bind(this)}
             />
           )
         });
