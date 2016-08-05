@@ -1,6 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {Link} from 'react-router';
-import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Glyphicon} from 'react-bootstrap';
+import {ButtonToolbar, SplitButton, MenuItem} from 'react-bootstrap';
 
 export default class ActionMenu extends Component {
   DEFAULT_STYLE = "info";
@@ -11,10 +10,6 @@ export default class ActionMenu extends Component {
     actionHandler: PropTypes.func
   };
 
-  handleClick(action, subject) {
-    this.props.actionHandler(action, subject);
-  }
-
   getDefaultAction() {
     let actions = this.props.actions.filter((action) => action && action.default === true);
 
@@ -23,6 +18,10 @@ export default class ActionMenu extends Component {
     }
 
     return actions[0];
+  }
+
+  handleClick(action, subject) {
+    this.props.actionHandler(action, subject);
   }
 
   render() {
