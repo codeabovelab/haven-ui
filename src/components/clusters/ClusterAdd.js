@@ -2,10 +2,9 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {reduxForm} from 'redux-form';
 import {load, create} from 'redux/modules/clusters/clusters';
+import {createValidator, required} from 'utils/validation';
 import {Dialog} from 'components';
 import {FormGroup, FormControl, ControlLabel, HelpBlock} from 'react-bootstrap';
-import {createValidator, required} from 'utils/validation';
-import _ from 'lodash';
 
 @connect(state => ({
   createError: state.clustersUI.createError
@@ -37,8 +36,6 @@ export default class ClusterAdd extends Component {
 
   onSubmit() {
     const { fields } = this.props;
-    console.log('onSubmit', this, this.props);
-
     return this.props.create(fields.name.value);
   }
 
