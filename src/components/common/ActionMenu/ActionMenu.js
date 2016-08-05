@@ -32,6 +32,7 @@ export default class ActionMenu extends Component {
         <ButtonToolbar>
           <SplitButton bsStyle={this.DEFAULT_STYLE}
                        title={defaultAction.title}
+                       disabled={defaultAction.disabled}
                        onClick={this.handleClick.bind(this, defaultAction.key, this.props.subject)}
                        pullRight
           >
@@ -40,6 +41,7 @@ export default class ActionMenu extends Component {
               if (action) {
                 return (
                   <MenuItem key={index}
+                            disabled={action.disabled}
                             onClick={this.handleClick.bind(this, action.key, this.props.subject)}
                   >
                     {action.title}
