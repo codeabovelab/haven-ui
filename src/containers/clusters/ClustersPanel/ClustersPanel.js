@@ -76,7 +76,7 @@ export default class ClustersPanel extends Component {
         <ButtonToolbar>
           <Button
             bsStyle="primary"
-            onClick={this.createCluster.bind(this)}
+            onClick={this.onActionInvoke.bind(this, "create")}
           >
             <i className="fa fa-plus" />&nbsp;
             New Cluster
@@ -99,7 +99,7 @@ export default class ClustersPanel extends Component {
 
         <ClustersList loading={typeof clustersList === "undefined"}
                       data={clustersList}
-                      onNewCluster={this.createCluster.bind(this)}
+                      onNewCluster={this.onActionInvoke.bind(this, "create")}
                       onActionInvoke={this.onActionInvoke.bind(this)}
         />
 
@@ -127,6 +127,15 @@ export default class ClustersPanel extends Component {
 
   onActionInvoke(action, cluster, event) {
     switch (action) {
+      case "create":
+        this.setState({
+          actionTitle: "Create Cluster",
+          clusterActionDialog: (
+            <ClusterAdd />
+          )
+        });
+        return;
+
       case "edit":
         this.setState({
           actionTitle: "Edit Cluster",
@@ -160,13 +169,5 @@ export default class ClustersPanel extends Component {
       default:
         return;
     }
-  }
-
-  createCluster() {
-    let contentComponent = <ClusterAdd/>;
-    window.simpleModal.show({
-      contentComponent,
-      focus: ClusterAdd.focusSelector
-    });
   }
 }
