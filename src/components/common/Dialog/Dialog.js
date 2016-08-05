@@ -14,14 +14,15 @@ export default class Dialog extends Component {
     errors: PropTypes.array,
     messages: PropTypes.array,
 
-    children: PropTypes.object.isRequired,
+    onEnter: PropTypes.func,
+    onEntered: PropTypes.func,
+    onEntering: PropTypes.func,
+    onExit: PropTypes.func,
+    onExiting: PropTypes.func,
+    onExited: PropTypes.func,
+    onHide: PropTypes.func,
 
-    create: PropTypes.func.isRequired,
-    load: PropTypes.func.isRequired,
-    fields: PropTypes.object.isRequired,
-    resetForm: PropTypes.func.isRequired,
-    createError: PropTypes.string,
-    cluster: PropTypes.object
+    children: PropTypes.object.isRequired,
   };
 
   render() {
@@ -30,6 +31,14 @@ export default class Dialog extends Component {
              bsSize={this.props.size || this.DEFAULT_DIALOG_SIZE}
              backdrop={this.props.focus || true}
              enforceFocus={this.props.focus || true}
+             onEnter={this.props.onEnter}
+             onEntered={this.props.onEntered}
+             onEntering={this.props.onEntering}
+             onExit={this.props.onExit}
+             onExiting={this.props.onExiting}
+             onExited={this.props.onExited}
+             onHide={this.props.onHide}
+             keyboard
       >
 
         <Modal.Header closeButton>

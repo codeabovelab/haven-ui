@@ -110,15 +110,22 @@ export default class ClustersPanel extends Component {
         </Panel>
 
         {(this.state && this.state.clusterActionDialog) && (
-          <Dialog title={this.state.actionTitle}
+          <Dialog show
+                  title={this.state.actionTitle}
                   size="large"
-                  show
+                  onHide={this.onHideDialog.bind(this)}
           >
             {this.state.clusterActionDialog}
           </Dialog>
         )}
       </div>
     );
+  }
+
+  onHideDialog() {
+    this.setState({
+      clusterActionDialog: undefined
+    });
   }
 
   onActionInvoke(action, cluster, event) {
