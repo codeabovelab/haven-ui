@@ -3,7 +3,9 @@ import {connect} from 'react-redux';
 import {Modal, Button, Alert} from 'react-bootstrap';
 
 export default class Dialog extends Component {
-  static DEFAULT_DIALOG_SIZE = "large";
+  DEFAULT_DIALOG_SIZE = "large";
+  DEFAULT_OK_TITLE = "OK";
+  DEFAULT_CANCEL_TITLE = "Cancel";
 
   static propTypes = {
     show: PropTypes.bool.isRequired,
@@ -21,6 +23,14 @@ export default class Dialog extends Component {
     onExiting: PropTypes.func,
     onExited: PropTypes.func,
     onHide: PropTypes.func,
+
+    onSubmit: PropTypes.func,
+    onReset: PropTypes.func,
+
+    submitting: PropTypes.bool,
+
+    okTitle: PropTypes.string,
+    cancelTitle: PropTypes.string,
 
     children: PropTypes.object.isRequired,
   };
@@ -64,7 +74,19 @@ export default class Dialog extends Component {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button>OK</Button>
+          <Button bsStyle="primary"
+                  disabled={this.props.submitting}
+                  onClick={this.props.onSubmit}
+          >
+            {this.props.okTitle || this.DEFAULT_OK_TITLE}
+          </Button>
+
+          <Button bsStyle="default"
+                  disabled={this.props.submitting}
+                  onClick={this.props.onHide}
+          >
+            {this.props.cancelTitle || this.DEFAULT_CANCEL_TITLE}
+          </Button>
         </Modal.Footer>
       </Modal>
     );

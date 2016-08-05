@@ -3,58 +3,80 @@ import {connect} from 'react-redux';
 import {reduxForm} from 'redux-form';
 import {load, create} from 'redux/modules/clusters/clusters';
 import clusterValidation from './clusterValidation';
+import {Dialog} from 'components';
+import {FormGroup, FormControl, ControlLabel, Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar} from 'react-bootstrap';
 import _ from 'lodash';
 
 @connect(state => ({
   createError: state.clustersUI.createError
 }), {create, load})
 @reduxForm({
-  form: 'clusterAdd',
+  form: 'ClusterAdd',
+  fields: [
+    'name',
+    'description'
+  ],
   validate: clusterValidation,
-  fields: ['name']
 })
 export default class ClusterAdd extends Component {
   static propTypes = {
+    title: PropTypes.string.isRequired,
     create: PropTypes.func.isRequired,
     load: PropTypes.func.isRequired,
     fields: PropTypes.object.isRequired,
-    resetForm: PropTypes.func.isRequired,
+    handleSubmit: PropTypes.func,
+    resetForm: PropTypes.func,
+    submitting: PropTypes.bool,
     createError: PropTypes.string,
     valid: PropTypes.bool.isRequired,
-    cluster: PropTypes.object
+    cluster: PropTypes.any,
+    onHide: PropTypes.func.isRequired
   };
 
   static focusSelector = '[name=name]';
 
   render() {
-    const {fields, valid, cluster} = this.props;
+    const {
+      fields, valid, cluster,
+      handleSubmit,
+      resetForm,
+      submitting
+    } = this.props;
+
     let creating = false;
-    console.log('cluster', cluster);
+    console.log('cluster', cluster, fields);
 
     return (
-      <form>
-        {fieldComponent()}
+      <Dialog show
+              size="large"
+              title={this.props.title}
+              onReset={resetForm}
+              onSubmit={handleSubmit}
+              onHide={this.props.onHide}
+      >
+        <form>
+          <FormGroup validationState={fields.name.error}>
+            <ControlLabel>Name</ControlLabel>
 
-        <button type="button" className="btn btn-primary" onClick={this.addCluster.bind(this)}
-                disabled={creating || !valid}>
-          <i className="fa fa-plus"/> Add
-        </button>
-      </form>
+            <FormControl type="text"
+                         {...fields.name}
+            />
+
+            <FormControl.Feedback />
+          </FormGroup>
+
+          <FormGroup validationState={fields.description.error}>
+            <ControlLabel>Description</ControlLabel>
+
+            <FormControl type="text"
+                         {...fields.description}
+            />
+
+            <FormControl.Feedback />
+          </FormGroup>
+        </form>
+      </Dialog>
     );
-
-    function fieldComponent() {
-      let field = fields.name;
-      return (<div className="form-group" required>
-        <label>Name</label>
-        {field.error && field.touched && field.value && <div className="text-danger">{field.error}</div>}
-        {inputText(field)}
-      </div>);
-    }
-
-
-    function inputText(field) {
-      return <input type="text" {...field} className="form-control"/>;
-    }
   }
 
   addCluster() {

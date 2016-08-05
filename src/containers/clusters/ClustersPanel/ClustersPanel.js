@@ -110,13 +110,9 @@ export default class ClustersPanel extends Component {
         </Panel>
 
         {(this.state && this.state.clusterActionDialog) && (
-          <Dialog show
-                  title={this.state.actionTitle}
-                  size="large"
-                  onHide={this.onHideDialog.bind(this)}
-          >
+          <div>
             {this.state.clusterActionDialog}
-          </Dialog>
+          </div>
         )}
       </div>
     );
@@ -132,9 +128,11 @@ export default class ClustersPanel extends Component {
     switch (action) {
       case "create":
         this.setState({
-          actionTitle: "Create Cluster",
           clusterActionDialog: (
-            <ClusterAdd />
+            <ClusterAdd title="Create a New Cluster"
+                        cluster={undefined}
+                        onHide={this.onHideDialog.bind(this)}
+            />
           )
         });
         return;
@@ -143,7 +141,10 @@ export default class ClustersPanel extends Component {
         this.setState({
           actionTitle: "Edit Cluster",
           clusterActionDialog: (
-            <ClusterAdd cluster={cluster} />
+            <ClusterAdd title="Edit Cluster"
+                        cluster={cluster}
+                        onHide={this.onHideDialog.bind(this)}
+            />
           )
         });
         return;
@@ -152,7 +153,10 @@ export default class ClustersPanel extends Component {
         this.setState({
           actionTitle: "Information",
           clusterActionDialog: (
-            <ClusterAdd cluster={cluster} />
+            <ClusterAdd title="Information"
+                        cluster={cluster}
+                        onHide={this.onHideDialog.bind(this)}
+            />
           )
         });
         return;
