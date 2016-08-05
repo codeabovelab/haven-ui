@@ -36,26 +36,20 @@ export default class ClusterAdd extends Component {
   static focusSelector = '[name=name]';
 
   render() {
-    const {
-      fields, valid, cluster,
-      handleSubmit,
-      resetForm,
-      submitting
-    } = this.props;
-
-    let creating = false;
-    console.log('cluster', cluster, fields);
+    const { fields } = this.props;
 
     return (
       <Dialog show
               size="large"
               title={this.props.title}
-              onReset={resetForm}
-              onSubmit={handleSubmit}
+              submitting={this.props.submitting}
+              allowSubmit={this.props.valid}
+              onReset={this.props.resetForm}
+              onSubmit={this.props.handleSubmit}
               onHide={this.props.onHide}
       >
         <form>
-          <FormGroup validationState={fields.name.error}>
+          <FormGroup>
             <ControlLabel>Name</ControlLabel>
 
             <FormControl type="text"
@@ -65,7 +59,7 @@ export default class ClusterAdd extends Component {
             <FormControl.Feedback />
           </FormGroup>
 
-          <FormGroup validationState={fields.description.error}>
+          <FormGroup>
             <ControlLabel>Description</ControlLabel>
 
             <FormControl type="text"

@@ -8,7 +8,7 @@ export default class DockTable extends Component {
     rows: PropTypes.array.isRequired,
     groupBy: PropTypes.string,
     groupBySelect: PropTypes.array,
-    searchable: PropTypes.boolean,
+    searchable: PropTypes.bool,
     striped: PropTypes.bool,
     size: PropTypes.string
   };

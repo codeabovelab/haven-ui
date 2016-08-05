@@ -11,7 +11,7 @@ export default class Dialog extends Component {
     show: PropTypes.bool.isRequired,
     backdrop: PropTypes.bool,
     focus: PropTypes.bool,
-    title: PropTypes.string.required,
+    title: PropTypes.string.isRequired,
     size: PropTypes.string,
     errors: PropTypes.array,
     messages: PropTypes.array,
@@ -23,10 +23,10 @@ export default class Dialog extends Component {
     onExiting: PropTypes.func,
     onExited: PropTypes.func,
     onHide: PropTypes.func,
-
     onSubmit: PropTypes.func,
     onReset: PropTypes.func,
 
+    allowSubmit: PropTypes.bool,
     submitting: PropTypes.bool,
 
     okTitle: PropTypes.string,
@@ -75,7 +75,7 @@ export default class Dialog extends Component {
 
         <Modal.Footer>
           <Button bsStyle="primary"
-                  disabled={this.props.submitting}
+                  disabled={this.props.submitting || !this.props.allowSubmit}
                   onClick={this.props.onSubmit}
           >
             {this.props.okTitle || this.DEFAULT_OK_TITLE}
