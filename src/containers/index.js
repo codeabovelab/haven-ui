@@ -6,7 +6,11 @@ export NotFound from './NotFound/NotFound';
 
 export ClustersPanel from './clusters/ClustersPanel/ClustersPanel';
 export ClusterDetailsPanel from './clusters/ClusterDetails/ClusterDetailsPanel';
+
 export ClusterAdd from '../components/clusters/ClusterAdd';
+export ClusterConfig from '../components/clusters/ClusterConfig';
+export ClusterInformation from '../components/clusters/ClusterInformation';
+
 export ContainerCreate from './containers/ContainerCreate/ContainerCreate';
 export ContainerScale from './containers/ContainerScale/ContainerScale';
 export NodesPanel from './nodes/NodesPanel/NodesPanel';

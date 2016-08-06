@@ -5,6 +5,8 @@
  *
  */
 
+export Dialog from './common/Dialog/Dialog';
+
 export DockTable from './common/table/DockTable/DockTable';
 export ConfirmDialog from './common/ConfirmDialog/ConfirmDialog';
 export SimpleModal from './common/SimpleModal/SimpleModal';
@@ -14,6 +16,7 @@ export NodesList from './nodes/NodesList';
 export ImagesList from './images/ImagesList';
 export RegistriesList from './registries/RegistriesList';
 export OnOff from './common/OnOff/OnOff';
+export ActionMenu from './common/ActionMenu/ActionMenu';
 export MenuLeft from './MenuLeft/MenuLeft';
 export Navbar from './Navbar/Navbar';
 export ContainerLog from './containers/ContainerLog/ContainerLog';

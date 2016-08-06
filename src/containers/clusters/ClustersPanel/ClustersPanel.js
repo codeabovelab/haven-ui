@@ -2,8 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import {load} from 'redux/modules/clusters/clusters';
 import {connect} from 'react-redux';
 import { Link } from 'react-router';
-import {DockTable, ClustersList, StatisticsPanel} from '../../../components';
-import {ClusterAdd} from '../../index';
+import {DockTable, ClustersList, StatisticsPanel, Dialog} from '../../../components';
+import {ClusterAdd, ClusterConfig, ClusterInformation} from '../../index';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar} from 'react-bootstrap';
 
 @connect(
@@ -43,6 +43,9 @@ export default class ClustersPanel extends Component {
 
   componentDidMount() {
     const {load} = this.props;
+
+    this.state = {};
+
     load();
     $('.input-search').focus();
   }
@@ -73,7 +76,7 @@ export default class ClustersPanel extends Component {
         <ButtonToolbar>
           <Button
             bsStyle="primary"
-            onClick={this.createCluster.bind(this)}
+            onClick={this.onActionInvoke.bind(this, "create")}
           >
             <i className="fa fa-plus" />&nbsp;
             New Cluster
@@ -96,7 +99,8 @@ export default class ClustersPanel extends Component {
 
         <ClustersList loading={typeof clustersList === "undefined"}
                       data={clustersList}
-                      onNewCluster={this.createCluster.bind()}
+                      onNewCluster={this.onActionInvoke.bind(this, "create")}
+                      onActionInvoke={this.onActionInvoke.bind(this)}
         />
 
         <Panel header={eventsHeaderBar}>
@@ -104,15 +108,73 @@ export default class ClustersPanel extends Component {
             <ProgressBar active now={100} />
           )}
         </Panel>
+
+        {(this.state && this.state.actionDialog) && (
+          <div>
+            {this.state.actionDialog}
+          </div>
+        )}
       </div>
     );
   }
 
-  createCluster() {
-    let contentComponent = <ClusterAdd/>;
-    window.simpleModal.show({
-      contentComponent,
-      focus: ClusterAdd.focusSelector
+  onHideDialog() {
+    this.setState({
+      actionDialog: undefined
     });
+  }
+
+  onActionInvoke(action, cluster, event) {
+    switch (action) {
+      case "create":
+        this.setState({
+          actionDialog: (
+            <ClusterAdd title="Create a New Cluster"
+                        cluster={undefined}
+                        onHide={this.onHideDialog.bind(this)}
+            />
+          )
+        });
+        return;
+
+      case "edit":
+        this.setState({
+          actionDialog: (
+            <ClusterAdd title="Edit Cluster"
+                        cluster={cluster}
+                        onHide={this.onHideDialog.bind(this)}
+            />
+          )
+        });
+        return;
+
+      case "information":
+        this.setState({
+          actionDialog: (
+            <ClusterInformation title="Information"
+                                cluster={cluster}
+                                onHide={this.onHideDialog.bind(this)}
+            />
+          )
+        });
+        return;
+
+      case "config":
+        this.setState({
+          actionDialog: (
+            <ClusterConfig title="Configuration"
+                           cluster={cluster}
+                           onHide={this.onHideDialog.bind(this)}
+            />
+          )
+        });
+        return;
+
+      case "delete":
+        return;
+
+      default:
+        return;
+    }
   }
 }

@@ -12,6 +12,25 @@ export default function reducer(state = {}, action = {}) {
         return new Cluster({init: data});
       });
       return _.merge({}, state, _.keyBy(clusters, 'name'));
+
+    case ACTIONS.CONFIG_SUCCESS:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          configuration: action.result
+        }
+      };
+
+    case ACTIONS.INFORMATION_SUCCESS:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          information: action.result
+        }
+      };
+
     case ACTIONS.LOAD_CONTAINERS_SUCCESS:
       return {
         ...state,
@@ -20,6 +39,7 @@ export default function reducer(state = {}, action = {}) {
           containersList: action.result.map(container => container.id)
         }
       };
+
     case ACTIONS.LOAD_DEFAULT_PARAMS_SUCCESS:
       let defaultParams = Object.assign({[action.image]: {}}, state[action.id].defaultParams);
       defaultParams[action.image][action.tag] = _.omit(action.result, '_res');
@@ -27,6 +47,7 @@ export default function reducer(state = {}, action = {}) {
         ...state,
         [action.id]: {...state[action.id], defaultParams}
       };
+
     case ACTIONS.LOAD_NODES_SUCCESS:
       return {
         ...state,
@@ -35,6 +56,7 @@ export default function reducer(state = {}, action = {}) {
           nodesList: action.result
         }
       };
+
     default:
       return state;
   }
@@ -51,7 +73,7 @@ export function load() {
   };
 }
 
-export function create({name}) {
+export function create(name) {
   return {
     types: [ACTIONS.CREATE, ACTIONS.CREATE_SUCCESS, ACTIONS.CREATE_FAIL],
     promise: (client) => client.put(`/ui/api/clusters/${name}`, {data: {}})
@@ -63,6 +85,22 @@ export function deleteCluster(clusterId) {
     types: [ACTIONS.DELETE, ACTIONS.DELETE_SUCCESS, ACTIONS.DELETE_FAIL],
     id: clusterId,
     promise: (client) => client.del(`/ui/api/clusters/${clusterId}`)
+  };
+}
+
+export function clusterConfig(clusterId) {
+  return {
+    types: [ACTIONS.CONFIG, ACTIONS.CONFIG_SUCCESS, ACTIONS.CONFIG_FAIL],
+    id: clusterId,
+    promise: (client) => client.get(`/ui/api/clusters/${clusterId}/config`)
+  };
+}
+
+export function clusterInformation(clusterId) {
+  return {
+    types: [ACTIONS.INFORMATION, ACTIONS.INFORMATION_SUCCESS, ACTIONS.INFORMATION_FAIL],
+    id: clusterId,
+    promise: (client) => client.get(`/ui/api/clusters/${clusterId}/info`)
   };
 }
 

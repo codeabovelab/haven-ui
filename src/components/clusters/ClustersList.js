@@ -1,13 +1,14 @@
 import React, {Component, PropTypes} from 'react';
 import {Link} from 'react-router';
-import {DockTable, OnOff} from '../index';
+import {DockTable, OnOff, ActionMenu} from '../index';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Glyphicon} from 'react-bootstrap';
 
 export default class ClustersList extends Component {
   static propTypes = {
     data: PropTypes.array,
     loading: PropTypes.bool,
-    onNewCluster: PropTypes.func
+    onNewCluster: PropTypes.func,
+    onActionInvoke: PropTypes.func
   };
 
   COLUMNS = [
@@ -39,7 +40,29 @@ export default class ClustersList extends Component {
     {
       name: 'Actions',
       width: '50px',
-      render: this.actionsRender
+      render: this.actionsRender.bind(this)
+    }
+  ];
+
+  ACTIONS = [
+    {
+      key: "edit",
+      title: "Edit",
+      default: true
+    },
+    null,
+    {
+      key: "information",
+      title: "Information"
+    },
+    {
+      key: "config",
+      title: "Config"
+    },
+    null,
+    {
+      key: "delete",
+      title: "Delete"
     }
   ];
 
@@ -122,23 +145,13 @@ export default class ClustersList extends Component {
     );
   }
 
-  actionsRender() {
+  actionsRender(cluster) {
     return (
       <td key="actions" className="td-actions">
-        <ButtonToolbar bsStyle="default">
-          <SplitButton bsStyle="info"
-                       title="Edit"
-                       pullRight>
-
-            <MenuItem eventKey="1">Edit</MenuItem>
-            <MenuItem divider />
-            <MenuItem eventKey="2">Information</MenuItem>
-            <MenuItem eventKey="3">Config</MenuItem>
-            <MenuItem divider />
-            <MenuItem eventKey="7">Delete</MenuItem>
-
-          </SplitButton>
-        </ButtonToolbar>
+        <ActionMenu subject={cluster.name}
+                    actions={this.ACTIONS}
+                    actionHandler={this.props.onActionInvoke.bind(this)}
+        />
       </td>
     );
   }

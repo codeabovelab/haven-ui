@@ -2,70 +2,87 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {reduxForm} from 'redux-form';
 import {load, create} from 'redux/modules/clusters/clusters';
-import clusterValidation from './clusterValidation';
-import _ from 'lodash';
+import {createValidator, required} from 'utils/validation';
+import {Dialog} from 'components';
+import {FormGroup, FormControl, ControlLabel, HelpBlock} from 'react-bootstrap';
 
 @connect(state => ({
   createError: state.clustersUI.createError
 }), {create, load})
 @reduxForm({
-  form: 'clusterAdd',
-  validate: clusterValidation,
-  fields: ['name']
+  form: 'ClusterAdd',
+  fields: [
+    'name',
+    'description'
+  ],
+  validate: createValidator({
+    name: [required]
+  })
 })
 export default class ClusterAdd extends Component {
   static propTypes = {
+    title: PropTypes.string.isRequired,
     create: PropTypes.func.isRequired,
     load: PropTypes.func.isRequired,
     fields: PropTypes.object.isRequired,
-    resetForm: PropTypes.func.isRequired,
+    handleSubmit: PropTypes.func,
+    resetForm: PropTypes.func,
+    submitting: PropTypes.bool,
     createError: PropTypes.string,
-    valid: PropTypes.bool.isRequired
+    valid: PropTypes.bool.isRequired,
+    cluster: PropTypes.any,
+    onHide: PropTypes.func.isRequired
   };
 
-  static focusSelector = '[name=name]';
+  onSubmit() {
+    const { fields } = this.props;
+    return this.props.create(fields.name.value);
+  }
 
   render() {
-    const {fields, valid} = this.props;
-    let creating = false;
+    const { fields } = this.props;
 
     return (
-      <div className="modal-content">
-        <div className="modal-header">
-          <button type="button" className="close" data-dismiss="modal">
-            <span aria-hidden="true">&times;</span>
-          </button>
-          <h4 className="modal-title">New Cluster
-            {creating && <span>{' '}<i className="fa fa-spinner fa fa-pulse"/></span>}
-          </h4>
-        </div>
-        <div className="modal-body">
-          <form>
-            {fieldComponent()}
-          </form>
-        </div>
-        <div className="modal-footer">
-          <button type="button" className="btn btn-primary" onClick={this.addCluster.bind(this)}
-                  disabled={creating || !valid}>
-            <i className="fa fa-plus"/> Add
-          </button>
-        </div>
-      </div>
+      <Dialog show
+              size="large"
+              title={this.props.title}
+              submitting={this.props.submitting}
+              allowSubmit={this.props.valid}
+              onReset={this.props.resetForm}
+              onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}
+              onHide={this.props.onHide}
+      >
+        <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
+          <FormGroup validationState={fields.name.error ? "error" : ""}>
+            <ControlLabel>Name</ControlLabel>
+
+            <FormControl type="text"
+                         {...fields.name}
+            />
+
+            <FormControl.Feedback />
+
+            {fields.name.error && (
+              <HelpBlock>{fields.name.error}</HelpBlock>
+            )}
+          </FormGroup>
+
+          <FormGroup validationState={fields.description.error ? "error" : ""}>
+            <ControlLabel>Description</ControlLabel>
+
+            <FormControl type="text"
+                         {...fields.description}
+            />
+
+            <FormControl.Feedback />
+
+            {fields.description.error && (
+              <HelpBlock>{fields.description.error}</HelpBlock>
+            )}
+          </FormGroup>
+        </form>
+      </Dialog>
     );
-
-    function fieldComponent() {
-      let field = fields.name;
-      return (<div className="form-group" required>
-        <label>Name</label>
-        {field.error && field.touched && field.value && <div className="text-danger">{field.error}</div>}
-        {inputText(field)}
-      </div>);
-    }
-
-
-    function inputText(field) {
-      return <input type="text" {...field} className="form-control"/>;
-    }
   }
 
   addCluster() {
