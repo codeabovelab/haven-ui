@@ -18,12 +18,13 @@ export default class OnOff extends Component {
         </a>
 
         &nbsp;&nbsp;&nbsp;
-
+        {(this.props.off > 0) && (
         <a className="on-off text-danger" href="">
           <Glyphicon glyph="chevron-down" className="text-danger" />
           &nbsp;
           {this.props.off}
         </a>
+        )}
       </p>
     );
   }
