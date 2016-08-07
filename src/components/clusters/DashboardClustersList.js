@@ -3,7 +3,7 @@ import {Link} from 'react-router';
 import {DockTable, OnOff} from '../index';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Glyphicon} from 'react-bootstrap';
 
-export default class ClustersList extends Component {
+export default class DashboardClustersList extends Component {
   static propTypes = {
     data: PropTypes.array,
     loading: PropTypes.bool

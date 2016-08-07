@@ -20,10 +20,9 @@ export default class ClustersList extends Component {
       render: this.nameRender
     },
     {
-      name: 'title',
-      label: 'Name',
-      sortable: true,
-      render: this.titleRender
+      name: 'description',
+      label: 'Description',
+      sortable: true
     },
     {
       name: 'containers',
