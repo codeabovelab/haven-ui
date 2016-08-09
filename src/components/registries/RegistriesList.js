@@ -119,18 +119,6 @@ export default class RegistriesList extends Component {
     );
   }
 
-  editRegistryEvent(event) {
-    let registry = this._getRegistryByTarget(event.target);
-    this.editRegistry(registry);
-  }
-
-  editRegistry(registry = null) {
-    let contentComponent = <RegistryEdit registry={registry}/>;
-    window.simpleModal.show({
-      contentComponent,
-      focus: RegistryEdit.focusSelector
-    });
-  }
   removeRegistry(event) {
     const {onRemoveReg, onLoadReg} = this.props;
     let registry = this._getRegistryByTarget(event.target);

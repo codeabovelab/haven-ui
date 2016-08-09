@@ -7,44 +7,23 @@ import {Dialog} from 'components';
 import {Row, Col, FormGroup, FormControl, Checkbox, ControlLabel, HelpBlock} from 'react-bootstrap';
 import _ from 'lodash';
 
-const FIELDS = {
-  name: {
-    label: 'Name'
-  },
-  host: {
-    label: 'Host'
-  },
-  port: {
-    label: 'Port',
-    type: 'integer',
-    min: 1
-  },
-  secured: {
-    label: 'Secured',
-    type: 'secured'
-  },
-  username: {
-    label: 'Username'
-  },
-  password: {
-    label: 'Password',
-    type: 'password'
-  }
-};
 @connect(state => ({
   registriesUI: state.registriesUI
 }), {addRegistry, editRegistry, loadRegistries})
 @reduxForm({
   form: 'RegistryEdit',
   fields: [
+    'active',
     'name',
     'host',
     'port',
     'username',
     'password',
+    'protocol',
     'secured'
   ],
   validate: createValidator({
+    active: [required],
     name: [required],
     host: [required],
     port: [required],
@@ -83,11 +62,6 @@ export default class RegistryEdit extends Component {
     }
   }
 
-  componentWillMount() {
-  }
-
-  static focusSelector = '[name=name]';
-
   onSubmit() {
     const { fields } = this.props;
     console.log('onSubmit', fields);
@@ -108,19 +82,35 @@ export default class RegistryEdit extends Component {
               onHide={this.props.onHide}
       >
         <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
-          <FormGroup validationState={(fields.name.error && fields.name.touched) ? "error" : ""}>
-            <ControlLabel>Name</ControlLabel>
+          <Row>
+            <Col xs={9}>
+              <FormGroup validationState={(fields.name.error && fields.name.touched) ? "error" : ""}>
+                <ControlLabel>Name</ControlLabel>
 
-            <FormControl type="text"
-                         {...fields.name}
-            />
+                <FormControl type="text"
+                             {...fields.name}
+                />
 
-            <FormControl.Feedback />
+                <FormControl.Feedback />
 
-            {(fields.name.error && fields.name.touched) && (
-              <HelpBlock>{fields.name.error}</HelpBlock>
-            )}
-          </FormGroup>
+                {(fields.name.error && fields.name.touched) && (
+                  <HelpBlock>{fields.name.error}</HelpBlock>
+                )}
+              </FormGroup>
+            </Col>
+
+            <Col xs={3}>
+              <FormGroup validationState={(fields.active.error && fields.active.touched) ? "error" : ""}>
+                <ControlLabel />
+
+                <Checkbox validationState={(fields.active.error && fields.active.touched) ? "error" : ""}
+                          {...fields.active}
+                >
+                  Active
+                </Checkbox>
+              </FormGroup>
+            </Col>
+          </Row>
 
           <Row>
             <Col xs={6}>
@@ -156,10 +146,10 @@ export default class RegistryEdit extends Component {
             </Col>
 
             <Col xs={3}>
-              <FormGroup validationState={fields.port.error ? "error" : ""}>
+              <FormGroup validationState={(fields.secured.error && fields.secured.touched) ? "error" : ""}>
                 <ControlLabel />
 
-                <Checkbox validationState={fields.secured.error ? "error" : ""}
+                <Checkbox validationState={(fields.secured.error && fields.secured.touched) ? "error" : ""}
                           {...fields.secured}
                 >
                   Secure
