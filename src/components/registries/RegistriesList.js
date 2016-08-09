@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {Link} from 'react-router';
-import {DockTable, OnOff} from '../index';
+import {DockTable, OnOff, ActionMenu} from '../index';
 import {RegistryEdit} from '../../containers/index';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Glyphicon} from 'react-bootstrap';
 
@@ -9,6 +9,8 @@ export default class RegistriesList extends Component {
     data: PropTypes.array,
     onLoadReg: PropTypes.func,
     onRemoveReg: PropTypes.func,
+    onNewEntry: PropTypes.func,
+    onActionInvoke: PropTypes.func.isRequired,
 //    uiMeta: PropTypes.array,
     loading: PropTypes.bool,
   };
@@ -17,13 +19,13 @@ export default class RegistriesList extends Component {
     {
       name: 'name',
       label: 'Name',
-      width: '15%',
+      width: '20%',
       sortable: true
     },
     {
       name: 'host',
       label: 'Host',
-      width: '20%',
+      width: '40%',
       sortable: true
     },
     {
@@ -35,8 +37,21 @@ export default class RegistriesList extends Component {
     {
       name: 'actions',
       label: 'Actions',
-      width: '15%',
-      render: this.actionsRender
+      width: '50px',
+      render: this.actionsRender.bind(this)
+    }
+  ];
+
+  ACTIONS = [
+    {
+      key: "edit",
+      title: "Edit",
+      default: true
+    },
+    null,
+    {
+      key: "delete",
+      title: "Delete"
     }
   ];
 
@@ -48,7 +63,7 @@ export default class RegistriesList extends Component {
         <ButtonToolbar>
           <Button
             bsStyle="primary"
-            onClick={this.editRegistry.bind(this.null)}
+            onClick={this.props.onNewEntry}
           >
             <i className="fa fa-plus"/>&nbsp;
             New Registry
@@ -79,18 +94,13 @@ export default class RegistriesList extends Component {
     );
   }
 
-  actionsRender() {
+  actionsRender(registry) {
     return (
       <td key="actions" className="td-actions">
-        <ButtonToolbar>
-          <SplitButton bsStyle="info"
-                       title="Edit"
-                       >
-            <MenuItem eventKey="1" >Edit</MenuItem>
-            <MenuItem divider />
-            <MenuItem eventKey="2" >Delete</MenuItem>
-          </SplitButton>
-        </ButtonToolbar>
+        <ActionMenu subject={registry.name}
+                    actions={this.ACTIONS}
+                    actionHandler={this.props.onActionInvoke.bind(this)}
+        />
       </td>
     );
   }

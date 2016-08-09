@@ -8,7 +8,7 @@ export default class ClustersList extends Component {
     data: PropTypes.array,
     loading: PropTypes.bool,
     onNewCluster: PropTypes.func,
-    onActionInvoke: PropTypes.func
+    onActionInvoke: PropTypes.func.isRequired
   };
 
   COLUMNS = [

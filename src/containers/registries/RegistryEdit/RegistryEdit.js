@@ -2,7 +2,9 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {reduxForm} from 'redux-form';
 import {addRegistry, editRegistry, load as loadRegistries} from 'redux/modules/registries/registries';
-import registerValidation from './registerValidation';
+import {createValidator, required} from 'utils/validation';
+import {Dialog} from 'components';
+import {FormGroup, FormControl, ControlLabel, HelpBlock} from 'react-bootstrap';
 import _ from 'lodash';
 
 const FIELDS = {
@@ -33,9 +35,22 @@ const FIELDS = {
   registriesUI: state.registriesUI
 }), {addRegistry, editRegistry, loadRegistries})
 @reduxForm({
-  form: 'registryEdit',
-  validate: registerValidation,
-  fields: ['name', 'host', 'port', 'username', 'password', 'secured']
+  form: 'RegistryEdit',
+  fields: [
+    'name',
+    'host',
+    'port',
+    'username',
+    'password',
+    'secured'
+  ],
+  validate: createValidator({
+    name: [required],
+    host: [required],
+    port: [required],
+    username: [required],
+    password: [required]
+  })
 })
 export default class RegistryEdit extends Component {
   static propTypes = {

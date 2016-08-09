@@ -31,7 +31,10 @@ export default class RegistriesPanel extends Component {
 
   componentDidMount() {
     const {loadRegistries} = this.props;
+
+    this.state = {};
     loadRegistries();
+
     $('.input-search').focus();
   }
 
@@ -63,12 +66,21 @@ export default class RegistriesPanel extends Component {
     return (
       <div>
         <StatisticsPanel metrics={this.statisticsMetrics} values={[connectedRegistries]}/>
+
         <RegistriesList loading={typeof RegistriesList === "undefined"}
                         data={rows}
           // uiMeta={uiMeta}
                         onloadReg={loadRegistries}
                         onremoveReg={removeRegistry}
+                        onNewEntry={this.onActionInvoke.bind(this, "create")}
+                        onActionInvoke={this.onActionInvoke.bind(this)}
         />
+
+        {(this.state && this.state.actionDialog) && (
+          <div>
+            {this.state.actionDialog}
+          </div>
+        )}
       </div>
     );
   }
@@ -96,6 +108,56 @@ export default class RegistriesPanel extends Component {
         </SplitButton>
       </ButtonToolbar>
     </td>);
+  }
+
+  onHideDialog() {
+    this.setState({
+      actionDialog: undefined
+    });
+  }
+
+  onActionInvoke(action, registry, event) {
+    console.log('onActionInvoke', action, registry, event);
+
+    switch (action) {
+      case "create":
+        this.setState({
+          actionDialog: (
+            <div />
+          )
+        });
+        return;
+
+      case "edit":
+        this.setState({
+          actionDialog: (
+            <div />
+          )
+        });
+        return;
+
+      case "information":
+        this.setState({
+          actionDialog: (
+            <div />
+          )
+        });
+        return;
+
+      case "config":
+        this.setState({
+          actionDialog: (
+            <div />
+          )
+        });
+        return;
+
+      case "delete":
+        return;
+
+      default:
+        return;
+    }
   }
 }
 
