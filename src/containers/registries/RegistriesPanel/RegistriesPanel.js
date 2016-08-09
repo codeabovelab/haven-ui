@@ -116,8 +116,12 @@ export default class RegistriesPanel extends Component {
     });
   }
 
-  onActionInvoke(action, registry, event) {
-    console.log('onActionInvoke', action, registry, event);
+  onActionInvoke(action, registryId, event) {
+    let registry;
+
+    if (registryId) {
+      registry = _.find(this.props.registries, (o) => o.name === registryId);
+    }
 
     switch (action) {
       case "create":
@@ -134,7 +138,10 @@ export default class RegistriesPanel extends Component {
       case "edit":
         this.setState({
           actionDialog: (
-            <div />
+            <RegistryEdit title="Edit Registry"
+                          registry={registry}
+                          onHide={this.onHideDialog.bind(this)}
+            />
           )
         });
         return;
