@@ -108,7 +108,7 @@ export default class RegistryEdit extends Component {
               onHide={this.props.onHide}
       >
         <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
-          <FormGroup validationState={fields.name.error ? "error" : ""}>
+          <FormGroup validationState={(fields.name.error && fields.name.touched) ? "error" : ""}>
             <ControlLabel>Name</ControlLabel>
 
             <FormControl type="text"
@@ -123,8 +123,8 @@ export default class RegistryEdit extends Component {
           </FormGroup>
 
           <Row>
-            <Col xs={8}>
-              <FormGroup validationState={fields.host.error ? "error" : ""}>
+            <Col xs={6}>
+              <FormGroup validationState={(fields.host.error && fields.host.touched) ? "error" : ""}>
                 <ControlLabel>Host</ControlLabel>
 
                 <FormControl type="text"
@@ -139,8 +139,8 @@ export default class RegistryEdit extends Component {
               </FormGroup>
             </Col>
 
-            <Col xs={2}>
-              <FormGroup validationState={fields.port.error ? "error" : ""}>
+            <Col xs={3}>
+              <FormGroup validationState={(fields.port.error && fields.port.touched) ? "error" : ""}>
                 <ControlLabel>Port</ControlLabel>
 
                 <FormControl type="text"
@@ -155,7 +155,7 @@ export default class RegistryEdit extends Component {
               </FormGroup>
             </Col>
 
-            <Col xs={2}>
+            <Col xs={3}>
               <FormGroup validationState={fields.port.error ? "error" : ""}>
                 <ControlLabel />
 
@@ -168,9 +168,11 @@ export default class RegistryEdit extends Component {
             </Col>
           </Row>
 
+          <hr />
+
           <Row>
             <Col xs={6}>
-              <FormGroup validationState={fields.username.error ? "error" : ""}>
+              <FormGroup validationState={(fields.username.error && fields.username.touched) ? "error" : ""}>
                 <ControlLabel>User name</ControlLabel>
 
                 <FormControl type="text"
@@ -186,7 +188,7 @@ export default class RegistryEdit extends Component {
             </Col>
 
             <Col xs={6}>
-              <FormGroup validationState={fields.password.error ? "error" : ""}>
+              <FormGroup validationState={(fields.password.error && fields.password.touched) ? "error" : ""}>
                 <ControlLabel>Password</ControlLabel>
 
                 <FormControl type="password"
