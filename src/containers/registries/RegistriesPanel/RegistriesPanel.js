@@ -123,7 +123,10 @@ export default class RegistriesPanel extends Component {
       case "create":
         this.setState({
           actionDialog: (
-            <div />
+            <RegistryEdit title="Create a New Registry"
+                          registry={undefined}
+                          onHide={this.onHideDialog.bind(this)}
+            />
           )
         });
         return;

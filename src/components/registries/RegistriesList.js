@@ -25,12 +25,12 @@ export default class RegistriesList extends Component {
     {
       name: 'host',
       label: 'Host',
-      width: '40%',
       sortable: true
     },
     {
       name: 'errorMessage',
       label: 'Status',
+      width: '30%',
       sortable: true,
       render: this.errorMessageRender
     },
