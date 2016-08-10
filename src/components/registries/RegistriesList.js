@@ -7,11 +7,8 @@ import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, Progr
 export default class RegistriesList extends Component {
   static propTypes = {
     data: PropTypes.array,
-    onLoadReg: PropTypes.func,
-    onRemoveReg: PropTypes.func,
     onNewEntry: PropTypes.func,
     onActionInvoke: PropTypes.func.isRequired,
-//    uiMeta: PropTypes.array,
     loading: PropTypes.bool,
   };
 
@@ -117,24 +114,5 @@ export default class RegistriesList extends Component {
     return (
       <td key="errorMessage" title={error} className={msgStyle}>{errorShort}</td>
     );
-  }
-
-  removeRegistry(event) {
-    const {onRemoveReg, onLoadReg} = this.props;
-    let registry = this._getRegistryByTarget(event.target);
-    confirm('Are you sure you want to remove this registry?')
-      .then(() => {
-        onRemoveReg(registry.name).catch(() => null)
-          .then(() => onLoadReg());
-      })
-      .catch(() => null);// confirm cancel
-  }
-
-  _getRegistryByTarget(target) {
-    const {registries} = this.props.data;
-    let $tr = $(target).parents('tr');
-    //$tr.data() will return previous data if one row was removed
-    let name = $tr.attr('data-name');
-    return registries.find(registry => registry.name === name);
   }
 }

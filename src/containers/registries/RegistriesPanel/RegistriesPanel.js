@@ -69,9 +69,6 @@ export default class RegistriesPanel extends Component {
 
         <RegistriesList loading={typeof RegistriesList === "undefined"}
                         data={rows}
-          // uiMeta={uiMeta}
-                        onloadReg={loadRegistries}
-                        onremoveReg={removeRegistry}
                         onNewEntry={this.onActionInvoke.bind(this, "create")}
                         onActionInvoke={this.onActionInvoke.bind(this)}
         />
@@ -169,8 +166,8 @@ export default class RegistriesPanel extends Component {
 
         confirm('Are you sure you want to remove this registry?')
           .then(() => {
-            removeRegistry(registryId).catch(() => null)
-              .then(() => loadRegistries());
+            this.props.removeRegistry(registryId).catch(() => null)
+              .then(() => this.props.loadRegistries());
           })
           .catch(() => null);// confirm cancel
 
