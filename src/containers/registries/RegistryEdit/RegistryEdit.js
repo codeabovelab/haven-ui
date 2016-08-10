@@ -92,10 +92,12 @@ export default class RegistryEdit extends Component {
 
       if (this.props.registry) {
         promise = this.props.editRegistry(data).then(() => {
+          this.props.loadRegistries();
           this.props.onHide();
         });
       } else {
         promise = this.props.addRegistry(data).then(() => {
+          this.props.loadRegistries();
           this.props.onHide();
         });
       }
