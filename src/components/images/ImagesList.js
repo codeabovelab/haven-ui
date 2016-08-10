@@ -18,13 +18,13 @@ export default class ImagesList extends Component {
     },
     {
       name: 'name',
-      label: 'Name',
+      label: 'Image Name',
       width: '35%',
       sortable: true
     },
     {
       name: 'tags',
-      label: 'Tags',
+      label: 'Downloaded Tags',
       width: '15%',
       render: this.tagsRender
     },
