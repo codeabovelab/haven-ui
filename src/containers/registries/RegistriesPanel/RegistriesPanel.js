@@ -112,22 +112,6 @@ export default class RegistriesPanel extends Component {
         });
         return;
 
-      case "information":
-        this.setState({
-          actionDialog: (
-            <div />
-          )
-        });
-        return;
-
-      case "config":
-        this.setState({
-          actionDialog: (
-            <div />
-          )
-        });
-        return;
-
       case "delete":
         this.setState({
           actionDialog: undefined
@@ -138,7 +122,7 @@ export default class RegistriesPanel extends Component {
             this.props.removeRegistry(registryId).catch(() => null)
               .then(() => this.props.loadRegistries());
           })
-          .catch(() => null);// confirm cancel
+          .catch(() => null);
 
         return;
 
