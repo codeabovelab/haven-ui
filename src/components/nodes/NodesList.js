@@ -42,16 +42,6 @@ export default class NodesList extends Component {
     const panelHeader = (
       <div className="clearfix">
         <h3>Nodes List</h3>
-
-        <ButtonToolbar>
-          <Button
-          bsStyle="primary"
-          onClick={this.props.onAddNode}
-        >
-        <i className="fa fa-plus" />&nbsp;
-          Add Node
-          </Button>
-        </ButtonToolbar>
       </div>
     );
 
