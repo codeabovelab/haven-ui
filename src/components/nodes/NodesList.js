@@ -14,32 +14,27 @@ export default class NodesList extends Component {
     {
       name: 'name',
       label: 'Name',
-      width: '20%',
+      width: '30%',
       sortable: true
     },
     {
       name: 'address',
       label: 'Address',
-      width: '20%',
+      width: '30%',
       sortable: true
     },
     {
       name: 'cluster',
       label: 'Cluster',
-      width: '10%',
+      width: '20%',
       sortable: true,
       render: this.clusterRender
     },
     {
       name: 'health',
       label: 'Health Status',
-      width: '30%',
-      render: this.healthRender
-    },
-    {
-      name: 'Actions',
       width: '20%',
-      render: this.actionsRender
+      render: this.healthRender
     }
   ];
 
@@ -95,21 +90,6 @@ export default class NodesList extends Component {
         {(registry.cluster == null) && (
           <label>None</label>
         )}
-      </td>
-    );
-  }
-
-  actionsRender() {
-    return (
-      <td key="actions" className="td-actions">
-        <ButtonToolbar bsStyle="default">
-          <SplitButton bsStyle="info"
-                       title="Edit">
-            <MenuItem eventKey="1">Edit</MenuItem>
-            <MenuItem divider />
-            <MenuItem eventKey="2">Delete</MenuItem>
-          </SplitButton>
-        </ButtonToolbar>
       </td>
     );
   }
