@@ -20,7 +20,7 @@ export function load() {
 export function addRegistry(register) {
   return {
     types: [ACTIONS.ADD_REGISTRY, ACTIONS.ADD_REGISTRY_SUCCESS, ACTIONS.ADD_REGISTRY_FAIL],
-    promise: (client) => client.put(`/ui/api/registries`, {data: register})
+    promise: (client) => client.post(`/ui/api/registries`, {data: register})
   };
 }
 

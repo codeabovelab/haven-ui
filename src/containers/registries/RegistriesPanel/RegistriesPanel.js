@@ -163,6 +163,17 @@ export default class RegistriesPanel extends Component {
         return;
 
       case "delete":
+        this.setState({
+          actionDialog: undefined
+        });
+
+        confirm('Are you sure you want to remove this registry?')
+          .then(() => {
+            removeRegistry(registryId).catch(() => null)
+              .then(() => loadRegistries());
+          })
+          .catch(() => null);// confirm cancel
+
         return;
 
       default:

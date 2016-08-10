@@ -53,19 +53,55 @@ export default class RegistryEdit extends Component {
   constructor(...params) {
     super(...params);
     const {registry, fields} = this.props;
+    console.log('this.orops', this.props);
     if (registry) {
-      let properties = ['name', 'host', 'port', 'username', 'password'];
+      let properties = ['active', 'name', 'host', 'port', 'username', 'password'];
       properties.forEach(property => fields[property].onChange(registry[property]));
       if (registry.protocol) {
-        fields.secured.value = registry.protocol.toLowerCase() === 'https';
+        fields.secured.onChange(registry.protocol.toLowerCase() === 'https');
       }
+    } else {
+      fields.active.onChange(true);
     }
   }
 
   onSubmit() {
     const { fields } = this.props;
     console.log('onSubmit', fields);
-    //return this.props.create(fields.name.value);
+
+    let data = {};
+    let hasValues = false;
+
+    Object.keys(fields).forEach((field) => {
+      let value = fields[field].value || fields[field].checked;
+
+      if (typeof value !== "undefined") {
+        data[field] = value;
+        hasValues = true;
+
+        if (field === "secured") {
+          data.protocol = fields[field] ? "HTTPS" : "HTTP";
+        }
+      }
+    });
+
+    console.log('data', data, 'hasValues', hasValues);
+
+    if (hasValues) {
+      let promise;
+
+      if (this.props.registry) {
+        promise = this.props.editRegistry(data).then(() => {
+          this.props.onHide();
+        });
+      } else {
+        promise = this.props.addRegistry(data).then(() => {
+          this.props.onHide();
+        });
+      }
+
+      return promise;
+    }
   }
 
   render() {
@@ -196,28 +232,5 @@ export default class RegistryEdit extends Component {
         </form>
       </Dialog>
     );
-  }
-
-  editRegistry() {
-    const {registry, addRegistry, editRegistry, loadRegistries, fields, resetForm} = this.props;
-    let all = ['name', 'host', 'port', 'secured', 'username', 'password'];
-    let data = {};
-    all.forEach(fieldName => data[fieldName] = fields[fieldName].value);
-    data.protocol = data.secured ? 'HTTPS' : 'HTTP';
-    delete data.secured;
-
-    let promise = null;
-    if (registry) {
-      data.name = registry.name;
-      promise = editRegistry(data);
-    } else {
-      promise = addRegistry(data);
-    }
-    return promise.then(() => {
-      loadRegistries();
-      resetForm();
-      window.simpleModal.close();
-    })
-    .catch();
   }
 }
