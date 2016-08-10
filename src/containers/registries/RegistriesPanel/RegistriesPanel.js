@@ -43,26 +43,11 @@ export default class RegistriesPanel extends Component {
     const {registries, registriesUI} = this.props;
 
     let rows = [...registries];
-    this.additionalData(rows);
     let showLoading = false;
     let showError = false;
     let showData = false;
     let connectedRegistries = rows.length;
 
-    if (loadingError) {
-      showError = true;
-    } else if (loading && (!rows || rows.length === 0)) {
-      showLoading = true;
-    } else {
-      showData = true;
-    }
-
-    let uiMeta = {
-      "showLoading": showLoading,
-      "showError": showError,
-      "showData": showData,
-      "loadingError": loadingError
-    };
     return (
       <div>
         <StatisticsPanel metrics={this.statisticsMetrics} values={[connectedRegistries]}/>
@@ -89,22 +74,6 @@ export default class RegistriesPanel extends Component {
       //  row.actions = this.tdActions.bind(this);
       });
     }
-  }
-
-  renderActions(registry) {
-    return (<td key="actions" className="td-actions">
-      <ButtonToolbar>
-        <SplitButton bsStyle="info"
-                     title="Edit"
-                     onClick={this.editRegisterEvent.bind(this)}>
-
-          <MenuItem eventKey="1" onClick={this.editRegisterEvent.bind(this)}>Edit</MenuItem>
-          <MenuItem divider/>
-          <MenuItem eventKey="2" onClick={this.removeRegistry.bind(this)}>Delete</MenuItem>
-
-        </SplitButton>
-      </ButtonToolbar>
-    </td>);
   }
 
   onHideDialog() {
