@@ -341,7 +341,6 @@ export default class ClusterDetailsPanel extends Component {
     const {clusters, params: {name}} = this.props;
     let cluster = clusters[name];
     let currentContainer = this.props.containers[container];
-    console.log('this.props.containers', this.props.containers, 'currentContainer', currentContainer);
 
     switch (action) {
       case "create":

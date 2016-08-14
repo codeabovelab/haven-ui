@@ -18,13 +18,6 @@ export default class ContainerLog extends Component {
     container: PropTypes.object.isRequired,
     loadLogs: PropTypes.func.isRequired,
 
-    fields: PropTypes.object.isRequired,
-    handleSubmit: PropTypes.func,
-    resetForm: PropTypes.func,
-    submitting: PropTypes.bool,
-    createError: PropTypes.string,
-    valid: PropTypes.bool.isRequired,
-    registry: PropTypes.any,
     onHide: PropTypes.func.isRequired,
   };
 
@@ -50,10 +43,11 @@ export default class ContainerLog extends Component {
     let paragraphs = logs.split('\n').map(str => str.trim()).filter(str => str);
     return (
       <Dialog show
-              hideOk
+              hideCancel
               size="large"
               title={`Container Logs: ${container.name}`}
-              cancelTitle="Close"
+              okTitle="Close"
+              onSubmit={this.props.onHide}
               onHide={this.props.onHide}
       >
         {loadingLogs && (
@@ -65,9 +59,8 @@ export default class ContainerLog extends Component {
         {!loadingLogs && (
           <textarea readOnly
                     className={s["container-log"]}
-          >
-            {logs}
-          </textarea>
+                    defaultValue={logs}
+          />
         )}
       </Dialog>
     );
