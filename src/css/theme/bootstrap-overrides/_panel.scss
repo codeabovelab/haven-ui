@@ -81,6 +81,11 @@ $panel-heading-font-size: 16px;
   }
   > .btn-toolbar {
     display: table-cell;
+    white-space: nowrap;
+
+    .btn {
+      float: none;
+    }
   }
 }
 

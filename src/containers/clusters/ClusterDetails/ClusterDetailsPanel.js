@@ -35,7 +35,7 @@ const COLUMNS = [
 
   {
     name: 'actions',
-    width: '15%'
+    width: '50px'
   }
 ];
 
@@ -150,6 +150,30 @@ export default class ClusterDetailsPanel extends Component {
       });
     }
 
+    const containersHeaderBar = (
+      <div className="clearfix">
+        <h3>Containers</h3>
+
+        <ButtonToolbar>
+          <Button
+            bsStyle="primary"
+            onClick={this.createContainer.bind(this)}
+          >
+            <i className="fa fa-plus" />&nbsp;
+            New Container
+          </Button>
+
+          <Button
+            bsStyle="danger"
+            onClick={this.deleteCluster.bind(this)}
+          >
+            <i className="fa fa-trash" />&nbsp;
+            Delete Cluster
+          </Button>
+        </ButtonToolbar>
+      </div>
+    );
+
     const eventsHeaderBar = (
       <div className="clearfix">
         <h3>Events</h3>
@@ -166,40 +190,30 @@ export default class ClusterDetailsPanel extends Component {
           <Link to="/clusters">Clusters</Link> / {name}
         </h1>
 
-        <div className="page-actions clearfix">
-          <div className="btn-group">
-            <button className="btn btn-primary" onClick={this.createContainer.bind(this)}><i className="fa fa-plus"/>
-              {' '}New Container
-            </button>
-            <button className="btn btn-danger" onClick={this.deleteCluster.bind(this)}><i className="fa fa-trash"/>
-              {' '}Delete Cluster
-            </button>
-          </div>
-        </div>
+        <Panel header={containersHeaderBar}>
+          {!rows && (
+            <ProgressBar active now={100} />
+          )}
 
-        <br />
+          {(rows && rows.length > 0) && (
+            <div>
+              <div className="containers">
+                <DockTable columns={COLUMNS}
+                           rows={rows}
+                           groupBy="node"
+                           groupBySelect={GROUP_BY_SELECT}
+                           size={DockTable.SIZES.SM}
+                />
+              </div>
+            </div>
+          )}
 
-        <div className="panel">
-          <div className="panel-body">
-            <div className="panel-content">
-        <div className={"container-fluid " + s.clusterDetail}>
-          <div className="clearfix"></div>
-          {rows && rows.length > 0 &&
-          <div>
-            <div className="containers">
-              <DockTable columns={COLUMNS} rows={rows} title="Containers" groupBy="node"
-                         groupBySelect={GROUP_BY_SELECT} size={DockTable.SIZES.SM}/>
+          {(rows && rows.length === 0) && (
+            <div className="alert alert-info">
+              No containers yet
             </div>
-          </div>
-          }
-          {rows && rows.length === 0 &&
-          <div className="alert alert-info">
-            No containers yet
-          </div>}
-        </div>
-            </div>
-          </div>
-        </div>
+          )}
+        </Panel>
 
         <Panel header={eventsHeaderBar}>
           {!rows && (
