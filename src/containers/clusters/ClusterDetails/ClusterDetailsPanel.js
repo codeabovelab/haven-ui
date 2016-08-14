@@ -364,6 +364,16 @@ export default class ClusterDetailsPanel extends Component {
         });
         return;
 
+      case "details":
+        this.setState({
+          actionDialog: (
+            <ContainerDetails container={currentContainer}
+                              onHide={this.onHideDialog.bind(this)}
+            />
+          )
+        });
+        return;
+
       case "delete":
         return;
 

@@ -1,5 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {loadDetails} from 'redux/modules/containers/containers';
+import {Dialog} from 'components';
+import {Row, Col, FormGroup, FormControl, Checkbox, ControlLabel, HelpBlock} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 
@@ -14,7 +16,9 @@ export default class ContainerDetails extends Component {
     containers: PropTypes.object.isRequired,
     containersUI: PropTypes.object.isRequired,
     container: PropTypes.object.isRequired,
-    loadDetails: PropTypes.func.isRequired
+    loadDetails: PropTypes.func.isRequired,
+
+    onHide: PropTypes.func.isRequired
   };
 
   componentWillMount() {
@@ -30,19 +34,26 @@ export default class ContainerDetails extends Component {
     let details = containerDetailed.details;
     let properties = details ? Object.keys(details) : [];
     return (
-      <div className={s.host}>
-        <h5>{container.name}</h5>
-        {loadingDetails &&
-        <div className="text-xs-center">
-          <i className="fa fa-spinner fa-5x fa-pulse"/>
-        </div>
-        }
-        {!loadingDetails &&
-        <div className="jumbotron-text">
-          {properties.map(propertyToHTML)}
-        </div>
-        }
-      </div>
+      <Dialog show
+              hideCancel
+              size="large"
+              title={`Container Details: ${container.name}`}
+              okTitle="Close"
+              onSubmit={this.props.onHide}
+              onHide={this.props.onHide}
+      >
+        {loadingDetails && (
+          <div className="text-xs-center">
+            <i className="fa fa-spinner fa-5x fa-pulse"/>
+          </div>
+        )}
+
+        {!loadingDetails && (
+          <div className="jumbotron-text">
+            {properties.map(propertyToHTML)}
+          </div>
+        )}
+      </Dialog>
     );
 
     function propertyToString(propertyName, property) {

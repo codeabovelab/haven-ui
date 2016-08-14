@@ -18,7 +18,7 @@ export default class ContainerLog extends Component {
     container: PropTypes.object.isRequired,
     loadLogs: PropTypes.func.isRequired,
 
-    onHide: PropTypes.func.isRequired,
+    onHide: PropTypes.func.isRequired
   };
 
   componentWillMount() {
