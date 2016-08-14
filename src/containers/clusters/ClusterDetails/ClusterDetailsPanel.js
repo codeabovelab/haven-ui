@@ -3,7 +3,7 @@ import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import { Link, browserHistory } from 'react-router';
-import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, StatisticsPanel} from '../../../components/index';
+import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, StatisticsPanel, ActionMenu} from '../../../components/index';
 import {ContainerCreate, ContainerScale} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
 import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar} from 'react-bootstrap';
@@ -114,9 +114,52 @@ export default class ClusterDetailsPanel extends Component {
     }
   ];
 
+  ACTIONS = [
+    {
+      key: "log",
+      title: "Show Log",
+      default: true
+    },
+    null,
+    {
+      key: "start",
+      title: "Start"
+    },
+    {
+      key: "stop",
+      title: "Stop"
+    },
+    {
+      key: "restart",
+      title: "Restart"
+    },
+    null,
+    {
+      key: "scale",
+      title: "Scale"
+    },
+    {
+      key: "details",
+      title: "Details"
+    },
+    {
+      key: "stats",
+      title: "Stats"
+    },
+    null,
+    {
+      key: "delete",
+      title: "Delete"
+    }
+  ];
+
   componentDidMount() {
     const {loadContainers, params: {name}} = this.props;
+
+    this.state = {};
+
     loadContainers(name);
+
     $('.input-search').focus();
   }
 
@@ -163,13 +206,14 @@ export default class ClusterDetailsPanel extends Component {
             New Container
           </Button>
 
-          <Button
+          {false && <Button
             bsStyle="danger"
             onClick={this.deleteCluster.bind(this)}
           >
             <i className="fa fa-trash" />&nbsp;
             Delete Cluster
           </Button>
+          }
         </ButtonToolbar>
       </div>
     );
@@ -220,6 +264,12 @@ export default class ClusterDetailsPanel extends Component {
             <ProgressBar active now={100} />
           )}
         </Panel>
+
+        {(this.state && this.state.actionDialog) && (
+          <div>
+            {this.state.actionDialog}
+          </div>
+        )}
       </div>
     );
   }
@@ -236,39 +286,91 @@ export default class ClusterDetailsPanel extends Component {
     }
   }
 
-  tdActions(row) {
+  tdActions(container) {
     return (
       <td className="td-actions" key="actions">
-        <ButtonToolbar bsStyle="default">
-          <SplitButton bsStyle="info"
-                       title="Show Log"
-                       onClick={this.showLog.bind(this)}>
+        <ActionMenu subject={container.id}
+                    actions={this.ACTIONS}
+                    actionHandler={this.onActionInvoke.bind(this)}
+        />
 
-            <MenuItem eventKey="1" onClick={this.showLog.bind(this)}>Show Log</MenuItem>
-            <MenuItem divider />
-            {!row.run && (
-              <MenuItem eventKey="2" onClick={this.startContainer.bind(this)}>Start</MenuItem>
-            )}
-            {row.run && (
-              <MenuItem eventKey="3" onClick={this.stopContainer.bind(this)}>Stop</MenuItem>
-            )}
-            {row.run && (
-              <MenuItem eventKey="4" onClick={this.restartContainer.bind(this)}>Restart</MenuItem>
-            )}
-            <MenuItem divider />
-            {row.run && (
-              <MenuItem eventKey="5" onClick={this.scaleContainer.bind(this)}>Scale</MenuItem>
-            )}
-            <MenuItem eventKey="6" onClick={this.showDetails.bind(this)}>Details</MenuItem>
-            {row.run && (
-              <MenuItem eventKey="7" onClick={this.showStats.bind(this)}>Stats</MenuItem>
-            )}
-            <MenuItem divider />
-            <MenuItem eventKey="8" onClick={this.removeContainer.bind(this)}>Delete</MenuItem>
+      </td>
+    );
 
-          </SplitButton>
-        </ButtonToolbar>
-      </td>);
+    /*
+     <ButtonToolbar bsStyle="default">
+     <SplitButton bsStyle="info"
+     title="Show Log"
+     onClick={this.showLog.bind(this)}>
+
+     <MenuItem eventKey="1" onClick={this.showLog.bind(this)}>Show Log</MenuItem>
+     <MenuItem divider />
+     {!container.run && (
+     <MenuItem eventKey="2" onClick={this.startContainer.bind(this)}>Start</MenuItem>
+     )}
+     {container.run && (
+     <MenuItem eventKey="3" onClick={this.stopContainer.bind(this)}>Stop</MenuItem>
+     )}
+     {container.run && (
+     <MenuItem eventKey="4" onClick={this.restartContainer.bind(this)}>Restart</MenuItem>
+     )}
+     <MenuItem divider />
+     {container.run && (
+     <MenuItem eventKey="5" onClick={this.scaleContainer.bind(this)}>Scale</MenuItem>
+     )}
+     <MenuItem eventKey="6" onClick={this.showDetails.bind(this)}>Details</MenuItem>
+     {container.run && (
+     <MenuItem eventKey="7" onClick={this.showStats.bind(this)}>Stats</MenuItem>
+     )}
+     <MenuItem divider />
+     <MenuItem eventKey="8" onClick={this.removeContainer.bind(this)}>Delete</MenuItem>
+
+     </SplitButton>
+     </ButtonToolbar>
+
+     */
+  }
+
+  onHideDialog() {
+    this.setState({
+      actionDialog: undefined
+    });
+  }
+
+  onActionInvoke(action, container) {
+    const {clusters, params: {name}} = this.props;
+    let cluster = clusters[name];
+    let currentContainer = this.props.containers[container];
+    console.log('this.props.containers', this.props.containers, 'currentContainer', currentContainer);
+
+    switch (action) {
+      case "create":
+        this.setState({
+          actionDialog: (
+            <ContainerCreate title="Create a New Cluster"
+                             cluster={cluster}
+                             onHide={this.onHideDialog.bind(this)}
+            />
+          )
+        });
+        return;
+
+      case "log":
+        this.setState({
+          actionDialog: (
+            <ContainerLog container={currentContainer}
+                          onHide={this.onHideDialog.bind(this)}
+            />
+          )
+        });
+        return;
+
+      case "delete":
+        return;
+
+      default:
+        return;
+    }
   }
 
   createContainer() {

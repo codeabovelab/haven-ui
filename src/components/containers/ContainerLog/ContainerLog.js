@@ -1,5 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import * as containerActions from 'redux/modules/containers/containers';
+import {Dialog} from 'components';
+import {Row, Col, FormGroup, FormControl, Checkbox, ControlLabel, HelpBlock} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 
@@ -14,7 +16,16 @@ export default class ContainerLog extends Component {
     containers: PropTypes.object.isRequired,
     containersUI: PropTypes.object.isRequired,
     container: PropTypes.object.isRequired,
-    loadLogs: PropTypes.func.isRequired
+    loadLogs: PropTypes.func.isRequired,
+
+    fields: PropTypes.object.isRequired,
+    handleSubmit: PropTypes.func,
+    resetForm: PropTypes.func,
+    submitting: PropTypes.bool,
+    createError: PropTypes.string,
+    valid: PropTypes.bool.isRequired,
+    registry: PropTypes.any,
+    onHide: PropTypes.func.isRequired,
   };
 
   componentWillMount() {
@@ -38,19 +49,27 @@ export default class ContainerLog extends Component {
     let loadingLogs = _.get(containersUI, `[${container.id}].loadingLogs`, false);
     let paragraphs = logs.split('\n').map(str => str.trim()).filter(str => str);
     return (
-      <div className={s.containerLog}>
-        <h5>{container.name}</h5>
-        {loadingLogs &&
-        <div className="text-xs-center">
-          <i className="fa fa-spinner fa-5x fa-pulse"/>
-        </div>
-        }
-        {!loadingLogs &&
-        <textarea className="log" readOnly>
-          {logs}
-        </textarea>
-        }
-      </div>
+      <Dialog show
+              hideOk
+              size="large"
+              title={`Container Logs: ${container.name}`}
+              cancelTitle="Close"
+              onHide={this.props.onHide}
+      >
+        {loadingLogs && (
+          <div className="text-xs-center">
+            <i className="fa fa-spinner fa-5x fa-pulse"/>
+          </div>
+        )}
+
+        {!loadingLogs && (
+          <textarea readOnly
+                    className={s["container-log"]}
+          >
+            {logs}
+          </textarea>
+        )}
+      </Dialog>
     );
   }
 }
