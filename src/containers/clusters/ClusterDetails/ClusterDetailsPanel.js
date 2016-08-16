@@ -200,7 +200,7 @@ export default class ClusterDetailsPanel extends Component {
         <ButtonToolbar>
           <Button
             bsStyle="primary"
-            onClick={this.createContainer.bind(this)}
+            onClick={this.onActionInvoke.bind(this, "create")}
           >
             <i className="fa fa-plus" />&nbsp;
             New Container
@@ -296,39 +296,6 @@ export default class ClusterDetailsPanel extends Component {
 
       </td>
     );
-
-    /*
-     <ButtonToolbar bsStyle="default">
-     <SplitButton bsStyle="info"
-     title="Show Log"
-     onClick={this.showLog.bind(this)}>
-
-     <MenuItem eventKey="1" onClick={this.showLog.bind(this)}>Show Log</MenuItem>
-     <MenuItem divider />
-     {!container.run && (
-     <MenuItem eventKey="2" onClick={this.startContainer.bind(this)}>Start</MenuItem>
-     )}
-     {container.run && (
-     <MenuItem eventKey="3" onClick={this.stopContainer.bind(this)}>Stop</MenuItem>
-     )}
-     {container.run && (
-     <MenuItem eventKey="4" onClick={this.restartContainer.bind(this)}>Restart</MenuItem>
-     )}
-     <MenuItem divider />
-     {container.run && (
-     <MenuItem eventKey="5" onClick={this.scaleContainer.bind(this)}>Scale</MenuItem>
-     )}
-     <MenuItem eventKey="6" onClick={this.showDetails.bind(this)}>Details</MenuItem>
-     {container.run && (
-     <MenuItem eventKey="7" onClick={this.showStats.bind(this)}>Stats</MenuItem>
-     )}
-     <MenuItem divider />
-     <MenuItem eventKey="8" onClick={this.removeContainer.bind(this)}>Delete</MenuItem>
-
-     </SplitButton>
-     </ButtonToolbar>
-
-     */
   }
 
   onHideDialog() {
@@ -340,13 +307,19 @@ export default class ClusterDetailsPanel extends Component {
   onActionInvoke(action, container) {
     const {clusters, params: {name}} = this.props;
     let cluster = clusters[name];
-    let currentContainer = this.props.containers[container];
+
+    console.log('onActionInvoke', action, cluster);
+
+    let currentContainer;
+    if (container) {
+      currentContainer = this.props.containers[container];
+    }
 
     switch (action) {
       case "create":
         this.setState({
           actionDialog: (
-            <ContainerCreate title="Create a New Cluster"
+            <ContainerCreate title="Create New Container"
                              cluster={cluster}
                              onHide={this.onHideDialog.bind(this)}
             />
@@ -374,94 +347,65 @@ export default class ClusterDetailsPanel extends Component {
         });
         return;
 
+      case "scale":
+        this.setState({
+          actionDialog: (
+            <ContainerScale container={currentContainer}
+                            onHide={this.onHideDialog.bind(this)}
+            />
+          )
+        });
+        return;
+
+      case "stats":
+        this.setState({
+          actionDialog: (
+            <ContainerStatistics container={currentContainer}
+                                 onHide={this.onHideDialog.bind(this)}
+            />
+          )
+        });
+        return;
+
+      case "start":
+        confirm('Are you sure you want to start container?')
+          .then(() => {
+            this.props.startContainer(currentContainer).catch(() => null)
+              .then(() => this.props.loadContainers(name));
+          })
+          .catch(() => null);// confirm cancel
+        return;
+
+      case "stop":
+        confirm('Are you sure you want to stop container?')
+          .then(() => {
+            this.props.stopContainer(currentContainer).catch(() => null)
+              .then(() => this.props.loadContainers(name));
+          })
+          .catch(() => null);// confirm cancel
+        return;
+
+      case "restart":
+        confirm('Are you sure you want to restart container?')
+          .then(() => {
+            this.props.restartContainer(container).catch(() => null)
+              .then(() => this.props.loadContainers(name));
+          })
+          .catch(() => null);// confirm cancel
+        return;
+
       case "delete":
+        confirm('Are you sure you want to remove this container?')
+          .then(() => {
+            this.props.removeContainer(container).catch(() => null)
+              .then(() => this.props.loadContainers(name));
+          })
+          .catch(() => null);// confirm cancel
         return;
 
       default:
         return;
     }
-  }
-
-  createContainer() {
-    const {clusters, params: {name}} = this.props;
-    let cluster = clusters[name];
-    let contentComponent = <ContainerCreate cluster={cluster}/>;
-    window.simpleModal.show({
-      contentComponent,
-      size: 'lg',
-      focus: ContainerCreate.focusSelector
-    });
-  }
-
-  showLog(event) {
-    let container = this._getContainerByTarget(event.target);
-    let bodyComponent = <ContainerLog container={container}/>;
-    window.simpleModal.show({title: 'Logs', bodyComponent, size: 'xl'});
-  }
-
-  startContainer(event) {
-    const {startContainer, loadContainers, params: {name}} = this.props;
-    let container = this._getContainerByTarget(event.target);
-    confirm('Are you sure you want to start container?')
-      .then(() => {
-        startContainer(container).catch(() => null)
-          .then(() => loadContainers(name));
-      })
-      .catch(() => null);// confirm cancel
-  }
-
-  stopContainer(event) {
-    const {stopContainer, loadContainers, params: {name}} = this.props;
-    let container = this._getContainerByTarget(event.target);
-    confirm('Are you sure you want to stop container?')
-      .then(() => {
-        stopContainer(container).catch(() => null)
-          .then(() => loadContainers(name));
-      })
-      .catch(() => null);// confirm cancel
-  }
-
-  restartContainer(event) {
-    const {restartContainer, loadContainers, params: {name}} = this.props;
-    let container = this._getContainerByTarget(event.target);
-    confirm('Are you sure you want to restart container?')
-      .then(() => {
-        restartContainer(container).catch(() => null)
-          .then(() => loadContainers(name));
-      })
-      .catch(() => null);// confirm cancel
-  }
-
-  scaleContainer(event) {
-    let container = this._getContainerByTarget(event.target);
-    let contentComponent = <ContainerScale container={container}/>;
-    window.simpleModal.show({
-      contentComponent,
-      focus: ContainerScale.focusSelector
-    });
-  }
-
-  showDetails(event) {
-    let container = this._getContainerByTarget(event.target);
-    let bodyComponent = <ContainerDetails container={container}/>;
-    window.simpleModal.show({title: 'Container Details', bodyComponent, size: 'xl'});
-  }
-
-  showStats(event) {
-    let container = this._getContainerByTarget(event.target);
-    let bodyComponent = <ContainerStatistics container={container}/>;
-    window.simpleModal.show({title: 'Container Statistics', bodyComponent, size: 'xl'});
-  }
-
-  removeContainer(event) {
-    const {removeContainer, loadContainers, params: {name}} = this.props;
-    let container = this._getContainerByTarget(event.target);
-    confirm('Are you sure you want to remove this container?')
-      .then(() => {
-        removeContainer(container).catch(() => null)
-          .then(() => loadContainers(name));
-      })
-      .catch(() => null);// confirm cancel
   }
 
   deleteCluster() {
@@ -472,13 +416,5 @@ export default class ClusterDetailsPanel extends Component {
           .then(() => browserHistory.push('/clusters'));
       }, () => null);
   }
-
-  _getContainerByTarget(target) {
-    const {containers} = this.props;
-    let $tr = $(target).parents('tr');
-    let id = $tr.data('id');
-    return containers[id];
-  }
-
 
 }
