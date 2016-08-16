@@ -1,5 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {loadStatistics} from 'redux/modules/containers/containers';
+import {Dialog} from 'components';
+import {Row, Col, FormGroup, FormControl, Checkbox, ControlLabel, HelpBlock} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 
@@ -14,7 +16,9 @@ export default class ContainerStatistics extends Component {
     containers: PropTypes.object.isRequired,
     containersUI: PropTypes.object.isRequired,
     container: PropTypes.object.isRequired,
-    loadStatistics: PropTypes.func.isRequired
+    loadStatistics: PropTypes.func.isRequired,
+
+    onHide: PropTypes.func.isRequired
   };
 
   componentWillMount() {
@@ -29,44 +33,56 @@ export default class ContainerStatistics extends Component {
     let loadingStatistics = _.get(containersUI, `[${container.id}].loadingStatistics`, false);
     let stats = containerDetailed.statistics ? containerDetailed.statistics : {};
 
+    //
+    // TODO: Refactor dialog layout using property grid
+    //
+
     return (
-      <div className={s.stats}>
-        <h5>{container.name}</h5>
-        {loadingStatistics &&
-        <div className="text-xs-center">
-          <i className="fa fa-spinner fa-5x fa-pulse"/>
-        </div>
-        }
-        {!loadingStatistics &&
-        <div className="data jumbotron-text">
-          <div>
-            <h5>Memory</h5>
+      <Dialog show
+              hideCancel
+              size="large"
+              title={`Container Statistics: ${container.name}`}
+              okTitle="Close"
+              onSubmit={this.props.onHide}
+              onHide={this.props.onHide}
+      >
+        {loadingStatistics && (
+          <div className="text-xs-center">
+            <i className="fa fa-spinner fa-5x fa-pulse"/>
+          </div>
+        )}
+
+        {!loadingStatistics && (
+          <div className="data jumbotron-text">
             <div>
-              <div><label>Usage MB:</label> {stats.memoryMBUsage}</div>
-              <div><label>Max Usage MB:</label> {stats.memoryMBMaxUsage}</div>
-              <div><label>Limit MB:</label> {stats.memoryMBLimit}</div>
-              <div><label>Memory %:</label> {stats.memoryPercentage}</div>
+              <h5>Memory</h5>
+              <div>
+                <div><label>Usage MB:</label> {stats.memoryMBUsage}</div>
+                <div><label>Max Usage MB:</label> {stats.memoryMBMaxUsage}</div>
+                <div><label>Limit MB:</label> {stats.memoryMBLimit}</div>
+                <div><label>Memory %:</label> {stats.memoryPercentage}</div>
+              </div>
+            </div>
+
+            <div>
+              <h5>CPU Table</h5>
+              <div>
+                <div><label>Total Usage:</label> {stats.cpuTotalUsage}</div>
+                <div><label>Kernel:</label> {stats.cpuKernel}</div>
+                <div><label>User:</label> {stats.cpuUser}</div>
+                <div><label>System:</label> {stats.cpuSystem}</div>
+              </div>
+            </div>
+
+            <div>
+              <h5>Networks</h5>
+              {this.printNetworks(stats.networks)}
             </div>
           </div>
-          <div>
-            <h5>CPU Table</h5>
-            <div>
-              <div><label>Total Usage:</label> {stats.cpuTotalUsage}</div>
-              <div><label>Kernel:</label> {stats.cpuKernel}</div>
-              <div><label>User:</label> {stats.cpuUser}</div>
-              <div><label>System:</label> {stats.cpuSystem}</div>
-            </div>
-          </div>
-          <div>
-            <h5>Networks</h5>
-            {this.printNetworks(stats.networks)}
-          </div>
-        </div>
-        }
-      </div>
+        )}
+      </Dialog>
     );
   }
-
 
   printNetworks(networks) {
     const fields = {
