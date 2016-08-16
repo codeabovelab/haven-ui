@@ -1,4 +1,6 @@
 import React, {Component, PropTypes} from 'react';
+import {Dialog} from 'components';
+import {Row, Col, FormGroup, FormControl, Checkbox, ControlLabel, HelpBlock} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import {scale} from 'redux/modules/containers/containers';
 import _ from 'lodash';
@@ -10,7 +12,9 @@ export default class ContainerScale extends Component {
   static propTypes = {
     containersUI: PropTypes.object.isRequired,
     container: PropTypes.object.isRequired,
-    scale: PropTypes.func.isRequired
+    scale: PropTypes.func.isRequired,
+
+    onHide: PropTypes.func.isRequired
   };
   static focusSelector = '#instances-number';
 
@@ -26,31 +30,25 @@ export default class ContainerScale extends Component {
   render() {
     const {container, containersUI} = this.props;
     let scaling = _.get(containersUI, `[${container.id}].scaling`, false);
+
     return (
-      <div className="modal-content">
-        <div className="modal-header">
-          <button type="button" className="close" data-dismiss="modal">
-            <span aria-hidden="true">&times;</span>
-          </button>
-          <h4 className="modal-title">Scale Container
-            {scaling && <span>{' '}<i className="fa fa-spinner fa fa-pulse"/></span>}
-          </h4>
+      <Dialog show
+              size="large"
+              title={`Scale Container: ${container.name}`}
+              onSubmit={this.props.onHide}
+              onHide={this.props.onHide}
+      >
+        {scaling && (
+          <span>{' '}<i className="fa fa-spinner fa fa-pulse"/></span>
+        )}
+
+        <div className="form-group" required>
+          <label>Number of instances to be launched:</label>
+          <input type="number" step="1" min="1" id={ContainerScale.focusSelector.replace('#', '')}
+                 value={this.state.scaleFactor} onChange={this.handleChange.bind(this)}
+                 className="form-control"/>
         </div>
-        <div className="modal-body">
-          <div className="form-group" required>
-            <label># of instances to be launched:</label>
-            <input type="number" step="1" min="1" id={ContainerScale.focusSelector.replace('#', '')}
-                   value={this.state.scaleFactor} onChange={this.handleChange.bind(this)}
-                   className="form-control"/>
-          </div>
-        </div>
-        <div className="modal-footer">
-          <button type="button" className="btn btn-primary" onClick={this.scale.bind(this)}
-                  disabled={!(this.state.scaleFactor > 0)}>
-            Scale
-          </button>
-        </div>
-      </div>
+      </Dialog>
     );
   }
 
@@ -58,7 +56,7 @@ export default class ContainerScale extends Component {
     const {container, scale} = this.props;
 
     return scale(container, this.state.scaleFactor)
-      .then(window.simpleModal.close)
+      .then(this.props.onHide())
       .catch();
   }
 }
