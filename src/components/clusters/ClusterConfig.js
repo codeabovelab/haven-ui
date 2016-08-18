@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {clusterConfig} from 'redux/modules/clusters/clusters';
-import {Dialog} from 'components';
+import {Dialog, PropertyGrid} from 'components';
 import {FormGroup, FormControl, ControlLabel, HelpBlock} from 'react-bootstrap';
 
 @connect(state => ({
@@ -23,32 +23,7 @@ export default class ClusterConfig extends Component {
     }
   }
 
-  // TODO: Move to shared
-  stringify(object) {
-    let simpleObject = {};
-
-    for (let prop in object) {
-      if (!object.hasOwnProperty(prop)) {
-        continue;
-      }
-
-      if (typeof(object[prop]) === 'object') {
-        simpleObject[prop] = JSON.stringify(simpleObject);
-        continue;
-      }
-
-      if (typeof(object[prop]) === 'function') {
-        continue;
-      }
-
-      simpleObject[prop] = object[prop];
-    }
-
-    return JSON.stringify(simpleObject);
-  }
-
   render() {
-    console.log('redener', this.props);
     return (
       <Dialog show
               hideCancel
@@ -57,15 +32,7 @@ export default class ClusterConfig extends Component {
               onSubmit={this.props.onHide}
               onHide={this.props.onHide}
       >
-        <form>
-          <FormGroup>
-            <FormControl componentClass="textarea"
-                         value={this.stringify(this.props.clusters[this.props.cluster].configuration)}
-                         rows={20}
-                         readOnly
-            />
-          </FormGroup>
-        </form>
+        <PropertyGrid data={this.props.clusters[this.props.cluster].configuration} />
       </Dialog>
     );
   }

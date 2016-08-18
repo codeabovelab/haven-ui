@@ -37,7 +37,15 @@ export default class PropertyGridLeaf extends Component {
   }
 
   render() {
+    console.log('leaf', this.props);
     let level = this.props.level || 1;
+
+    if (level > 10) {
+      console.log('Maximum depth of object structure exceeded');
+      return (
+        <div />
+      );
+    }
 
     let data = this.props.data;
     let type = this.getType(data);
@@ -48,9 +56,11 @@ export default class PropertyGridLeaf extends Component {
     let isPrimitive = this.isPrimitiveType(data);
     let isExpanded = this.state && this.state.expanded;
     let isHidden = false;
+    let isEmpty = (typeof data === "undefined") || (data === null);
+
     if (this.props.isRoot === true) {
       isHidden = (this.props.hideRoot === true);
-      level = 0;
+      if (isHidden) level = 0;
     }
 
     let value = '';
@@ -58,32 +68,39 @@ export default class PropertyGridLeaf extends Component {
       value = String(data);
     }
 
+    console.log('data', isEmpty, isPrimitive, type, data);
+
+    let children;
+    if (!isEmpty && isExpanded && !isPrimitive) {
+      children = Object.keys(data).filter((key) => key.charAt(0) !== "_").map((key) => {
+        return (
+          <PropertyGridLeaf data={data[key]}
+                            level={level + 1}
+                            label={key}
+          />
+        );
+      });
+    }
+
     return (
       <div className="pg-leaf">
         {!isHidden && (
           <div className="pg-row">
-            <span className="pg-label">
-              <span className={"pg-type pg-level-" + String(level) + " " + type + (isPrimitive ? "" : " pg-expandable") + (!isExpanded ? "" : " pg-collapsed")}
-                    onClick={this.onExpandCollapse.bind(this)}
-              />
+          <span className="pg-label">
+            <span className={"pg-type pg-level-" + String(level) + " " + type + (isPrimitive ? "" : " pg-expandable") + (!isExpanded ? "" : " pg-collapsed")}
+                  onClick={this.onExpandCollapse.bind(this)}
+            />
 
-              {this.props.label}
-            </span>
+            {this.props.label}
+          </span>
 
             <span className="pg-value">
-              {value}
-            </span>
+            {value}
+          </span>
           </div>
         )}
 
-        {(isExpanded && !isPrimitive) && Object.keys(data).map((key) => {
-          return (
-            <PropertyGridLeaf data={data[key]}
-                              level={level + 1}
-                              label={key}
-            />
-          );
-        })}
+        {children}
       </div>
     );
   }

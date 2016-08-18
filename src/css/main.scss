@@ -36,10 +36,8 @@
 .pg-leaf {
 }
 .pg-row {
-  display: table;
-  width: 100%;
-  border-collapse: collapse;
   border-bottom: 1px dotted #f1f1f1;
+  vertical-align: top;
 }
 .pg-leaf .pg-type {
   display: inline-block;
@@ -63,21 +61,28 @@
   }
 }
 .pg-leaf .pg-label {
-  display: table-cell;
+  display: inline-block;
   width: 40%;
   padding: 0.5em 0.5em 0.5em 0;
   vertical-align: top;
   white-space: nowrap;
   text-overflow: ellipsis;
+  overflow: hidden;
 }
 .pg-leaf .pg-value {
-  display: table-cell;
+  display: inline-block;
   width: 60%;
   padding: 0.5em 0.5em;
   vertical-align: top;
   white-space: nowrap;
   text-overflow: ellipsis;
   border-left: 1px dotted #f1f1f1;
+  overflow: hidden;
+
+  &:after {
+    display: inline-block;
+    content: ' ';
+  }
 }
 .pg-expandable {
   cursor: pointer;

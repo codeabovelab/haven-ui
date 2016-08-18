@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {clusterInformation} from 'redux/modules/clusters/clusters';
-import {Dialog} from 'components';
+import {Dialog, PropertyGrid} from 'components';
 import {FormGroup, FormControl, ControlLabel, HelpBlock} from 'react-bootstrap';
 
 @connect(state => ({
@@ -54,16 +54,7 @@ export default class ClusterInformation extends Component {
               onSubmit={this.props.onHide}
               onHide={this.props.onHide}
       >
-        Configuration props here
-        <form>
-          <FormGroup>
-            <FormControl componentClass="textarea"
-                         value={this.stringify(this.props.clusters[this.props.cluster].information)}
-                         rows={20}
-                         readOnly
-            />
-          </FormGroup>
-        </form>
+        <PropertyGrid data={this.props.clusters[this.props.cluster].information} />
       </Dialog>
     );
   }

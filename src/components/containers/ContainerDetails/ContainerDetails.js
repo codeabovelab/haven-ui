@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {loadDetails} from 'redux/modules/containers/containers';
-import {Dialog} from 'components';
+import {Dialog, PropertyGrid} from 'components';
 import {Row, Col, FormGroup, FormControl, Checkbox, ControlLabel, HelpBlock} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import _ from 'lodash';
@@ -49,9 +49,7 @@ export default class ContainerDetails extends Component {
         )}
 
         {!loadingDetails && (
-          <div className="jumbotron-text">
-            {properties.map(propertyToHTML)}
-          </div>
+          <PropertyGrid data={details} />
         )}
       </Dialog>
     );
