@@ -28,3 +28,69 @@
 @import "theme/components/_pageTop";
 @import "theme/components/_sidebar";
 @import "theme/components/_widgets";
+
+
+.property-grid {
+  border-top: 1px dotted #f1f1f1;
+}
+.pg-leaf {
+}
+.pg-row {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+  border-bottom: 1px dotted #f1f1f1;
+}
+.pg-leaf .pg-type {
+  display: inline-block;
+  width: 15px;
+  min-height: 1px;
+
+  &.pg-level-2 {
+    margin-left: 15px;
+  }
+  &.pg-level-3 {
+    margin-left: 30px;
+  }
+  &.pg-level-4 {
+    margin-left: 45px;
+  }
+  &.pg-level-5 {
+    margin-left: 60px;
+  }
+  &.pg-level-6 {
+    margin-left: 75px;
+  }
+}
+.pg-leaf .pg-label {
+  display: table-cell;
+  width: 40%;
+  padding: 0.5em 0.5em 0.5em 0;
+  vertical-align: top;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.pg-leaf .pg-value {
+  display: table-cell;
+  width: 60%;
+  padding: 0.5em 0.5em;
+  vertical-align: top;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  border-left: 1px dotted #f1f1f1;
+}
+.pg-expandable {
+  cursor: pointer;
+  text-align: center;
+  vertical-align: middle;
+
+  &:before {
+    display: inline-block;
+    content: '+';
+  }
+  &.pg-collapsed {
+    &:before {
+      content: '-';
+    }
+  }
+}

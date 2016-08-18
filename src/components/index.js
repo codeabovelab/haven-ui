@@ -23,5 +23,7 @@ export ContainerLog from './containers/ContainerLog/ContainerLog';
 export ContainerDetails from './containers/ContainerDetails/ContainerDetails';
 export ContainerStatistics from './containers/ContainerStatistics/ContainerStatistics';
 
+export PropertyGrid from './common/PropertyGrid/PropertyGrid';
+
 export DashboardNodesList from './nodes/DashboardNodesList/DashboardNodesList';
 export DashboardClustersList from '../components/clusters/DashboardClustersList';

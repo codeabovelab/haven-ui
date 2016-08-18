@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {loadStatistics} from 'redux/modules/containers/containers';
-import {Dialog} from 'components';
+import {Dialog, PropertyGrid} from 'components';
 import {Row, Col, FormGroup, FormControl, Checkbox, ControlLabel, HelpBlock} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import _ from 'lodash';
@@ -54,30 +54,8 @@ export default class ContainerStatistics extends Component {
 
         {!loadingStatistics && (
           <div className="data jumbotron-text">
-            <div>
-              <h5>Memory</h5>
-              <div>
-                <div><label>Usage MB:</label> {stats.memoryMBUsage}</div>
-                <div><label>Max Usage MB:</label> {stats.memoryMBMaxUsage}</div>
-                <div><label>Limit MB:</label> {stats.memoryMBLimit}</div>
-                <div><label>Memory %:</label> {stats.memoryPercentage}</div>
-              </div>
-            </div>
-
-            <div>
-              <h5>CPU Table</h5>
-              <div>
-                <div><label>Total Usage:</label> {stats.cpuTotalUsage}</div>
-                <div><label>Kernel:</label> {stats.cpuKernel}</div>
-                <div><label>User:</label> {stats.cpuUser}</div>
-                <div><label>System:</label> {stats.cpuSystem}</div>
-              </div>
-            </div>
-
-            <div>
-              <h5>Networks</h5>
-              {this.printNetworks(stats.networks)}
-            </div>
+            <PropertyGrid data={stats}
+            />
           </div>
         )}
       </Dialog>
