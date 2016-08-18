@@ -37,7 +37,6 @@ export default class PropertyGridLeaf extends Component {
   }
 
   render() {
-    console.log('leaf', this.props);
     let level = this.props.level || 1;
 
     if (level > 10) {
@@ -67,8 +66,6 @@ export default class PropertyGridLeaf extends Component {
     if (this.isPrimitiveType(data)) {
       value = String(data);
     }
-
-    console.log('data', isEmpty, isPrimitive, type, data);
 
     let children;
     if (!isEmpty && isExpanded && !isPrimitive) {
