@@ -106,11 +106,6 @@ export default class ClusterDetailsPanel extends Component {
       type: 'number',
       title: 'Running Job',
       titles: 'Running Jobs'
-    },
-    {
-      type: 'number',
-      title: 'Error in last 24 hours',
-      titles: 'Errors in last 23 hours'
     }
   ];
 
