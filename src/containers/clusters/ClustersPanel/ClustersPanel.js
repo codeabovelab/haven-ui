@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {load} from 'redux/modules/clusters/clusters';
+import * as clusterActions from 'redux/modules/clusters/clusters';
 import {connect} from 'react-redux';
 import { Link } from 'react-router';
 import {DockTable, ClustersList, StatisticsPanel, Dialog} from '../../../components';
@@ -10,12 +10,17 @@ import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, Progr
   state => ({
     clusters: state.clusters,
     clustersIds: state.clustersUI.list
-  }), {load})
+  }), {
+    loadClusters: clusterActions.load,
+    deleteCluster: clusterActions.deleteCluster
+  }
+)
 export default class ClustersPanel extends Component {
   static propTypes = {
     clusters: PropTypes.object,
     clustersIds: PropTypes.array,
-    load: PropTypes.func.isRequired
+    loadClusters: PropTypes.func.isRequired,
+    deleteCluster: PropTypes.func.isRequired
   };
 
   statisticsMetrics = [
@@ -42,11 +47,10 @@ export default class ClustersPanel extends Component {
   ];
 
   componentDidMount() {
-    const {load} = this.props;
-
     this.state = {};
 
-    load();
+    this.props.loadClusters();
+
     $('.input-search').focus();
   }
 
@@ -171,6 +175,12 @@ export default class ClustersPanel extends Component {
         return;
 
       case "delete":
+        confirm('Are you sure you want to remove this cluster?')
+          .then(() => {
+            this.props.deleteCluster(cluster).catch(() => null)
+              .then(() => this.props.loadClusters());
+          })
+          .catch(() => null);// confirm cancel
         return;
 
       default:
