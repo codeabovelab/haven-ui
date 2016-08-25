@@ -309,6 +309,7 @@ export default class ClusterDetailsPanel extends Component {
     if (container) {
       currentContainer = this.props.containers[container];
     }
+    console.log('container', container, currentContainer);
 
     switch (action) {
       case "create":
@@ -383,7 +384,7 @@ export default class ClusterDetailsPanel extends Component {
       case "restart":
         confirm('Are you sure you want to restart container?')
           .then(() => {
-            this.props.restartContainer(container).catch(() => null)
+            this.props.restartContainer(currentContainer).catch(() => null)
               .then(() => this.props.loadContainers(name));
           })
           .catch(() => null);// confirm cancel
@@ -392,7 +393,7 @@ export default class ClusterDetailsPanel extends Component {
       case "delete":
         confirm('Are you sure you want to remove this container?')
           .then(() => {
-            this.props.removeContainer(container).catch(() => null)
+            this.props.removeContainer(currentContainer).catch(() => null)
               .then(() => this.props.loadContainers(name));
           })
           .catch(() => null);// confirm cancel
