@@ -61,7 +61,9 @@ export default class ContainerCreate extends Component {
     fields: PropTypes.object.isRequired,
     resetForm: PropTypes.func.isRequired,
     loadContainers: PropTypes.func.isRequired,
-    loadDefaultParams: PropTypes.func.isRequired
+    loadDefaultParams: PropTypes.func.isRequired,
+
+    onHide: PropTypes.func.isRequired
   };
   static focusSelector = '#image-select';
 
@@ -83,7 +85,7 @@ export default class ContainerCreate extends Component {
   getImagesList() {
     let imagesList = [];
     const {images} = this.props;
-    Object.keys(images).forEach(registerName => {
+    Object.keys(images).filter((key) => (key === "all")).forEach(registerName => {
       let register = images[registerName];
       _.forOwn(register, image => {
         let i = Object.assign({}, image, {label: `${registerName} | ${image.name}`});
