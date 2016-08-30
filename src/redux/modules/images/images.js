@@ -44,6 +44,6 @@ export function loadImageTags(imageId) {
   return {
     types: [ACTIONS.LOAD_IMAGE_TAGS, ACTIONS.LOAD_IMAGE_TAGS_SUCCESS, ACTIONS.LOAD_IMAGE_TAGS_FAIL],
     image: imageId,
-    promise: (client) => client.get(`/ui/api/images/tags?imageName=${imageId}`)
+    promise: (client) => client.get('/ui/api/images/tags', {params: {imageName: imageId }})
   };
 }
