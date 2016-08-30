@@ -12,7 +12,8 @@ import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, Progr
     clustersIds: state.clustersUI.list
   }), {
     loadClusters: clusterActions.load,
-    deleteCluster: clusterActions.deleteCluster
+    deleteCluster: clusterActions.deleteCluster,
+    loadNodes: clusterActions.loadNodes
   }
 )
 export default class ClustersPanel extends Component {
@@ -20,7 +21,8 @@ export default class ClustersPanel extends Component {
     clusters: PropTypes.object,
     clustersIds: PropTypes.array,
     loadClusters: PropTypes.func.isRequired,
-    deleteCluster: PropTypes.func.isRequired
+    deleteCluster: PropTypes.func.isRequired,
+    loadNodes: PropTypes.func.isRequired
   };
 
   statisticsMetrics = [
@@ -50,6 +52,14 @@ export default class ClustersPanel extends Component {
     this.state = {};
 
     this.props.loadClusters();
+
+
+    let curNodes = this.props.loadNodes('dev');
+    console.log(curNodes);
+    curNodes.then(function(result) {
+      console.log(result);
+    });
+
 
     $('.input-search').focus();
   }
@@ -129,6 +139,7 @@ export default class ClustersPanel extends Component {
   }
 
   onActionInvoke(action, cluster, event) {
+    let assignedNodes = [].concat(this.props.clusters[cluster].nodesList);
     switch (action) {
       case "create":
         this.setState({
@@ -146,6 +157,7 @@ export default class ClustersPanel extends Component {
           actionDialog: (
             <ClusterAdd title="Edit Cluster"
                         cluster={cluster}
+                        assignedNodes = {assignedNodes}
                         onHide={this.onHideDialog.bind(this)}
             />
           )

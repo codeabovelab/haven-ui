@@ -3,7 +3,7 @@ import {CommonModel} from "../core/CommonModel";
 
 export class Cluster extends CommonModel {
   name;
-
+  assignedNodes;
   constructor({init: init = null}) {
     if (init) {
       super({init});
