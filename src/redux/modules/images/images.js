@@ -40,12 +40,10 @@ export function loadImages() {
   };
 }
 
-export function loadImageTags({image, register}) {
-  let imageId = `${register}/${image}`;
+export function loadImageTags(imageId) {
   return {
     types: [ACTIONS.LOAD_IMAGE_TAGS, ACTIONS.LOAD_IMAGE_TAGS_SUCCESS, ACTIONS.LOAD_IMAGE_TAGS_FAIL],
-    image: image,
-    register: register,
-    promise: (client) => client.get(`/ui/api/images/tags`, {params: {id: imageId}})
+    image: imageId,
+    promise: (client) => client.get(`/ui/api/images/tags?imageName=${imageId}`)
   };
 }

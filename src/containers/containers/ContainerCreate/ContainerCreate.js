@@ -209,9 +209,8 @@ export default class ContainerCreate extends Component {
   onImageChange(event) {
     const {loadImageTags} = this.props;
     let option = event.target[event.target.selectedIndex];
-    let register = option.dataset.register;
-    if (register) {
-      loadImageTags({register, image: event.target.value});
+    if (event.target.value) {
+      loadImageTags(event.target.value);
     }
   }
 
