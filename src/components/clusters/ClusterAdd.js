@@ -2,13 +2,14 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {Field, reduxForm} from 'redux-form';
 import {load, create} from 'redux/modules/clusters/clusters';
+import {create as createNode}  from 'redux/modules/nodes/nodes';
 import {createValidator, required} from 'utils/validation';
 import {Dialog} from 'components';
 import {FormGroup, FormControl, ControlLabel, HelpBlock} from 'react-bootstrap';
 
 @connect(state => ({
   createError: state.clustersUI.createError
-}), {create, load})
+}), {create, load, createNode})
 @reduxForm({
   form: 'ClusterAdd',
   fields: [
@@ -24,10 +25,10 @@ export default class ClusterAdd extends Component {
   static propTypes = {
     title: PropTypes.string.isRequired,
     create: PropTypes.func.isRequired,
+    createNode: PropTypes.func.isRequired,
     load: PropTypes.func.isRequired,
     fields: PropTypes.object.isRequired,
     handleSubmit: PropTypes.func,
-    assignedNodes: PropTypes.array,
     orphanNodes: PropTypes.array,
     resetForm: PropTypes.func,
     submitting: PropTypes.bool,
@@ -39,22 +40,20 @@ export default class ClusterAdd extends Component {
 
   onSubmit() {
     const { fields } = this.props;
+    if (fields.assignedNodes.value.length > 0) {
+      fields.assignedNodes.value.map(function (node) {
+        if (typeof(node) !== 'undefined') {
+          let data = {name: node, cluster: fields.name.value};
+          this.props.createNode(data);
+        }
+      }.bind(this))
+    }
     return this.props.create(fields.name.value);
   }
 
   render() {
     const { fields } = this.props;
-    console.log(this.props);
-    const assignedNodes = this.props.assignedNodes;
     const orphanNodes = this.props.orphanNodes;
-      let options = [
-          { name: 'one', label: 'one' },
-          { name: 'two', label: 'two'},
-          { name: 'three', label: 'three' },
-          { name: 'four', label: 'four'},
-          { name: 'five', label: 'five' },
-          { name: 'six', label: 'six'}
-      ];
     return (
       <Dialog show
               size="large"
@@ -93,23 +92,23 @@ export default class ClusterAdd extends Component {
               <HelpBlock>{fields.description.error}</HelpBlock>
             )}
           </FormGroup>
-          <FormGroup validationState={fields.assignedNodes.error ? "error" : ""}>
-             <ControlLabel>Assigned Nodes</ControlLabel>
-             <FormControl multiple componentClass="select">
-                 <option value=""/>
-                 {
-                   assignedNodes.map(function (node, i) {
-                         console.log(i);
-                          if (typeof(node)!=='undefined'){
-                         return <option key={i} value={node}>{node}</option>;
-                          }
-                     })
-                 }
-              </FormControl>
-             <FormControl.Feedback />
-             {fields.assignedNodes.error && (
-                  <HelpBlock>{fields.assignedNodes.error}</HelpBlock>
-              )}
+          <FormGroup className={typeof(this.props.cluster) == 'undefined' ? '' : 'invisible'}
+                     validationState={fields.assignedNodes.error ? "error" : ""}>
+            <ControlLabel>Assigned Nodes</ControlLabel>
+            <FormControl multiple componentClass="select" {...fields.assignedNodes} >
+              <option value=""/>
+              {
+                orphanNodes.map(function (node, i) {
+                  if (typeof(node) !== 'undefined') {
+                    return <option key={i} value={node}>{node}</option>;
+                  }
+                })
+              }
+            </FormControl>
+            <FormControl.Feedback />
+            {fields.assignedNodes.error && (
+              <HelpBlock>{fields.assignedNodes.error}</HelpBlock>
+            )}
           </FormGroup>
         </form>
       </Dialog>

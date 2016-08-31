@@ -52,14 +52,7 @@ export default class ClustersPanel extends Component {
     this.state = {};
 
     this.props.loadClusters();
-
-
-    let curNodes = this.props.loadNodes('dev');
-    console.log(curNodes);
-    curNodes.then(function(result) {
-      console.log(result);
-    });
-
+    this.props.loadNodes('orphans');
 
     $('.input-search').focus();
   }
@@ -139,7 +132,7 @@ export default class ClustersPanel extends Component {
   }
 
   onActionInvoke(action, cluster, event) {
-    let assignedNodes = [].concat(this.props.clusters[cluster].nodesList);
+    let orphanNodes = [].concat(this.props.clusters['orphans'].nodesList);
     switch (action) {
       case "create":
         this.setState({
@@ -147,6 +140,7 @@ export default class ClustersPanel extends Component {
             <ClusterAdd title="Create a New Cluster"
                         cluster={undefined}
                         onHide={this.onHideDialog.bind(this)}
+                        orphanNodes = {orphanNodes}
             />
           )
         });
@@ -157,7 +151,7 @@ export default class ClustersPanel extends Component {
           actionDialog: (
             <ClusterAdd title="Edit Cluster"
                         cluster={cluster}
-                        assignedNodes = {assignedNodes}
+                        orphanNodes = {orphanNodes}
                         onHide={this.onHideDialog.bind(this)}
             />
           )
