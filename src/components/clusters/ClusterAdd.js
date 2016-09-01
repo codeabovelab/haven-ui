@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {Field, reduxForm} from 'redux-form';
 import {load, create} from 'redux/modules/clusters/clusters';
-import {create as createNode}  from 'redux/modules/nodes/nodes';
+import {create as createNode} from 'redux/modules/nodes/nodes';
 import {createValidator, required} from 'utils/validation';
 import {Dialog} from 'components';
 import {FormGroup, FormControl, ControlLabel, HelpBlock} from 'react-bootstrap';
@@ -41,12 +41,12 @@ export default class ClusterAdd extends Component {
   onSubmit() {
     const { fields } = this.props;
     if (fields.assignedNodes.value.length > 0) {
-      fields.assignedNodes.value.map(function (node) {
+      fields.assignedNodes.value.map(function(node) {
         if (typeof(node) !== 'undefined') {
           let data = {name: node, cluster: fields.name.value};
           this.props.createNode(data);
         }
-      }.bind(this))
+      }.bind(this));
     }
     return this.props.create(fields.name.value);
   }
@@ -92,13 +92,13 @@ export default class ClusterAdd extends Component {
               <HelpBlock>{fields.description.error}</HelpBlock>
             )}
           </FormGroup>
-          <FormGroup className={typeof(this.props.cluster) == 'undefined' ? '' : 'invisible'}
+          <FormGroup className={typeof(this.props.cluster) === 'undefined' ? '' : 'invisible'}
                      validationState={fields.assignedNodes.error ? "error" : ""}>
             <ControlLabel>Assigned Nodes</ControlLabel>
             <FormControl multiple componentClass="select" {...fields.assignedNodes} >
               <option value=""/>
               {
-                orphanNodes.map(function (node, i) {
+                orphanNodes.map(function(node, i) {
                   if (typeof(node) !== 'undefined') {
                     return <option key={i} value={node}>{node}</option>;
                   }

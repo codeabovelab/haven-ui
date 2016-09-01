@@ -132,7 +132,7 @@ export default class ClustersPanel extends Component {
   }
 
   onActionInvoke(action, cluster, event) {
-    let orphanNodes = [].concat(this.props.clusters['orphans'].nodesList);
+    let orphanNodes = [].concat(this.props.clusters.orphans.nodesList);
     switch (action) {
       case "create":
         this.setState({
