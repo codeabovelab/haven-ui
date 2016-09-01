@@ -54,14 +54,12 @@ export default class NodesList extends Component {
 
   render() {
     const {data} = this.props;
-    const rows = data ? [...data] : null;
+    const rows = this.additionalData(data);
     const panelHeader = (
       <div className="clearfix">
         <h3>Nodes List</h3>
       </div>
     );
-
-    this.additionalData(rows);
 
     return (
       <div>
@@ -88,10 +86,11 @@ export default class NodesList extends Component {
 
   additionalData(rows) {
     if (rows) {
-      rows.forEach(row => {
-        row.__attributes = {'data-id': row.id};
-        row.actions = this.tdActions.bind(this);
-      });
+      return rows.map(row => ({
+        ...row,
+        __attributes: {'data-id': row.id},
+        actions: this.tdActions.bind(this)
+      }));
     }
   }
 
@@ -130,6 +129,7 @@ export default class NodesList extends Component {
               title={`Node Details: ${node.name}`}
               okTitle="Close"
               onHide={this.onHideDialog.bind(this)}
+              onSubmit={this.onHideDialog.bind(this)}
       >
 
         <PropertyGrid data={node} />
