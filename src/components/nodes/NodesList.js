@@ -2,6 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import {Link} from 'react-router';
 import {DockTable, ActionMenu} from '../index';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Glyphicon} from 'react-bootstrap';
+import {Dialog, PropertyGrid} from 'components';
+import _ from 'lodash';
 
 export default class NodesList extends Component {
   static propTypes = {
@@ -51,7 +53,8 @@ export default class NodesList extends Component {
   ];
 
   render() {
-    const {data: rows} = this.props;
+    const {data} = this.props;
+    const rows = data ? [...data] : null;
     const panelHeader = (
       <div className="clearfix">
         <h3>Nodes List</h3>
@@ -61,16 +64,25 @@ export default class NodesList extends Component {
     this.additionalData(rows);
 
     return (
-      <Panel header={panelHeader}>
+      <div>
+        <Panel header={panelHeader}>
           {this.props.loading && (
-          <ProgressBar active now={100} />
-      )}
-      {(this.props.data && !this.props.loading) && (
-        <DockTable columns={this.COLUMNS}
-                    rows={rows}
-        />
-      )}
-      </Panel>
+            <ProgressBar active now={100} />
+          )}
+
+          {(this.props.data && !this.props.loading) && (
+            <DockTable columns={this.COLUMNS}
+              rows={rows}
+            />
+          )}
+        </Panel>
+
+        {(this.state && this.state.actionDialog) && (
+          <div>
+            {this.state.actionDialog}
+          </div>
+        )}
+      </div>
     );
   }
 
@@ -95,8 +107,41 @@ export default class NodesList extends Component {
     );
   }
 
-  onActionInvoke(action, nodes) {
-    console.log('onActionInvokeNodes', action, nodes);
+  onActionInvoke(action, nodeId) {
+    const node = _.find(this.props.data, 'id', nodeId);
+
+    switch (action) {
+      case "info":
+        this.setState({
+          actionDialog: this.getDialog(node)
+        });
+        return;
+
+      default:
+        return;
+    }
+  }
+
+  getDialog(node) {
+    return (
+      <Dialog show
+              hideCancel
+              size="large"
+              title={`Node Details: ${node.name}`}
+              okTitle="Close"
+              onHide={this.onHideDialog.bind(this)}
+      >
+
+        <PropertyGrid data={node} />
+
+      </Dialog>
+    );
+  }
+
+  onHideDialog() {
+    this.setState({
+      actionDialog: undefined
+    });
   }
 
   healthRender(registry) {
@@ -111,6 +156,7 @@ export default class NodesList extends Component {
       </td>
     );
   }
+
   clusterRender(registry) {
     return (
       <td>
