@@ -48,7 +48,10 @@ export default class ClusterAdd extends Component {
         }
       }.bind(this));
     }
-    return this.props.create(fields.name.value);
+    return this.props.create(fields.name.value).then(() => {
+      this.props.onHide();
+    })
+      .catch();
   }
 
   render() {
