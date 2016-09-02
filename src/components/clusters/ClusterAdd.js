@@ -96,10 +96,9 @@ export default class ClusterAdd extends Component {
                      validationState={fields.assignedNodes.error ? "error" : ""}>
             <ControlLabel>Assigned Nodes</ControlLabel>
             <FormControl multiple componentClass="select" {...fields.assignedNodes} >
-              <option value=""/>
               {
                 orphanNodes.map(function(node, i) {
-                  if (typeof(node) !== 'undefined') {
+                  if (typeof(node) !== 'undefined' && node.trim() !== '') {
                     return <option key={i} value={node}>{node}</option>;
                   }
                 })
