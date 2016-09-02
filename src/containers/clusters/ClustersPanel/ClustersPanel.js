@@ -184,7 +184,7 @@ export default class ClustersPanel extends Component {
         confirm('Are you sure you want to remove this cluster?')
           .then(() => {
             this.props.deleteCluster(cluster).catch(() => null)
-              .then(() => this.props.loadClusters());
+              .then(() => this.props.loadClusters(), this.props.loadNodes('orphans'));
           })
           .catch(() => null);// confirm cancel
         return;

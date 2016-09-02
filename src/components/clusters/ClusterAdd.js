@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {Field, reduxForm} from 'redux-form';
-import {load, create} from 'redux/modules/clusters/clusters';
+import {load, create, loadNodes} from 'redux/modules/clusters/clusters';
 import {create as createNode} from 'redux/modules/nodes/nodes';
 import {createValidator, required} from 'utils/validation';
 import {Dialog} from 'components';
@@ -9,7 +9,7 @@ import {FormGroup, FormControl, ControlLabel, HelpBlock} from 'react-bootstrap';
 
 @connect(state => ({
   createError: state.clustersUI.createError
-}), {create, load, createNode})
+}), {create, load, createNode, loadNodes})
 @reduxForm({
   form: 'ClusterAdd',
   fields: [
@@ -27,6 +27,7 @@ export default class ClusterAdd extends Component {
     create: PropTypes.func.isRequired,
     createNode: PropTypes.func.isRequired,
     load: PropTypes.func.isRequired,
+    loadNodes: PropTypes.func.isRequired,
     fields: PropTypes.object.isRequired,
     handleSubmit: PropTypes.func,
     orphanNodes: PropTypes.array,
@@ -40,15 +41,19 @@ export default class ClusterAdd extends Component {
 
   onSubmit() {
     const { fields } = this.props;
-    if (typeof(fields.assignedNodes.value) !== 'undefined' && fields.assignedNodes.value.length > 0) {
-      fields.assignedNodes.value.map(function(node) {
-        if (typeof(node) !== 'undefined') {
-          let data = {name: node, cluster: fields.name.value};
-          this.props.createNode(data);
-        }
-      }.bind(this));
-    }
     return this.props.create(fields.name.value).then(() => {
+      if (typeof(fields.assignedNodes.value) !== 'undefined' && fields.assignedNodes.value.length > 0) {
+        fields.assignedNodes.value.map(function(node) {
+          if (typeof(node) !== 'undefined') {
+            let data = {name: node, cluster: fields.name.value};
+            this.props.createNode(data);
+          }
+        }.bind(this));
+      }
+    }).then(() =>{
+      window.setTimeout(this.props.load(), 2000);
+      this.props.loadNodes('orphans');
+    }).then(() =>{
       this.props.onHide();
     })
       .catch();
