@@ -40,7 +40,7 @@ export default class ClusterAdd extends Component {
 
   onSubmit() {
     const { fields } = this.props;
-    if (fields.assignedNodes.value.length > 0) {
+    if (typeof(fields.assignedNodes.value) !== 'undefined' && fields.assignedNodes.value.length > 0) {
       fields.assignedNodes.value.map(function(node) {
         if (typeof(node) !== 'undefined') {
           let data = {name: node, cluster: fields.name.value};
