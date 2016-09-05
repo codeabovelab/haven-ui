@@ -109,7 +109,6 @@ export default class ClustersList extends Component {
     return (
       <td key="title">
         <Link to={`/clusters/${cluster.name}`}>{cluster.title || cluster.name}</Link>
-        <div>{cluster.description}</div>
       </td>
     );
   }
