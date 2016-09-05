@@ -36,7 +36,7 @@ export default class ClusterAdd extends Component {
 
   onSubmit() {
     const { fields } = this.props;
-    return this.props.create(fields.name.value);
+    return this.props.create(fields.name.value, {"description": fields.description.value});
   }
 
   render() {
