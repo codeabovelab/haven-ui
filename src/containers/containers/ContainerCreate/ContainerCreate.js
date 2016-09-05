@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import {Dialog} from 'components';
 import {reduxForm} from 'redux-form';
 import {create} from 'redux/modules/containers/containers';
 import {loadNodes, loadContainers, loadDefaultParams} from 'redux/modules/clusters/clusters';
@@ -60,7 +61,9 @@ export default class ContainerCreate extends Component {
     fields: PropTypes.object.isRequired,
     resetForm: PropTypes.func.isRequired,
     loadContainers: PropTypes.func.isRequired,
-    loadDefaultParams: PropTypes.func.isRequired
+    loadDefaultParams: PropTypes.func.isRequired,
+
+    onHide: PropTypes.func.isRequired
   };
   static focusSelector = '#image-select';
 
@@ -82,7 +85,7 @@ export default class ContainerCreate extends Component {
   getImagesList() {
     let imagesList = [];
     const {images} = this.props;
-    Object.keys(images).forEach(registerName => {
+    Object.keys(images).filter((key) => (key === "all")).forEach(registerName => {
       let register = images[registerName];
       _.forOwn(register, image => {
         let i = Object.assign({}, image, {label: `${registerName} | ${image.name}`});
@@ -103,16 +106,12 @@ export default class ContainerCreate extends Component {
     let image = this.getCurrentImage();
     let creating = containersUI.new.creating;
     return (
-      <div className={'modal-content ' + s.containerCreate}>
-        <div className="modal-header">
-          <button type="button" className="close" data-dismiss="modal">
-            <span aria-hidden="true">&times;</span>
-          </button>
-          <h4 className="modal-title">Create Container
-            {creating && <span>{' '}<i className="fa fa-spinner fa fa-pulse"/></span>}
-          </h4>
-        </div>
-        <div className="modal-body">
+      <Dialog show
+              size="large"
+              title="Create Container"
+              onSubmit={this.props.onHide}
+              onHide={this.props.onHide}
+      >
           <form>
             <div className="form-group" required>
               {(field = fields.image) && ''}
@@ -154,16 +153,9 @@ export default class ContainerCreate extends Component {
               )}
             </div>
             {this.fieldPublish()}
-            {this.fieldEnvironment()}
             {this.fieldRestart()}
           </form>
-        </div>
-        <div className="modal-footer">
-          <button type="button" className="btn btn-primary" onClick={this.create.bind(this)} disabled={creating}>
-            Create
-          </button>
-        </div>
-      </div>
+      </Dialog>
     );
 
 
@@ -217,9 +209,8 @@ export default class ContainerCreate extends Component {
   onImageChange(event) {
     const {loadImageTags} = this.props;
     let option = event.target[event.target.selectedIndex];
-    let register = option.dataset.register;
-    if (register) {
-      loadImageTags({register, image: event.target.value});
+    if (event.target.value) {
+      loadImageTags(event.target.value);
     }
   }
 
