@@ -147,10 +147,12 @@ export default class ClustersPanel extends Component {
         return;
 
       case "edit":
+        let description = this.props.clusters[cluster].description;
         this.setState({
           actionDialog: (
             <ClusterAdd title="Edit Cluster"
                         cluster={cluster}
+                        description={description}
                         orphanNodes = {orphanNodes}
                         onHide={this.onHideDialog.bind(this)}
             />

@@ -36,6 +36,7 @@ export default class ClusterAdd extends Component {
     createError: PropTypes.string,
     valid: PropTypes.bool.isRequired,
     cluster: PropTypes.any,
+    description: PropTypes.any,
     onHide: PropTypes.func.isRequired
   };
 
@@ -61,6 +62,7 @@ export default class ClusterAdd extends Component {
 
   render() {
     const { fields } = this.props;
+    let { cluster, description } = this.props;
     const orphanNodes = this.props.orphanNodes;
     return (
       <Dialog show
@@ -78,10 +80,10 @@ export default class ClusterAdd extends Component {
 
             <FormControl type="text"
                          {...fields.name}
+                         defaultValue = {cluster === 'undefined' ? '' : cluster}
             />
 
             <FormControl.Feedback />
-
             {fields.name.error && (
               <HelpBlock>{fields.name.error}</HelpBlock>
             )}
@@ -92,6 +94,7 @@ export default class ClusterAdd extends Component {
 
             <FormControl type="text"
                          {...fields.description}
+                         defaultValue = {description === 'undefined' ? '' : description}
             />
 
             <FormControl.Feedback />
