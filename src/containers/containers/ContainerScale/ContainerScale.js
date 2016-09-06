@@ -13,7 +13,6 @@ export default class ContainerScale extends Component {
     containersUI: PropTypes.object.isRequired,
     container: PropTypes.object.isRequired,
     scale: PropTypes.func.isRequired,
-
     onHide: PropTypes.func.isRequired
   };
   static focusSelector = '#instances-number';
@@ -21,6 +20,10 @@ export default class ContainerScale extends Component {
   constructor(...params) {
     super(...params);
     this.state = {scaleFactor: 1};
+  }
+
+  onSubmit() {
+    return this.props.scale(this.props.container, this.state.scaleFactor);
   }
 
   handleChange(e) {
@@ -35,19 +38,19 @@ export default class ContainerScale extends Component {
       <Dialog show
               size="large"
               title={`Scale Container: ${container.name}`}
-              onSubmit={this.props.onHide}
+              onSubmit={this.onSubmit.bind(this)}
               onHide={this.props.onHide}
       >
         {scaling && (
           <span>{' '}<i className="fa fa-spinner fa fa-pulse"/></span>
         )}
 
-        <div className="form-group" required>
-          <label>Number of instances to be launched:</label>
-          <input type="number" step="1" min="1" id={ContainerScale.focusSelector.replace('#', '')}
-                 value={this.state.scaleFactor} onChange={this.handleChange.bind(this)}
-                 className="form-control"/>
-        </div>
+        <FormGroup onChange={this.handleChange.bind(this)}>
+          <ControlLabel>Number of instances to be launched:</ControlLabel>
+          <FormControl type="number" step="1" min="1" id={ContainerScale.focusSelector.replace('#', '')}
+                       defaultValue={this.state.scaleFactor}
+          />
+        </FormGroup>
       </Dialog>
     );
   }
