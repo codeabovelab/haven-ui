@@ -99,7 +99,12 @@ export default class Dashboard extends Component {
         return 0;
       });
 
-      top5CPU = nodes.filter((el) => typeof el.health !== "undefined").sort((a, b) => {
+      top5CPU = nodes.filter((el) => typeof el.health !== "undefined").map((element)=> {
+        if (typeof(element.health.sysCpuLoad) === 'undefined') {
+          element.health.sysCpuLoad = 0;
+        }
+        return element;
+      }).sort((a, b) => {
         if (a.health.sysCpuLoad > b.health.sysCpuLoad) {
           return -1;
         } else if (a.health.sysCpuLoad < b.health.sysCpuLoad) {
