@@ -188,6 +188,11 @@ export default class ClusterDetailsPanel extends Component {
       });
     }
 
+    if (typeof(cluster.nodes.on) !== 'undefined' && typeof(cluster.nodes.off) !== 'undefined') {
+      runningJobs = cluster.nodes.on;
+      runningNodes = cluster.nodes.off + cluster.nodes.on;
+    }
+
     const containersHeaderBar = (
       <div className="clearfix">
         <h3>Containers</h3>
