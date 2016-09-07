@@ -72,6 +72,7 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         [action.id]: {
           ...state[action.id],
+          error: action.error.message,
           loadingLogs: false
         }
       };
