@@ -71,11 +71,9 @@ export default class ImagesList extends Component {
         {image.tags.map((tag, i) => {
           if (i < 5) {
             return (<Label bsStyle="info">{tag}</Label>);
-          }
-          else if (i >= 5 && i < image.tags.length - 1) {
+          } else if (i >= 5 && i < image.tags.length - 1) {
             tagsList.push(tag);
-          }
-          else {
+          } else {
             return (<a title={tagsList.join(', ')}>...</a>);
           }
         })}
