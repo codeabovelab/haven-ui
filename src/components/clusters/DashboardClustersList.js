@@ -15,7 +15,7 @@ export default class DashboardClustersList extends Component {
       label: 'Name',
       sortable: true,
       width: '10%',
-      render: this.titleRender
+      render: this.nameRender
     },
     {
       name: 'description',
