@@ -1,10 +1,11 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {Dialog} from 'components';
-import {reduxForm} from 'redux-form';
+import {reduxForm, SubmissionError} from 'redux-form';
 import {create} from 'redux/modules/containers/containers';
 import {loadNodes, loadContainers, loadDefaultParams} from 'redux/modules/clusters/clusters';
 import {loadImages, loadImageTags} from 'redux/modules/images/images';
+import {Alert} from 'react-bootstrap';
 import _ from 'lodash';
 
 const EXTRA_FIELDS = {
@@ -55,10 +56,12 @@ export default class ContainerCreate extends Component {
     images: PropTypes.object.isRequired,
     cluster: PropTypes.object.isRequired,
     create: PropTypes.func.isRequired,
+    createError: PropTypes.string,
     loadNodes: PropTypes.func.isRequired,
     loadImages: PropTypes.func.isRequired,
     loadImageTags: PropTypes.func.isRequired,
     fields: PropTypes.object.isRequired,
+    handleSubmit: PropTypes.func,
     resetForm: PropTypes.func.isRequired,
     loadContainers: PropTypes.func.isRequired,
     loadDefaultParams: PropTypes.func.isRequired,
@@ -109,9 +112,15 @@ export default class ContainerCreate extends Component {
       <Dialog show
               size="large"
               title="Create Container"
-              onSubmit={this.props.onHide}
+              onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}
               onHide={this.props.onHide}
       >
+          {this.props.createError && (
+            <Alert bsStyle="danger">
+              {this.props.createError}
+            </Alert>
+          )}
+
           <form>
             <div className="form-group" required>
               {(field = fields.image) && ''}
@@ -232,6 +241,10 @@ export default class ContainerCreate extends Component {
     }
   }
 
+  onSubmit() {
+    this.create();
+  }
+
   create() {
     const {fields, create, cluster, resetForm, loadContainers} = this.props;
     let container = {
@@ -251,10 +264,12 @@ export default class ContainerCreate extends Component {
     return create(container)
       .then(() => {
         resetForm();
-        window.simpleModal.close();
+        this.props.onHide();
         return loadContainers(cluster.name);
       })
-      .catch();
+      .catch((response) => {
+        throw new SubmissionError(response.message);
+      });
   }
 
   fieldPublish() {
