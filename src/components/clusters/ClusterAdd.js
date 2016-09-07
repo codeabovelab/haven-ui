@@ -1,11 +1,11 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {Field, reduxForm} from 'redux-form';
+import {Field, reduxForm, SubmissionError} from 'redux-form';
 import {load, create, loadNodes} from 'redux/modules/clusters/clusters';
 import {create as createNode} from 'redux/modules/nodes/nodes';
 import {createValidator, required} from 'utils/validation';
 import {Dialog} from 'components';
-import {FormGroup, FormControl, ControlLabel, HelpBlock} from 'react-bootstrap';
+import {FormGroup, FormControl, ControlLabel, HelpBlock, Alert} from 'react-bootstrap';
 
 @connect(state => ({
   createError: state.clustersUI.createError
@@ -57,7 +57,9 @@ export default class ClusterAdd extends Component {
     }).then(() =>{
       this.props.onHide();
     })
-      .catch();
+    .catch((response) => {
+      throw new SubmissionError(response.message);
+    });
   }
 
   render() {
@@ -74,6 +76,12 @@ export default class ClusterAdd extends Component {
               onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}
               onHide={this.props.onHide}
       >
+        {this.props.createError && (
+          <Alert bsStyle="danger">
+            {this.props.createError}
+          </Alert>
+        )}
+
         <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
           <FormGroup validationState={fields.name.error ? "error" : ""}>
             <ControlLabel>Name</ControlLabel>
