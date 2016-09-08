@@ -78,16 +78,17 @@ export default class MenuLeft extends Component {
     let arrowDirection = $icon.attr("data-direction");
     let $mainContent = $(".al-main");
     let $footer = $(".al-footer-main");
+    let $sidebar = $(".al-sidebar");
 
     if (arrowDirection === 'right') {
-      $(".al-sidebar").addClass("sidebar-expanded");
+      $sidebar.addClass("sidebar-expanded");
       $icon.removeClass("fa-chevron-right").addClass("fa-chevron-left");
       $mainContent.addClass("extra-margin-content");
       $footer.addClass('extra-margin-footer');
       $iconLi.attr("title", "Collapse");
       $icon.attr("data-direction", "left");
     } else {
-      $(".al-sidebar").removeClass("sidebar-expanded");
+      $sidebar.removeClass("sidebar-expanded");
       $icon.removeClass("fa-chevron-left").addClass("fa-chevron-right");
       $mainContent.removeClass("extra-margin-content");
       $footer.removeClass('extra-margin-footer');

@@ -178,12 +178,13 @@ a.al-sidebar-list-link {
 
 .sidebar-expanded{
   width: ($sidebar-width !important);
+  transition:width .3s, left .3s, right .3s;
 }
 
 @mixin sidebar-collapsed() {
   .al-sidebar {
     width: 52px;
-
+    transition: width .3s, left .3s, right .3s;
     .fa-angle-down, .fa-angle-up {
       opacity: 0;
     }
