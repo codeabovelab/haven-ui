@@ -61,8 +61,32 @@ export default class MenuLeft extends Component {
               <span>Registries</span>
             </Link>
           </li>
+          <li id="expandIcon" className="al-sidebar-list-item" title="Expand">
+            <Link to="#" className="al-sidebar-list-link" onClick = {this.expand}>
+              <i className="fa fa-chevron-right fa-2x" data-direction="right" />
+            </Link>
+          </li>
         </ul>
       </aside>
     );
+  }
+
+  expand(e) {
+    e.preventDefault();
+    let $iconLi = $("#expandIcon");
+    let $icon = $iconLi.find("i");
+    let arrowDirection = $icon.attr("data-direction");
+
+    if (arrowDirection === 'right') {
+      $(".al-sidebar").addClass("sidebar-expanded");
+      $icon.removeClass("fa-chevron-right").addClass("fa-chevron-left");
+      $iconLi.attr("title", "Collapse");
+      $icon.attr("data-direction", "left");
+    } else {
+      $(".al-sidebar").removeClass("sidebar-expanded");
+      $icon.removeClass("fa-chevron-left").addClass("fa-chevron-right");
+      $iconLi.attr("title", "Expand");
+      $icon.attr("data-direction", "right");
+    }
   }
 }

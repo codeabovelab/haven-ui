@@ -176,6 +176,10 @@ a.al-sidebar-list-link {
   top: 94px;
 }
 
+.sidebar-expanded{
+  width: ($sidebar-width !important);
+}
+
 @mixin sidebar-collapsed() {
   .al-sidebar {
     width: 52px;
@@ -258,6 +262,9 @@ a.al-sidebar-list-link {
   .menu-collapsed {
     @include layout-collapsed();
   }
+  #expandIcon {
+    visibility: hidden;
+  }
 }
 
 @media (min-width: $resXS + 1) {
@@ -271,7 +278,10 @@ a.al-sidebar-list-link {
 }
 
 @media (max-width: 1200px) {
-  @include sidebar-overlap();
+  @include sidebar-collapsed();
+  #expandIcon {
+    visibility: visible;
+  }
 }
 
 @media (max-width: $resXS) {
