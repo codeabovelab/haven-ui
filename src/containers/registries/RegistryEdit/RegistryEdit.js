@@ -4,7 +4,7 @@ import {reduxForm} from 'redux-form';
 import {addRegistry, editRegistry, load as loadRegistries} from 'redux/modules/registries/registries';
 import {createValidator, required} from 'utils/validation';
 import {Dialog} from 'components';
-import {Row, Col, FormGroup, FormControl, Checkbox, ControlLabel, HelpBlock} from 'react-bootstrap';
+import {Grid, Row, Col, FormGroup, FormControl, Checkbox, ControlLabel, HelpBlock, Thumbnail} from 'react-bootstrap';
 import _ from 'lodash';
 
 @connect(state => ({
@@ -13,22 +13,26 @@ import _ from 'lodash';
 @reduxForm({
   form: 'RegistryEdit',
   fields: [
-    'active',
-    'name',
-    'host',
-    'port',
     'username',
     'password',
-    'protocol',
-    'secured'
+    'url',
+    'region',
+    'secretKey',
+    'accessKey',
+    'registryType',
+    'disabled',
+    'readOnly'
   ],
   validate: createValidator({
-    active: [required],
-    name: [required],
-    host: [required],
-    port: [required],
     username: [required],
-    password: [required]
+    password: [required],
+    url: [required],
+    region: [required],
+    secretKey: [required],
+    accessKey: [required],
+    registryType: [required],
+    disabled: [required],
+    readOnly: [required]
   })
 })
 export default class RegistryEdit extends Component {
@@ -120,117 +124,116 @@ export default class RegistryEdit extends Component {
               onHide={this.props.onHide}
       >
         <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
-          <Row>
-            <Col xs={9}>
-              <FormGroup validationState={(fields.name.error && fields.name.touched) ? "error" : ""}>
-                <ControlLabel>Name</ControlLabel>
+          <Grid>
+            <Row>
+              <Col xs={2} md={3}>
+                <Thumbnail src="/thumbnail.png"/>
+              </Col>
+              <Col xs={2} md={3}>
+                <Thumbnail src="/thumbnail.png" />
+              </Col>
+              <Col xs={2} md={3}>
+                <Thumbnail src="/thumbnail.png" />
+              </Col>
+            </Row>
+          </Grid>
+          <FormGroup controlId="formName">
+            <Grid>
+              <Row slassName="show-grid">
+                <Col sm={2}>
+                  <ControlLabel>Name</ControlLabel>
+                </Col>
+                <Col sm={7}>
+                  <FormControl type="text" placeholder="Name" />
+                </Col>
+              </Row>
+            </Grid>
+          </FormGroup>
 
-                <FormControl type="text"
-                             {...fields.name}
-                />
+          <FormGroup controlId="formPassword">
+            <Grid>
+              <Row slassName="show-grid">
+                <Col sm={2}>
+                  <ControlLabel>Password</ControlLabel>
+                </Col>
+                <Col sm={7}>
+                  <FormControl type="password" placeholder="Passwod" />
+                </Col>
+              </Row>
+            </Grid>
+          </FormGroup>
 
-                <FormControl.Feedback />
+          <FormGroup controlId="formUrl">
+            <Grid>
+              <Row slassName="show-grid">
+                <Col sm={2}>
+                  <ControlLabel>Url</ControlLabel>
+                </Col>
+                <Col sm={7}>
+                  <FormControl type="text" placeholder="Url" />
+                </Col>
+              </Row>
+            </Grid>
+          </FormGroup>
 
-                {(fields.name.error && fields.name.touched) && (
-                  <HelpBlock>{fields.name.error}</HelpBlock>
-                )}
-              </FormGroup>
-            </Col>
+          <FormGroup controlId="formAccessKey">
+            <Grid>
+              <Row slassName="show-grid">
+                <Col sm={2}>
+                  <ControlLabel>Access key</ControlLabel>
+                </Col>
+                <Col sm={7}>
+                  <FormControl type="text" placeholder="Access Key" />
+                </Col>
+              </Row>
+            </Grid>
+          </FormGroup>
 
-            <Col xs={3}>
-              <FormGroup validationState={(fields.active.error && fields.active.touched) ? "error" : ""}>
-                <ControlLabel />
+          <FormGroup controlId="formSecretKey">
+            <Grid>
+              <Row slassName="show-grid">
+                <Col sm={2}>
+                  <ControlLabel>Secret key</ControlLabel>
+                </Col>
+                <Col sm={7}>
+                  <FormControl type="text" placeholder="Secret Key" />
+                </Col>
+              </Row>
+            </Grid>
+          </FormGroup>
 
-                <Checkbox validationState={(fields.active.error && fields.active.touched) ? "error" : ""}
-                          {...fields.active}
-                >
-                  Active
-                </Checkbox>
-              </FormGroup>
-            </Col>
-          </Row>
+          <FormGroup controlId="formRegion">
+            <Grid>
+              <Row slassName="show-grid">
+                <Col sm={2}>
+                  <ControlLabel>Region</ControlLabel>
+                </Col>
+                <Col sm={7}>
+                  <FormControl type="text" placeholder="Region" />
+                </Col>
+              </Row>
+            </Grid>
+          </FormGroup>
 
-          <Row>
-            <Col xs={6}>
-              <FormGroup validationState={(fields.host.error && fields.host.touched) ? "error" : ""}>
-                <ControlLabel>Host</ControlLabel>
+          <FormGroup controlId="formRegion">
+            <Grid>
+              <Row slassName="show-grid">
+                <Col sm={2}>
+                </Col>
+                <Col sm={2}>
+                  <Checkbox inline>
+                    Disabled
+                  </Checkbox>
+                </Col>
+                <Col sm={2}>
+                  <Checkbox checked inline>
+                    Read Only
+                  </Checkbox>
+                </Col>
+              </Row>
+            </Grid>
+          </FormGroup>
 
-                <FormControl type="text"
-                             {...fields.host}
-                />
-
-                <FormControl.Feedback />
-
-                {(fields.host.error && fields.host.touched) && (
-                  <HelpBlock>{fields.host.error}</HelpBlock>
-                )}
-              </FormGroup>
-            </Col>
-
-            <Col xs={3}>
-              <FormGroup validationState={(fields.port.error && fields.port.touched) ? "error" : ""}>
-                <ControlLabel>Port</ControlLabel>
-
-                <FormControl type="text"
-                             {...fields.port}
-                />
-
-                <FormControl.Feedback />
-
-                {(fields.port.error && fields.port.touched) && (
-                  <HelpBlock>{fields.port.error}</HelpBlock>
-                )}
-              </FormGroup>
-            </Col>
-
-            <Col xs={3}>
-              <FormGroup validationState={(fields.secured.error && fields.secured.touched) ? "error" : ""}>
-                <ControlLabel />
-
-                <Checkbox validationState={(fields.secured.error && fields.secured.touched) ? "error" : ""}
-                          {...fields.secured}
-                >
-                  Secure
-                </Checkbox>
-              </FormGroup>
-            </Col>
-          </Row>
-
-          <hr />
-
-          <Row>
-            <Col xs={6}>
-              <FormGroup validationState={(fields.username.error && fields.username.touched) ? "error" : ""}>
-                <ControlLabel>User name</ControlLabel>
-
-                <FormControl type="text"
-                             {...fields.username}
-                />
-
-                <FormControl.Feedback />
-
-                {(fields.username.error && fields.username.touched) && (
-                  <HelpBlock>{fields.username.error}</HelpBlock>
-                )}
-              </FormGroup>
-            </Col>
-
-            <Col xs={6}>
-              <FormGroup validationState={(fields.password.error && fields.password.touched) ? "error" : ""}>
-                <ControlLabel>Password</ControlLabel>
-
-                <FormControl type="password"
-                             {...fields.password}
-                />
-
-                <FormControl.Feedback />
-
-                {(fields.password.error && fields.password.touched) && (
-                  <HelpBlock>{fields.password.error}</HelpBlock>
-                )}
-              </FormGroup>
-            </Col>
-          </Row>
         </form>
       </Dialog>
     );
