@@ -44,7 +44,7 @@ export default class ClusterAdd extends Component {
     const { fields } = this.props;
     return this.props.create(fields.name.value, {"description": fields.description.value}).then(() => {
       if (typeof(fields.assignedNodes.value) !== 'undefined' && fields.assignedNodes.value.length > 0) {
-        fields.assignedNodes.value.map(function(node) {
+        fields.assignedNodes.value.map(function createNode(node) {
           if (typeof(node) !== 'undefined') {
             let data = {name: node, cluster: fields.name.value};
             this.props.createNode(data);
@@ -116,7 +116,7 @@ export default class ClusterAdd extends Component {
             <ControlLabel>Assigned Nodes</ControlLabel>
             <FormControl multiple componentClass="select" {...fields.assignedNodes} >
               {
-                orphanNodes.map(function(node, i) {
+                orphanNodes.map(function listNodes(node, i) {
                   if (typeof(node) !== 'undefined' && node.trim() !== '') {
                     return <option key={i} value={node}>{node}</option>;
                   }
