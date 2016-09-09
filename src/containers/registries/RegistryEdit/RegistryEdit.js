@@ -4,7 +4,7 @@ import {reduxForm} from 'redux-form';
 import {addRegistry, editRegistry, load as loadRegistries} from 'redux/modules/registries/registries';
 import {createValidator, required} from 'utils/validation';
 import {Dialog} from 'components';
-import {Grid, Row, Col, FormGroup, FormControl, Checkbox, ControlLabel, HelpBlock, Thumbnail} from 'react-bootstrap';
+import {Grid, Row, Col, FormGroup, FormControl, Checkbox, ControlLabel, ButtonToolbar, Button, HelpBlock, Thumbnail} from 'react-bootstrap';
 import _ from 'lodash';
 
 @connect(state => ({
@@ -13,7 +13,7 @@ import _ from 'lodash';
 @reduxForm({
   form: 'RegistryEdit',
   fields: [
-    'username',
+    'name',
     'password',
     'url',
     'region',
@@ -24,15 +24,13 @@ import _ from 'lodash';
     'readOnly'
   ],
   validate: createValidator({
-    username: [required],
+    name: [required],
     password: [required],
     url: [required],
     region: [required],
     secretKey: [required],
     accessKey: [required],
-    registryType: [required],
-    disabled: [required],
-    readOnly: [required]
+    registryType: [required]
   })
 })
 export default class RegistryEdit extends Component {
@@ -47,7 +45,6 @@ export default class RegistryEdit extends Component {
     valid: PropTypes.bool.isRequired,
     registry: PropTypes.any,
     onHide: PropTypes.func.isRequired,
-
     addRegistry: PropTypes.func.isRequired,
     editRegistry: PropTypes.func.isRequired,
     loadRegistries: PropTypes.func.isRequired,
@@ -59,7 +56,7 @@ export default class RegistryEdit extends Component {
     const {registry, fields} = this.props;
     console.log('this.orops', this.props);
     if (registry) {
-      let properties = ['active', 'name', 'host', 'port', 'username', 'password'];
+      let properties = ['name', 'password', 'url', 'region', 'secretKey', 'accessKey', 'registryType', 'disabled', 'readOnly'];
       properties.forEach(property => fields[property].onChange(registry[property]));
       if (registry.protocol) {
         fields.secured.onChange(registry.protocol.toLowerCase() === 'https');
@@ -67,11 +64,49 @@ export default class RegistryEdit extends Component {
     } else {
       fields.active.onChange(true);
     }
+
+    this.state = {currentRegType: 0};
   }
+
+  onClickButtonType(index) {
+    this.setState(
+      {currentRegType: index}
+    );
+  }
+
+  config = [
+    {
+      type: 'PRIVATE',
+      url: true,
+      secretKey: false,
+      accessKey: false,
+      region: false,
+      name: true,
+      password: true
+    },
+    {
+      type: 'AWS',
+      url: false,
+      secretKey: true,
+      accessKey: true,
+      region: true,
+      name: false,
+      password: false
+    },
+    {
+      type: 'DOCKER_HUB',
+      url: false,
+      secretKey: false,
+      accessKey: false,
+      region: false,
+      name: true,
+      password: false
+    }
+  ];
 
   onSubmit() {
     const { fields } = this.props;
-    console.log('onSubmit', fields);
+//    console.log('onSubmit', fields);
 
     let data = {};
     let hasValues = false;
@@ -89,7 +124,7 @@ export default class RegistryEdit extends Component {
       }
     });
 
-    console.log('data', data, 'hasValues', hasValues);
+//    console.log('data', data, 'hasValues', hasValues);
 
     if (hasValues) {
       let promise;
@@ -111,8 +146,8 @@ export default class RegistryEdit extends Component {
   }
 
   render() {
-    const { fields } = this.props;
-
+    const {fields} = this.props;
+    const indexType = this.state.currentRegType;
     return (
       <Dialog show
               size="large"
@@ -126,107 +161,36 @@ export default class RegistryEdit extends Component {
         <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
           <Grid>
             <Row>
-              <Col xs={2} md={3}>
-                <Thumbnail src="/thumbnail.png"/>
-              </Col>
-              <Col xs={2} md={3}>
-                <Thumbnail src="/thumbnail.png" />
-              </Col>
-              <Col xs={2} md={3}>
-                <Thumbnail src="/thumbnail.png" />
-              </Col>
-            </Row>
+                <ButtonToolbar>
+                  {this.renderButton(0)}
+                  {this.renderButton(1)}
+                  {this.renderButton(2)}
+                </ButtonToolbar>
+             </Row>
           </Grid>
-          <FormGroup controlId="formName">
-            <Grid>
-              <Row slassName="show-grid">
-                <Col sm={2}>
-                  <ControlLabel>Name</ControlLabel>
-                </Col>
-                <Col sm={7}>
-                  <FormControl type="text" placeholder="Name" />
-                </Col>
-              </Row>
-            </Grid>
-          </FormGroup>
 
-          <FormGroup controlId="formPassword">
-            <Grid>
-              <Row slassName="show-grid">
-                <Col sm={2}>
-                  <ControlLabel>Password</ControlLabel>
-                </Col>
-                <Col sm={7}>
-                  <FormControl type="password" placeholder="Passwod" />
-                </Col>
-              </Row>
-            </Grid>
-          </FormGroup>
+          <hr />
 
-          <FormGroup controlId="formUrl">
-            <Grid>
-              <Row slassName="show-grid">
-                <Col sm={2}>
-                  <ControlLabel>Url</ControlLabel>
-                </Col>
-                <Col sm={7}>
-                  <FormControl type="text" placeholder="Url" />
-                </Col>
-              </Row>
-            </Grid>
-          </FormGroup>
+          {this.renderInput('text', 'name', 'Name', 'Name', !this.config[indexType].name )}
+          {this.renderInput('password', 'password', 'Password', 'Password', !this.config[indexType].password )}
+          {this.renderInput('text', 'url', 'Url', 'Url', !this.config[indexType].url )}
+          {this.renderInput('text', 'accessKey', 'Access key', 'Access key', !this.config[indexType].accessKey )}
+          {this.renderInput('text', 'secretKey', 'Secret Key', 'Secret Key', !this.config[indexType].secretKey )}
+          {this.renderInput('text', 'region', 'Region', 'Region', !this.config[indexType].region )}
 
-          <FormGroup controlId="formAccessKey">
+          <FormGroup>
             <Grid>
               <Row slassName="show-grid">
                 <Col sm={2}>
-                  <ControlLabel>Access key</ControlLabel>
-                </Col>
-                <Col sm={7}>
-                  <FormControl type="text" placeholder="Access Key" />
-                </Col>
-              </Row>
-            </Grid>
-          </FormGroup>
-
-          <FormGroup controlId="formSecretKey">
-            <Grid>
-              <Row slassName="show-grid">
-                <Col sm={2}>
-                  <ControlLabel>Secret key</ControlLabel>
-                </Col>
-                <Col sm={7}>
-                  <FormControl type="text" placeholder="Secret Key" />
-                </Col>
-              </Row>
-            </Grid>
-          </FormGroup>
-
-          <FormGroup controlId="formRegion">
-            <Grid>
-              <Row slassName="show-grid">
-                <Col sm={2}>
-                  <ControlLabel>Region</ControlLabel>
-                </Col>
-                <Col sm={7}>
-                  <FormControl type="text" placeholder="Region" />
-                </Col>
-              </Row>
-            </Grid>
-          </FormGroup>
-
-          <FormGroup controlId="formRegion">
-            <Grid>
-              <Row slassName="show-grid">
-                <Col sm={2}>
+                  -
                 </Col>
                 <Col sm={2}>
-                  <Checkbox inline>
+                  <Checkbox inline {...fields.disabled}>
                     Disabled
                   </Checkbox>
                 </Col>
                 <Col sm={2}>
-                  <Checkbox checked inline>
+                  <Checkbox inline {...fields.readOnly}>
                     Read Only
                   </Checkbox>
                 </Col>
@@ -236,6 +200,45 @@ export default class RegistryEdit extends Component {
 
         </form>
       </Dialog>
+    );
+  }
+
+  renderButton(index) {
+    return (
+      <Button bsSize="large"
+              bsStyle={index === this.state.currentRegType ? 'warning' : ""}
+              onClick={this.onClickButtonType.bind(this, index)}>
+        {this.config[index].type}
+      </Button>
+    );
+  }
+
+  renderInput(type, fieldName, title, placeholder, hidden) {
+    const {fields} = this.props;
+    const hide = hidden ? 'hidden' : '';
+    let valid = '';
+
+    if (!hidden) {
+      valid = (fields[fieldName].error && fields[fieldName].touched) ? "error" : "";
+    }
+
+    return (
+
+      <div className={hide}>
+        <FormGroup validationState={valid}>
+          <Grid>
+            <Row slassName="show-grid">
+              <Col sm={2}>
+                <ControlLabel>{title}</ControlLabel>
+              </Col>
+              <Col sm={7}>
+                <FormControl type={type} placeholder={placeholder} {...fields[fieldName]} />
+              </Col>
+            </Row>
+          </Grid>
+        </FormGroup>
+      </div>
+
     );
   }
 }
