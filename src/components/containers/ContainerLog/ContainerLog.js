@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import * as containerActions from 'redux/modules/containers/containers';
 import {Dialog} from 'components';
-import {Row, Col, FormGroup, FormControl, Checkbox, ControlLabel, HelpBlock} from 'react-bootstrap';
+import {Row, Col, FormGroup, FormControl, Checkbox, ControlLabel, HelpBlock, Alert} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 
@@ -39,7 +39,10 @@ export default class ContainerLog extends Component {
     let containerDetailed = containers[container.id];
     let logs = containerDetailed.logs;
     logs = logs ? logs : "";
+
     let loadingLogs = _.get(containersUI, `[${container.id}].loadingLogs`, false);
+    let error = _.get(containersUI, `[${container.id}].error`);
+
     let paragraphs = logs.split('\n').map(str => str.trim()).filter(str => str);
     return (
       <Dialog show
@@ -56,7 +59,13 @@ export default class ContainerLog extends Component {
           </div>
         )}
 
-        {!loadingLogs && (
+        {(!loadingLogs && error) && (
+          <Alert bsStyle="danger">
+            {error}
+          </Alert>
+        )}
+
+        {(!loadingLogs && !error) && (
           <textarea readOnly
                     className={s["container-log"]}
                     defaultValue={logs}
