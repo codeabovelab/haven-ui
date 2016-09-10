@@ -82,7 +82,7 @@ export default class Dashboard extends Component {
 
     clustersAll.forEach((cluster) => {
       runningContainers += cluster.containers.on || 0;
-      runningNodes += cluster.nodes.on || 0;
+
     });
 
     if (this.props.nodes) {
@@ -90,6 +90,9 @@ export default class Dashboard extends Component {
 
       //console.log('nodes', nodes);
       top5Memory = nodes.filter((el) => typeof el.health !== "undefined").sort((a, b) => {
+
+        runningNodes += cluster.nodes.on || 0;
+
         if (a.health.sysMemUsed > b.health.sysMemUsed) {
           return -1;
         } else if (a.health.sysMemUsed < b.health.sysMemUsed) {
