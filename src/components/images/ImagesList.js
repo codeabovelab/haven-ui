@@ -70,11 +70,11 @@ export default class ImagesList extends Component {
       <td key="tags">
         {image.tags.map((tag, i) => {
           if (i < 5) {
-            return (<Label bsStyle="info">{tag}</Label>);
+            return (<Label bsStyle="info label-image">{tag}</Label>);
           } else if (i >= 5 && i < image.tags.length - 1) {
             tagsList.push(tag);
           } else {
-            return (<a title={tagsList.join(', ')}>...</a>);
+            return (<Label bsStyle="etc"><a title={tagsList.join(', ')}>...</a></Label>);
           }
         })}
       </td>
