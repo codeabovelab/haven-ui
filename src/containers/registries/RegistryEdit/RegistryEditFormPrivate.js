@@ -15,7 +15,6 @@ import RegistryEditCommon from './RegistryEditCommon';
     'username',
     'password',
     'url',
-    'registryType',
     'disabled',
     'readOnly'
   ],
@@ -28,8 +27,8 @@ import RegistryEditCommon from './RegistryEditCommon';
 export default class RegistryEditFormPrivate extends RegistryEditCommon {
   static propTypes= {
     fields: PropTypes.object.isRequired,
-    registry: PropTypes.any,
-    onSubmitForm: PropTypes.func.isRequired
+    valid: PropTypes.bool,
+    registry: PropTypes.any
   };
 
   constructor(...params) {
@@ -38,13 +37,16 @@ export default class RegistryEditFormPrivate extends RegistryEditCommon {
 
   render() {
     const {fields} = this.props;
+    const valid = this.props.valid;
     return (
-      <form >
-        {this.renderLabel('name', 'Name', fields)}
-        {this.renderInput('text', 'username', 'User name', 'User Name', fields)}
-        {this.renderInput('password', 'password', 'Password', 'Password', fields)}
-        {this.renderInput('text', 'url', 'Url', 'Url', fields)}
+      <form onSubmit={this.props.handleSubmit}>
+        {this.renderLabel('Name', fields.name)}
+        {this.renderInput('text', 'User name', 'User Name', fields.username)}
+        {this.renderInput('password', 'Password', 'Password', fields.password)}
+        {this.renderInput('text', 'Url', 'Url', fields.url)}
         {this.renderTwoCheckboxes(fields)}
+        <hr/>
+        {this.renderButtonSubmit(valid)}
       </form>
     );
   }

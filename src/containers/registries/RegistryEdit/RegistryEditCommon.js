@@ -1,18 +1,23 @@
 import React, {PropTypes, Component} from 'react';
-import {Grid, Row, Col, FormGroup, FormControl, Checkbox, ControlLabel, ButtonToolbar, Button, HelpBlock, Thumbnail} from 'react-bootstrap';
+import {Grid, Row, Col, FormGroup, FormControl, Checkbox, ControlLabel, ButtonToolbar, Button, HelpBlock} from 'react-bootstrap';
 
 export default class RegistryEditCommon extends Component {
+  static propTypes ={
+    values: PropTypes.object.isRequired,
+    param: PropTypes.object.isRequired,
+    onHide: PropTypes.func.isRequired
+  };
 
-  renderInput(type, fieldName, title, placeholder, fields) {
+  renderInput(type, title, placeholder, field) {
     return (
-      <FormGroup validationState={(fields[fieldName].error && fields[fieldName].touched) ? "error" : "warning"}>
+      <FormGroup validationState={(field.error && field.touched) ? "error" : "warning"}>
         <Grid>
           <Row slassName="show-grid">
             <Col sm={2}>
               <ControlLabel>{title}</ControlLabel>
             </Col>
             <Col sm={7}>
-              <FormControl type={type} placeholder={placeholder} {...fields[fieldName]} />
+              <FormControl type={type} placeholder={placeholder} {...field} />
             </Col>
           </Row>
         </Grid>
@@ -20,7 +25,7 @@ export default class RegistryEditCommon extends Component {
     );
   }
 
-  renderLabel(fieldName, title, fields) {
+  renderLabel(title, field) {
     return (
       <FormGroup>
         <Grid>
@@ -29,7 +34,7 @@ export default class RegistryEditCommon extends Component {
               <ControlLabel>{title}</ControlLabel>
             </Col>
             <Col sm={7}>
-              <ControlLabel> {fields[fieldName].value} </ControlLabel>
+              <ControlLabel> {field.value} </ControlLabel>
             </Col>
           </Row>
         </Grid>
@@ -58,6 +63,25 @@ export default class RegistryEditCommon extends Component {
           </Row>
         </Grid>
       </FormGroup>
+    );
+  }
+
+  renderButtonSubmit(valid) {
+    return (
+      <ButtonToolbar>
+        <Button bsSize="large"
+                bsStyle="primary"
+                disabled={!valid}
+                type="submit"
+        >
+          Submit
+        </Button>
+        <Button bsSize="large"
+                onClick={this.props.onHide}
+        >
+          Cancel
+        </Button>
+      </ButtonToolbar>
     );
   }
 }

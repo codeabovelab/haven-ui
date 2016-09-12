@@ -27,18 +27,27 @@ import RegistryEditCommon from './RegistryEditCommon';
 })
 export default class RegistryEditFormAWS extends RegistryEditCommon {
   static propTypes= {
-    fields: PropTypes.object.isRequired
+    fields: PropTypes.object.isRequired,
+    valid: PropTypes.bool,
+    registry: PropTypes.any
   };
+
+  constructor(...params) {
+    super(...params);
+  }
 
   render() {
     const {fields} = this.props;
+    const valid = this.props.valid;
     return (
-      <form>
-        {this.renderLabel('name', 'Name', fields)}
-        {this.renderInput('text', 'secretKey', 'Secret key', 'Secret key', fields)}
-        {this.renderInput('text', 'accessKey', 'Access key', 'Access key', fields)}
-        {this.renderInput('text', 'region', 'Region', 'Region', fields)}
+      <form onSubmit={this.props.handleSubmit}>
+        {this.renderLabel('Name', fields.name)}
+        {this.renderInput('text', 'Secret key', 'Secret key', fields.secretKey)}
+        {this.renderInput('text', 'Access key', 'Access key', fields.accessKey)}
+        {this.renderInput('text', 'Region', 'Region', fields.region)}
         {this.renderTwoCheckboxes(fields)}
+        <hr/>
+        {this.renderButtonSubmit(valid)}
       </form>
     );
   }

@@ -12,40 +12,13 @@ import RegistryEditFormDockerHub from './RegistryEditFormDockerHub';
 @connect(state => ({
   registriesUI: state.registriesUI
 }), {addRegistry, editRegistry, loadRegistries})
-@reduxForm({
-  form: 'RegistryEdit',
-  fields: [
-    'name',
-    'username',
-    'password',
-    'url',
-    'region',
-    'secretKey',
-    'accessKey',
-    'registryType',
-    'disabled',
-    'readOnly'
-  ],
-  validate: createValidator({
-    username: [required],
-    password: [required],
-    url: [required],
-    region: [required],
-    secretKey: [required],
-    accessKey: [required],
-    registryType: [required]
-  })
-})
 export default class RegistryEdit extends Component {
   static propTypes = {
     title: PropTypes.string.isRequired,
-
-    fields: PropTypes.object.isRequired,
     handleSubmit: PropTypes.func,
     resetForm: PropTypes.func,
     submitting: PropTypes.bool,
     createError: PropTypes.string,
-    valid: PropTypes.bool.isRequired,
     registry: PropTypes.any,
     onHide: PropTypes.func.isRequired,
     addRegistry: PropTypes.func.isRequired,
@@ -56,137 +29,58 @@ export default class RegistryEdit extends Component {
 
   constructor(...params) {
     super(...params);
-    const {registry, fields} = this.props;
-    console.log('this.orops', this.props);
-/*    if (registry) {
-      let properties = ['name', 'username', 'password', 'url', 'region', 'secretKey', 'accessKey', 'registryType', 'disabled', 'readOnly'];
-      properties.forEach(property => fields[property].onChange(registry[property]));
-      if (registry.protocol) {
-        fields.secured.onChange(registry.protocol.toLowerCase() === 'https');
-      }
-    } else {
-      fields.active.onChange(true);
-    }
-*/
-    console.log(this.getTypeIndex());
-    this.state = {currentRegType: this.getTypeIndex()};
+    this.state = {currentRegType: this.getType()};
   }
 
-  config = [
-    {
-      type: 'PRIVATE',
-      url: true,
-      secretKey: false,
-      accessKey: false,
-      region: false,
-      name: true,
-      username: true,
-      password: true,
-      disabled: true,
-      readOnly: true
-    },
-    {
-      type: 'AWS',
-      url: false,
-      secretKey: true,
-      accessKey: true,
-      region: true,
-      name: true,
-      username: false,
-      password: false,
-      disabled: true,
-      readOnly: true
-    },
-    {
-      type: 'DOCKER_HUB',
-      url: false,
-      secretKey: false,
-      accessKey: false,
-      region: false,
-      name: true,
-      username: true,
-      password: false,
-      disabled: true,
-      readOnly: true
-    }
+  configType = [
+    'PRIVATE',
+    'AWS',
+    'DOCKER_HUB'
   ];
 
-  onClickButtonType(index) {
-    this.setState(
-      {currentRegType: index}
-    );
-  }
+  onSubmit(values) {
+    delete values.name;
+    values.registryType = this.getCurrentType();
 
-  onSubmit() {
-    const { fields } = this.props;
-//    console.log('onSubmit', fields);
+    alert(JSON.stringify(values));
+    console.log('data', values, 'hasValues', JSON.stringify(values));
 
-    let data = [];
-    data.registryType = this.config[this.state.currentRegType].type;
-    let hasValues = false;
+    let promise;
 
-    Object.keys(fields).forEach((field) => {
-      let isField = this.isField(this.state.currentRegType, field);
-
-      if (isField) {
-        console.log(field);
-        let value = fields[field].value || fields[field].checked;
-
-        if (typeof value !== "undefined") {
-          data[field] = value;
-          hasValues = true;
-
-          if (field === "secured") {
-            data.protocol = fields[field] ? "HTTPS" : "HTTP";
-          }
-        }
-      }
-    });
-
-    console.log('data', data, 'hasValues', hasValues);
-
-    if (hasValues) {
-      let promise;
-
-      if (this.props.registry) {
-        promise = this.props.editRegistry(data).then(() => {
-          this.props.loadRegistries();
-          this.props.onHide();
-        });
-      } else {
-        promise = this.props.addRegistry(data).then(() => {
-          this.props.loadRegistries();
-          this.props.onHide();
-        });
-      }
-
-      return promise;
+    if (this.props.registry) {
+      promise = this.props.editRegistry(values).then(() => {
+        this.props.loadRegistries();
+        this.props.onHide();
+      });
+    } else {
+      promise = this.props.addRegistry(values).then(() => {
+        this.props.loadRegistries();
+        this.props.onHide();
+      });
     }
-  }
 
-  isField(typeIndex, fieldName) {
-    return (fieldName === 'name') ? false : this.config[typeIndex][fieldName];
+    return promise;
   }
 
   render() {
-    const {fields} = this.props;
-    const indexType = this.state.currentRegType;
+    const hidden = true;
     return (
       <Dialog show
+              role="document"
               size="large"
               title={this.props.title}
-              submitting={this.props.submitting}
-              allowSubmit={this.props.valid}
+              hideCancel={hidden}
+              hideOk={hidden}
+              hideFooter={hidden}
               onReset={this.props.resetForm}
-              onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}
               onHide={this.props.onHide}
       >
         <Grid>
           <Row>
             <ButtonToolbar>
-              {this.renderButton(0)}
-              {this.renderButton(1)}
-              {this.renderButton(2)}
+              {this.renderButton(this.configType[0])}
+              {this.renderButton(this.configType[1])}
+              {this.renderButton(this.configType[2])}
             </ButtonToolbar>
           </Row>
         </Grid>
@@ -199,33 +93,59 @@ export default class RegistryEdit extends Component {
     );
   }
 
-  renderSelectForm(index) {
+  renderSelectForm(type) {
     const init = this.props.registry;
-    switch (index) {
-      case 1: return ( <RegistryEditFormAWS initialValues={init} /> );
-      case 2: return ( <RegistryEditFormDockerHub initialValues={init} /> );
-      default: return ( <RegistryEditFormPrivate initialValues={init} /> );
+
+    switch (type) {
+      case this.configType[1]:
+        return ( <RegistryEditFormAWS
+          initialValues={init}
+          onHide={this.props.onHide}
+          onSubmit={this.onSubmit.bind(this)} /> );
+      case this.configType[2]:
+        return ( <RegistryEditFormDockerHub
+          initialValues={init}
+          onHide={this.props.onHide}
+          onSubmit={this.onSubmit.bind(this)} /> );
+      default:
+        return ( <RegistryEditFormPrivate
+          initialValues={init}
+          onHide={this.props.onHide}
+          onSubmit={this.onSubmit.bind(this)} /> );
     }
   }
 
-  renderButton(index) {
+  renderButton(type) {
     return (
       <Button bsSize="large"
-              bsStyle={index === this.state.currentRegType ? 'warning' : "default"}
-              onClick={this.onClickButtonType.bind(this, index)}>
-        {this.config[index].type}
+              bsStyle={type === this.getCurrentType() ? 'warning' : "default"}
+              onClick={this.onClickButtonType.bind(this, type)}>
+        {type}
       </Button>
     );
   }
 
-  getTypeIndex() {
-    let index = 0;
+  onClickButtonType(type) {
+    this.setState(
+      {currentRegType: type}
+    );
+  }
+
+  getCurrentType() {
+    return this.state.currentRegType;
+  }
+
+  getType() {
+    let Type = 'PRIVATE';
+    let registryType = Type;
+
     if (this.props.registry) {
-      const {registryType} = this.props.registry;
-      this.config.forEach((it, i) => {
-        if (it.type === registryType) {index = i;}
-      });
+      let {registryType} = this.props.registry;
     }
-    return index;
+
+    if (registryType === 'undefined') {
+      console.lod('registryType UNDEFINED');
+    }
+    return registryType;
   }
 }

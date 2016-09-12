@@ -25,17 +25,26 @@ import RegistryEditCommon from './RegistryEditCommon';
 })
 export default class RegistryEditFormDockerHub extends RegistryEditCommon {
   static propTypes= {
-    fields: PropTypes.object.isRequired
+    fields: PropTypes.object.isRequired,
+    valid: PropTypes.bool,
+    registry: PropTypes.any
   };
+
+  constructor(...params) {
+    super(...params);
+  }
 
   render() {
     const {fields} = this.props;
+    const valid = this.props.valid;
     return (
-      <form>
-        {this.renderLabel('name', 'Name', fields)}
-        {this.renderInput('text', 'username', 'User name', 'User name', fields)}
-        {this.renderInput('password', 'password', 'Password', 'Password', fields)}
+      <form onSubmit={this.props.handleSubmit}>
+        {this.renderLabel('Name', fields.name)}
+        {this.renderInput('text', 'User name', 'User name', fields.username)}
+        {this.renderInput('password', 'Password', 'Password', fields.password)}
         {this.renderTwoCheckboxes(fields)}
+        <hr/>
+        {this.renderButtonSubmit(valid)}
       </form>
     );
   }
