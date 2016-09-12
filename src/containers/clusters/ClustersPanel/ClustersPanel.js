@@ -5,15 +5,18 @@ import { Link } from 'react-router';
 import {DockTable, ClustersList, StatisticsPanel, Dialog} from '../../../components';
 import {ClusterAdd, ClusterConfig, ClusterInformation} from '../../index';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar} from 'react-bootstrap';
+import {count as countEvents} from 'redux/modules/events/events';
 
 @connect(
   state => ({
     clusters: state.clusters,
-    clustersIds: state.clustersUI.list
+    clustersIds: state.clustersUI.list,
+    alerts: state.events.alerts
   }), {
     loadClusters: clusterActions.load,
     deleteCluster: clusterActions.deleteCluster,
-    loadNodes: clusterActions.loadNodes
+    loadNodes: clusterActions.loadNodes,
+    countEvents
   }
 )
 export default class ClustersPanel extends Component {
@@ -22,7 +25,9 @@ export default class ClustersPanel extends Component {
     clustersIds: PropTypes.array,
     loadClusters: PropTypes.func.isRequired,
     deleteCluster: PropTypes.func.isRequired,
-    loadNodes: PropTypes.func.isRequired
+    loadNodes: PropTypes.func.isRequired,
+    alerts: PropTypes.object,
+    countEvents: PropTypes.func.isRequired
   };
 
   statisticsMetrics = [
@@ -50,16 +55,30 @@ export default class ClustersPanel extends Component {
 
   componentDidMount() {
     this.state = {};
-
-    this.props.loadClusters();
+    let clusterNames = [];
+    this.props.loadClusters().then(() => {
+      for (let key in this.props.clusters) {
+        if (typeof(this.props.clusters[key] === 'Cluster')) {
+          clusterNames.push('cluster:' + key);
+        }
+      }
+      this.props.countEvents('bus.cluman.errors', clusterNames);
+    });
     this.props.loadNodes('orphans');
 
     $('.input-search').focus();
   }
 
   render() {
-    const {clusters, clustersIds} = this.props;
-    const clustersList = clustersIds !== null ? clustersIds.filter(id => !(['all', 'orphans'].includes(id))).map(id => clusters[id]) : null;
+    const {clusters, clustersIds, alerts} = this.props;
+    let clustersList = clustersIds !== null ? clustersIds.filter(id => !(['all', 'orphans'].includes(id))).map(id => clusters[id]) : null;
+    if (this.props.alerts) {
+      clustersList = clustersList.map((element)=> {
+        let alertsCount = typeof(alerts !== 'undefined') && alerts.hasOwnProperty(element.name) ?
+          alerts[element.name] : 0;
+        return Object.assign(element, alertsCount);
+      });
+    }
     const clustersAll = clustersIds !== null ? clustersIds.filter(id => id === 'all').map(id => clusters[id]) : null;
 
     let clusterCount = 0;

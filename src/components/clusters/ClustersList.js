@@ -37,6 +37,11 @@ export default class ClustersList extends Component {
       render: this.nodesRender
     },
     {
+      name: 'alertsCount',
+      label: '# of Alerts',
+      sortable: true
+    },
+    {
       name: 'Actions',
       width: '50px',
       render: this.actionsRender.bind(this)
