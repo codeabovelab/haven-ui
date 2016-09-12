@@ -40,7 +40,7 @@ export default class DashboardClustersList extends Component {
       render: this.containersRender
     },
     {
-      name: 'alerts',
+      name: 'alertsCount',
       label: '# of Alerts'
     }
   ];
