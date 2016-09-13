@@ -16,7 +16,30 @@ export default function reducer(state = {}, action = {}) {
         last.pop();
       }
       return {...state, last};
+
+    case ACTIONS.COUNT_SUCCESS:
+      let resultFiltered = action.result.filtered;
+      let atAll = action.result.count;
+      let alerts = {};
+      resultFiltered.map((element)=> {
+        alerts[element.filter.replace('cluster:', '')] = {alertsCount: element.count};
+      });
+      alerts.atAll = atAll;
+      return {
+        ...state,
+        alerts
+      };
     default:
       return state;
   }
 }
+
+export function count(source, data) {
+  return {
+    types: [ACTIONS.COUNT, ACTIONS.COUNT_SUCCESS, ACTIONS.COUNT_FAIL],
+    id: source,
+    promise: (client) => client.get(`/ui/api/events/${source}/count`, {params: {filter: data }})
+  };
+}
+
+

@@ -267,3 +267,11 @@ a.on-off {
   text-decoration: none;
   cursor: pointer;
 }
+
+.extra-margin-content{
+  margin-left: ($left-space !important);
+}
+
+.extra-margin-footer{
+  margin-left: (145px !important);
+}
