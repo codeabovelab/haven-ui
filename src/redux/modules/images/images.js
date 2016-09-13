@@ -15,6 +15,14 @@ export default function reducer(state = initialState, action = {}) {
         [action.register]: {[action.image]: {tags: action.result.reverse()}}
       };
       return _.merge({}, state, data);
+    case ACTIONS.SEARCH_IMAGES_SUCCESS:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          imageOpts: action.result
+        }
+      };
     default:
       return state;
   }
@@ -45,5 +53,13 @@ export function loadImageTags(imageId) {
     types: [ACTIONS.LOAD_IMAGE_TAGS, ACTIONS.LOAD_IMAGE_TAGS_SUCCESS, ACTIONS.LOAD_IMAGE_TAGS_FAIL],
     image: imageId,
     promise: (client) => client.get('/ui/api/images/tags', {params: {imageName: imageId }})
+  };
+}
+
+export function searchImages(query, page, size, registry) {
+  return {
+    types: [ACTIONS.SEARCH_IMAGES, ACTIONS.SEARCH_IMAGES_SUCCESS, ACTIONS.SEARCH_IMAGES_FAIL],
+    id: 'search',
+    promise: (client) => client.get('/ui/api/images/search', {params: {registry: registry, query: query, page: page, size: size}})
   };
 }

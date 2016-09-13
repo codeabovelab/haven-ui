@@ -4,7 +4,7 @@ import {Dialog} from 'components';
 import {reduxForm, SubmissionError} from 'redux-form';
 import {create} from 'redux/modules/containers/containers';
 import {loadNodes, loadContainers, loadDefaultParams} from 'redux/modules/clusters/clusters';
-import {loadImages, loadImageTags} from 'redux/modules/images/images';
+import {loadImages, loadImageTags, searchImages} from 'redux/modules/images/images';
 import {Alert} from 'react-bootstrap';
 import _ from 'lodash';
 import Select from 'react-select';
@@ -46,7 +46,7 @@ const EXTRA_FIELDS_KEYS = Object.keys(EXTRA_FIELDS);
   clusters: state.clusters,
   containersUI: state.containersUI,
   images: state.images
-}), {create, loadNodes, loadImages, loadImageTags, loadContainers, loadDefaultParams})
+}), {create, loadNodes, loadImages, loadImageTags, searchImages, loadContainers, loadDefaultParams})
 @reduxForm({
   form: 'newContainer',
   fields: ['image', 'tag', 'node', 'restart', 'restartRetries'].concat(EXTRA_FIELDS_KEYS)
@@ -62,11 +62,13 @@ export default class ContainerCreate extends Component {
     loadNodes: PropTypes.func.isRequired,
     loadImages: PropTypes.func.isRequired,
     loadImageTags: PropTypes.func.isRequired,
+    searchImages: PropTypes.func.isRequired,
     fields: PropTypes.object.isRequired,
     handleSubmit: PropTypes.func,
     resetForm: PropTypes.func.isRequired,
     loadContainers: PropTypes.func.isRequired,
     loadDefaultParams: PropTypes.func.isRequired,
+    dispatch: PropTypes.func.isRequired,
 
     onHide: PropTypes.func.isRequired
   };
@@ -81,10 +83,17 @@ export default class ContainerCreate extends Component {
   }
 
   componentWillMount() {
-    const {loadNodes, loadImages, cluster, fields} = this.props;
+    const {loadNodes, loadImages, searchImages, cluster, fields} = this.props;
     loadNodes(cluster.name);
     loadImages();
+    console.log(searchImages);
+    searchImages('win', 1, 1, '');
     fields.restart.value = 'no';
+  }
+
+  getOptions(input) {
+    console.log(searchImages);
+    this.props.dispatch(searchImages(input, 1, 1, ''));
   }
 
   getImagesList() {
@@ -129,8 +138,8 @@ export default class ContainerCreate extends Component {
             <div className="form-group" required>
               {(field = fields.image) && ''}
               <label>Image:</label>
-              <Select ref="stateSelect" autofocus options={options} simpleValue clearable={this.state.clearable}
-                      name="selected-state" disabled={this.state.disabled} value={this.state.selectValue} onChange={this.updateValue}
+              <Select.Async ref="stateSelect" loadOptions={this.getOptions.bind(this)}
+                      name="selected-state"
                       searchable={this.state.searchable} />
               <select id={ContainerCreate.focusSelector.replace('#', '')} className="form-control" {...field}
                       onChange={e => {fields.image.onChange(e); this.onImageChange.call(this, e);}}>
