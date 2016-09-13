@@ -90,14 +90,21 @@ export default class ContainerCreate extends Component {
     loadNodes(cluster.name);
     loadImages();
     loadRegistries();
-    console.log(searchImages);
-    searchImages('win', 1, 1, '');
     fields.restart.value = 'no';
   }
 
-  getOptions(input) {
-    console.log(searchImages);
-    this.props.dispatch(searchImages(input, 1, 1, ''));
+  getOptions(input, callback) {
+    let options = [];
+    this.props.dispatch(searchImages(input, 1, 1, '')).then(() => {
+      let results = this.props.images.search.results;
+      for (let i = 0; i < results.length; i++) {
+        let imageName = results[i].name;
+        options.push({value: imageName, label: imageName});
+      }
+    }).then(()=> {
+      console.log(options);
+      callback(null, {options: options});
+    });
   }
 
   getImagesList() {
@@ -123,8 +130,7 @@ export default class ContainerCreate extends Component {
     let field;
     let image = this.getCurrentImage();
     let creating = containersUI.new.creating;
-    let options = imagesList;
-    console.log(options);
+
     return (
       <Dialog show
               size="large"
@@ -143,7 +149,7 @@ export default class ContainerCreate extends Component {
               {(field = fields.image) && ''}
               <label>Image:</label>
               <Select.Async ref="stateSelect" loadOptions={this.getOptions.bind(this)}
-                      name="selected-state"
+                      name="selected-state" autoload = {false}
                       searchable={this.state.searchable} />
               <select id={ContainerCreate.focusSelector.replace('#', '')} className="form-control" {...field}
                       onChange={e => {fields.image.onChange(e); this.onImageChange.call(this, e);}}>

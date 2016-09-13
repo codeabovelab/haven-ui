@@ -20,7 +20,7 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         [action.id]: {
           ...state[action.id],
-          imageOpts: action.result
+          ...action.result
         }
       };
     default:
