@@ -41,6 +41,7 @@ export default class RegistryEdit extends Component {
   onSubmit(values) {
     delete values.name;
     values.registryType = this.getCurrentType();
+//    values.name = values.username;
 
     alert(JSON.stringify(values));
     console.log('data', values, 'hasValues', JSON.stringify(values));
@@ -75,15 +76,11 @@ export default class RegistryEdit extends Component {
               onReset={this.props.resetForm}
               onHide={this.props.onHide}
       >
-        <Grid>
-          <Row>
-            <ButtonToolbar>
-              {this.renderButton(this.configType[0])}
-              {this.renderButton(this.configType[1])}
-              {this.renderButton(this.configType[2])}
-            </ButtonToolbar>
-          </Row>
-        </Grid>
+        <ButtonToolbar>
+          {this.renderButton(this.configType[0])}
+          {this.renderButton(this.configType[1])}
+          {this.renderButton(this.configType[2])}
+        </ButtonToolbar>
 
         <hr />
 
@@ -94,8 +91,7 @@ export default class RegistryEdit extends Component {
   }
 
   renderSelectForm(type) {
-    const init = this.props.registry;
-
+    const init = this.getInit();
     switch (type) {
       case this.configType[1]:
         return ( <RegistryEditFormAWS
@@ -133,6 +129,24 @@ export default class RegistryEdit extends Component {
 
   getCurrentType() {
     return this.state.currentRegType;
+  }
+
+  getInit() {
+    let init = '';
+    if (this.props.registry) {
+      init = this.props.registry;
+    } else {
+      init = {
+        disabled: false,
+        readOnly: false,
+        registryType: "PRIVATE",
+        username: "",
+        password: "",
+        name: "",
+        url: "https://ni1.codeabovelab.com"
+      };
+    }
+    return init;
   }
 
   getType() {
