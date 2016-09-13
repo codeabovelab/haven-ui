@@ -81,7 +81,8 @@ export default class ContainerCreate extends Component {
     super(...params);
     this.state = {
       publish: [{field1: '', field2: ''}],
-      environment: [{field1: '', field2: ''}]
+      environment: [{field1: '', field2: ''}],
+      selectImageValue: [{value: '', label: ''}]
     };
   }
 
@@ -106,8 +107,15 @@ export default class ContainerCreate extends Component {
         callback(null, {options: options});
       });
     }else {
-      callback(null, {options: ''});
+      callback(null, options = '');
     }
+  }
+
+  updateValue(newValue) {
+    this.setState({
+      selectImageValue: newValue
+    });
+    this.onImageChange(newValue.value);
   }
 
   getImagesList() {
@@ -152,18 +160,22 @@ export default class ContainerCreate extends Component {
             <div className="form-group" required>
               {(field = fields.image) && ''}
               <label>Image:</label>
-              <Select.Async ref="stateSelect" loadOptions={this.getOptions.bind(this)} autoFocus
-                      name="selected-state"
-                      autoload = {0}
-                      clearable
-                      searchable={this.state.searchable} />
-              <select id={ContainerCreate.focusSelector.replace('#', '')} className="form-control" {...field}
-                      onChange={e => {fields.image.onChange(e); this.onImageChange.call(this, e);}}>
-                <option disabled/>
-                {imagesList && imagesList.map(image =>
-                  <option key={image.label} value={image.name} data-register={image.register}>{image.label}</option>
-                )}
-              </select>
+              <Select.Async ref="stateSelect" loadOptions={this.getOptions.bind(this)}
+                            autoFocus
+                            name="image"
+                            value={this.state.selectImageValue}
+                            autoload = {false}
+                            placeholder = "Search..."
+                            clearable
+                            onChange={this.updateValue.bind(this)}
+                            searchable={this.state.searchable} />
+              {/*<select className="form-control" {...field}*/}
+                      {/*onChange={e => {fields.image.onChange(e); this.onImageChange.call(this, e);}}>*/}
+                {/*<option disabled/>*/}
+                {/*{imagesList && imagesList.map(image =>*/}
+                  {/*<option key={image.label} value={image.name} data-register={image.register}>{image.label}</option>*/}
+                {/*)}*/}
+              {/*</select>*/}
             </div>
             <div className="form-group">
               <label>Tag:</label>
@@ -234,7 +246,7 @@ export default class ContainerCreate extends Component {
 
   getCurrentImage() {
     const {images, fields} = this.props;
-    let imageName = fields.image.value;
+    let imageName = this.state.selectImageValue.value;
     if (!imageName) {
       return null;
     }
@@ -247,11 +259,10 @@ export default class ContainerCreate extends Component {
     return image;
   }
 
-  onImageChange(event) {
+  onImageChange(value) {
     const {loadImageTags} = this.props;
-    let option = event.target[event.target.selectedIndex];
-    if (event.target.value) {
-      loadImageTags(event.target.value);
+    if (value) {
+      loadImageTags(value);
     }
   }
 
