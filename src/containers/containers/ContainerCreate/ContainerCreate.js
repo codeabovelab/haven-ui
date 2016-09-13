@@ -7,6 +7,8 @@ import {loadNodes, loadContainers, loadDefaultParams} from 'redux/modules/cluste
 import {loadImages, loadImageTags} from 'redux/modules/images/images';
 import {Alert} from 'react-bootstrap';
 import _ from 'lodash';
+import Select from 'react-select';
+
 
 const EXTRA_FIELDS = {
   containerName: {
@@ -108,6 +110,8 @@ export default class ContainerCreate extends Component {
     let field;
     let image = this.getCurrentImage();
     let creating = containersUI.new.creating;
+    let options = imagesList;
+    console.log(options);
     return (
       <Dialog show
               size="large"
@@ -125,6 +129,9 @@ export default class ContainerCreate extends Component {
             <div className="form-group" required>
               {(field = fields.image) && ''}
               <label>Image:</label>
+              <Select ref="stateSelect" autofocus options={options} simpleValue clearable={this.state.clearable}
+                      name="selected-state" disabled={this.state.disabled} value={this.state.selectValue} onChange={this.updateValue}
+                      searchable={this.state.searchable} />
               <select id={ContainerCreate.focusSelector.replace('#', '')} className="form-control" {...field}
                       onChange={e => {fields.image.onChange(e); this.onImageChange.call(this, e);}}>
                 <option disabled/>
