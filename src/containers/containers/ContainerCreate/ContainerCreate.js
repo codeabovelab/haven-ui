@@ -5,6 +5,7 @@ import {reduxForm, SubmissionError} from 'redux-form';
 import {create} from 'redux/modules/containers/containers';
 import {loadNodes, loadContainers, loadDefaultParams} from 'redux/modules/clusters/clusters';
 import {loadImages, loadImageTags, searchImages} from 'redux/modules/images/images';
+import {load as loadRegistries} from 'redux/modules/registries/registries';
 import {Alert} from 'react-bootstrap';
 import _ from 'lodash';
 import Select from 'react-select';
@@ -45,8 +46,9 @@ const EXTRA_FIELDS_KEYS = Object.keys(EXTRA_FIELDS);
 @connect(state => ({
   clusters: state.clusters,
   containersUI: state.containersUI,
-  images: state.images
-}), {create, loadNodes, loadImages, loadImageTags, searchImages, loadContainers, loadDefaultParams})
+  images: state.images,
+  registries: state.registries
+}), {create, loadNodes, loadImages, loadImageTags, searchImages, loadContainers, loadDefaultParams, loadRegistries})
 @reduxForm({
   form: 'newContainer',
   fields: ['image', 'tag', 'node', 'restart', 'restartRetries'].concat(EXTRA_FIELDS_KEYS)
@@ -67,6 +69,7 @@ export default class ContainerCreate extends Component {
     handleSubmit: PropTypes.func,
     resetForm: PropTypes.func.isRequired,
     loadContainers: PropTypes.func.isRequired,
+    loadRegistries: PropTypes.func.isRequired,
     loadDefaultParams: PropTypes.func.isRequired,
     dispatch: PropTypes.func.isRequired,
 
@@ -83,9 +86,10 @@ export default class ContainerCreate extends Component {
   }
 
   componentWillMount() {
-    const {loadNodes, loadImages, searchImages, cluster, fields} = this.props;
+    const {loadNodes, loadImages, searchImages, cluster, fields, loadRegistries} = this.props;
     loadNodes(cluster.name);
     loadImages();
+    loadRegistries();
     console.log(searchImages);
     searchImages('win', 1, 1, '');
     fields.restart.value = 'no';
