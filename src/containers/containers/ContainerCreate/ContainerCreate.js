@@ -95,16 +95,19 @@ export default class ContainerCreate extends Component {
 
   getOptions(input, callback) {
     let options = [];
-    this.props.dispatch(searchImages(input, 1, 1, '')).then(() => {
-      let results = this.props.images.search.results;
-      for (let i = 0; i < results.length; i++) {
-        let imageName = results[i].name;
-        options.push({value: imageName, label: imageName});
-      }
-    }).then(()=> {
-      console.log(options);
-      callback(null, {options: options});
-    });
+    if (input.length > 0) {
+      this.props.dispatch(searchImages(input, 1, 1, '')).then(() => {
+        let results = this.props.images.search.results;
+        for (let i = 0; i < results.length; i++) {
+          let imageName = results[i].name;
+          options.push({value: imageName, label: imageName});
+        }
+      }).then(()=> {
+        callback(null, {options: options});
+      });
+    }else {
+      callback(null, {options: ''});
+    }
   }
 
   getImagesList() {
@@ -122,6 +125,7 @@ export default class ContainerCreate extends Component {
 
   render() {
     let s = require('./ContainerCreate.scss');
+    require('react-select/dist/react-select.css');
     const {clusters, cluster, fields, containersUI} = this.props;
     let clusterDetailed = clusters[cluster.name];// to ensure loading of nodes with loadNodes;
     let nodes = clusterDetailed.nodesList;
@@ -148,8 +152,10 @@ export default class ContainerCreate extends Component {
             <div className="form-group" required>
               {(field = fields.image) && ''}
               <label>Image:</label>
-              <Select.Async ref="stateSelect" loadOptions={this.getOptions.bind(this)}
-                      name="selected-state" autoload = {false}
+              <Select.Async ref="stateSelect" loadOptions={this.getOptions.bind(this)} autoFocus
+                      name="selected-state"
+                      autoload = {0}
+                      clearable
                       searchable={this.state.searchable} />
               <select id={ContainerCreate.focusSelector.replace('#', '')} className="form-control" {...field}
                       onChange={e => {fields.image.onChange(e); this.onImageChange.call(this, e);}}>
