@@ -56,6 +56,7 @@ const EXTRA_FIELDS_KEYS = Object.keys(EXTRA_FIELDS);
 export default class ContainerCreate extends Component {
   static propTypes = {
     clusters: PropTypes.object.isRequired,
+    registries: PropTypes.array.isRequired,
     containersUI: PropTypes.object.isRequired,
     images: PropTypes.object.isRequired,
     cluster: PropTypes.object.isRequired,
@@ -82,7 +83,7 @@ export default class ContainerCreate extends Component {
     this.state = {
       publish: [{field1: '', field2: ''}],
       environment: [{field1: '', field2: ''}],
-      selectImageValue: [{value: '', label: ''}]
+      selectImageValue: {value: '', label: ''}
     };
   }
 
@@ -107,15 +108,25 @@ export default class ContainerCreate extends Component {
         callback(null, {options: options});
       });
     }else {
-      callback(null, options = '');
+      callback(null, options = {value: '', label: ''});
     }
   }
 
   updateValue(newValue) {
-    this.setState({
-      selectImageValue: newValue
-    });
-    this.onImageChange(newValue.value);
+    if (newValue.length !== 0) {
+      this.setState({
+        selectImageValue: newValue
+      });
+      this.onImageChange(newValue.value);
+    }else {
+      this.setState({
+        selectImageValue: {label: '', value: ''}
+      });
+    }
+  }
+
+  displayRegistries() {
+    $('.checkbox-list-image').toggle();
   }
 
   getImagesList() {
@@ -134,7 +145,7 @@ export default class ContainerCreate extends Component {
   render() {
     let s = require('./ContainerCreate.scss');
     require('react-select/dist/react-select.css');
-    const {clusters, cluster, fields, containersUI} = this.props;
+    const {clusters, cluster, fields, containersUI, registries} = this.props;
     let clusterDetailed = clusters[cluster.name];// to ensure loading of nodes with loadNodes;
     let nodes = clusterDetailed.nodesList;
     nodes = nodes ? nodes : [];
@@ -163,20 +174,33 @@ export default class ContainerCreate extends Component {
               <Select.Async ref="stateSelect" loadOptions={this.getOptions.bind(this)}
                             autoFocus
                             name="image"
+                            minimumInput={ 1 }
+                            cache = {true}
                             value={this.state.selectImageValue}
-                            autoload = {false}
+                            autoload
                             placeholder = "Search..."
                             clearable
+                            resetValue = ""
                             onChange={this.updateValue.bind(this)}
                             searchable={this.state.searchable} />
-              {/*<select className="form-control" {...field}*/}
-                      {/*onChange={e => {fields.image.onChange(e); this.onImageChange.call(this, e);}}>*/}
-                {/*<option disabled/>*/}
-                {/*{imagesList && imagesList.map(image =>*/}
-                  {/*<option key={image.label} value={image.name} data-register={image.register}>{image.label}</option>*/}
-                {/*)}*/}
-              {/*</select>*/}
             </div>
+            <div className="button-wrapper">
+            <button className = "react-select-button" type="button" onClick={this.displayRegistries}>Registries</button>
+            </div>
+            <div className="checkbox-list checkbox-list-image">
+              {
+                registries.map(function listNodes(node, i) {
+                  if (typeof(node) !== 'undefined') {
+                    return (<label key={i} className="checkbox">
+                               <input type="checkbox" className="checkbox-control" value="AU" defaultChecked
+                                     />
+                               <span className="checkbox-label">{node.name}</span>
+                            </label>);
+                  }
+                })
+              }
+            </div>
+
             <div className="form-group">
               <label>Tag:</label>
               {(field = fields.tag) && ''}
