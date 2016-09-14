@@ -93,6 +93,7 @@
     "radium": "^0.17.1",
     "react": "^0.14.2",
     "react-bootstrap": "^0.29.5",
+    "react-bootstrap-toggle": "^1.2.19",
     "react-dom": "^0.14.1",
     "react-helmet": "^2.2.0",
     "react-inline-css": "^2.0.0",

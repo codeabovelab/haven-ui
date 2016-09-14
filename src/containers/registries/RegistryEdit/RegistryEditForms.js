@@ -44,7 +44,6 @@ export default class RegistryEdit extends Component {
 //    values.name = values.username;
 
     alert(JSON.stringify(values));
-    console.log('data', values, 'hasValues', JSON.stringify(values));
 
     let promise;
 
@@ -97,17 +96,17 @@ export default class RegistryEdit extends Component {
         return ( <RegistryEditFormAWS
           initialValues={init}
           onHide={this.props.onHide}
-          onSubmit={this.onSubmit.bind(this)} /> );
+          onSubmit={this.onSubmit.bind(this)} />);
       case this.configType[2]:
         return ( <RegistryEditFormDockerHub
           initialValues={init}
           onHide={this.props.onHide}
-          onSubmit={this.onSubmit.bind(this)} /> );
+          onSubmit={this.onSubmit.bind(this)} />);
       default:
         return ( <RegistryEditFormPrivate
           initialValues={init}
           onHide={this.props.onHide}
-          onSubmit={this.onSubmit.bind(this)} /> );
+          onSubmit={this.onSubmit.bind(this)} />);
     }
   }
 
@@ -115,7 +114,8 @@ export default class RegistryEdit extends Component {
     return (
       <Button bsSize="large"
               bsStyle={type === this.getCurrentType() ? 'warning' : "default"}
-              onClick={this.onClickButtonType.bind(this, type)}>
+              onClick={this.onClickButtonType.bind(this, type)}
+              disabled={this.isEdit() } >
         {type}
       </Button>
     );
@@ -161,5 +161,9 @@ export default class RegistryEdit extends Component {
       console.lod('registryType UNDEFINED');
     }
     return registryType;
+  }
+
+  isEdit() {
+    return this.props.registry ? true : false;
   }
 }
