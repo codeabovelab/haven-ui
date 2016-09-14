@@ -83,7 +83,8 @@ export default class ContainerCreate extends Component {
     this.state = {
       publish: [{field1: '', field2: ''}],
       environment: [{field1: '', field2: ''}],
-      selectImageValue: {value: '', label: ''}
+      selectImageValue: {value: '', label: ''},
+      checkboxes: {checkboxInitial: ''}
     };
   }
 
@@ -97,8 +98,17 @@ export default class ContainerCreate extends Component {
 
   getOptions(input, callback) {
     let options = [];
+    let registriesArr = this.props.registries.map(function listRegistries(element) {
+      let checkBoxState = this.state.checkboxes[element.name];
+      if (typeof(checkBoxState) === 'undefined' || checkBoxState.checked === true) {
+        return element.name;
+      }
+    }.bind(this)).filter((element)=>{
+      return typeof(element) !== 'undefined';
+    });
+    let registries = registriesArr.join(', ');
     if (input.length > 0) {
-      this.props.dispatch(searchImages(input, 1, 1, '')).then(() => {
+      this.props.dispatch(searchImages(input, 10, 100, registries)).then(() => {
         let results = this.props.images.search.results;
         for (let i = 0; i < results.length; i++) {
           let imageName = results[i].name;
@@ -125,8 +135,25 @@ export default class ContainerCreate extends Component {
     }
   }
 
+  toggleCheckbox(e) {
+    let checked = e.target.checked;
+    let name = e.target.name;
+    this.setState({
+      checkboxes: $.extend(this.state.checkboxes, {[name]: {checked: checked}})
+    });
+  }
+
   displayRegistries() {
-    $('.checkbox-list-image').toggle();
+    let $checkboxBlock = $('.checkbox-list-image');
+    let $checkboxes = $checkboxBlock.find('input');
+    for (let i = 0; i < $checkboxes.length; i++) {
+      let name = $checkboxes[i].name;
+      let checked = $checkboxes[i].checked;
+      this.setState({
+        checkboxes: $.extend(this.state.checkboxes, {[name]: {checked: checked}})
+      });
+    }
+    $checkboxBlock.slideToggle(200);
   }
 
   getImagesList() {
@@ -171,11 +198,12 @@ export default class ContainerCreate extends Component {
             <div className="form-group" required>
               {(field = fields.image) && ''}
               <label>Image:</label>
-              <Select.Async ref="stateSelect" loadOptions={this.getOptions.bind(this)}
+              <Select.Async ref="stateSelect"
+                            loadOptions={this.getOptions.bind(this)}
                             autoFocus
                             name="image"
                             minimumInput={ 1 }
-                            cache = {true}
+                            cache
                             value={this.state.selectImageValue}
                             autoload
                             placeholder = "Search..."
@@ -185,19 +213,24 @@ export default class ContainerCreate extends Component {
                             searchable={this.state.searchable} />
             </div>
             <div className="button-wrapper">
-            <button className = "react-select-button" type="button" onClick={this.displayRegistries}>Registries</button>
+            <button className = "react-select-button" type="button" onClick={this.displayRegistries.bind(this)}>Registries</button>
             </div>
             <div className="checkbox-list checkbox-list-image">
               {
-                registries.map(function listNodes(node, i) {
-                  if (typeof(node) !== 'undefined') {
+                registries.map(function list(registry, i) {
+                  if (typeof(registry) !== 'undefined') {
                     return (<label key={i} className="checkbox">
-                               <input type="checkbox" className="checkbox-control" value="AU" defaultChecked
+                               <input type="checkbox"
+                                      className="checkbox-control registry-checkbox"
+                                      value={registry.name}
+                                      defaultChecked
+                                      onChange={this.toggleCheckbox.bind(this)}
+                                      name={registry.name}
                                      />
-                               <span className="checkbox-label">{node.name}</span>
+                               <span className="checkbox-label">{registry.name}</span>
                             </label>);
                   }
-                })
+                }.bind(this))
               }
             </div>
 
