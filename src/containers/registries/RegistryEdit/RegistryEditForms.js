@@ -150,11 +150,12 @@ export default class RegistryEdit extends Component {
   }
 
   getType() {
-    let Type = 'PRIVATE';
-    let registryType = Type;
+    let registryType;
 
     if (this.props.registry) {
-      let {registryType} = this.props.registry;
+      registryType = this.props.registry.registryType;
+    } else {
+      registryType = "PRIVATE";
     }
 
     if (registryType === 'undefined') {
