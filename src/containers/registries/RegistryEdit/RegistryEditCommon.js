@@ -44,7 +44,7 @@ export default class RegistryEditCommon extends Component {
   }
 
   renderTwoCheckboxes(fields) {
-    const s = require('../../../components/common/Toogle/bootstrap2-toggle.css');
+    const s = require('./bootstrap2-toggle.css');
     let on1 = 'Enable';
     let off1 = 'Disable';
     let on2 = 'Editable';
