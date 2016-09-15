@@ -21,6 +21,9 @@ const EXTRA_FIELDS = {
   memory: {
     label: 'Memory limit'
   },
+  registry: {
+    label: 'Registry'
+  },
   cpuQuota: {
     type: 'integer',
     label: 'CPU quota',
@@ -132,6 +135,8 @@ export default class ContainerCreate extends Component {
   }
 
   updateValue(newValue) {
+    let registry;
+    let image;
     const {fields} = this.props;
     if (newValue.length !== 0) {
       this.setState({
@@ -143,7 +148,15 @@ export default class ContainerCreate extends Component {
         selectImageValue: {label: '', value: ''}
       });
     }
-    fields.image.onChange(newValue.value);
+   let ValSplitted = newValue.value.split('/');
+    if (ValSplitted.length === 2){
+      registry = ValSplitted[0];
+      image = ValSplitted[1];
+      fields.registry.onChange(registry);
+    } else {
+      image = ValSplitted[0];
+    }
+    fields.image.onChange(image);
   }
 
   updateTagValue(newValue) {
@@ -344,10 +357,21 @@ export default class ContainerCreate extends Component {
 
   onTagChange(value) {
     const {cluster, loadDefaultParams, fields} = this.props;
-    let image = this.state.selectImageValue.value;
+    let imageWithRegistry = this.state.selectImageValue.value;
+    let registry = '';
+    let image;
+    let imageValSplitted = imageWithRegistry.split('/');
+    if (imageValSplitted.length === 2){
+        registry = imageValSplitted[0];
+        image = imageValSplitted[1];
+    } else {
+      image = imageValSplitted[0];
+    }
+
+    console.log(image, ' ', registry);
     let tag = value;
     if (tag && image) {
-      loadDefaultParams({clusterId: cluster.name, image, tag})
+      loadDefaultParams({clusterId: cluster.name, image, tag, registry})
         .then((defaultParams) => {
           _.forOwn(defaultParams, (value, key) => {
             if (['tag'].indexOf(key) > -1) return;

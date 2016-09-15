@@ -123,12 +123,12 @@ export function loadNodes(clusterId) {
   };
 }
 
-export function loadDefaultParams({clusterId, image, tag}) {
+export function loadDefaultParams({clusterId, image, tag, registry}) {
   return {
     types: [ACTIONS.LOAD_DEFAULT_PARAMS, ACTIONS.LOAD_DEFAULT_PARAMS_SUCCESS, ACTIONS.LOAD_DEFAULT_PARAMS_FAIL],
     id: clusterId,
     image: image,
     tag: tag,
-    promise: (client) => client.get(`/ui/api/clusters/${clusterId}/defaultparams/${image}/${tag}/`)
+    promise: (client) => client.get(`/ui/api/clusters/${clusterId}/defaultparams/${image}/${tag}/`, {params: {registry: registry }})
   };
 }
