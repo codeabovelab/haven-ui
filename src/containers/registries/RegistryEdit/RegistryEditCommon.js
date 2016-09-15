@@ -1,6 +1,5 @@
 import React, {PropTypes, Component} from 'react';
-import {Grid, Row, Col, FormGroup, FormControl, ControlLabel, ButtonToolbar, Button} from 'react-bootstrap';
-import ReactBootstrapToggle from 'react-bootstrap-toggle';
+import {Grid, Row, Col, FormGroup, FormControl, ControlLabel, ButtonToolbar, Button, Checkbox} from 'react-bootstrap';
 
 export default class RegistryEditCommon extends Component {
   static propTypes ={
@@ -44,7 +43,6 @@ export default class RegistryEditCommon extends Component {
   }
 
   renderTwoCheckboxes(fields) {
-    const s = require('./bootstrap2-toggle.css');
     let on1 = 'Enable';
     let off1 = 'Disable';
     let on2 = 'Editable';
@@ -57,24 +55,14 @@ export default class RegistryEditCommon extends Component {
               -
             </Col>
             <Col sm={2}>
-              <div className={s}>
-                <ReactBootstrapToggle
-                  on={on1}
-                  off={off1}
-                  active={fields.disabled.checked}
-                  onChange={(isChecked)=>{fields.disabled.onChange(isChecked);}}
-                />
-              </div>
+              <Checkbox inline {...fields.disabled}>
+                Disabled
+              </Checkbox>
             </Col>
             <Col sm={2}>
-              <div className={s}>
-                <ReactBootstrapToggle
-                  on={on2}
-                  off={off2}
-                  active={fields.readOnly.checked}
-                  onChange={(isChecked)=>{fields.readOnly.onChange(isChecked);}}
-                />
-              </div>
+              <Checkbox inline {...fields.readOnly}>
+                Read Only
+              </Checkbox>
             </Col>
           </Row>
         </Grid>
