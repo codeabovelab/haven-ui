@@ -107,7 +107,7 @@ export default class NodesList extends Component {
   }
 
   onActionInvoke(action, nodeId) {
-    const node = _.find(this.props.data, 'id', nodeId);
+    const node = this.props.data.filter((i)=>(i.id === nodeId))[0];
 
     switch (action) {
       case "info":
