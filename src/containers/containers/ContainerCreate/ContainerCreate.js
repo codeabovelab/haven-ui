@@ -89,11 +89,20 @@ export default class ContainerCreate extends Component {
   }
 
   componentWillMount() {
-    const {loadNodes, loadImages, searchImages, cluster, fields, loadRegistries} = this.props;
+    const {loadNodes, loadImages, cluster, fields, loadRegistries} = this.props;
     loadNodes(cluster.name);
     loadImages();
     loadRegistries();
     fields.restart.value = 'no';
+  }
+
+  getTagsOptions(image) {
+    let tagsOptions;
+    tagsOptions = image && image.tags && image.tags.map(tag => {
+          return {value: tag, label: tag};
+        }
+      );
+    return tagsOptions;
   }
 
   getOptions(input, callback) {
@@ -123,6 +132,7 @@ export default class ContainerCreate extends Component {
   }
 
   updateValue(newValue) {
+    const {fields} = this.props;
     if (newValue.length !== 0) {
       this.setState({
         selectImageValue: newValue
@@ -133,6 +143,16 @@ export default class ContainerCreate extends Component {
         selectImageValue: {label: '', value: ''}
       });
     }
+    fields.image.onChange(newValue.value);
+  }
+
+  updateTagValue(newValue) {
+    const {fields} = this.props;
+    this.setState({
+      selectTagValue: newValue
+    });
+    this.onTagChange(newValue);
+    fields.tag.onChange(newValue);
   }
 
   toggleCheckbox(e) {
@@ -196,9 +216,8 @@ export default class ContainerCreate extends Component {
 
           <form>
             <div className="form-group" required>
-              {(field = fields.image) && ''}
               <label>Image:</label>
-              <Select.Async ref="stateSelect"
+              <Select.Async ref="imageSelect"
                             loadOptions={this.getOptions.bind(this)}
                             autoFocus
                             name="image"
@@ -236,14 +255,14 @@ export default class ContainerCreate extends Component {
 
             <div className="form-group">
               <label>Tag:</label>
-              {(field = fields.tag) && ''}
-              <select className="form-control" {...field}
-                      onChange={e => {fields.tag.onChange(e); this.onTagChange.call(this, e);}}>
-                <option />
-                {image && image.tags && image.tags.map(tag =>
-                  <option key={tag} value={tag}>{tag}</option>
-                )}
-              </select>
+              <Select ref="tagSelect"
+                      simpleValue
+                      clearable
+                      name="tag"
+                      value={this.state.selectTagValue}
+                      onChange={this.updateTagValue.bind(this)}
+                      options={this.getTagsOptions(image)}
+                      searchable />
             </div>
             <div className="form-group">
               <label>Node:</label>
@@ -323,10 +342,10 @@ export default class ContainerCreate extends Component {
     }
   }
 
-  onTagChange(event) {
+  onTagChange(value) {
     const {cluster, loadDefaultParams, fields} = this.props;
-    let image = fields.image.value;
-    let tag = event.target.value;
+    let image = this.state.selectImageValue.value;
+    let tag = value;
     if (tag && image) {
       loadDefaultParams({clusterId: cluster.name, image, tag})
         .then((defaultParams) => {
