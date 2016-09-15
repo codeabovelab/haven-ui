@@ -17,3 +17,5 @@ export NodesPanel from './nodes/NodesPanel/NodesPanel';
 export ImagesPanel from './images/ImagesPanel/ImagesPanel';
 export RegistriesPanel from './registries/RegistriesPanel/RegistriesPanel';
 export RegistryEdit from './registries/RegistryEdit/RegistryEdit';
+
+export RegistryEditForms from './registries/RegistryEdit/RegistryEditForms';

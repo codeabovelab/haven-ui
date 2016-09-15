@@ -2,7 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {load as loadRegistries} from 'redux/modules/registries/registries';
 import {DockTable, RegistriesList, StatisticsPanel} from '../../../components/index';
-import {RegistryEdit} from '../../index';
+//import {RegistryEdit} from '../../index';
+import {RegistryEditForms} from '../../index';
 import _ from 'lodash';
 import {removeRegistry} from 'redux/modules/registries/registries';
 import {ButtonToolbar, SplitButton, Button, MenuItem} from 'react-bootstrap';
@@ -93,7 +94,7 @@ export default class RegistriesPanel extends Component {
       case "create":
         this.setState({
           actionDialog: (
-            <RegistryEdit title="Create a New Registry"
+            <RegistryEditForms title="Create a New Registry"
                           registry={undefined}
                           onHide={this.onHideDialog.bind(this)}
             />
@@ -104,7 +105,7 @@ export default class RegistriesPanel extends Component {
       case "edit":
         this.setState({
           actionDialog: (
-            <RegistryEdit title="Edit Registry"
+            <RegistryEditForms title="Edit Registry"
                           registry={registry}
                           onHide={this.onHideDialog.bind(this)}
             />

@@ -1,10 +1,10 @@
-import React, {Component, PropTypes} from 'react';
+/*import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {reduxForm} from 'redux-form';
 import {addRegistry, editRegistry, load as loadRegistries} from 'redux/modules/registries/registries';
 import {createValidator, required} from 'utils/validation';
 import {Dialog} from 'components';
-import {Row, Col, FormGroup, FormControl, Checkbox, ControlLabel, HelpBlock} from 'react-bootstrap';
+import {Grid, Row, Col, FormGroup, FormControl, Checkbox, ControlLabel, ButtonToolbar, Button, HelpBlock, Thumbnail} from 'react-bootstrap';
 import _ from 'lodash';
 
 @connect(state => ({
@@ -13,22 +13,24 @@ import _ from 'lodash';
 @reduxForm({
   form: 'RegistryEdit',
   fields: [
-    'active',
     'name',
-    'host',
-    'port',
-    'username',
     'password',
-    'protocol',
-    'secured'
+    'url',
+    'region',
+    'secretKey',
+    'accessKey',
+    'registryType',
+    'disabled',
+    'readOnly'
   ],
   validate: createValidator({
-    active: [required],
     name: [required],
-    host: [required],
-    port: [required],
-    username: [required],
-    password: [required]
+    password: [required],
+    url: [required],
+    region: [required],
+    secretKey: [required],
+    accessKey: [required],
+    registryType: [required]
   })
 })
 export default class RegistryEdit extends Component {
@@ -43,7 +45,6 @@ export default class RegistryEdit extends Component {
     valid: PropTypes.bool.isRequired,
     registry: PropTypes.any,
     onHide: PropTypes.func.isRequired,
-
     addRegistry: PropTypes.func.isRequired,
     editRegistry: PropTypes.func.isRequired,
     loadRegistries: PropTypes.func.isRequired,
@@ -55,7 +56,7 @@ export default class RegistryEdit extends Component {
     const {registry, fields} = this.props;
     console.log('this.orops', this.props);
     if (registry) {
-      let properties = ['active', 'name', 'host', 'port', 'username', 'password'];
+      let properties = ['name', 'password', 'url', 'region', 'secretKey', 'accessKey', 'registryType', 'disabled', 'readOnly'];
       properties.forEach(property => fields[property].onChange(registry[property]));
       if (registry.protocol) {
         fields.secured.onChange(registry.protocol.toLowerCase() === 'https');
@@ -63,11 +64,49 @@ export default class RegistryEdit extends Component {
     } else {
       fields.active.onChange(true);
     }
+
+    this.state = {currentRegType: 0};
   }
+
+  onClickButtonType(index) {
+    this.setState(
+      {currentRegType: index}
+    );
+  }
+
+  config = [
+    {
+      type: 'PRIVATE',
+      url: true,
+      secretKey: false,
+      accessKey: false,
+      region: false,
+      name: true,
+      password: true
+    },
+    {
+      type: 'AWS',
+      url: false,
+      secretKey: true,
+      accessKey: true,
+      region: true,
+      name: false,
+      password: false
+    },
+    {
+      type: 'DOCKER_HUB',
+      url: false,
+      secretKey: false,
+      accessKey: false,
+      region: false,
+      name: true,
+      password: false
+    }
+  ];
 
   onSubmit() {
     const { fields } = this.props;
-    console.log('onSubmit', fields);
+//    console.log('onSubmit', fields);
 
     let data = {};
     let hasValues = false;
@@ -85,7 +124,7 @@ export default class RegistryEdit extends Component {
       }
     });
 
-    console.log('data', data, 'hasValues', hasValues);
+//    console.log('data', data, 'hasValues', hasValues);
 
     if (hasValues) {
       let promise;
@@ -107,8 +146,8 @@ export default class RegistryEdit extends Component {
   }
 
   render() {
-    const { fields } = this.props;
-
+    const {fields} = this.props;
+    const indexType = this.state.currentRegType;
     return (
       <Dialog show
               size="large"
@@ -120,119 +159,87 @@ export default class RegistryEdit extends Component {
               onHide={this.props.onHide}
       >
         <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
-          <Row>
-            <Col xs={9}>
-              <FormGroup validationState={(fields.name.error && fields.name.touched) ? "error" : ""}>
-                <ControlLabel>Name</ControlLabel>
-
-                <FormControl type="text"
-                             {...fields.name}
-                />
-
-                <FormControl.Feedback />
-
-                {(fields.name.error && fields.name.touched) && (
-                  <HelpBlock>{fields.name.error}</HelpBlock>
-                )}
-              </FormGroup>
-            </Col>
-
-            <Col xs={3}>
-              <FormGroup validationState={(fields.active.error && fields.active.touched) ? "error" : ""}>
-                <ControlLabel />
-
-                <Checkbox validationState={(fields.active.error && fields.active.touched) ? "error" : ""}
-                          {...fields.active}
-                >
-                  Active
-                </Checkbox>
-              </FormGroup>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col xs={6}>
-              <FormGroup validationState={(fields.host.error && fields.host.touched) ? "error" : ""}>
-                <ControlLabel>Host</ControlLabel>
-
-                <FormControl type="text"
-                             {...fields.host}
-                />
-
-                <FormControl.Feedback />
-
-                {(fields.host.error && fields.host.touched) && (
-                  <HelpBlock>{fields.host.error}</HelpBlock>
-                )}
-              </FormGroup>
-            </Col>
-
-            <Col xs={3}>
-              <FormGroup validationState={(fields.port.error && fields.port.touched) ? "error" : ""}>
-                <ControlLabel>Port</ControlLabel>
-
-                <FormControl type="text"
-                             {...fields.port}
-                />
-
-                <FormControl.Feedback />
-
-                {(fields.port.error && fields.port.touched) && (
-                  <HelpBlock>{fields.port.error}</HelpBlock>
-                )}
-              </FormGroup>
-            </Col>
-
-            <Col xs={3}>
-              <FormGroup validationState={(fields.secured.error && fields.secured.touched) ? "error" : ""}>
-                <ControlLabel />
-
-                <Checkbox validationState={(fields.secured.error && fields.secured.touched) ? "error" : ""}
-                          {...fields.secured}
-                >
-                  Secure
-                </Checkbox>
-              </FormGroup>
-            </Col>
-          </Row>
+          <Grid>
+            <Row>
+                <ButtonToolbar>
+                  {this.renderButton(0)}
+                  {this.renderButton(1)}
+                  {this.renderButton(2)}
+                </ButtonToolbar>
+             </Row>
+          </Grid>
 
           <hr />
 
-          <Row>
-            <Col xs={6}>
-              <FormGroup validationState={(fields.username.error && fields.username.touched) ? "error" : ""}>
-                <ControlLabel>User name</ControlLabel>
+          {this.renderInput('text', 'name', 'Name', 'Name', !this.config[indexType].name )}
+          {this.renderInput('password', 'password', 'Password', 'Password', !this.config[indexType].password )}
+          {this.renderInput('text', 'url', 'Url', 'Url', !this.config[indexType].url )}
+          {this.renderInput('text', 'accessKey', 'Access key', 'Access key', !this.config[indexType].accessKey )}
+          {this.renderInput('text', 'secretKey', 'Secret Key', 'Secret Key', !this.config[indexType].secretKey )}
+          {this.renderInput('text', 'region', 'Region', 'Region', !this.config[indexType].region )}
 
-                <FormControl type="text"
-                             {...fields.username}
-                />
+          <FormGroup>
+            <Grid>
+              <Row slassName="show-grid">
+                <Col sm={2}>
+                  -
+                </Col>
+                <Col sm={2}>
+                  <Checkbox inline {...fields.disabled}>
+                    Disabled
+                  </Checkbox>
+                </Col>
+                <Col sm={2}>
+                  <Checkbox inline {...fields.readOnly}>
+                    Read Only
+                  </Checkbox>
+                </Col>
+              </Row>
+            </Grid>
+          </FormGroup>
 
-                <FormControl.Feedback />
-
-                {(fields.username.error && fields.username.touched) && (
-                  <HelpBlock>{fields.username.error}</HelpBlock>
-                )}
-              </FormGroup>
-            </Col>
-
-            <Col xs={6}>
-              <FormGroup validationState={(fields.password.error && fields.password.touched) ? "error" : ""}>
-                <ControlLabel>Password</ControlLabel>
-
-                <FormControl type="password"
-                             {...fields.password}
-                />
-
-                <FormControl.Feedback />
-
-                {(fields.password.error && fields.password.touched) && (
-                  <HelpBlock>{fields.password.error}</HelpBlock>
-                )}
-              </FormGroup>
-            </Col>
-          </Row>
         </form>
       </Dialog>
     );
   }
+
+  renderButton(index) {
+    return (
+      <Button bsSize="large"
+              bsStyle={index === this.state.currentRegType ? 'warning' : ""}
+              onClick={this.onClickButtonType.bind(this, index)}>
+        {this.config[index].type}
+      </Button>
+    );
+  }
+
+  renderInput(type, fieldName, title, placeholder, hidden) {
+    const {fields} = this.props;
+    const hide = hidden ? 'hidden' : '';
+    let valid = '';
+
+    if (!hidden) {
+      valid = (fields[fieldName].error && fields[fieldName].touched) ? "error" : "";
+    }
+
+    return (
+
+      <div className={hide}>
+        <FormGroup validationState={valid}>
+          <Grid>
+            <Row slassName="show-grid">
+              <Col sm={2}>
+                <ControlLabel>{title}</ControlLabel>
+              </Col>
+              <Col sm={7}>
+                <FormControl type={type} placeholder={placeholder} {...fields[fieldName]} />
+              </Col>
+            </Row>
+          </Grid>
+        </FormGroup>
+      </div>
+
+    );
+  }
 }
+*/

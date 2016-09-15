@@ -20,8 +20,18 @@ export default class RegistriesList extends Component {
       sortable: true
     },
     {
-      name: 'host',
-      label: 'Host',
+      name: 'username',
+      label: 'User name',
+      sortable: true
+    },
+    {
+      name: 'registryType',
+      label: 'Type',
+      sortable: true
+    },
+    {
+      name: 'url',
+      label: 'Url',
       sortable: true
     },
     {
