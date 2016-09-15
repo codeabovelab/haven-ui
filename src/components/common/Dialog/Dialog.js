@@ -31,6 +31,7 @@ export default class Dialog extends Component {
 
     hideOk: PropTypes.bool,
     hideCancel: PropTypes.bool,
+    hideFooter: PropTypes.bool,
 
     okTitle: PropTypes.string,
     cancelTitle: PropTypes.string,
@@ -76,7 +77,7 @@ export default class Dialog extends Component {
           {this.props.children}
         </Modal.Body>
 
-        <Modal.Footer>
+        {!this.props.hideFooter && (<Modal.Footer>
           {!this.props.hideOk && (
             <Button bsStyle="primary"
                     disabled={this.props.submitting || (typeof this.props.allowSubmit !== "undefined" && !this.props.allowSubmit)}
@@ -94,7 +95,7 @@ export default class Dialog extends Component {
               {this.props.cancelTitle || this.DEFAULT_CANCEL_TITLE}
             </Button>
           )}
-        </Modal.Footer>
+        </Modal.Footer> )}
       </Modal>
     );
   }
