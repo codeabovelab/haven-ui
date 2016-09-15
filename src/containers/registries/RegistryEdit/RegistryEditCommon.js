@@ -43,10 +43,6 @@ export default class RegistryEditCommon extends Component {
   }
 
   renderTwoCheckboxes(fields) {
-    let on1 = 'Enable';
-    let off1 = 'Disable';
-    let on2 = 'Editable';
-    let off2 = 'Read Only';
     return (
       <FormGroup>
         <Grid>
@@ -74,13 +70,14 @@ export default class RegistryEditCommon extends Component {
     return (
       <ButtonToolbar>
         <Button bsSize="large"
-                bsStyle="primary"
+                bsStyle="info"
                 disabled={!valid}
                 type="submit"
         >
           Submit
         </Button>
         <Button bsSize="large"
+                bsStyle="info"
                 onClick={this.props.onHide}
         >
           Cancel
