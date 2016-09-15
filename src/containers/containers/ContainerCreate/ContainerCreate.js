@@ -4,9 +4,12 @@ import {Dialog} from 'components';
 import {reduxForm, SubmissionError} from 'redux-form';
 import {create} from 'redux/modules/containers/containers';
 import {loadNodes, loadContainers, loadDefaultParams} from 'redux/modules/clusters/clusters';
-import {loadImages, loadImageTags} from 'redux/modules/images/images';
-import {Alert} from 'react-bootstrap';
+import {loadImages, loadImageTags, searchImages} from 'redux/modules/images/images';
+import {load as loadRegistries} from 'redux/modules/registries/registries';
+import {Alert, Accordion, Panel} from 'react-bootstrap';
 import _ from 'lodash';
+import Select from 'react-select';
+
 
 const EXTRA_FIELDS = {
   containerName: {
@@ -43,15 +46,17 @@ const EXTRA_FIELDS_KEYS = Object.keys(EXTRA_FIELDS);
 @connect(state => ({
   clusters: state.clusters,
   containersUI: state.containersUI,
-  images: state.images
-}), {create, loadNodes, loadImages, loadImageTags, loadContainers, loadDefaultParams})
+  images: state.images,
+  registries: state.registries
+}), {create, loadNodes, loadImages, loadImageTags, searchImages, loadContainers, loadDefaultParams, loadRegistries})
 @reduxForm({
   form: 'newContainer',
-  fields: ['image', 'tag', 'node', 'restart', 'restartRetries'].concat(EXTRA_FIELDS_KEYS)
+  fields: ['image', 'tag', 'node', 'registry', 'restart', 'restartRetries'].concat(EXTRA_FIELDS_KEYS)
 })
 export default class ContainerCreate extends Component {
   static propTypes = {
     clusters: PropTypes.object.isRequired,
+    registries: PropTypes.array.isRequired,
     containersUI: PropTypes.object.isRequired,
     images: PropTypes.object.isRequired,
     cluster: PropTypes.object.isRequired,
@@ -60,11 +65,14 @@ export default class ContainerCreate extends Component {
     loadNodes: PropTypes.func.isRequired,
     loadImages: PropTypes.func.isRequired,
     loadImageTags: PropTypes.func.isRequired,
+    searchImages: PropTypes.func.isRequired,
     fields: PropTypes.object.isRequired,
     handleSubmit: PropTypes.func,
     resetForm: PropTypes.func.isRequired,
     loadContainers: PropTypes.func.isRequired,
+    loadRegistries: PropTypes.func.isRequired,
     loadDefaultParams: PropTypes.func.isRequired,
+    dispatch: PropTypes.func.isRequired,
 
     onHide: PropTypes.func.isRequired
   };
@@ -74,15 +82,96 @@ export default class ContainerCreate extends Component {
     super(...params);
     this.state = {
       publish: [{field1: '', field2: ''}],
-      environment: [{field1: '', field2: ''}]
+      environment: [{field1: '', field2: ''}],
+      selectImageValue: {value: '', label: ''},
+      checkboxes: {checkboxInitial: ''}
     };
   }
 
   componentWillMount() {
-    const {loadNodes, loadImages, cluster, fields} = this.props;
+    const {loadNodes, loadImages, cluster, fields, loadRegistries} = this.props;
     loadNodes(cluster.name);
     loadImages();
+    loadRegistries();
     fields.restart.value = 'no';
+  }
+
+  getTagsOptions(image) {
+    let tagsOptions;
+    tagsOptions = image && image.tags && image.tags.map(tag => {
+      return {value: tag, label: tag};
+    }
+      );
+    return tagsOptions;
+  }
+
+  getImageOptions(input, callback) {
+    let options = [];
+    let registriesArr = this.props.registries.map(function listRegistries(element) {
+      let checkBoxState = this.state.checkboxes[element.name];
+      if (typeof(checkBoxState) === 'undefined' || checkBoxState.checked === true) {
+        return element.name;
+      }
+    }.bind(this)).filter((element)=>{
+      return typeof(element) !== 'undefined';
+    });
+    let registries = registriesArr.join(', ');
+    if (input.length > 0) {
+      this.props.dispatch(searchImages(input, 10, 100, registries)).then(() => {
+        let results = this.props.images.search.results;
+        for (let i = 0; i < results.length; i++) {
+          let imageName = results[i].name;
+          options.push({value: imageName, label: imageName});
+        }
+      }).then(()=> {
+        callback(null, {options: options});
+      });
+    }else {
+      callback(null, options = {value: '', label: ''});
+    }
+  }
+
+  updateImageValue(newValue) {
+    let registry;
+    let image;
+    const {fields} = this.props;
+    if (newValue.length !== 0) {
+      this.setState({
+        selectImageValue: newValue
+      });
+      this.onImageChange(newValue.value);
+    } else {
+      this.setState({
+        selectImageValue: {label: '', value: ''}
+      });
+    }
+    let ValSplitted = this.splitImageName(newValue.value);
+    registry = ValSplitted.registry;
+    image = ValSplitted.image;
+    fields.registry.onChange(registry);
+    fields.image.onChange(image);
+  }
+
+  updateTagValue(newValue) {
+    const {fields} = this.props;
+    this.setState({
+      selectTagValue: newValue
+    });
+    this.onTagChange(newValue);
+    fields.tag.onChange(newValue);
+  }
+
+  toggleCheckbox(e) {
+    let checked = e.target.checked;
+    let name = e.target.name;
+    this.setState({
+      checkboxes: $.extend(this.state.checkboxes, {[name]: {checked: checked}})
+    });
+  }
+
+  displayRegistries() {
+    let $checkboxBlock = $('.checkbox-list-image');
+    $checkboxBlock.slideToggle(200);
   }
 
   getImagesList() {
@@ -100,7 +189,8 @@ export default class ContainerCreate extends Component {
 
   render() {
     let s = require('./ContainerCreate.scss');
-    const {clusters, cluster, fields, containersUI} = this.props;
+    require('react-select/dist/react-select.css');
+    const {clusters, cluster, fields, containersUI, registries} = this.props;
     let clusterDetailed = clusters[cluster.name];// to ensure loading of nodes with loadNodes;
     let nodes = clusterDetailed.nodesList;
     nodes = nodes ? nodes : [];
@@ -108,6 +198,7 @@ export default class ContainerCreate extends Component {
     let field;
     let image = this.getCurrentImage();
     let creating = containersUI.new.creating;
+
     return (
       <Dialog show
               size="large"
@@ -123,26 +214,53 @@ export default class ContainerCreate extends Component {
 
           <form>
             <div className="form-group" required>
-              {(field = fields.image) && ''}
               <label>Image:</label>
-              <select id={ContainerCreate.focusSelector.replace('#', '')} className="form-control" {...field}
-                      onChange={e => {fields.image.onChange(e); this.onImageChange.call(this, e);}}>
-                <option disabled/>
-                {imagesList && imagesList.map(image =>
-                  <option key={image.label} value={image.name} data-register={image.register}>{image.label}</option>
-                )}
-              </select>
+              <Select.Async ref="imageSelect"
+                            loadOptions={this.getImageOptions.bind(this)}
+                            autoFocus
+                            name="image"
+                            minimumInput={ 1 }
+                            cache
+                            value={this.state.selectImageValue}
+                            autoload
+                            placeholder = "Search..."
+                            clearable
+                            resetValue = ""
+                            onChange={this.updateImageValue.bind(this)}
+                            searchable={this.state.searchable} />
             </div>
+            <div className="button-wrapper">
+            <button className = "react-select-button" type="button" onClick={this.displayRegistries.bind(this)}>Registries</button>
+            </div>
+            <div className="checkbox-list checkbox-list-image">
+              {
+                registries.map(function list(registry, i) {
+                  if (typeof(registry) !== 'undefined') {
+                    return (<label key={i} className="checkbox">
+                               <input type="checkbox"
+                                      className="checkbox-control registry-checkbox"
+                                      value={registry.name}
+                                      defaultChecked
+                                      onChange={this.toggleCheckbox.bind(this)}
+                                      name={registry.name}
+                                     />
+                               <span className="checkbox-label">{registry.name}</span>
+                            </label>);
+                  }
+                }.bind(this))
+              }
+            </div>
+
             <div className="form-group">
               <label>Tag:</label>
-              {(field = fields.tag) && ''}
-              <select className="form-control" {...field}
-                      onChange={e => {fields.tag.onChange(e); this.onTagChange.call(this, e);}}>
-                <option />
-                {image && image.tags && image.tags.map(tag =>
-                  <option key={tag} value={tag}>{tag}</option>
-                )}
-              </select>
+              <Select ref="tagSelect"
+                      simpleValue
+                      clearable
+                      name="tag"
+                      value={this.state.selectTagValue}
+                      onChange={this.updateTagValue.bind(this)}
+                      options={this.getTagsOptions(image)}
+                      searchable />
             </div>
             <div className="form-group">
               <label>Node:</label>
@@ -154,14 +272,20 @@ export default class ContainerCreate extends Component {
                 )}
               </select>
             </div>
-            <div className="row">
-              {EXTRA_FIELDS_KEYS.map(key =>
-                <div className="col-md-6" key={key}>
-                  {fieldComponent(key)}
+            <Accordion className="accordion-create-container">
+              <Panel header="Container & Volumes settings" eventKey="1">
+                <div className="row">
+                  {EXTRA_FIELDS_KEYS.map(key =>
+                    <div className="col-md-6" key={key}>
+                      {fieldComponent(key)}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            {this.fieldPublish()}
+              </Panel>
+              <Panel header="Ports settings" eventKey="2">
+                {this.fieldPublish()}
+              </Panel>
+            </Accordion>
             {this.fieldRestart()}
           </form>
       </Dialog>
@@ -202,7 +326,7 @@ export default class ContainerCreate extends Component {
 
   getCurrentImage() {
     const {images, fields} = this.props;
-    let imageName = fields.image.value;
+    let imageName = this.state.selectImageValue.value;
     if (!imageName) {
       return null;
     }
@@ -215,20 +339,34 @@ export default class ContainerCreate extends Component {
     return image;
   }
 
-  onImageChange(event) {
+  onImageChange(value) {
     const {loadImageTags} = this.props;
-    let option = event.target[event.target.selectedIndex];
-    if (event.target.value) {
-      loadImageTags(event.target.value);
+    if (value) {
+      loadImageTags(value);
     }
   }
 
-  onTagChange(event) {
+  splitImageName(value) {
+    let result = {image: '', registry: ''};
+    if (typeof(value) !== 'undefined') {
+      let imageValSplitted = value.split('/');
+      if (imageValSplitted.length === 2) {
+        result.registry = imageValSplitted[0];
+        result.image = imageValSplitted[1];
+      } else {
+        result.image = imageValSplitted[0];
+      }
+    }
+    return result;
+  }
+
+  onTagChange(value) {
     const {cluster, loadDefaultParams, fields} = this.props;
     let image = fields.image.value;
-    let tag = event.target.value;
+    let registry = fields.registry.value;
+    let tag = value;
     if (tag && image) {
-      loadDefaultParams({clusterId: cluster.name, image, tag})
+      loadDefaultParams({clusterId: cluster.name, image, tag, registry})
         .then((defaultParams) => {
           _.forOwn(defaultParams, (value, key) => {
             if (['tag'].indexOf(key) > -1) return;
