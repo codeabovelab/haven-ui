@@ -113,7 +113,7 @@ export default class RegistryEdit extends Component {
   renderButton(type) {
     return (
       <Button bsSize="large"
-              bsStyle={type === this.getCurrentType() ? 'warning' : "default"}
+              bsStyle={type === this.getCurrentType() ? 'info' : "default"}
               onClick={this.onClickButtonType.bind(this, type)}
               disabled={this.isEdit() } >
         {type}
