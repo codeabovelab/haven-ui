@@ -22,7 +22,8 @@ export default class RegistriesList extends Component {
     {
       name: 'username',
       label: 'User name',
-      sortable: true
+      sortable: true,
+      render: this.formatUserName
     },
     {
       name: 'registryType',
@@ -123,6 +124,13 @@ export default class RegistriesList extends Component {
     }
     return (
       <td key="errorMessage" title={error} className={msgStyle}>{errorShort}</td>
+    );
+  }
+
+  formatUserName(registry) {
+    const username = registry.registryType === 'AWS' ? ('accessKey: ' + registry.accessKey) : registry.username;
+    return (
+      <td>{username}</td>
     );
   }
 }
