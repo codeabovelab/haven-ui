@@ -28,15 +28,21 @@ export default class NodesList extends Component {
     {
       name: 'cluster',
       label: 'Cluster',
-      width: '20%',
+      width: '15%',
       sortable: true,
       render: this.clusterRender
     },
     {
       name: 'health',
       label: 'Health Status',
-      width: '20%',
+      width: '10%',
       render: this.healthRender
+    },
+    {
+      name: 'time',
+      label: 'Health time',
+      width: '30%',
+      render: this.timeFotmat
     },
     {
       name: 'actions',
@@ -89,6 +95,7 @@ export default class NodesList extends Component {
       return rows.map(row => ({
         ...row,
         __attributes: {'data-id': row.id},
+        time: row.health.time,
         actions: this.tdActions.bind(this)
       }));
     }
@@ -107,7 +114,7 @@ export default class NodesList extends Component {
   }
 
   onActionInvoke(action, nodeId) {
-    const node = _.find(this.props.data, 'id', nodeId);
+    const node = this.props.data.filter((i)=>(i.id === nodeId))[0];
 
     switch (action) {
       case "info":
@@ -145,13 +152,17 @@ export default class NodesList extends Component {
   }
 
   healthRender(registry) {
+    let labelStyle;
+    if ((!registry.on && registry.health.health) || !registry.time ) {
+      labelStyle = "default";
+    }
     return (
       <td>
         {(registry.health.healthy) && (
-          <Label bsStyle="success">Healthy</Label>
+          <Label bsStyle={labelStyle ? labelStyle : "success"}>Healthy</Label>
         )}
         {(!registry.health.healthy) && (
-          <Label bsStyle="warning">Not Healthy</Label>
+          <Label bsStyle={labelStyle ? labelStyle : "warning"}>Not Healthy</Label>
         )}
       </td>
     );
@@ -166,6 +177,18 @@ export default class NodesList extends Component {
         {(registry.cluster == null) && (
           <label>None</label>
         )}
+      </td>
+    );
+  }
+
+  timeFotmat(registry) {
+    let time = 'none';
+    if (registry.time) {
+      time = registry.time.substring(0, 10) + ' ' + registry.time.substring(11, 19);
+    }
+    return (
+      <td>
+        {time}
       </td>
     );
   }
