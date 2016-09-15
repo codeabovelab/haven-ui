@@ -21,9 +21,6 @@ const EXTRA_FIELDS = {
   memory: {
     label: 'Memory limit'
   },
-  registry: {
-    label: 'Registry'
-  },
   cpuQuota: {
     type: 'integer',
     label: 'CPU quota',
@@ -54,7 +51,7 @@ const EXTRA_FIELDS_KEYS = Object.keys(EXTRA_FIELDS);
 }), {create, loadNodes, loadImages, loadImageTags, searchImages, loadContainers, loadDefaultParams, loadRegistries})
 @reduxForm({
   form: 'newContainer',
-  fields: ['image', 'tag', 'node', 'restart', 'restartRetries'].concat(EXTRA_FIELDS_KEYS)
+  fields: ['image', 'tag', 'node', 'registry', 'restart', 'restartRetries'].concat(EXTRA_FIELDS_KEYS)
 })
 export default class ContainerCreate extends Component {
   static propTypes = {
@@ -102,13 +99,13 @@ export default class ContainerCreate extends Component {
   getTagsOptions(image) {
     let tagsOptions;
     tagsOptions = image && image.tags && image.tags.map(tag => {
-          return {value: tag, label: tag};
-        }
+      return {value: tag, label: tag};
+    }
       );
     return tagsOptions;
   }
 
-  getOptions(input, callback) {
+  getImageOptions(input, callback) {
     let options = [];
     let registriesArr = this.props.registries.map(function listRegistries(element) {
       let checkBoxState = this.state.checkboxes[element.name];
@@ -134,7 +131,7 @@ export default class ContainerCreate extends Component {
     }
   }
 
-  updateValue(newValue) {
+  updateImageValue(newValue) {
     let registry;
     let image;
     const {fields} = this.props;
@@ -143,19 +140,15 @@ export default class ContainerCreate extends Component {
         selectImageValue: newValue
       });
       this.onImageChange(newValue.value);
-    }else {
+    } else {
       this.setState({
         selectImageValue: {label: '', value: ''}
       });
     }
-   let ValSplitted = newValue.value.split('/');
-    if (ValSplitted.length === 2){
-      registry = ValSplitted[0];
-      image = ValSplitted[1];
-      fields.registry.onChange(registry);
-    } else {
-      image = ValSplitted[0];
-    }
+    let ValSplitted = this.splitImageName(newValue.value);
+    registry = ValSplitted.registry;
+    image = ValSplitted.image;
+    fields.registry.onChange(registry);
     fields.image.onChange(image);
   }
 
@@ -178,14 +171,6 @@ export default class ContainerCreate extends Component {
 
   displayRegistries() {
     let $checkboxBlock = $('.checkbox-list-image');
-    let $checkboxes = $checkboxBlock.find('input');
-    for (let i = 0; i < $checkboxes.length; i++) {
-      let name = $checkboxes[i].name;
-      let checked = $checkboxes[i].checked;
-      this.setState({
-        checkboxes: $.extend(this.state.checkboxes, {[name]: {checked: checked}})
-      });
-    }
     $checkboxBlock.slideToggle(200);
   }
 
@@ -231,7 +216,7 @@ export default class ContainerCreate extends Component {
             <div className="form-group" required>
               <label>Image:</label>
               <Select.Async ref="imageSelect"
-                            loadOptions={this.getOptions.bind(this)}
+                            loadOptions={this.getImageOptions.bind(this)}
                             autoFocus
                             name="image"
                             minimumInput={ 1 }
@@ -241,7 +226,7 @@ export default class ContainerCreate extends Component {
                             placeholder = "Search..."
                             clearable
                             resetValue = ""
-                            onChange={this.updateValue.bind(this)}
+                            onChange={this.updateImageValue.bind(this)}
                             searchable={this.state.searchable} />
             </div>
             <div className="button-wrapper">
@@ -361,20 +346,24 @@ export default class ContainerCreate extends Component {
     }
   }
 
+  splitImageName(value) {
+    let result = {image: '', registry: ''};
+    if (typeof(value) !== 'undefined') {
+      let imageValSplitted = value.split('/');
+      if (imageValSplitted.length === 2) {
+        result.registry = imageValSplitted[0];
+        result.image = imageValSplitted[1];
+      } else {
+        result.image = imageValSplitted[0];
+      }
+    }
+    return result;
+  }
+
   onTagChange(value) {
     const {cluster, loadDefaultParams, fields} = this.props;
-    let imageWithRegistry = this.state.selectImageValue.value;
-    let registry = '';
-    let image;
-    let imageValSplitted = imageWithRegistry.split('/');
-    if (imageValSplitted.length === 2){
-        registry = imageValSplitted[0];
-        image = imageValSplitted[1];
-    } else {
-      image = imageValSplitted[0];
-    }
-
-    console.log(image, ' ', registry);
+    let image = fields.image.value;
+    let registry = fields.registry.value;
     let tag = value;
     if (tag && image) {
       loadDefaultParams({clusterId: cluster.name, image, tag, registry})
