@@ -43,8 +43,6 @@ export default class RegistryEdit extends Component {
     values.registryType = this.getCurrentType();
 //    values.name = values.username;
 
-    alert(JSON.stringify(values));
-
     let promise;
 
     if (this.props.registry) {

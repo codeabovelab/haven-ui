@@ -43,12 +43,13 @@ export default class RegistryEditCommon extends Component {
   }
 
   renderTwoCheckboxes(fields) {
+    let space = ' ';
     return (
       <FormGroup>
         <Grid>
           <Row slassName="show-grid">
             <Col sm={2}>
-              -
+              {space}
             </Col>
             <Col sm={2}>
               <Checkbox inline {...fields.disabled}>
