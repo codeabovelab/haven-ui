@@ -6,7 +6,7 @@ import {create} from 'redux/modules/containers/containers';
 import {loadNodes, loadContainers, loadDefaultParams} from 'redux/modules/clusters/clusters';
 import {loadImages, loadImageTags, searchImages} from 'redux/modules/images/images';
 import {load as loadRegistries} from 'redux/modules/registries/registries';
-import {Alert} from 'react-bootstrap';
+import {Alert, Accordion, Panel} from 'react-bootstrap';
 import _ from 'lodash';
 import Select from 'react-select';
 
@@ -287,14 +287,20 @@ export default class ContainerCreate extends Component {
                 )}
               </select>
             </div>
-            <div className="row">
-              {EXTRA_FIELDS_KEYS.map(key =>
-                <div className="col-md-6" key={key}>
-                  {fieldComponent(key)}
+            <Accordion className="accordion-create-container">
+              <Panel header="Container & Volumes settings" eventKey="1">
+                <div className="row">
+                  {EXTRA_FIELDS_KEYS.map(key =>
+                    <div className="col-md-6" key={key}>
+                      {fieldComponent(key)}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            {this.fieldPublish()}
+              </Panel>
+              <Panel header="Ports settings" eventKey="2">
+                {this.fieldPublish()}
+              </Panel>
+            </Accordion>
             {this.fieldRestart()}
           </form>
       </Dialog>
