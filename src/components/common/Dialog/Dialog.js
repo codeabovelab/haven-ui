@@ -53,6 +53,7 @@ export default class Dialog extends Component {
              onExited={this.props.onExited}
              onHide={this.props.onHide}
              keyboard
+             id = "dialog-modal"
       >
 
         <Modal.Header closeButton>

@@ -24,6 +24,11 @@ export default class ContainerLog extends Component {
   componentWillMount() {
     const {container, loadLogs} = this.props;
     loadLogs(container);
+    require('jquery-ui/ui/widgets/draggable');
+  }
+
+  componentDidMount() {
+    $("#dialog-modal").draggable({ handle: ".modal-header" });
   }
 
   componentWillUpdate(nextProps) {
