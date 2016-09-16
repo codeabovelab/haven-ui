@@ -51,9 +51,9 @@
   height: 28px;
 }
 
-.modal-dialog {
+#container-log-modal {
   div.modal-content {
-    display: inline-flex;
+    display: flex;
     flex-direction: column;
     resize: both;
     overflow: auto;

@@ -28,7 +28,7 @@ export default class ContainerLog extends Component {
   }
 
   componentDidMount() {
-    $("#dialog-modal").draggable({ handle: ".modal-header" });
+    $("#container-log-modal").draggable({ handle: ".modal-header" });
   }
 
   componentWillUpdate(nextProps) {
@@ -57,6 +57,7 @@ export default class ContainerLog extends Component {
               okTitle="Close"
               onSubmit={this.props.onHide}
               onHide={this.props.onHide}
+              modalId = "container-log-modal"
       >
         {loadingLogs && (
           <div className="text-xs-center">
