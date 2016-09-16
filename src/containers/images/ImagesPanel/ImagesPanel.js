@@ -28,6 +28,11 @@ export default class ImagesPanel extends Component {
   statisticsMetrics = [
     {
       type: 'number',
+      title: 'Image available',
+      titles: 'Images available',
+    },
+    {
+      type: 'number',
       title: 'Image Running',
       titles: 'Images Running',
     }
@@ -49,16 +54,20 @@ export default class ImagesPanel extends Component {
     let imagesList = this.props.images.all;
 
     let runningImages = 0;
+    let availableImages = 0;
 
     if (imagesList && imagesList.length > 0) {
       imagesList.forEach((image) => {
-        runningImages++;
+        availableImages++;
+        if(image.nodes && image.nodes.length > 0) {
+          runningImages++
+        }
       });
     }
     return (
       <div>
         <StatisticsPanel metrics={this.statisticsMetrics}
-                        values={[runningImages]}
+                        values={[availableImages, runningImages]}
         />
         <ImagesList loading={typeof imagesList === "undefined"}
                     data={imagesList}
