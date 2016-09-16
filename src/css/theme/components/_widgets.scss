@@ -50,3 +50,23 @@
   margin-top: -10px;
   height: 28px;
 }
+
+.modal-dialog {
+  div.modal-content {
+    display: inline-flex;
+    flex-direction: column;
+    resize: both;
+    overflow: auto;
+  }
+  div.modal-footer {
+    flex-grow: 0;
+  }
+  div.modal-body {
+    flex-grow: 8;
+    display: inline-flex;
+    flex-direction: column;
+  }
+  div.modal-header {
+    flex-grow: 0;
+  }
+}
