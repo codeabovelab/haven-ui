@@ -138,8 +138,7 @@ export default class Dashboard extends Component {
     let clusters;
     if (this.props.clusters) {
       clusters = clustersList.map((element)=> {
-        let alertsCount = typeof(alerts !== 'undefined') && alerts.hasOwnProperty(element.name) ?
-          alerts[element.name] : 0;
+        let alertsCount = alerts ? alerts[element.name] : 0;
         return Object.assign(element, alertsCount);
       });
     }

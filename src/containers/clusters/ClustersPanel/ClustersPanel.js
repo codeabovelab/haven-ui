@@ -74,8 +74,7 @@ export default class ClustersPanel extends Component {
     let clustersList = clustersIds !== null ? clustersIds.filter(id => !(['all', 'orphans'].includes(id))).map(id => clusters[id]) : null;
     if (this.props.alerts) {
       clustersList = clustersList.map((element)=> {
-        let alertsCount = typeof(alerts !== 'undefined') && alerts.hasOwnProperty(element.name) ?
-          alerts[element.name] : 0;
+        let alertsCount = alerts ? alerts[element.name] : 0;
         return Object.assign(element, alertsCount);
       });
     }
