@@ -1,5 +1,5 @@
 import React, {PropTypes, Component} from 'react';
-import {Grid, Row, Col, FormGroup, FormControl, ControlLabel, ButtonToolbar, Button, Checkbox} from 'react-bootstrap';
+import {Grid, Row, Col, FormGroup, FormControl, ControlLabel, ButtonToolbar, Button, Checkbox, ButtonGroup} from 'react-bootstrap';
 
 export default class RegistryEditCommon extends Component {
   static propTypes ={
@@ -44,6 +44,10 @@ export default class RegistryEditCommon extends Component {
 
   renderTwoCheckboxes(fields) {
     let space = ' ';
+    let buttonDisabledOn = fields.disabled.value ? 'info' : 'default';
+    let buttonDisabledOff = fields.disabled.value ? 'default' : 'info';
+    let buttonReadOn = fields.readOnly.value ? 'info' : 'default';
+    let buttonReadOff = fields.readOnly.value ? 'default' : 'info';
     return (
       <FormGroup>
         <Grid>
@@ -51,15 +55,30 @@ export default class RegistryEditCommon extends Component {
             <Col sm={2}>
               {space}
             </Col>
-            <Col sm={2}>
-              <Checkbox inline {...fields.disabled}>
-                Disabled
-              </Checkbox>
+            <Col sm={3}>
+              <ButtonGroup>
+                <Button
+                  onClick={()=>(fields.disabled.onChange(true))}
+                  bsStyle={buttonDisabledOn}
+                >Disabled</Button>
+                <Button
+                  onClick={()=>(fields.disabled.onChange(false))}
+                  bsStyle={buttonDisabledOff}
+                >Enabled</Button>
+              </ButtonGroup>
+              <br/><br/>
             </Col>
-            <Col sm={2}>
-              <Checkbox inline {...fields.readOnly}>
-                Read Only
-              </Checkbox>
+            <Col sm={4}>
+              <ButtonGroup>
+                <Button
+                  onClick={()=>(fields.readOnly.onChange(true))}
+                  bsStyle={buttonReadOn}
+                >Read Only</Button>
+                <Button
+                  onClick={()=>(fields.readOnly.onChange(false))}
+                  bsStyle={buttonReadOff}
+                >Editable</Button>
+              </ButtonGroup>
             </Col>
           </Row>
         </Grid>
