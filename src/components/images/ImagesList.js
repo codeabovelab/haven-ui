@@ -53,7 +53,9 @@ export default class ImagesList extends Component {
         <DockTable columns={this.COLUMNS}
                   rows={this.props.data}
                   groupBy="registry"
-                  groupBySelect={GROUP_BY_SELECT} />
+                  groupBySelect={GROUP_BY_SELECT}
+                  hideGroupColumn
+                  />
       )}
       {this.props.data && this.props.data.length === 0 && (
         <div className="alert alert-info">
