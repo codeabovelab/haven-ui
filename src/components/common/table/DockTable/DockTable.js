@@ -361,37 +361,27 @@ export default class DockTable extends Component {
     let columns = this.columnsWithoutGroup;
     this.currentGroups.forEach(group => {
       let closed = _.get(closedGroups, group.key, false);
-      if (group.rows.length === 1) {
-        let model = group.rows[0];
-        groupEls.push(
-          <tbody key={group.key}>
-          <tr className="tr-value tr-single-value" {...model.__attributes}>
-            {this.tdRender(this.groupByColumn.name, model)}
+      // hiding group for single image is confused some users, therefore we remove this part
+      groupEls.push(
+        <tbody key={group.key}>
+        <tr className="tr-group">
+          <td colSpan={columns.length + 1}>
+            <span className="group-title" onClick={this.toggleGroup.bind(this, group.key)}>
+            {!closed && <i className="fa fa-minus"/>}
+              {closed && <i className="fa fa-plus"/>}
+              {group.key}
+            </span>
+            <span className="text-muted">{' '}({group.rows.length})</span>
+          </td>
+        </tr>
+        {!closed && group.currentRows.map((model, i) =>
+          <tr key={i} className="tr-value" {...model.__attributes}>
+            <td/>
             {columns.map(column => this.tdRender(column.name, model))}
           </tr>
-          </tbody>);
-      } else {
-        groupEls.push(
-          <tbody key={group.key}>
-          <tr className="tr-group">
-            <td colSpan={columns.length + 1}>
-              <span className="group-title" onClick={this.toggleGroup.bind(this, group.key)}>
-              {!closed && <i className="fa fa-minus"/>}
-                {closed && <i className="fa fa-plus"/>}
-                {group.key}
-              </span>
-              <span className="text-muted">{' '}({group.rows.length})</span>
-            </td>
-          </tr>
-          {!closed && group.currentRows.map((model, i) =>
-            <tr key={i} className="tr-value" {...model.__attributes}>
-              <td/>
-              {columns.map(column => this.tdRender(column.name, model))}
-            </tr>
-          )}
-          </tbody>
-        );
-      }
+        )}
+        </tbody>
+      );
     });
     return groupEls;
   }
