@@ -50,3 +50,16 @@
   margin-top: -10px;
   height: 28px;
 }
+
+#creation-log-block {
+  display: none;
+  textarea {
+    white-space: pre;
+    font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+    font-size: 0.8em;
+    width: 100%;
+    min-height: 200px;
+    margin: 0;
+    resize: none;
+  }
+}
