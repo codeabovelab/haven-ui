@@ -69,4 +69,7 @@
   div.modal-header {
     flex-grow: 0;
   }
+  div.modal-header:hover {
+    cursor: move;
+  }
 }
