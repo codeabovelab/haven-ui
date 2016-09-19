@@ -230,7 +230,7 @@ export default class ContainerCreate extends Component {
                             searchable={this.state.searchable} />
             </div>
             <div className="button-wrapper">
-            <button className = "react-select-button" type="button" onClick={this.displayRegistries.bind(this)}>Registries</button>
+            <button className = "btn btn-default btn-sm react-select-button" type="button" onClick={this.displayRegistries.bind(this)}>Registries</button>
             </div>
             <div className="checkbox-list checkbox-list-image">
               {
