@@ -37,7 +37,7 @@ export default class ImagesList extends Component {
       width: '20%',
       render: this.itemsRenderFactory({
         key: "nodes",
-        items: (image) => image.nodes,
+        items: (image) => image.nodes.concat(image.nodes, image.nodes, image.nodes, image.nodes),
         render: (node) => (<a href="#TODO">{node}</a>)
       })
     },
@@ -86,7 +86,7 @@ export default class ImagesList extends Component {
       let items = [];
       let src = arg.items(image);
       let itemRender = arg.render || ((a) => a);
-      let labelRender = (item) => (<Label bsStyle="info label-image">{itemRender(item)}</Label>);
+      let labelRender = (item) => (<Label bsStyle="info spaced-items">{itemRender(item)}</Label>);
       return (
         <td key={arg.key}>
           {src.map((item, i) => {
@@ -95,9 +95,9 @@ export default class ImagesList extends Component {
             } else if (i >= first && i < src.length - 1) {
               items.push(item);
             } else {
-              //we show last element after '...'
+              //we show last element after '...', note that label always append to first style 'label-' prefix.
               return [
-                <Label bsStyle="etc"><a title={items.join(', ')}>...</a></Label>,
+                <Label bsStyle="default etc spaced-items"><a title={items.join(', ')}>...</a></Label>,
                 labelRender(item)
               ];
             }

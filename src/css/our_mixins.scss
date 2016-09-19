@@ -1,1 +1,8 @@
+.etc {
+  background: darken($gray-lighter, 5%);
+}
 
+/* style for items which must be spaced */
+.spaced-items:not(:first-child) {
+  margin-left: 0.3rem;
+}
