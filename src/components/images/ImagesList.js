@@ -37,7 +37,7 @@ export default class ImagesList extends Component {
       width: '20%',
       render: this.itemsRenderFactory({
         key: "nodes",
-        items: (image) => image.nodes.concat(image.nodes, image.nodes, image.nodes, image.nodes),
+        items: (image) => image.nodes,
         render: (node) => (<a href="#TODO">{node}</a>)
       })
     },

@@ -12,10 +12,8 @@ const environment = {
 module.exports = Object.assign({
   host: process.env.HOST || 'localhost',
   port: process.env.PORT,
-  //apiHost: '178.62.246.249',
-  //apiPort: 8762,
-  apiHost: 'hb1.codeabovelab.com',
-  apiPort: 80,
+  apiHost: '172.31.0.3',
+  apiPort: 8761,
   eventServer: 'hb1.codeabovelab.com/ui/stomp',
   mock: false,
   app: {
