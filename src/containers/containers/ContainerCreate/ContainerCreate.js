@@ -236,7 +236,7 @@ export default class ContainerCreate extends Component {
               {
                 registries.map(function list(registry, i) {
                   if (typeof(registry) !== 'undefined') {
-                    return (<label key={i} className="checkbox">
+                    return (<div className="checkbox-button" key={i}><label>
                                <input type="checkbox"
                                       className="checkbox-control registry-checkbox"
                                       value={registry.name}
@@ -245,7 +245,7 @@ export default class ContainerCreate extends Component {
                                       name={registry.name}
                                      />
                                <span className="checkbox-label">{registry.name}</span>
-                            </label>);
+                            </label></div>);
                   }
                 }.bind(this))
               }
