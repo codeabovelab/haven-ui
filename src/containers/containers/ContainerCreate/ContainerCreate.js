@@ -418,6 +418,7 @@ export default class ContainerCreate extends Component {
         return loadContainers(cluster.name);
       })
       .catch((response) => {
+        $spinner.hide();
         throw new SubmissionError(response.message);
       });
   }
