@@ -13,20 +13,33 @@ export default class ImagesList extends Component {
     {
       name: 'registry',
       label: 'Registry Address',
-      width: '40%',
+      width: '0%',
       sortable: true
     },
     {
       name: 'name',
       label: 'Image Name',
-      width: '35%',
+      width: '50%',
       sortable: true
     },
     {
       name: 'tags',
       label: 'Downloaded Tags',
-      width: '15%',
-      render: this.tagsRender
+      width: '20%',
+      render: this.itemsRenderFactory({
+        key: "tags",
+        items: (image) => image.tags
+      })
+    },
+    {
+      name: 'nodes',
+      label: 'Nodes',
+      width: '20%',
+      render: this.itemsRenderFactory({
+        key: "nodes",
+        items: (image) => image.nodes.concat(image.nodes, image.nodes, image.nodes, image.nodes),
+        render: (node) => (<a href="#TODO">{node}</a>)
+      })
     },
     {
       name: 'Actions',
@@ -66,21 +79,32 @@ export default class ImagesList extends Component {
     );
   }
 
-  tagsRender(image) {
-    let tagsList = [];
-    return (
-      <td key="tags">
-        {image.tags.map((tag, i) => {
-          if (i < 5) {
-            return (<Label bsStyle="info label-image">{tag}</Label>);
-          } else if (i >= 5 && i < image.tags.length - 1) {
-            tagsList.push(tag);
-          } else {
-            return (<Label bsStyle="etc"><a title={tagsList.join(', ')}>...</a></Label>);
-          }
-        })}
-      </td>
-    );
+//TODO we need to declare component for this
+  itemsRenderFactory(arg) {
+    return (image) => {
+      let first = 5;
+      let items = [];
+      let src = arg.items(image);
+      let itemRender = arg.render || ((a) => a);
+      let labelRender = (item) => (<Label bsStyle="info label-image">{itemRender(item)}</Label>);
+      return (
+        <td key={arg.key}>
+          {src.map((item, i) => {
+            if (i < first) {
+              return labelRender(item);
+            } else if (i >= first && i < src.length - 1) {
+              items.push(item);
+            } else {
+              //we show last element after '...'
+              return [
+                <Label bsStyle="etc"><a title={items.join(', ')}>...</a></Label>,
+                labelRender(item)
+              ];
+            }
+          })}
+        </td>
+      );
+    };
   }
 
   actionsRender() {
