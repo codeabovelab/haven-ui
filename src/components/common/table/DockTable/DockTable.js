@@ -7,6 +7,7 @@ export default class DockTable extends Component {
     columns: PropTypes.array.isRequired,
     rows: PropTypes.array.isRequired,
     groupBy: PropTypes.string,
+    hideGroupColumn: PropTypes.bool,
     groupBySelect: PropTypes.array,
     searchable: PropTypes.bool,
     striped: PropTypes.bool,
@@ -15,7 +16,8 @@ export default class DockTable extends Component {
 
   static defaultProps = {
     searchable: true,
-    striped: true
+    striped: true,
+    hideGroupColumn: false
   };
 
   static SIZES = {SM: 'SM'};
@@ -365,7 +367,7 @@ export default class DockTable extends Component {
       groupEls.push(
         <tbody key={group.key}>
         <tr className="tr-group">
-          <td colSpan={columns.length + 1}>
+          <td colSpan={columns.length + (this.props.hideGroupColumn ? 0 : 1)}>
             <span className="group-title" onClick={this.toggleGroup.bind(this, group.key)}>
             {!closed && <i className="fa fa-minus"/>}
               {closed && <i className="fa fa-plus"/>}
@@ -376,7 +378,7 @@ export default class DockTable extends Component {
         </tr>
         {!closed && group.currentRows.map((model, i) =>
           <tr key={i} className="tr-value" {...model.__attributes}>
-            <td/>
+            {!this.props.hideGroupColumn && <td/>}
             {columns.map(column => this.tdRender(column.name, model))}
           </tr>
         )}
@@ -487,7 +489,7 @@ export default class DockTable extends Component {
     return (
       <thead>
       <tr>
-        {this.groupByColumn && <th>{DockTable.columnLabel(this.groupByColumn)}</th>}
+        {this.groupByColumn && !this.props.hideGroupColumn && <th>{DockTable.columnLabel(this.groupByColumn)}</th>}
         {this.columnsWithoutGroup && this.columnsWithoutGroup.map(this.renderHeaderTh.bind(this))}
       </tr>
       </thead>
