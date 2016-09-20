@@ -42,7 +42,12 @@ export default class Login extends Component {
 
 
   render() {
-    const {user, logout, loginError} = this.props;
+    const LS_KEY = 'auth';
+    const {auth, logout, loginError} = this.props;
+    let user = this.props.user;
+    if(!window.ls[LS_KEY]){
+      user = false;
+    }
     const s = require('./Login.scss');
     return (
       <div className={s.loginPage}>

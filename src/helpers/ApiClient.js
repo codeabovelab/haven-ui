@@ -1,5 +1,7 @@
 import superagent from 'superagent';
 import config from '../config';
+import {browserHistory} from 'react-router'
+import {logout} from 'redux/modules/auth/auth';
 
 const methods = ['get', 'post', 'put', 'patch', 'del'];
 
@@ -29,6 +31,12 @@ export default class ApiClient {
 
         request.end((err, response = {}) => {
           let {body} = response;
+          console.log(response.status);
+          if (response.status === 401) {
+            console.log(this._store.dispatch);
+            this._store.dispatch(logout);
+            browserHistory.push('/login');
+          }
           if (err) {
             reject(body || err);
           } else {
