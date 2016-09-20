@@ -230,13 +230,13 @@ export default class ContainerCreate extends Component {
                             searchable={this.state.searchable} />
             </div>
             <div className="button-wrapper">
-            <button className = "react-select-button" type="button" onClick={this.displayRegistries.bind(this)}>Registries</button>
+            <button className = "btn btn-default btn-sm react-select-button" type="button" onClick={this.displayRegistries.bind(this)}>Registries</button>
             </div>
             <div className="checkbox-list checkbox-list-image">
               {
                 registries.map(function list(registry, i) {
                   if (typeof(registry) !== 'undefined') {
-                    return (<label key={i} className="checkbox">
+                    return (<div className="checkbox-button" key={i}><label>
                                <input type="checkbox"
                                       className="checkbox-control registry-checkbox"
                                       value={registry.name}
@@ -245,7 +245,7 @@ export default class ContainerCreate extends Component {
                                       name={registry.name}
                                      />
                                <span className="checkbox-label">{registry.name}</span>
-                            </label>);
+                            </label></div>);
                   }
                 }.bind(this))
               }

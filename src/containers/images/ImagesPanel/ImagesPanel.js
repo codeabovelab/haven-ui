@@ -59,8 +59,8 @@ export default class ImagesPanel extends Component {
     if (imagesList && imagesList.length > 0) {
       imagesList.forEach((image) => {
         availableImages++;
-        if(image.nodes && image.nodes.length > 0) {
-          runningImages++
+        if (image.nodes && image.nodes.length > 0) {
+          runningImages++;
         }
       });
     }

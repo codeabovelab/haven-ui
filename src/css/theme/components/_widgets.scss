@@ -42,13 +42,42 @@
 }
 
 .checkbox-list-image {
-  margin: 0 0 0 20px;
   display: none;
 }
 
 .button-wrapper {
-  margin-top: -10px;
-  height: 28px;
+  margin-top: -5px;
+  height: 38px;
+}
+
+.checkbox-button {
+  margin:4px;
+  background-color:#EFEFEF;
+  border-radius:4px;
+  border:1px solid #D0D0D0;
+  overflow:hidden;
+  label {
+    float: left;
+    width: 100%;
+    margin-bottom: 0;
+    span {
+      text-align: center;
+      padding: 3px 0;
+      display: block;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+    input {
+      position: absolute;
+      top: -100px;
+      visibility: hidden;
+    }
+  }
+  input:checked + span {
+    background-color: #209e91;
+    color: #fff;
+  }
 }
 
 #creation-log-block {
