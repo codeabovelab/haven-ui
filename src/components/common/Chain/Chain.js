@@ -5,7 +5,9 @@ export default class Chain extends Component {
   static propTypes = {
     maxCount: PropTypes.number,
     data: PropTypes.any.isRequired,
-    render: PropTypes.func
+    render: PropTypes.func,
+    popoverRender: PropTypes.func,
+    popoverPlacement: PropTypes.string
   };
 
   render() {
@@ -21,7 +23,22 @@ export default class Chain extends Component {
     src = src || [];
     let first = maxCount >= src.length ? maxCount : maxCount - 2;
     let itemRender = this.props.render || ((a) => a);
-    let labelRender = (item, i) => (<Button key={"item." + i} bsStyle="info" className="spaced-items">{itemRender(item)}</Button>);
+    let buttonRender = (item, i) => (<Button key={"item." + i} bsStyle="info" className="spaced-items">{itemRender(item)}</Button>);
+    let labelRender;
+    if (this.props.popoverRender) {
+      labelRender = (item, i) => (
+        <OverlayTrigger key={"item." + i}
+                        trigger="click"
+                        rootClose
+                        placement={this.props.popoverPlacement || "left"}
+                        overlay={this.props.popoverRender(item)}
+        >
+          {buttonRender(item, i)}
+        </OverlayTrigger>
+      );
+    } else {
+      labelRender = buttonRender;
+    }
     let popover = (items) => (
       <Popover id="etc-items-popover" title="Other items">
         <span className={s.chain}>

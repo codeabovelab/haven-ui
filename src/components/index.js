@@ -14,6 +14,7 @@ export StatisticsPanel from './common/StatisticsPanel/StatisticsPanel';
 export ClustersList from './clusters/ClustersList';
 export NodesList from './nodes/NodesList';
 export ImagesList from './images/ImagesList';
+export ImageInfo from './images/ImageInfo';
 export RegistriesList from './registries/RegistriesList';
 export OnOff from './common/OnOff/OnOff';
 export Chain from './common/Chain/Chain';

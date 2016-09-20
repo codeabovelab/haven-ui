@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {Link} from 'react-router';
-import {DockTable, OnOff, Chain} from '../index';
-import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Glyphicon} from 'react-bootstrap';
+import {DockTable, OnOff, Chain, ImageInfo} from '../index';
+import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Popover, Button, ProgressBar, Glyphicon} from 'react-bootstrap';
 
 export default class ImagesList extends Component {
   static propTypes = {
@@ -26,7 +26,38 @@ export default class ImagesList extends Component {
       name: 'tags',
       label: 'Downloaded Tags',
       width: '20%',
-      render: (image) => (<td key="tags"><Chain data={image.tags}/></td>)
+      render: (image) => {
+        let popoverRender = (tag) => (
+          <Popover id="image-info-popover">
+            <ImageInfo data={
+              {
+                "name": image.registry ? image.name.substring(image.registry.length + 1) : image.name,
+                "tag": tag,
+                "registry": image.registry,
+                "id": "sha256:c5c0fad7b868c9eff51e7bf5505ca4f808dd1de7a4bf42f5f816563e574593e4",
+                "created": "2016-08-10T21:49:31.434+0000",
+                "containerConfig": {
+                  "ExposedPorts": { "8761/tcp": {}, "8762/tcp": {} },
+                  "Volumes": { "/data": {} },
+                  "WorkingDir": "/data"
+                },
+                "labels": {
+                  "arg.memory": "512M",
+                  "arg.ports": "8761:8761",
+                  "arg.restart": "always",
+                  "selfdiscovered": "true",
+                  "service-type": "system"
+                }
+              }
+            }/>
+          </Popover>
+        );
+        return (
+          <td key="tags">
+            <Chain data={image.tags} popoverRender={popoverRender}/>
+          </td>
+        );
+      }
     },
     {
       name: 'nodes',
