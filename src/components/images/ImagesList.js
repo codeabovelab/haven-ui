@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {Link} from 'react-router';
-import {DockTable, OnOff} from '../index';
+import {DockTable, OnOff, Chain} from '../index';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Glyphicon} from 'react-bootstrap';
 
 export default class ImagesList extends Component {
@@ -26,20 +26,13 @@ export default class ImagesList extends Component {
       name: 'tags',
       label: 'Downloaded Tags',
       width: '20%',
-      render: this.itemsRenderFactory({
-        key: "tags",
-        items: (image) => image.tags
-      })
+      render: (image) => (<td key="tags"><Chain data={image.tags}/></td>)
     },
     {
       name: 'nodes',
       label: 'Nodes',
       width: '20%',
-      render: this.itemsRenderFactory({
-        key: "nodes",
-        items: (image) => image.nodes,
-        render: (node) => (<a href="#TODO">{node}</a>)
-      })
+      render: (image) => (<td key="nodes"><Chain data={image.nodes}/></td>)
     },
     {
       name: 'Actions',
@@ -77,34 +70,6 @@ export default class ImagesList extends Component {
       )}
       </Panel>
     );
-  }
-
-//TODO we need to declare component for this
-  itemsRenderFactory(arg) {
-    return (image) => {
-      let first = 5;
-      let items = [];
-      let src = arg.items(image);
-      let itemRender = arg.render || ((a) => a);
-      let labelRender = (item) => (<Label bsStyle="info spaced-items">{itemRender(item)}</Label>);
-      return (
-        <td key={arg.key}>
-          {src.map((item, i) => {
-            if (i < first) {
-              return labelRender(item);
-            } else if (i >= first && i < src.length - 1) {
-              items.push(item);
-            } else {
-              //we show last element after '...', note that label always append to first style 'label-' prefix.
-              return [
-                <Label bsStyle="default etc spaced-items"><a title={items.join(', ')}>...</a></Label>,
-                labelRender(item)
-              ];
-            }
-          })}
-        </td>
-      );
-    };
   }
 
   actionsRender() {
