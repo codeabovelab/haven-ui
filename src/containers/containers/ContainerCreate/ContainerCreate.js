@@ -287,6 +287,14 @@ export default class ContainerCreate extends Component {
               </Panel>
             </Accordion>
             {this.fieldRestart()}
+            <div className="form-group" id="creation-log-block">
+              <label>Creation Log: <i className="fa fa-spinner fa-2x fa-pulse"/></label>
+              <textarea readOnly
+                        className="container-creation-log"
+                        defaultValue=""
+                        id="creation-log"
+              />
+            </div>
           </form>
       </Dialog>
     );
@@ -396,16 +404,21 @@ export default class ContainerCreate extends Component {
         container[key] = value;
       }
     });
+    let $logBlock = $('#creation-log-block');
+    let $spinner = $logBlock.find('i');
     container.publish = this.getPublish();
     container.environment = this.getEnvironment();
     container.restart = this.getRestart();
+    $logBlock.show();
+    $spinner.show();
     return create(container)
-      .then(() => {
-        resetForm();
-        this.props.onHide();
+      .then((response) => {
+        $('#creation-log').val(response._res.text);
+        $spinner.hide();
         return loadContainers(cluster.name);
       })
       .catch((response) => {
+        $spinner.hide();
         throw new SubmissionError(response.message);
       });
   }
@@ -507,23 +520,25 @@ export default class ContainerCreate extends Component {
     let {fields: {restart, restartRetries}} = this.props;
     let values = ['no', 'on-failure', 'always', 'unless-stopped'];
     return (
-      <div className="field-restart">
-        <div className="field-header">
-          <label>Restart policy:</label>
-        </div>
-        <div className="field-body">
-          <div className="row">
-            <div className="col-sm-6">
-              <select className="form-control" {...restart}>
-                {values.map(value =>
-                  <option key={value} value={value}>{value}</option>
-                )}
-              </select>
+      <div className="form-group">
+        <div className="field-restart">
+          <div className="field-header">
+            <label>Restart policy:</label>
+          </div>
+          <div className="field-body">
+            <div className="row">
+              <div className="col-sm-6">
+                <select className="form-control" {...restart}>
+                  {values.map(value =>
+                    <option key={value} value={value}>{value}</option>
+                  )}
+                </select>
+              </div>
+              {(restart.value === "on-failure") && <div className="col-sm-6">
+                <input {...restartRetries} type="number" step="1" min="0"
+                       className="form-control" placeholder="max retries"/>
+              </div>}
             </div>
-            {(restart.value === "on-failure") && <div className="col-sm-6">
-              <input {...restartRetries} type="number" step="1" min="0"
-                                         className="form-control" placeholder="max retries"/>
-            </div>}
           </div>
         </div>
       </div>
