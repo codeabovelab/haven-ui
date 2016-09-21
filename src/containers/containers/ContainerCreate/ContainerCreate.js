@@ -84,7 +84,8 @@ export default class ContainerCreate extends Component {
       publish: [{field1: '', field2: ''}],
       environment: [{field1: '', field2: ''}],
       selectImageValue: {value: '', label: ''},
-      checkboxes: {checkboxInitial: ''}
+      checkboxes: {checkboxInitial: ''},
+      creationLogVisible: ''
     };
   }
 
@@ -191,6 +192,7 @@ export default class ContainerCreate extends Component {
     let s = require('./ContainerCreate.scss');
     require('react-select/dist/react-select.css');
     const {clusters, cluster, fields, containersUI, registries} = this.props;
+    const creationLogVisible = this.state.creationLogVisible;
     let clusterDetailed = clusters[cluster.name];// to ensure loading of nodes with loadNodes;
     let nodes = clusterDetailed.nodesList;
     nodes = nodes ? nodes : [];
@@ -203,8 +205,10 @@ export default class ContainerCreate extends Component {
       <Dialog show
               size="large"
               title="Create Container"
-              onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}
-              onHide={this.props.onHide}
+              onSubmit={creationLogVisible ? this.props.onHide : this.props.handleSubmit(this.onSubmit.bind(this))}
+              onHide={creationLogVisible ? this.props.handleSubmit(this.onSubmit.bind(this)) : this.props.onHide}
+              okTitle={creationLogVisible ? "Close" : null}
+              cancelTitle={creationLogVisible ? "Again" : null}
       >
           {this.props.createError && (
             <Alert bsStyle="danger">
@@ -410,6 +414,9 @@ export default class ContainerCreate extends Component {
     container.environment = this.getEnvironment();
     container.restart = this.getRestart();
     $logBlock.show();
+    this.setState({
+      creationLogVisible: true
+    });
     $spinner.show();
     return create(container)
       .then((response) => {
