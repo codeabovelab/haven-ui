@@ -3,7 +3,7 @@ import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import { Link, browserHistory } from 'react-router';
-import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, StatisticsPanel, ActionMenu} from '../../../components/index';
+import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, LoadingDialog, StatisticsPanel, ActionMenu} from '../../../components/index';
 import {ContainerCreate, ContainerScale} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
 import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar} from 'react-bootstrap';
@@ -371,37 +371,69 @@ export default class ClusterDetailsPanel extends Component {
       case "start":
         confirm('Are you sure you want to start container?')
           .then(() => {
-            this.props.startContainer(currentContainer).catch(() => null)
-              .then(() => this.props.loadContainers(name));
-          })
-          .catch(() => null);// confirm cancel
+            this.setState({
+              actionDialog: (
+                <LoadingDialog container={currentContainer}
+                               onHide={this.onHideDialog.bind(this)}
+                               name={name}
+                               longTermAction={this.props.startContainer}
+                               loadContainers={this.props.loadContainers}
+                               actionKey="started"
+                />
+              )
+            });
+          });
         return;
 
       case "stop":
         confirm('Are you sure you want to stop container?')
           .then(() => {
-            this.props.stopContainer(currentContainer).catch(() => null)
-              .then(() => this.props.loadContainers(name));
-          })
-          .catch(() => null);// confirm cancel
+            this.setState({
+              actionDialog: (
+                <LoadingDialog container={currentContainer}
+                               onHide={this.onHideDialog.bind(this)}
+                               name={name}
+                               longTermAction={this.props.stopContainer}
+                               loadContainers={this.props.loadContainers}
+                               actionKey="stopped"
+                />
+              )
+            });
+          });
         return;
 
       case "restart":
         confirm('Are you sure you want to restart container?')
           .then(() => {
-            this.props.restartContainer(currentContainer).catch(() => null)
-              .then(() => this.props.loadContainers(name));
-          })
-          .catch(() => null);// confirm cancel
+            this.setState({
+              actionDialog: (
+                <LoadingDialog container={currentContainer}
+                               onHide={this.onHideDialog.bind(this)}
+                               name={name}
+                               longTermAction={this.props.restartContainer}
+                               loadContainers={this.props.loadContainers}
+                               actionKey="restarted"
+                />
+              )
+            });
+          });
         return;
 
       case "delete":
         confirm('Are you sure you want to remove this container?')
           .then(() => {
-            this.props.removeContainer(currentContainer).catch(() => null)
-              .then(() => this.props.loadContainers(name));
-          })
-          .catch(() => null);// confirm cancel
+            this.setState({
+              actionDialog: (
+                <LoadingDialog container={currentContainer}
+                               onHide={this.onHideDialog.bind(this)}
+                               name={name}
+                               longTermAction={this.props.removeContainer}
+                               loadContainers={this.props.loadContainers}
+                               actionKey="removed"
+                />
+              )
+            });
+          });
         return;
 
       default:

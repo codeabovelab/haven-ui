@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {Link} from 'react-router';
-import {DockTable, OnOff} from '../index';
-import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Glyphicon} from 'react-bootstrap';
+import {DockTable, OnOff, Chain, ImageInfo} from '../index';
+import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Popover, Button, ProgressBar, Glyphicon} from 'react-bootstrap';
 
 export default class ImagesList extends Component {
   static propTypes = {
@@ -13,20 +13,57 @@ export default class ImagesList extends Component {
     {
       name: 'registry',
       label: 'Registry Address',
-      width: '40%',
+      width: '0%',
       sortable: true
     },
     {
       name: 'name',
       label: 'Image Name',
-      width: '35%',
+      width: '50%',
       sortable: true
     },
     {
       name: 'tags',
       label: 'Downloaded Tags',
-      width: '15%',
-      render: this.tagsRender
+      width: '20%',
+      render: (image) => {
+        let popoverRender = (tag) => (
+          <Popover id="image-info-popover">
+            <ImageInfo data={
+              {
+                "name": image.registry ? image.name.substring(image.registry.length + 1) : image.name,
+                "tag": tag,
+                "registry": image.registry,
+                "id": "sha256:c5c0fad7b868c9eff51e7bf5505ca4f808dd1de7a4bf42f5f816563e574593e4",
+                "created": "2016-08-10T21:49:31.434+0000",
+                "containerConfig": {
+                  "ExposedPorts": { "8761/tcp": {}, "8762/tcp": {} },
+                  "Volumes": { "/data": {} },
+                  "WorkingDir": "/data"
+                },
+                "labels": {
+                  "arg.memory": "512M",
+                  "arg.ports": "8761:8761",
+                  "arg.restart": "always",
+                  "selfdiscovered": "true",
+                  "service-type": "system"
+                }
+              }
+            }/>
+          </Popover>
+        );
+        return (
+          <td key="tags">
+            <Chain data={image.tags} popoverRender={popoverRender}/>
+          </td>
+        );
+      }
+    },
+    {
+      name: 'nodes',
+      label: 'Nodes',
+      width: '20%',
+      render: (image) => (<td key="nodes"><Chain data={image.nodes}/></td>)
     },
     {
       name: 'Actions',
@@ -53,7 +90,9 @@ export default class ImagesList extends Component {
         <DockTable columns={this.COLUMNS}
                   rows={this.props.data}
                   groupBy="registry"
-                  groupBySelect={GROUP_BY_SELECT} />
+                  groupBySelect={GROUP_BY_SELECT}
+                  hideGroupColumn
+                  />
       )}
       {this.props.data && this.props.data.length === 0 && (
         <div className="alert alert-info">
@@ -61,23 +100,6 @@ export default class ImagesList extends Component {
         </div>
       )}
       </Panel>
-    );
-  }
-
-  tagsRender(image) {
-    let tagsList = [];
-    return (
-      <td key="tags">
-        {image.tags.map((tag, i) => {
-          if (i < 5) {
-            return (<Label bsStyle="info label-image">{tag}</Label>);
-          } else if (i >= 5 && i < image.tags.length - 1) {
-            tagsList.push(tag);
-          } else {
-            return (<Label bsStyle="etc"><a title={tagsList.join(', ')}>...</a></Label>);
-          }
-        })}
-      </td>
     );
   }
 

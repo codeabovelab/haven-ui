@@ -1,0 +1,16 @@
+@import "../../../css/variables";
+
+.chain {
+  :global(.spaced-items) {
+    padding: .0em .3em;
+    border-radius: 0px;
+    //it need for vertical space between them
+    margin-bottom: 0.1rem;
+  }
+  :global(.etc) {
+    background: darken($gray-lighter, 5%) !important;
+  }
+  :global(.spaced-items:not(:last-child)) {
+    margin-right: 0.3rem;
+  }
+}

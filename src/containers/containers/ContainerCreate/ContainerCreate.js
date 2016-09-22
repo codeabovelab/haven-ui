@@ -84,7 +84,8 @@ export default class ContainerCreate extends Component {
       publish: [{field1: '', field2: ''}],
       environment: [{field1: '', field2: ''}],
       selectImageValue: {value: '', label: ''},
-      checkboxes: {checkboxInitial: ''}
+      checkboxes: {checkboxInitial: ''},
+      creationLogVisible: ''
     };
   }
 
@@ -191,6 +192,7 @@ export default class ContainerCreate extends Component {
     let s = require('./ContainerCreate.scss');
     require('react-select/dist/react-select.css');
     const {clusters, cluster, fields, containersUI, registries} = this.props;
+    const creationLogVisible = this.state.creationLogVisible;
     let clusterDetailed = clusters[cluster.name];// to ensure loading of nodes with loadNodes;
     let nodes = clusterDetailed.nodesList;
     nodes = nodes ? nodes : [];
@@ -203,8 +205,10 @@ export default class ContainerCreate extends Component {
       <Dialog show
               size="large"
               title="Create Container"
-              onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}
-              onHide={this.props.onHide}
+              onSubmit={creationLogVisible ? this.props.onHide : this.props.handleSubmit(this.onSubmit.bind(this))}
+              onHide={creationLogVisible ? this.props.handleSubmit(this.onSubmit.bind(this)) : this.props.onHide}
+              okTitle={creationLogVisible ? "Close" : null}
+              cancelTitle={creationLogVisible ? "Again" : null}
       >
           {this.props.createError && (
             <Alert bsStyle="danger">
@@ -230,13 +234,13 @@ export default class ContainerCreate extends Component {
                             searchable={this.state.searchable} />
             </div>
             <div className="button-wrapper">
-            <button className = "react-select-button" type="button" onClick={this.displayRegistries.bind(this)}>Registries</button>
+            <button className = "btn btn-default btn-sm react-select-button" type="button" onClick={this.displayRegistries.bind(this)}>Registries</button>
             </div>
             <div className="checkbox-list checkbox-list-image">
               {
                 registries.map(function list(registry, i) {
                   if (typeof(registry) !== 'undefined') {
-                    return (<label key={i} className="checkbox">
+                    return (<div className="checkbox-button" key={i}><label>
                                <input type="checkbox"
                                       className="checkbox-control registry-checkbox"
                                       value={registry.name}
@@ -245,7 +249,7 @@ export default class ContainerCreate extends Component {
                                       name={registry.name}
                                      />
                                <span className="checkbox-label">{registry.name}</span>
-                            </label>);
+                            </label></div>);
                   }
                 }.bind(this))
               }
@@ -287,6 +291,14 @@ export default class ContainerCreate extends Component {
               </Panel>
             </Accordion>
             {this.fieldRestart()}
+            <div className="form-group" id="creation-log-block">
+              <label>Creation Log: <i className="fa fa-spinner fa-2x fa-pulse"/></label>
+              <textarea readOnly
+                        className="container-creation-log"
+                        defaultValue=""
+                        id="creation-log"
+              />
+            </div>
           </form>
       </Dialog>
     );
@@ -396,16 +408,24 @@ export default class ContainerCreate extends Component {
         container[key] = value;
       }
     });
+    let $logBlock = $('#creation-log-block');
+    let $spinner = $logBlock.find('i');
     container.publish = this.getPublish();
     container.environment = this.getEnvironment();
     container.restart = this.getRestart();
+    $logBlock.show();
+    this.setState({
+      creationLogVisible: true
+    });
+    $spinner.show();
     return create(container)
-      .then(() => {
-        resetForm();
-        this.props.onHide();
+      .then((response) => {
+        $('#creation-log').val(response._res.text);
+        $spinner.hide();
         return loadContainers(cluster.name);
       })
       .catch((response) => {
+        $spinner.hide();
         throw new SubmissionError(response.message);
       });
   }
@@ -507,23 +527,25 @@ export default class ContainerCreate extends Component {
     let {fields: {restart, restartRetries}} = this.props;
     let values = ['no', 'on-failure', 'always', 'unless-stopped'];
     return (
-      <div className="field-restart">
-        <div className="field-header">
-          <label>Restart policy:</label>
-        </div>
-        <div className="field-body">
-          <div className="row">
-            <div className="col-sm-6">
-              <select className="form-control" {...restart}>
-                {values.map(value =>
-                  <option key={value} value={value}>{value}</option>
-                )}
-              </select>
+      <div className="form-group">
+        <div className="field-restart">
+          <div className="field-header">
+            <label>Restart policy:</label>
+          </div>
+          <div className="field-body">
+            <div className="row">
+              <div className="col-sm-6">
+                <select className="form-control" {...restart}>
+                  {values.map(value =>
+                    <option key={value} value={value}>{value}</option>
+                  )}
+                </select>
+              </div>
+              {(restart.value === "on-failure") && <div className="col-sm-6">
+                <input {...restartRetries} type="number" step="1" min="0"
+                       className="form-control" placeholder="max retries"/>
+              </div>}
             </div>
-            {(restart.value === "on-failure") && <div className="col-sm-6">
-              <input {...restartRetries} type="number" step="1" min="0"
-                                         className="form-control" placeholder="max retries"/>
-            </div>}
           </div>
         </div>
       </div>

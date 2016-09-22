@@ -14,14 +14,17 @@ export StatisticsPanel from './common/StatisticsPanel/StatisticsPanel';
 export ClustersList from './clusters/ClustersList';
 export NodesList from './nodes/NodesList';
 export ImagesList from './images/ImagesList';
+export ImageInfo from './images/ImageInfo';
 export RegistriesList from './registries/RegistriesList';
 export OnOff from './common/OnOff/OnOff';
+export Chain from './common/Chain/Chain';
 export ActionMenu from './common/ActionMenu/ActionMenu';
 export MenuLeft from './MenuLeft/MenuLeft';
 export Navbar from './Navbar/Navbar';
 export ContainerLog from './containers/ContainerLog/ContainerLog';
 export ContainerDetails from './containers/ContainerDetails/ContainerDetails';
 export ContainerStatistics from './containers/ContainerStatistics/ContainerStatistics';
+export LoadingDialog from './common/LoadingDialog/LoadingDialog';
 
 export PropertyGrid from './common/PropertyGrid/PropertyGrid';
 
