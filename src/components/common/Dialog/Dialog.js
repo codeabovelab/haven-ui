@@ -15,6 +15,7 @@ export default class Dialog extends Component {
     size: PropTypes.string,
     errors: PropTypes.array,
     messages: PropTypes.array,
+    modalId: PropTypes.string,
 
     onEnter: PropTypes.func,
     onEntered: PropTypes.func,
@@ -53,6 +54,7 @@ export default class Dialog extends Component {
              onExited={this.props.onExited}
              onHide={this.props.onHide}
              keyboard
+             id = {this.props.modalId || ''}
       >
 
         <Modal.Header closeButton>

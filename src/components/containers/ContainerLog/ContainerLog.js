@@ -24,6 +24,11 @@ export default class ContainerLog extends Component {
   componentWillMount() {
     const {container, loadLogs} = this.props;
     loadLogs(container);
+    require('jquery-ui/ui/widgets/draggable');
+  }
+
+  componentDidMount() {
+    $("#container-log-modal").draggable({ handle: ".modal-header" });
   }
 
   componentWillUpdate(nextProps) {
@@ -52,6 +57,7 @@ export default class ContainerLog extends Component {
               okTitle="Close"
               onSubmit={this.props.onHide}
               onHide={this.props.onHide}
+              modalId = "container-log-modal"
       >
         {loadingLogs && (
           <div className="text-xs-center">

@@ -50,6 +50,29 @@
   height: 38px;
 }
 
+#container-log-modal {
+  div.modal-content {
+    display: flex;
+    flex-direction: column;
+    resize: both;
+    overflow: auto;
+  }
+  div.modal-footer {
+    flex-grow: 0;
+  }
+  div.modal-body {
+    flex-grow: 8;
+    display: inline-flex;
+    flex-direction: column;
+  }
+  div.modal-header {
+    flex-grow: 0;
+  }
+  div.modal-header:hover {
+    cursor: move;
+  }
+}
+
 .checkbox-button {
   margin:4px;
   background-color:#EFEFEF;
