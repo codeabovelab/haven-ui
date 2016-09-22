@@ -40,8 +40,6 @@ export default class Navbar extends Component {
             </Dropdown.Toggle>
 
             <Dropdown.Menu pullRight>
-              <MenuItem eventKey="1">Profile</MenuItem>
-              <MenuItem eventKey="2">Settings</MenuItem>
               <MenuItem onClick={this.handleLogout}>Sign out</MenuItem>
             </Dropdown.Menu>
           </Dropdown>
