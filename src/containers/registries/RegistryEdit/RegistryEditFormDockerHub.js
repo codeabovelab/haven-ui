@@ -43,7 +43,7 @@ export default class RegistryEditFormDockerHub extends RegistryEditCommon {
         {this.renderInput('text', 'User name', 'User name', fields.username)}
         {this.renderInput('password', 'Password', 'Password', fields.password)}
         {this.renderTwoCheckboxes(fields)}
-        <hr/>
+        <hr className="registries-bottom-form-separator"/>
         {this.renderButtonSubmit(valid)}
       </form>
     );

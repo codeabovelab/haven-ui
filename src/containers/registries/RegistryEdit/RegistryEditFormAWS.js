@@ -46,7 +46,7 @@ export default class RegistryEditFormAWS extends RegistryEditCommon {
         {this.renderInput('text', 'Access key', 'Access key', fields.accessKey)}
         {this.renderInput('text', 'Region', 'Region', fields.region)}
         {this.renderTwoCheckboxes(fields)}
-        <hr/>
+        <hr className="registries-bottom-form-separator"/>
         {this.renderButtonSubmit(valid)}
       </form>
     );
