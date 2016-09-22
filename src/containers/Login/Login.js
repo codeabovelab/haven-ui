@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import Helmet from 'react-helmet';
 import {login, logout} from 'redux/modules/auth/auth';
+import {browserHistory} from 'react-router';
 
 @connect(
   state => ({user: state.auth.user, auth: state.auth, loginError: state.auth.loginError}),
@@ -15,13 +16,35 @@ export default class Login extends Component {
     logout: PropTypes.func.isRequired
   };
 
+  constructor(...params) {
+    super(...params);
+    this.state = {
+      outdatedToken: "",
+    };
+  }
+
+  componentWillMount() {
+    const LS_KEY = 'auth';
+    const {user, logout} = this.props;
+    if (!window.ls[LS_KEY] && user) {
+      this.setState({
+        outdatedToken: true
+      });
+      logout();
+    }
+  }
+
   componentDidMount() {
     const {user} = this.props;
     if (!user) {
-      this.refs.username.value = 'admin';
-      this.refs.password.value = 'password';
-      this.refs.username.focus();
+      this.fillCredentialsFields();
     }
+  }
+
+  fillCredentialsFields() {
+    this.refs.username.value = 'admin';
+    this.refs.password.value = 'password';
+    this.refs.username.focus();
   }
 
   handleSubmit = (event) => {
@@ -36,10 +59,12 @@ export default class Login extends Component {
         if (auth && auth.token) {
           iUsername.value = '';
           iPassword.value = '';
+          if (this.state.outdatedToken) {
+            browserHistory.go(-2);
+          }
         }
       });
   };
-
 
   render() {
     const {user, logout, loginError} = this.props;
