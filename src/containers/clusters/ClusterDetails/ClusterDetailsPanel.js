@@ -223,6 +223,7 @@ export default class ClusterDetailsPanel extends Component {
         <h3>Events</h3>
       </div>
     );
+    const isContainersPage = name === 'all';
 
     return (
       <div>
@@ -230,9 +231,16 @@ export default class ClusterDetailsPanel extends Component {
                          values={[runningContainers, runningNodes, runningJobs, errorCount]}
         />
 
-        <h1>
-          <Link to="/clusters">Clusters</Link> / {name}
-        </h1>
+        {isContainersPage && (
+          <h1>
+            Containers
+          </h1>
+        )}
+        {!isContainersPage && (
+          <h1>
+            <Link to="/clusters">Clusters</Link> / {name}
+          </h1>
+        )}
 
         <Panel header={containersHeaderBar}>
           {!rows && (
