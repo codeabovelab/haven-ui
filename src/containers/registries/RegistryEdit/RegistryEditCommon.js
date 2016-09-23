@@ -22,7 +22,7 @@ export default class RegistryEditCommon extends Component {
       <FormGroup>
         <Grid>
           <Row slassName="show-grid">
-            <Col sm={2} className="registries-col-block">
+            <Col sm={2} className="pulled-left-col-block">
               <ControlLabel>{title}</ControlLabel>
             </Col>
             <Col sm={7}>
@@ -44,7 +44,7 @@ export default class RegistryEditCommon extends Component {
       <FormGroup>
         <Grid>
           <Row slassName="show-grid">
-            <Col sm={2} className="registries-col-block">
+            <Col sm={2} className="pulled-left-col-block">
               <ButtonGroup>
                 <Button
                   onClick={()=>(fields.disabled.onChange(true))}
@@ -77,7 +77,7 @@ export default class RegistryEditCommon extends Component {
 
   renderButtonSubmit(valid) {
     return (
-      <div className="form-group text-right registries-submit-buttons-block">
+      <div className="form-group text-right submit-buttons-block">
         <Button bsStyle="primary"
                 disabled={!valid}
                 type="submit"

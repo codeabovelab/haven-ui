@@ -79,7 +79,7 @@ export default class RegistryEdit extends Component {
           {this.renderButton(this.configType[2])}
         </ButtonToolbar>
 
-        <hr className="registries-top-form-separator" />
+        <hr className="top-form-separator" />
 
         {this.renderSelectForm(this.state.currentRegType)}
 
