@@ -79,7 +79,7 @@ export default class RegistryEdit extends Component {
           {this.renderButton(this.configType[2])}
         </ButtonToolbar>
 
-        <hr />
+        <hr className="top-form-separator" />
 
         {this.renderSelectForm(this.state.currentRegType)}
 
@@ -110,8 +110,7 @@ export default class RegistryEdit extends Component {
 
   renderButton(type) {
     return (
-      <Button bsSize="large"
-              bsStyle={type === this.getCurrentType() ? 'info' : "default"}
+      <Button bsStyle={type === this.getCurrentType() ? 'primary' : "default"}
               onClick={this.onClickButtonType.bind(this, type)}
               disabled={this.isEdit() } >
         {type}

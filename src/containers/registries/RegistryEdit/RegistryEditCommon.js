@@ -10,17 +10,9 @@ export default class RegistryEditCommon extends Component {
 
   renderInput(type, title, placeholder, field) {
     return (
-      <FormGroup validationState={(field.error && field.touched) ? "error" : "warning"}>
-        <Grid>
-          <Row slassName="show-grid">
-            <Col sm={2}>
-              <ControlLabel>{title}</ControlLabel>
-            </Col>
-            <Col sm={7}>
-              <FormControl type={type} placeholder={placeholder} {...field} />
-            </Col>
-          </Row>
-        </Grid>
+      <FormGroup validationState={field.error ? "error" : ""}>
+        <ControlLabel>{title}</ControlLabel>
+        <FormControl type={type} placeholder={placeholder} {...field} />
       </FormGroup>
     );
   }
@@ -30,7 +22,7 @@ export default class RegistryEditCommon extends Component {
       <FormGroup>
         <Grid>
           <Row slassName="show-grid">
-            <Col sm={2}>
+            <Col sm={2} className="pulled-left-col-block">
               <ControlLabel>{title}</ControlLabel>
             </Col>
             <Col sm={7}>
@@ -44,18 +36,15 @@ export default class RegistryEditCommon extends Component {
 
   renderTwoCheckboxes(fields) {
     let space = ' ';
-    let buttonDisabledOn = fields.disabled.value ? 'info' : 'default';
-    let buttonDisabledOff = fields.disabled.value ? 'default' : 'info';
-    let buttonReadOn = fields.readOnly.value ? 'info' : 'default';
-    let buttonReadOff = fields.readOnly.value ? 'default' : 'info';
+    let buttonDisabledOn = fields.disabled.value ? 'primary' : 'default';
+    let buttonDisabledOff = fields.disabled.value ? 'default' : 'primary';
+    let buttonReadOn = fields.readOnly.value ? 'primary' : 'default';
+    let buttonReadOff = fields.readOnly.value ? 'default' : 'primary';
     return (
       <FormGroup>
         <Grid>
           <Row slassName="show-grid">
-            <Col sm={2}>
-              {space}
-            </Col>
-            <Col sm={3}>
+            <Col sm={2} className="pulled-left-col-block">
               <ButtonGroup>
                 <Button
                   onClick={()=>(fields.disabled.onChange(true))}
@@ -68,7 +57,7 @@ export default class RegistryEditCommon extends Component {
               </ButtonGroup>
               <br/><br/>
             </Col>
-            <Col sm={4}>
+            <Col sm={2}>
               <ButtonGroup>
                 <Button
                   onClick={()=>(fields.readOnly.onChange(true))}
@@ -88,22 +77,20 @@ export default class RegistryEditCommon extends Component {
 
   renderButtonSubmit(valid) {
     return (
-      <ButtonToolbar>
-        <Button bsSize="large"
-                bsStyle="info"
+      <div className="form-group text-right submit-buttons-block">
+        <Button bsStyle="primary"
                 disabled={!valid}
                 type="submit"
         >
-          Submit
+          OK
         </Button>
-        <Button bsSize="large"
-                bsStyle="info"
+        <span>&nbsp;&nbsp;</span>
+        <Button bsStyle="default"
                 onClick={this.props.onHide}
         >
           Cancel
         </Button>
-
-      </ButtonToolbar>
+      </div>
     );
   }
 }

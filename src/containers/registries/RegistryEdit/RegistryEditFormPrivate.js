@@ -45,7 +45,7 @@ export default class RegistryEditFormPrivate extends RegistryEditCommon {
         {this.renderInput('password', 'Password', 'Password', fields.password)}
         {this.renderInput('text', 'Url', 'Url', fields.url)}
         {this.renderTwoCheckboxes(fields)}
-        <hr/>
+        <hr className="bottom-form-separator"/>
         {this.renderButtonSubmit(valid)}
       </form>
     );
