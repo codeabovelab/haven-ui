@@ -27,6 +27,7 @@ export default class ImageInfo extends Component {
       let i = imageName.indexOf('/');
       let registry = imageName.substring(0, i);
       let name = imageName.substring(i + 1);
+      let labelKeys = Object.keys(img.labels || {});
       return (
         <div>
           <div>
@@ -35,12 +36,15 @@ export default class ImageInfo extends Component {
           </div>
           <div>
             <p>Created: {window.TimeUtils.format(img.created)}</p>
-            Labels:
-            <ul className="list-group">
-              {img.labels && Object.keys(img.labels).map((key) => (
-                <li key={key} className="list-group-item">{key} = {img.labels[key]}</li>
-              ))}
-            </ul>
+            {labelKeys.length > 0 && (
+              <span>Labels:
+                <ul className="list-group">
+                  {labelKeys.map((key) => (
+                    <li key={key} className="list-group-item">{key} = {img.labels[key]}</li>
+                  ))}
+                </ul>
+              </span>
+            )}
           </div>
         </div>
       );
