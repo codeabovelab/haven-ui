@@ -3,7 +3,7 @@ import _ from 'lodash';
 
 const initialState = {
   byRegistry: {},
-  all: [],
+  all: null /* it mean that images not yet loaded */,
   tagInfo: {}
 };
 

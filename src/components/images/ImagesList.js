@@ -76,7 +76,7 @@ export default class ImagesList extends Component {
       )}
       {this.props.data && this.props.data.length === 0 && (
         <div className="alert alert-info">
-          Loading...
+          No Images yet
         </div>
       )}
       </Panel>
