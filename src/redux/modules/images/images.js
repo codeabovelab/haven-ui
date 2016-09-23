@@ -3,7 +3,8 @@ import _ from 'lodash';
 
 const initialState = {
   byRegistry: {},
-  all: []
+  all: [],
+  tagInfo: {}
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -21,6 +22,26 @@ export default function reducer(state = initialState, action = {}) {
         [action.id]: {
           ...state[action.id],
           ...action.result
+        }
+      };
+    case ACTIONS.LOAD_IMAGE_TAG_INFO_SUCCESS:
+      return {
+        ...state,
+        tagInfo: {
+          ...state.tagInfo,
+          [action.image]: {
+            ...action.result
+          }
+        }
+      };
+    case ACTIONS.LOAD_IMAGE_TAG_INFO_FAIL:
+      return {
+        ...state,
+        tagInfo: {
+          ...state.tagInfo,
+          [action.image]: {
+            error: action.error
+          }
         }
       };
     default:
@@ -55,6 +76,15 @@ export function loadImageTags(imageId) {
     promise: (client) => client.get('/ui/api/images/tags', {params: {imageName: imageId }})
   };
 }
+
+export function loadImageTagInfo(imageName) {
+  return {
+    types: [ACTIONS.LOAD_IMAGE_TAG_INFO, ACTIONS.LOAD_IMAGE_TAG_INFO_SUCCESS, ACTIONS.LOAD_IMAGE_TAG_INFO_FAIL],
+    image: imageName,
+    promise: (client) => client.get('/ui/api/images/image', {params: {fullImageName: imageName }})
+  };
+}
+
 
 export function searchImages(query, page, size, registry) {
   return {
