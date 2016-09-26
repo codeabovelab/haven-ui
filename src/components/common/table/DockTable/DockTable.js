@@ -26,7 +26,7 @@ export default class DockTable extends Component {
   //general
   total = 0; // before filtering
   pagesTotal = 0; // before filtering
-  pageSize = 10;
+  pageSize = 20;
   columnsMap = {};
 
 
