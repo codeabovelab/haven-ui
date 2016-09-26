@@ -93,3 +93,21 @@ export function searchImages(query, page, size, registry) {
     promise: (client) => client.get('/ui/api/images/search', {params: {registry: registry, query: query, page: page, size: size}})
   };
 }
+
+export function deleteImages(arg) {
+  let body = {
+    type: "job.removeImageJob",
+    parameters: {
+    //TODO after debug "dryRun":false,
+      retainLast: arg.retainLast,
+      nodes: arg.nodes,
+      fullImageName: arg.name,
+      fromRegistry: arg.fromRegistry
+    }
+  };
+  return {
+    types: [ACTIONS.DELETE_IMAGES, ACTIONS.DELETE_IMAGES_SUCCESS, ACTIONS.DELETE_IMAGES_FAIL],
+    id: 'delete',
+    promise: (client) => client.post('/ui/api/jobs/', {data: body})
+  };
+}
