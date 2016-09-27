@@ -16,7 +16,8 @@ import {list as listApplications} from 'redux/modules/application/application';
     clusters: state.clusters,
     nodes: state.nodes,
     lastEvents: state.events.last,
-    alerts: state.events.alerts
+    alerts: state.events.alerts,
+    application: state.application.applicationsList
   }), {loadClusters, loadNodes, countEvents, listApplications})
 export default class Dashboard extends Component {
   static propTypes = {
@@ -24,6 +25,7 @@ export default class Dashboard extends Component {
     clusters: PropTypes.object,
     alerts: PropTypes.object,
     nodes: PropTypes.object,
+    application: PropTypes.object,
     loadClusters: PropTypes.func.isRequired,
     loadNodes: PropTypes.func.isRequired,
     countEvents: PropTypes.func.isRequired,
@@ -69,7 +71,7 @@ export default class Dashboard extends Component {
   }
 
   render() {
-    const {lastEvents, alerts} = this.props;
+    const {lastEvents, alerts, application} = this.props;
     let events = lastEvents ? lastEvents.slice(0, 20) : null;
 
     const styles = require('./Dashboard.scss');
@@ -142,8 +144,15 @@ export default class Dashboard extends Component {
     if (this.props.clusters) {
       clusters = clustersList.map((element)=> {
         let alertsCount = alerts ? alerts[element.name] : 0;
-        return Object.assign(element, alertsCount);
+        let applicationsCount;
+        if(application && application[element.name]) {
+          applicationsCount = _.size(application[element.name]);
+        } else {
+          applicationsCount = 0;
+        }
+        return Object.assign(element, alertsCount, {applicationsCount});
       });
+      console.log(clusters);
     }
 
     return (

@@ -47,7 +47,7 @@ export default (store) => {
         <Route name="Nodes" path="nodes" component={NodesPanel}/>
         <Route name="Images" path="images" component={ImagesPanel}/>
         <Route name="Registries" path="registries" component={RegistriesPanel}/>
-        <Route name="Applications" path="application" component={ApplicationPanel}/>
+        <Route name="Applications" path="clusters/:name/applications" component={ApplicationPanel}/>
         <Route name="" path="application/:name" component={ApplicationDetailsPanel}/>
       </Route>
 

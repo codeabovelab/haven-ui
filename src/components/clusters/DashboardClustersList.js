@@ -42,6 +42,11 @@ export default class DashboardClustersList extends Component {
     {
       name: 'alertsCount',
       label: '# of Alerts'
+    },
+    {
+      name: 'applicationsCount',
+      label: '# of Applications',
+      render: this.applicationsRender
     }
   ];
 
@@ -109,6 +114,14 @@ export default class DashboardClustersList extends Component {
       <td key="nodes">
         <OnOff on={cluster.nodes.on}
                off={cluster.nodes.off} />
+      </td>
+    );
+  }
+
+  applicationsRender(cluster) {
+    return (
+      <td key="applicationsCount">
+        <Link to={`/clusters/${cluster.name}/applications`}>{cluster.applicationsCount}</Link>
       </td>
     );
   }
