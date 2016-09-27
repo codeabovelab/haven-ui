@@ -3,4 +3,6 @@ import {connect} from 'react-redux';
 import {DockTable, NodesList, StatisticsPanel} from '../../../components';
 
 export default class ApplicationPanel extends Component {
+
+
 }

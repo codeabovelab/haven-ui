@@ -5,10 +5,7 @@ export default function reducer(state = {}, action = {}) {
   console.log(action.type);
   switch (action.type) {
     case ACTIONS.LIST_SUCCESS:
-      console.log('list success!');
-      console.log(action.result);
       let namedApplications = _.keyBy(action.result, 'name');
-      console.log(namedApplications);
       return {
         ...state,
         applicationsList: {
@@ -19,13 +16,13 @@ export default function reducer(state = {}, action = {}) {
         }
       };
     case ACTIONS.LOAD_SUCCESS:
+      let namedApplication = _.keyBy(action.result, 'name');
       return {
         ...state,
-        clusters: {
-          ...state[action.clusterName],
-          applications: {
-            ...state[action.applicationName],
-            ...action.result
+        applicationsList: {
+          ...state.applicationsList,
+          [action.clusterName]: {
+            ...namedApplication
           }
         }
       };
@@ -106,6 +103,8 @@ export function deleteApplication(clusterId, appId) {
 export function load(clusterId, appId) {
   return {
     types: [ACTIONS.LOAD, ACTIONS.LOAD_SUCCESS, ACTIONS.LOAD_FAIL],
+    clusterName: clusterId,
+    applicationName: appId,
     promise: (client) => client.get(`/ui/api/application/${clusterId}/${appId}`)
   };
 }

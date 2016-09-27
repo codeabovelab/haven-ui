@@ -6,7 +6,6 @@ import { Link, browserHistory } from 'react-router';
 import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, LoadingDialog, StatisticsPanel, ActionMenu} from '../../../components/index';
 import {ContainerCreate, ContainerScale} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
-import {list as listApplications} from 'redux/modules/application/application';
 import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar} from 'react-bootstrap';
 
 
@@ -77,8 +76,7 @@ function renderTdImage(row) {
     startContainer: containerActions.start,
     stopContainer: containerActions.stop,
     restartContainer: containerActions.restart,
-    removeContainer: containerActions.remove,
-    listApplications: listApplications
+    removeContainer: containerActions.remove
   })
 export default class ClusterDetailsPanel extends Component {
   static propTypes = {
@@ -90,8 +88,7 @@ export default class ClusterDetailsPanel extends Component {
     startContainer: PropTypes.func.isRequired,
     stopContainer: PropTypes.func.isRequired,
     restartContainer: PropTypes.func.isRequired,
-    removeContainer: PropTypes.func.isRequired,
-    listApplications: PropTypes.func.isRequired
+    removeContainer: PropTypes.func.isRequired
   };
 
   statisticsMetrics = [
@@ -152,12 +149,11 @@ export default class ClusterDetailsPanel extends Component {
   ];
 
   componentDidMount() {
-    const {loadContainers, listApplications, params: {name}} = this.props;
+    const {loadContainers, params: {name}} = this.props;
 
     this.state = {};
 
     loadContainers(name);
-    listApplications(name);
 
     $('.input-search').focus();
   }
