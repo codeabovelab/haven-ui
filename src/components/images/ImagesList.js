@@ -31,14 +31,19 @@ export default class ImagesList extends Component {
       label: 'Downloaded Tags',
       width: '20%',
       render: (image) => {
-        let popoverRender = (tag) => (
+        let popoverRender = (img) => (
           <Popover id="image-info-popover">
-            <ImageInfo image={image.name + ":" + tag} />
+            <ImageInfo image={image.name + (img.tags.length ? (":" + img.tags[0]) : "")} />
           </Popover>
         );
+        let title = (img) => `id: ${img.id}\nname: ${img.tags.map(tag => image.name + ":" + tag)}`;
         return (
           <td key="tags">
-            <Chain data={image.tags} popoverPlacement="right" popoverRender={popoverRender}/>
+            <Chain data={image.ids || []}
+              popoverPlacement="right"
+              popoverRender={popoverRender}
+              render={(img) => (<span title={title(img)}>{String(img.tags)}</span>)}
+            />
           </td>
         );
       }
@@ -47,7 +52,18 @@ export default class ImagesList extends Component {
       name: 'nodes',
       label: 'Nodes',
       width: '20%',
-      render: (image) => (<td key="nodes"><Chain data={image.nodes}/></td>)
+      render: (image) => {
+        let data = image.ids || [];
+        if (data.length) {
+          data = data.map(img => img.nodes)
+            .reduce((a, b) => a.concat(b))
+            .sort()
+            .reduce((a, b) => {if (a[a.length - 1] !== b) a.push(b); return a;}, []);
+        }
+        return (<td key="nodes">
+          <Chain data={data} />
+        </td>);
+      }
     },
     {
       name: 'Actions',
