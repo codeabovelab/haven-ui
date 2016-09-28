@@ -14,7 +14,8 @@ export default class LoadingDialog extends Component {
   static propTypes = {
     containers: PropTypes.object.isRequired,
     containersUI: PropTypes.object.isRequired,
-    container: PropTypes.object.isRequired,
+    container: PropTypes.object,
+    application: PropTypes.object,
     name: PropTypes.string.isRequired,
     actionKey: PropTypes.string.isRequired,
     longTermAction: PropTypes.func.isRequired,
@@ -32,8 +33,9 @@ export default class LoadingDialog extends Component {
 
   componentDidMount() {
     let result;
-    const {container, name, longTermAction} = this.props;
-    longTermAction(container).catch((response) =>{
+    const {container, name, longTermAction, application} = this.props;
+    let funcRequest = application ? longTermAction(name, application.name) : longTermAction(container);
+    funcRequest.catch((response) =>{
       this.setState({
         longTermActionResponse: response
       });
@@ -49,14 +51,16 @@ export default class LoadingDialog extends Component {
 
   componentWillUpdate(nextProps, nextState) {
     let message;
-    const {actionKey, container} = this.props;
+    const {actionKey, container, application} = this.props;
+    let entity = container ? container : application;
+    let entityType = container ? 'Container ' : 'Application ';
     const status = nextState.longTermActionResponse.status || nextState.longTermActionResponse.code;
     switch (status) {
       case 200:
-        message = 'Container ' + "\"" + container.name + "\"" + ' successfully ' + actionKey;
+        message = entityType + "\"" + entity.name + "\"" + ' successfully ' + actionKey;
         break;
       case 304:
-        message = 'Container ' + "\"" + container.name + "\"" + ' was not modified';
+        message = entityType + "\"" + entity.name + "\"" + ' was not modified';
         break;
       default:
         message = 'Error: ' + nextState.longTermActionResponse.message;
@@ -65,7 +69,7 @@ export default class LoadingDialog extends Component {
   }
 
   render() {
-    const {container} = this.props;
+    const {container, application} = this.props;
     let error;
     let s = require('./LoadingDialog.scss');
     let response = this.state.longTermActionResponse;
@@ -79,7 +83,7 @@ export default class LoadingDialog extends Component {
       <Dialog show
               hideCancel
               size="large"
-              title={"Container " + "\"" + container.name + "\""}
+              title={ container ? "Container " + "\"" + container.name + "\"" : "Application " + "\"" + application.name + "\""}
               okTitle="Close"
               onSubmit={this.props.onHide}
               onHide={this.props.onHide}

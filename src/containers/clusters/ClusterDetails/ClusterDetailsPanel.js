@@ -4,7 +4,7 @@ import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import { Link, browserHistory } from 'react-router';
 import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, LoadingDialog, StatisticsPanel, ActionMenu} from '../../../components/index';
-import {ContainerCreate, ContainerScale} from '../../../containers/index';
+import {ApplicationCreate} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
 import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar} from 'react-bootstrap';
 
@@ -283,6 +283,7 @@ export default class ClusterDetailsPanel extends Component {
   }
 
   additionalData(rows) {
+    console.log(rows);
     if (rows) {
       rows.forEach(row => {
         row.__attributes = {'data-id': row.id};
