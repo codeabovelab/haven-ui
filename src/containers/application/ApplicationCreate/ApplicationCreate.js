@@ -1,60 +1,47 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
-import {load, create, loadNodes} from 'redux/modules/clusters/clusters';
-import {create as createNode} from 'redux/modules/nodes/nodes';
+import {list, uploadFile} from 'redux/modules/application/application';
 import {createValidator, required} from 'utils/validation';
 import {Dialog} from 'components';
 import {FormGroup, FormControl, ControlLabel, HelpBlock, Alert} from 'react-bootstrap';
 
 @connect(state => ({
-  createError: state.clustersUI.createError
-}), {create, load, createNode, loadNodes})
+  createError: state.application.uploadFileError
+}), {list, uploadFile})
 @reduxForm({
-  form: 'ClusterAdd',
+  form: 'ApplicationCreate',
   fields: [
     'name',
-    'description',
-    'assignedNodes'
+    'file'
   ],
   validate: createValidator({
-    name: [required]
+    name: [required],
+    file: [required]
   })
 })
 export default class ApplicationCreate extends Component {
   static propTypes = {
     title: PropTypes.string.isRequired,
-    create: PropTypes.func.isRequired,
-    createNode: PropTypes.func.isRequired,
-    load: PropTypes.func.isRequired,
-    loadNodes: PropTypes.func.isRequired,
+    clusterName: PropTypes.string.isRequired,
+    list: PropTypes.func.isRequired,
+    uploadFile: PropTypes.func.isRequired,
+    loadContainers: PropTypes.func.isRequired,
     fields: PropTypes.object.isRequired,
     handleSubmit: PropTypes.func,
-    orphanNodes: PropTypes.array,
     resetForm: PropTypes.func,
     submitting: PropTypes.bool,
     createError: PropTypes.string,
     valid: PropTypes.bool.isRequired,
-    cluster: PropTypes.any,
-    description: PropTypes.any,
     onHide: PropTypes.func.isRequired
   };
 
   onSubmit() {
-    const { fields } = this.props;
-    return this.props.create(fields.name.value, {"description": fields.description.value}).then(() => {
-      if (typeof(fields.assignedNodes.value) !== 'undefined' && fields.assignedNodes.value.length > 0) {
-        fields.assignedNodes.value.map(function createNode(node) {
-          if (typeof(node) !== 'undefined') {
-            let data = {name: node, cluster: fields.name.value};
-            this.props.createNode(data);
-          }
-        }.bind(this));
-      }
-    }).then(() =>{
-      window.setTimeout(this.props.load(), 2000);
-      this.props.loadNodes('orphans');
-    }).then(() =>{
+    const {fields, clusterName} = this.props;
+    debugger;
+    return this.props.uploadFile(clusterName, fields.name.value, fields.file.value[0]).then(() => {
+      this.props.list(clusterName);
+    }).then(() => {
       this.props.onHide();
     })
       .catch((response) => {
@@ -63,9 +50,8 @@ export default class ApplicationCreate extends Component {
   }
 
   render() {
-    const { fields } = this.props;
-    let { cluster, description } = this.props;
-    const orphanNodes = this.props.orphanNodes;
+    const {fields} = this.props;
+    let {clusterName} = this.props;
     return (
       <Dialog show
               size="large"
@@ -88,7 +74,7 @@ export default class ApplicationCreate extends Component {
 
             <FormControl type="text"
                          {...fields.name}
-                         defaultValue = {cluster === 'undefined' ? '' : cluster}
+                         name="name"
             />
 
             <FormControl.Feedback />
@@ -97,51 +83,24 @@ export default class ApplicationCreate extends Component {
             )}
           </FormGroup>
 
-          <FormGroup validationState={fields.description.error ? "error" : ""}>
-            <ControlLabel>Description</ControlLabel>
+          <FormGroup validationState={fields.file.error ? "error" : ""}>
+            <ControlLabel>Compose File</ControlLabel>
 
-            <FormControl type="text"
-                         {...fields.description}
-                         defaultValue = {description === 'undefined' ? '' : description}
+            <FormControl type="file"
+                         webkitdirectory
+                         name="file"
+                         multiple
+                         {...fields.file}
+                         value={null}
             />
 
             <FormControl.Feedback />
-
-            {fields.description.error && (
-              <HelpBlock>{fields.description.error}</HelpBlock>
-            )}
-          </FormGroup>
-          <FormGroup className={typeof(this.props.cluster) === 'undefined' ? '' : 'invisible'}
-                     validationState={fields.assignedNodes.error ? "error" : ""}>
-            <ControlLabel>Assigned Nodes</ControlLabel>
-            <FormControl multiple componentClass="select" {...fields.assignedNodes} >
-              {
-                orphanNodes.map(function listNodes(node, i) {
-                  if (typeof(node) !== 'undefined' && node.trim() !== '') {
-                    return <option key={i} value={node}>{node}</option>;
-                  }
-                })
-              }
-            </FormControl>
-            <FormControl.Feedback />
-            {fields.assignedNodes.error && (
-              <HelpBlock>{fields.assignedNodes.error}</HelpBlock>
+            {fields.file.error && (
+              <HelpBlock>{fields.file.error}</HelpBlock>
             )}
           </FormGroup>
         </form>
       </Dialog>
     );
-  }
-
-  addCluster() {
-    const {create, load, fields, resetForm} = this.props;
-
-    return create({name: fields.name.value})
-      .then(() => {
-        resetForm();
-        load();
-        window.simpleModal.close();
-      })
-      .catch();
   }
 }

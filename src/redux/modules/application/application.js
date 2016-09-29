@@ -49,22 +49,22 @@ export default function reducer(state = {}, action = {}) {
     case ACTIONS.UPLOAD_FILE:
       return {
         ...state,
-        getComposeError: null
+        uploadFileError: null
       };
     case ACTIONS.UPLOAD_FILE_FAIL:
       return {
         ...state,
-        getComposeError: action.error.message
+        uploadFileError: action.error.message
       };
     case ACTIONS.UPLOAD_STREAM:
       return {
         ...state,
-        getComposeError: null
+        uploadStreamError: null
       };
     case ACTIONS.UPLOAD_STREAM_FAIL:
       return {
         ...state,
-        getComposeError: action.error.message
+        uploadStreamError: action.error.message
       };
     case ACTIONS.GET_INIT_FILE_SUCCESS:
       return {
@@ -130,10 +130,12 @@ export function uploadStream(clusterId, appId, resource) {
   };
 }
 
-export function uploadFile(clusterId, appId, pathToFile) {
+export function uploadFile(clusterId, appId, file) {
+  let fd = new FormData();
+  fd.append( "file", file);
   return {
     types: [ACTIONS.UPLOAD_FILE, ACTIONS.UPLOAD_FILE_SUCCESS, ACTIONS.UPLOAD_FILE_FAIL],
-    promise: (client) => client.post(`/ui/api/application/${clusterId}/${appId}/compose`).attach('composeFile', pathToFile)
+    promise: (client) => client.post(`/ui/api/application/${clusterId}/${appId}/compose/mp`, {data: fd})
   };
 }
 

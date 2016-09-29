@@ -6,6 +6,7 @@ import { Link, browserHistory } from 'react-router';
 import {DockTable, LoadingDialog, ActionMenu} from '../../../components/index';
 import { asyncConnect } from 'redux-async-connect';
 import {Button, ButtonToolbar, Panel, ProgressBar} from 'react-bootstrap';
+import {ApplicationCreate} from '../../../containers/index';
 
 @asyncConnect([{
   promise: ({store: {dispatch, getState}}) => {
@@ -329,8 +330,9 @@ export default class ApplicationPanel extends Component {
         this.setState({
           actionDialog: (
             <ApplicationCreate title="Create New Application"
-                             clusterName={name}
-                             onHide={this.onHideDialog.bind(this)}
+                               clusterName={name}
+                               loadContainers={this.props.loadContainers}
+                               onHide={this.onHideDialog.bind(this)}
             />
           )
         });
