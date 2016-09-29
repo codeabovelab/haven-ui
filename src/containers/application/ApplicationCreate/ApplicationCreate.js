@@ -51,7 +51,8 @@ export default class ApplicationCreate extends Component {
 
   render() {
     const {fields} = this.props;
-    let {clusterName} = this.props;
+    const fileInputVal = $('#fileInput').val();
+    const fileName = fileInputVal ? fileInputVal.match(/[^\\\/]+$/g) : '';
     return (
       <Dialog show
               size="large"
@@ -84,16 +85,16 @@ export default class ApplicationCreate extends Component {
           </FormGroup>
 
           <FormGroup validationState={fields.file.error ? "error" : ""}>
-            <ControlLabel>Compose File</ControlLabel>
-
+            <ControlLabel className="btn btn-default btn-file">
+            Choose Compose File
             <FormControl type="file"
-                         webkitdirectory
                          name="file"
-                         multiple
                          {...fields.file}
                          value={null}
+                         id="fileInput"
             />
-
+            </ControlLabel>
+            <span className="upload-file-name">{fields.file.value && fileName}</span>
             <FormControl.Feedback />
             {fields.file.error && (
               <HelpBlock>{fields.file.error}</HelpBlock>

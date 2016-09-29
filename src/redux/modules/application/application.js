@@ -131,11 +131,11 @@ export function uploadStream(clusterId, appId, resource) {
 }
 
 export function uploadFile(clusterId, appId, file) {
-  let fd = new FormData();
-  fd.append( "file", file);
+  let formData = new FormData();
+  formData.append( "file", file);
   return {
     types: [ACTIONS.UPLOAD_FILE, ACTIONS.UPLOAD_FILE_SUCCESS, ACTIONS.UPLOAD_FILE_FAIL],
-    promise: (client) => client.post(`/ui/api/application/${clusterId}/${appId}/compose/mp`, {data: fd})
+    promise: (client) => client.post(`/ui/api/application/${clusterId}/${appId}/compose/mp`, {data: formData})
   };
 }
 
