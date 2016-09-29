@@ -8,18 +8,25 @@ import {loadImageTagInfo} from 'redux/modules/images/images';
   }), {loadImageTagInfo})
 export default class ImageInfo extends Component {
   static propTypes = {
-    image: PropTypes.string.isRequired,
+    imageName: PropTypes.string,
+    imageId: PropTypes.string,
     tagInfo: PropTypes.object.isRequired,
     loadImageTagInfo: PropTypes.func.isRequired
   };
 
   componentDidMount() {
-    this.props.loadImageTagInfo(this.props.image);
+    this.props.loadImageTagInfo(this.props.imageId || this.props.imageName);
   }
 
   render() {
-    let imageName = this.props.image;
-    let img = this.props.tagInfo[this.props.image];
+    let imageId = this.props.imageId;
+    let imageName = this.props.imageName;
+    //some time images does not has name and then backend uses id as it name
+    if (!imageName || imageName === imageId) {
+      let begin = imageId.indexOf(':') + 1;
+      imageName = imageId.substring(begin, begin + 12 /*docker use 12digits of id as name*/);
+    }
+    let img = this.props.tagInfo[this.props.imageId || this.props.imageName];
     if (img && img.error) {
       return (<span>Error: <br/> {String(img.error.message || img.error)}</span>);
     }

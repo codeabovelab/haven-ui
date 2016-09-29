@@ -18,7 +18,13 @@ export default class ImagesList extends Component {
       name: 'registry',
       label: 'Registry Address',
       width: '0%',
-      sortable: true
+      sortable: true,
+      render: (img) => {
+        let registry = img.registry;
+        if (registry == null) return "[no registry]";
+        if (registry === "") return "[docker hub]";
+        return registry;
+      }
     },
     {
       name: 'name',
@@ -33,7 +39,7 @@ export default class ImagesList extends Component {
       render: (image) => {
         let popoverRender = (img) => (
           <Popover id="image-info-popover">
-            <ImageInfo image={image.name + (img.tags.length ? (":" + img.tags[0]) : "")} />
+            <ImageInfo imageName={img.tags.length ? (image.name + ":" + img.tags[0]) : null} imageId={img.id} />
           </Popover>
         );
         let title = (img) => `id: ${img.id}\nname: ${img.tags.map(tag => image.name + ":" + tag)}`;
@@ -42,7 +48,7 @@ export default class ImagesList extends Component {
             <Chain data={image.ids || []}
               popoverPlacement="right"
               popoverRender={popoverRender}
-              render={(img) => (<span title={title(img)}>{String(img.tags)}</span>)}
+              render={(img) => (<span title={title(img)}>{String(img.tags) || "[untagged]"}</span>)}
             />
           </td>
         );
