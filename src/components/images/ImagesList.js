@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router';
-import {DockTable, OnOff, Chain, ImageInfo} from '../index';
+import {DockTable, OnOff, Chain, ImageInfo, NodeInfo} from '../index';
 import {deleteImages} from 'redux/modules/images/images';
 import {Label, Badge, ButtonToolbar, DropdownButton, MenuItem, Panel, Popover, Button, ProgressBar, Glyphicon} from 'react-bootstrap';
 
@@ -61,7 +61,10 @@ export default class ImagesList extends Component {
             .reduce((a, b) => {if (a[a.length - 1] !== b) a.push(b); return a;}, []);
         }
         return (<td key="nodes">
-          <Chain data={data} />
+          <Chain data={data}
+            popoverPlacement="right"
+            popoverRender={(node) => (<Popover id="node-info-popover"><NodeInfo node={node} /></Popover>)}
+          />
         </td>);
       }
     },
