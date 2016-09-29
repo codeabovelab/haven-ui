@@ -26,6 +26,7 @@ export ContainerDetails from './containers/ContainerDetails/ContainerDetails';
 export ContainerStatistics from './containers/ContainerStatistics/ContainerStatistics';
 export LoadingDialog from './common/LoadingDialog/LoadingDialog';
 
+export EventLog from './common/EventLog/EventLog';
 export PropertyGrid from './common/PropertyGrid/PropertyGrid';
 
 export DashboardNodesList from './nodes/DashboardNodesList/DashboardNodesList';
