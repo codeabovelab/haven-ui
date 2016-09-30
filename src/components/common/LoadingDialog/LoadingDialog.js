@@ -20,7 +20,7 @@ export default class LoadingDialog extends Component {
     actionKey: PropTypes.string.isRequired,
     longTermAction: PropTypes.func.isRequired,
     loadContainers: PropTypes.func.isRequired,
-
+    listApps: PropTypes.func,
     onHide: PropTypes.func.isRequired
   };
 
@@ -41,7 +41,7 @@ export default class LoadingDialog extends Component {
       });
     })
       .then((response) => {
-        this.props.loadContainers(name);
+        application ? this.props.listApps(name) : this.props.loadContainers(name);
         result = response === null ? 'Action has no effect' : response._res;
         this.setState({
           longTermActionResponse: result

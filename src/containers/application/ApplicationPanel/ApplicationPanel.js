@@ -252,6 +252,7 @@ export default class ApplicationPanel extends Component {
                                longTermAction={this.props.startApp}
                                loadContainers={this.props.loadContainers}
                                actionKey="started"
+                               listApps={this.props.listApps}
                 />
               )
             });
@@ -269,6 +270,7 @@ export default class ApplicationPanel extends Component {
                                longTermAction={this.props.stopApp}
                                loadContainers={this.props.loadContainers}
                                actionKey="stopped"
+                               listApps={this.props.listApps}
                 />
               )
             });
@@ -286,6 +288,7 @@ export default class ApplicationPanel extends Component {
                                longTermAction={this.props.deleteApp}
                                loadContainers={this.props.loadContainers}
                                actionKey="deleted"
+                               listApps={this.props.listApps}
                 />
               )
             });
@@ -303,6 +306,7 @@ export default class ApplicationPanel extends Component {
                                longTermAction={this.props.getComposeApp}
                                loadContainers={this.props.loadContainers}
                                actionKey="composed"
+                               listApps={this.props.listApps}
                 />
               )
             });
@@ -320,6 +324,7 @@ export default class ApplicationPanel extends Component {
                                longTermAction={this.props.getInitFile}
                                loadContainers={this.props.loadContainers}
                                actionKey="returned init file"
+                               listApps={this.props.listApps}
                 />
               )
             });
