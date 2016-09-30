@@ -131,3 +131,11 @@
 .top-form-separator {
   margin: 15px 0 20px 0;
 }
+
+.btn-file input[type=file] {
+  display: none;
+}
+
+.upload-file-name {
+  margin-left: 20px;
+}

@@ -1,0 +1,30 @@
+@import "../../../css/variables";
+
+.applications {
+  div {
+    table {
+      td {
+        background-color: lighten($brand-warning, 35%);
+        &[data-column="status"] {
+          color: #f00;
+          text-transform: capitalize;
+        }
+      }
+      td[data-column="name"] {
+        width: 15%;
+      }
+      td[data-column="containers"] {
+        width: 20%;
+      }
+      td[data-column="creatingDate"] {
+        width: 20%;
+      }
+      td[data-column="initFile"] {
+        width: 30%;
+      }
+      td:last-child {
+        width: 11rem;
+      }
+    }
+  }
+}

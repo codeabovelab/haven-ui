@@ -283,6 +283,7 @@ export default class ClusterDetailsPanel extends Component {
   }
 
   additionalData(rows) {
+    console.log(rows);
     if (rows) {
       rows.forEach(row => {
         row.__attributes = {'data-id': row.id};

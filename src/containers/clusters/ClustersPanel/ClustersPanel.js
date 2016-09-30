@@ -2,34 +2,40 @@ import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 import {connect} from 'react-redux';
 import { Link } from 'react-router';
+import _ from 'lodash';
 import {DockTable, ClustersList, StatisticsPanel, Dialog, EventLog} from 'components';
 import {ClusterAdd, ClusterConfig, ClusterInformation} from '../../index';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar} from 'react-bootstrap';
 import {count as countEvents} from 'redux/modules/events/events';
+import {list as listApplications} from 'redux/modules/application/application';
 
 @connect(
   state => ({
     clusters: state.clusters,
     clustersIds: state.clustersUI.list,
     events: state.events,
-    alerts: state.events.alerts
+    alerts: state.events.alerts,
+    application: state.application.applicationsList
   }), {
     loadClusters: clusterActions.load,
     deleteCluster: clusterActions.deleteCluster,
     loadNodes: clusterActions.loadNodes,
-    countEvents
+    countEvents,
+    listApplications
   }
 )
 export default class ClustersPanel extends Component {
   static propTypes = {
     clusters: PropTypes.object,
+    application: PropTypes.object,
     clustersIds: PropTypes.array,
     loadClusters: PropTypes.func.isRequired,
     deleteCluster: PropTypes.func.isRequired,
     loadNodes: PropTypes.func.isRequired,
     events: PropTypes.object,
     alerts: PropTypes.object,
-    countEvents: PropTypes.func.isRequired
+    countEvents: PropTypes.func.isRequired,
+    listApplications: PropTypes.func.isRequired
   };
 
   statisticsMetrics = [
@@ -56,28 +62,36 @@ export default class ClustersPanel extends Component {
   ];
 
   componentDidMount() {
+    const {loadClusters, loadNodes, countEvents, listApplications} = this.props;
     this.state = {};
     let clusterNames = [];
-    this.props.loadClusters().then(() => {
+    loadClusters().then(() => {
       for (let key in this.props.clusters) {
         if (typeof(this.props.clusters[key] === 'Cluster')) {
           clusterNames.push('cluster:' + key);
+          listApplications(key);
         }
       }
-      this.props.countEvents('bus.cluman.errors', clusterNames);
+      countEvents('bus.cluman.errors', clusterNames);
     });
-    this.props.loadNodes('orphans');
+    loadNodes('orphans');
 
     $('.input-search').focus();
   }
 
   render() {
-    const {clusters, clustersIds, alerts} = this.props;
+    const {clusters, clustersIds, alerts, application} = this.props;
     let clustersList = clustersIds !== null ? clustersIds.filter(id => !(['all', 'orphans'].includes(id))).map(id => clusters[id]) : null;
-    if (this.props.alerts) {
+    if (clustersList) {
       clustersList = clustersList.map((element)=> {
         let alertsCount = alerts ? alerts[element.name] : 0;
-        return Object.assign(element, alertsCount);
+        let applicationsCount;
+        if (application && application[element.name]) {
+          applicationsCount = _.size(application[element.name]);
+        } else {
+          applicationsCount = 0;
+        }
+        return Object.assign(element, alertsCount, {applicationsCount});
       });
     }
     const clustersAll = clustersIds !== null ? clustersIds.filter(id => id === 'all').map(id => clusters[id]) : null;
