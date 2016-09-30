@@ -51,6 +51,7 @@ export default class LoadingDialog extends Component {
 
   componentWillUpdate(nextProps, nextState) {
     let message;
+    let $actionResponse = $('#actionResponse');
     const {actionKey, container, application} = this.props;
     let entity = container ? container : application;
     let entityType = container ? 'Container ' : 'Application ';
@@ -58,6 +59,9 @@ export default class LoadingDialog extends Component {
     switch (status) {
       case 200:
         message = entityType + "\"" + entity.name + "\"" + ' successfully ' + actionKey;
+        if(actionKey === 'returned init file') {
+          $actionResponse.find('a').text('Download').attr('href', nextState.longTermActionResponse.xhr.responseURL);
+        }
         break;
       case 304:
         message = entityType + "\"" + entity.name + "\"" + ' was not modified';
@@ -65,7 +69,7 @@ export default class LoadingDialog extends Component {
       default:
         message = 'Error: ' + nextState.longTermActionResponse.message;
     }
-    $('#actionResponse').val(message);
+    $actionResponse.find('div').text(message);
   }
 
   render() {
@@ -99,11 +103,14 @@ export default class LoadingDialog extends Component {
           </Alert>
         )}
         {!error && (
-          <textarea readOnly
-                    className={s["loading-dialog"]}
-                    defaultValue=""
-                    id="actionResponse"
-          />
+          <div
+            className={s["loading-dialog"]}
+            defaultValue=""
+            id="actionResponse"
+          >
+            <div></div>
+            <a>&nbsp;</a>
+          </div>
         )}
       </Dialog>
     );

@@ -69,11 +69,11 @@ export default function reducer(state = {}, action = {}) {
     case ACTIONS.GET_INIT_FILE_SUCCESS:
       return {
         ...state,
-        clusters: {
-          ...state[action.clusterName],
-          applications: {
+        initFiles: {
+          ...state.initFiles,
+          [action.applicationName]: {
             ...state[action.applicationName],
-            initFile: {...action.result}
+            ...action.result
           }
         }
       };
