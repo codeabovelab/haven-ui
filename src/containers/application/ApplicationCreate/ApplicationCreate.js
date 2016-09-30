@@ -36,21 +36,37 @@ export default class ApplicationCreate extends Component {
     onHide: PropTypes.func.isRequired
   };
 
+  constructor(...params) {
+    super(...params);
+    this.state = {
+      creationLogVisible: ''
+    };
+  }
+
   onSubmit() {
     const {fields, clusterName} = this.props;
-    debugger;
-    return this.props.uploadFile(clusterName, fields.name.value, fields.file.value[0]).then(() => {
+    let $logBlock = $('#creation-log-block');
+    let $logBlockArea = $('#creation-log');
+    let $spinner = $logBlock.find('i');
+    $logBlock.show();
+    $logBlockArea.val('');
+    this.setState({
+      creationLogVisible: true
+    });
+    $spinner.show();
+    return this.props.uploadFile(clusterName, fields.name.value, fields.file.value[0]).then((response) => {
+      $logBlockArea.val(response._res.text);
       this.props.list(clusterName);
-    }).then(() => {
-      this.props.onHide();
-    })
-      .catch((response) => {
+      $spinner.hide();
+    }).catch((response) => {
+        $spinner.hide();
         throw new SubmissionError(response.message);
       });
   }
 
   render() {
     const {fields} = this.props;
+    const creationLogVisible = this.state.creationLogVisible;
     const fileInputVal = $('#fileInput').val();
     const fileName = fileInputVal ? fileInputVal.match(/[^\\\/]+$/g) : '';
     return (
@@ -60,8 +76,10 @@ export default class ApplicationCreate extends Component {
               submitting={this.props.submitting}
               allowSubmit={this.props.valid}
               onReset={this.props.resetForm}
-              onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}
-              onHide={this.props.onHide}
+              onSubmit={creationLogVisible ? this.props.onHide : this.props.handleSubmit(this.onSubmit.bind(this))}
+              onHide={creationLogVisible ? this.props.handleSubmit(this.onSubmit.bind(this)) : this.props.onHide}
+              okTitle={creationLogVisible ? "Close" : null}
+              cancelTitle={creationLogVisible ? "Again" : null}
       >
         {this.props.createError && (
           <Alert bsStyle="danger">
@@ -100,6 +118,14 @@ export default class ApplicationCreate extends Component {
               <HelpBlock>{fields.file.error}</HelpBlock>
             )}
           </FormGroup>
+          <div className="form-group" id="creation-log-block">
+            <label>Creation Log: <i className="fa fa-spinner fa-2x fa-pulse"/></label>
+            <textarea readOnly
+                      className="container-creation-log"
+                      defaultValue=""
+                      id="creation-log"
+            />
+          </div>
         </form>
       </Dialog>
     );
