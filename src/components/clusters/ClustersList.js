@@ -42,6 +42,11 @@ export default class ClustersList extends Component {
       sortable: true
     },
     {
+      name: 'applicationsCount',
+      label: '# of Applications',
+      render: this.applicationsRender
+    },
+    {
       name: 'Actions',
       width: '50px',
       render: this.actionsRender.bind(this)
@@ -155,6 +160,14 @@ export default class ClustersList extends Component {
                     actions={this.ACTIONS}
                     actionHandler={this.props.onActionInvoke.bind(this)}
         />
+      </td>
+    );
+  }
+
+  applicationsRender(cluster) {
+    return (
+      <td key="applicationsCount">
+        <Link to={`/clusters/${cluster.name}/applications`}>{cluster.applicationsCount}</Link>
       </td>
     );
   }
