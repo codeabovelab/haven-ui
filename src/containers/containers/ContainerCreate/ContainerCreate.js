@@ -224,7 +224,6 @@ export default class ContainerCreate extends Component {
                             autoFocus
                             name="image"
                             minimumInput={ 1 }
-                            cache
                             value={this.state.selectImageValue}
                             autoload
                             placeholder = "Search..."
