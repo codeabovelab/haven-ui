@@ -59,13 +59,7 @@ export default class ImagesList extends Component {
       label: 'Nodes',
       width: '20%',
       render: (image) => {
-        let data = image.ids || [];
-        if (data.length) {
-          data = data.map(img => img.nodes)
-            .reduce((a, b) => a.concat(b))
-            .sort()
-            .reduce((a, b) => {if (a[a.length - 1] !== b) a.push(b); return a;}, []);
-        }
+        let data = this.getNodes(image);
         return (<td key="nodes">
           <Chain data={data}
             popoverPlacement="right"
@@ -80,6 +74,17 @@ export default class ImagesList extends Component {
       render: (image) => this.actionsRender(image)//it hold 'this'
     }
   ];
+
+  getNodes(image) {
+    let data = image.ids || [];
+    if (data.length) {
+      data = data.map(img => img.nodes)
+        .reduce((a, b) => a.concat(b))
+        .sort()
+        .reduce((a, b) => {if (a[a.length - 1] !== b) a.push(b); return a;}, []);
+    }
+    return data;
+  }
 
   render() {
     const GROUP_BY_SELECT = ['registry', 'name'];
@@ -120,7 +125,7 @@ export default class ImagesList extends Component {
           .then(() => {
             deleteImages({
               ...arg,
-              nodes: image.nodes,
+              nodes: this.getNodes(image),
               name: image.name
             });
             //TODO reload images
