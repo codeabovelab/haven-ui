@@ -2,7 +2,6 @@ import {ACTIONS} from './actions';
 import _ from 'lodash';
 
 export default function reducer(state = {}, action = {}) {
-  console.log(action.type);
   switch (action.type) {
     case ACTIONS.LIST_SUCCESS:
       let namedApplications = _.keyBy(action.result, 'name');

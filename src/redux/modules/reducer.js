@@ -32,8 +32,8 @@ export default combineReducers({
   images,
   registries,
   events,
-  application,
   //END models data
+  application,
   imagesUI,
   registriesUI,
   clustersUI,

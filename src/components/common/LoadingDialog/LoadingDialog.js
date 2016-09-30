@@ -19,7 +19,7 @@ export default class LoadingDialog extends Component {
     name: PropTypes.string.isRequired,
     actionKey: PropTypes.string.isRequired,
     longTermAction: PropTypes.func.isRequired,
-    loadContainers: PropTypes.func.isRequired,
+    loadContainers: PropTypes.func,
     listApps: PropTypes.func,
     onHide: PropTypes.func.isRequired
   };
@@ -33,7 +33,7 @@ export default class LoadingDialog extends Component {
 
   componentDidMount() {
     let result;
-    const {container, name, longTermAction, application} = this.props;
+    const {container, name, longTermAction, application, loadContainers, listApps} = this.props;
     let funcRequest = application ? longTermAction(name, application.name) : longTermAction(container);
     funcRequest.catch((response) =>{
       this.setState({
@@ -41,7 +41,7 @@ export default class LoadingDialog extends Component {
       });
     })
       .then((response) => {
-        application ? this.props.listApps(name) : this.props.loadContainers(name);
+        let refreshData = application ? listApps(name) : loadContainers(name);
         result = response === null ? 'Action has no effect' : response._res;
         this.setState({
           longTermActionResponse: result
@@ -59,7 +59,7 @@ export default class LoadingDialog extends Component {
     switch (status) {
       case 200:
         message = entityType + "\"" + entity.name + "\"" + ' successfully ' + actionKey;
-        if(actionKey === 'returned init file') {
+        if (actionKey === 'returned init file') {
           $actionResponse.find('a').text('Download').attr('href', nextState.longTermActionResponse.xhr.responseURL);
         }
         break;

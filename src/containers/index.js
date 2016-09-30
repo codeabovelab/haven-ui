@@ -21,5 +21,4 @@ export RegistryEdit from './registries/RegistryEdit/RegistryEdit';
 export RegistryEditForms from './registries/RegistryEdit/RegistryEditForms';
 
 export ApplicationPanel from './application/ApplicationPanel/ApplicationPanel';
-export ApplicationDetailsPanel from './application/ApplicationDetailsPanel/ApplicationDetailsPanel';
 export ApplicationCreate from './application/ApplicationCreate/ApplicationCreate';

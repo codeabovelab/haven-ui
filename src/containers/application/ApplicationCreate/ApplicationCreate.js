@@ -59,9 +59,9 @@ export default class ApplicationCreate extends Component {
       this.props.list(clusterName);
       $spinner.hide();
     }).catch((response) => {
-        $spinner.hide();
-        throw new SubmissionError(response.message);
-      });
+      $spinner.hide();
+      throw new SubmissionError(response.message);
+    });
   }
 
   render() {

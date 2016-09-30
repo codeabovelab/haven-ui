@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as applicationActions from 'redux/modules/application/application';
 import {connect} from 'react-redux';
-import { Link, browserHistory } from 'react-router';
+import { Link } from 'react-router';
 import {DockTable, LoadingDialog, ActionMenu} from '../../../components/index';
 import { asyncConnect } from 'redux-async-connect';
 import {Button, ButtonToolbar, Panel, ProgressBar} from 'react-bootstrap';
@@ -39,6 +39,7 @@ import {ApplicationCreate} from '../../../containers/index';
 export default class ApplicationPanel extends Component {
   static propTypes = {
     clusters: PropTypes.object,
+    application: PropTypes.object,
     containers: PropTypes.object,
     params: PropTypes.object,
     loadContainers: PropTypes.func.isRequired,
@@ -122,28 +123,25 @@ export default class ApplicationPanel extends Component {
   render() {
     this.COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
     const GROUP_BY_SELECT = ['name', 'containers', 'creatingDate'];
-    const {containers, clusters, application, params: {name}} = this.props;
+    const {containers, application, params: {name}} = this.props;
     if (!application) {
       return (
         <div></div>
       );
     }
     const applications = application[name];
-    console.log(application);
-    console.log(applications);
     let rows = [];
     if (applications == null) {
       rows = null;
-    }else {
-      for (let el in applications){
-        if (applications.hasOwnProperty(el))
-        rows.push(applications[el]);
+    } else {
+      for (let el in applications) {
+        if (applications.hasOwnProperty(el)) {
+          rows.push(applications[el]);
+        }
       }
     }
-    console.log(rows);
 
     this.additionalData(rows);
-    console.log(rows);
     const applicationsHeaderBar = (
       <div className="clearfix">
         <h3>Applications</h3>
@@ -201,7 +199,6 @@ export default class ApplicationPanel extends Component {
 
   additionalData(rows) {
     require('jquery-ui/ui/widgets/datepicker');
-    console.log(rows);
     if (rows) {
       rows.forEach(row => {
         row.actions = this.tdActions.bind(this);
@@ -232,13 +229,10 @@ export default class ApplicationPanel extends Component {
     const {clusters, params: {name}} = this.props;
     let cluster = clusters[name];
 
-    console.log('onActionInvoke', action, cluster);
-
     let currentApplication;
     if (application) {
       currentApplication = this.props.application[name][application];
     }
-    console.log('application', name, currentApplication);
 
     switch (action) {
       case "start":
