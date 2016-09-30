@@ -110,7 +110,7 @@ export default class ContainerCreate extends Component {
     let options = [];
     let registriesArr = this.props.registries.map(function listRegistries(element) {
       let checkBoxState = this.state.checkboxes[element.name];
-      if (typeof(checkBoxState) === 'undefined' || checkBoxState.checked === true) {
+      if (checkBoxState && checkBoxState.checked === true) {
         return element.name;
       }
     }.bind(this)).filter((element)=>{
@@ -234,7 +234,7 @@ export default class ContainerCreate extends Component {
                             searchable={this.state.searchable} />
             </div>
             <div className="button-wrapper">
-            <button className = "btn btn-default btn-sm react-select-button" type="button" onClick={this.displayRegistries.bind(this)}>Registries</button>
+            <button className = "btn btn-default btn-sm react-select-button" type="button" onClick={this.displayRegistries.bind(this)}>Use custom registries</button>
             </div>
             <div className="checkbox-list checkbox-list-image">
               {
@@ -244,7 +244,7 @@ export default class ContainerCreate extends Component {
                                <input type="checkbox"
                                       className="checkbox-control registry-checkbox"
                                       value={registry.name}
-                                      defaultChecked
+                                      defaultChecked={false}
                                       onChange={this.toggleCheckbox.bind(this)}
                                       name={registry.name}
                                      />

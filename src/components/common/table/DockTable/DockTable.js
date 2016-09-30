@@ -26,7 +26,7 @@ export default class DockTable extends Component {
   //general
   total = 0; // before filtering
   pagesTotal = 0; // before filtering
-  pageSize = 10;
+  pageSize = 20;
   columnsMap = {};
 
 
@@ -371,7 +371,9 @@ export default class DockTable extends Component {
             <span className="group-title" onClick={this.toggleGroup.bind(this, group.key)}>
             {!closed && <i className="fa fa-minus"/>}
               {closed && <i className="fa fa-plus"/>}
-              {group.key}
+              {this.columnsMap[this.groupBy].render ?
+                this.tdRender(this.groupBy, group.currentRows[0]) :
+                group.key}
             </span>
             <span className="text-muted">{' '}({group.rows.length})</span>
           </td>

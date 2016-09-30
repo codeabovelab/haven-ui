@@ -22,7 +22,7 @@ export default class Chain extends Component {
     }
     src = src || [];
     let first = maxCount >= src.length ? maxCount : maxCount - 2;
-    let itemRender = this.props.render || ((a) => a);
+    let itemRender = this.props.render || ((a) => String(a));
     let buttonRender = (item, i) => (<Button key={"item." + i} bsStyle="info" className="spaced-items">{itemRender(item)}</Button>);
     let labelRender;
     if (this.props.popoverRender) {

@@ -69,7 +69,7 @@ export default class ImagesPanel extends Component {
         <StatisticsPanel metrics={this.statisticsMetrics}
                         values={[availableImages, runningImages]}
         />
-        <ImagesList loading={typeof imagesList === "undefined"}
+        <ImagesList loading={!imagesList}
                     data={imagesList}
         />
       </div>

@@ -17,6 +17,8 @@ module.exports = Object.assign({
   apiHost: 'hb1.codeabovelab.com',
   apiPort: 80,
   eventServer: 'hb1.codeabovelab.com/ui/stomp',
+  eventServerLogin: 'admin',
+  eventServerPassword: 'password',
   mock: false,
   app: {
     title: 'Dockmaster',

@@ -3,7 +3,7 @@ import * as clusterActions from 'redux/modules/clusters/clusters';
 import {connect} from 'react-redux';
 import { Link } from 'react-router';
 import _ from 'lodash';
-import {DockTable, ClustersList, StatisticsPanel, Dialog} from '../../../components';
+import {DockTable, ClustersList, StatisticsPanel, Dialog, EventLog} from 'components';
 import {ClusterAdd, ClusterConfig, ClusterInformation} from '../../index';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar} from 'react-bootstrap';
 import {count as countEvents} from 'redux/modules/events/events';
@@ -13,6 +13,7 @@ import {list as listApplications} from 'redux/modules/application/application';
   state => ({
     clusters: state.clusters,
     clustersIds: state.clustersUI.list,
+    events: state.events,
     alerts: state.events.alerts,
     application: state.application.applicationsList
   }), {
@@ -31,6 +32,7 @@ export default class ClustersPanel extends Component {
     loadClusters: PropTypes.func.isRequired,
     deleteCluster: PropTypes.func.isRequired,
     loadNodes: PropTypes.func.isRequired,
+    events: PropTypes.object,
     alerts: PropTypes.object,
     countEvents: PropTypes.func.isRequired,
     listApplications: PropTypes.func.isRequired
@@ -143,8 +145,10 @@ export default class ClustersPanel extends Component {
         />
 
         <Panel header={eventsHeaderBar}>
-          {!clustersList && (
-            <ProgressBar active now={100} />
+          {this.props.events && (
+            <EventLog data={this.props.events['bus.cluman.errors']}
+                      loading={!this.props.events}
+            />
           )}
         </Panel>
 
