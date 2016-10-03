@@ -313,21 +313,7 @@ export default class ApplicationPanel extends Component {
         return;
 
       case "getInitFile":
-        confirm('Are you sure you want to get init file of this application?')
-          .then(() => {
-            this.setState({
-              actionDialog: (
-                <LoadingDialog application={currentApplication}
-                               onHide={this.onHideDialog.bind(this)}
-                               name={name}
-                               longTermAction={this.props.getInitFile}
-                               loadContainers={this.props.loadContainers}
-                               actionKey="returned init file"
-                               listApps={this.props.listApps}
-                />
-              )
-            });
-          });
+        this.props.getInitFile(name, currentApplication.name);
         return;
 
       case "create":

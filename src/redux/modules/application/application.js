@@ -66,6 +66,7 @@ export default function reducer(state = {}, action = {}) {
         uploadStreamError: action.error.message
       };
     case ACTIONS.GET_INIT_FILE_SUCCESS:
+      downloadFile(action.result._res.xhr.responseURL);
       return {
         ...state,
         initFiles: {
@@ -159,4 +160,11 @@ export function stop(clusterId, appId) {
     types: [ACTIONS.STOP, ACTIONS.STOP_SUCCESS, ACTIONS.STOP_FAIL],
     promise: (client) => client.post(`/ui/api/application/${clusterId}/${appId}/stop`)
   };
+}
+
+function downloadFile(uri) {
+  let link = document.createElement("a");
+  link.href = uri;
+  link.download = '';
+  link.click();
 }
