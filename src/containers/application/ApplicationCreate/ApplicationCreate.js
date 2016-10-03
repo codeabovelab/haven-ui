@@ -32,6 +32,7 @@ export default class ApplicationCreate extends Component {
     resetForm: PropTypes.func,
     submitting: PropTypes.bool,
     createError: PropTypes.string,
+    application: PropTypes.object,
     valid: PropTypes.bool.isRequired,
     onHide: PropTypes.func.isRequired
   };
@@ -41,6 +42,13 @@ export default class ApplicationCreate extends Component {
     this.state = {
       creationLogVisible: ''
     };
+  }
+
+  componentDidMount() {
+    const {application, fields} = this.props;
+    if (application) {
+      fields.name.onChange(application.name);
+    }
   }
 
   onSubmit() {
@@ -65,7 +73,7 @@ export default class ApplicationCreate extends Component {
   }
 
   render() {
-    const {fields} = this.props;
+    const {fields, application} = this.props;
     const creationLogVisible = this.state.creationLogVisible;
     const fileInputVal = $('#fileInput').val();
     const fileName = fileInputVal ? fileInputVal.match(/[^\\\/]+$/g) : '';
@@ -94,9 +102,9 @@ export default class ApplicationCreate extends Component {
             <FormControl type="text"
                          {...fields.name}
                          name="name"
+                         id="appName"
+                         disabled={application ? true : false}
             />
-
-            <FormControl.Feedback />
             {fields.name.error && (
               <HelpBlock>{fields.name.error}</HelpBlock>
             )}
@@ -113,7 +121,6 @@ export default class ApplicationCreate extends Component {
             />
             </ControlLabel>
             <span className="upload-file-name">{fields.file.value && fileName}</span>
-            <FormControl.Feedback />
             {fields.file.error && (
               <HelpBlock>{fields.file.error}</HelpBlock>
             )}
