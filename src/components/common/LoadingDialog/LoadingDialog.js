@@ -59,9 +59,6 @@ export default class LoadingDialog extends Component {
     switch (status) {
       case 200:
         message = entityType + "\"" + entity.name + "\"" + ' successfully ' + actionKey;
-        if (actionKey === 'returned init file') {
-          $actionResponse.find('a').text('Download').attr('href', nextState.longTermActionResponse.xhr.responseURL);
-        }
         break;
       case 304:
         message = entityType + "\"" + entity.name + "\"" + ' was not modified';
@@ -109,7 +106,6 @@ export default class LoadingDialog extends Component {
             id="actionResponse"
           >
             <div></div>
-            <a>&nbsp;</a>
           </div>
         )}
       </Dialog>
