@@ -62,6 +62,13 @@ export default class MenuLeft extends Component {
             </Link>
           </li>
 
+          <li className="al-sidebar-list-item" title="Jobs">
+            <Link to="/jobs" className="al-sidebar-list-link">
+              <i className="fa fa-cogs fa-fw"/>
+              <span>Jobs</span>
+            </Link>
+          </li>
+
           <li id="expandIcon" className="al-sidebar-list-item" title="Expand">
             <Link to="#" className="al-sidebar-list-link" onClick = {this.expand}>
               <i className="fa fa-chevron-right fa-2x" data-direction="right" />
