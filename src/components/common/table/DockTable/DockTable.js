@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import _ from 'lodash';
+import TimeUtils from 'utils/TimeUtils';
 
 export default class DockTable extends Component {
   static propTypes = {
@@ -22,6 +23,9 @@ export default class DockTable extends Component {
 
   static SIZES = {SM: 'SM'};
 
+  static FORMATTERS = {
+    dateTime: TimeUtils.format
+  };
 
   //general
   total = 0; // before filtering
@@ -341,18 +345,28 @@ export default class DockTable extends Component {
 
   tdRender(key, model) {
     let render = this.columnsMap[key].render;
+    let formatter = this.columnsMap[key].formatter;
     let field = model[key];
     let td = null;
     if (typeof field === 'function') {
       td = field(model);
     } else if (render) {
       td = render(model);
-    } else if (field == null) {
-      td = <td key={key} data-column={key}><em>none</em></td>;
-    } else if (typeof field === 'object') {
-      td = <td key={key} data-column={key}>{JSON.stringify(field)}</td>;
     } else {
-      td = <td key={key} data-column={key}>{field}</td>;
+      let value = field;
+      if (typeof formatter === 'string') {
+        formatter = DockTable.FORMATTERS[formatter];
+      }
+      if (formatter) {
+        value = formatter(field);
+        // String() - prevent exception when formatter return invalid value
+        if (value) {
+          value = String(value);
+        }
+      } else if (typeof field === 'object') {
+        value = JSON.stringify(field);
+      }
+      td = <td key={key} data-column={key}>{value == null ? (<em>none</em>) : value }</td>;
     }
     return td;
   }

@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {loadImageTagInfo} from 'redux/modules/images/images';
+import TimeUtils from 'utils/TimeUtils';
 
 @connect(
   state => ({
@@ -42,7 +43,7 @@ export default class ImageInfo extends Component {
             {registry && (<small>from {registry}</small>)}
           </div>
           <div>
-            <p>Created: {window.TimeUtils.format(img.created)}</p>
+            <p>Created: {TimeUtils.format(img.created)}</p>
             {labelKeys.length > 0 && (
               <span>Labels:
                 <ul className="list-group">
