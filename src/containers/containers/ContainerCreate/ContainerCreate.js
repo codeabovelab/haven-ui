@@ -6,7 +6,7 @@ import {create} from 'redux/modules/containers/containers';
 import {loadNodes, loadContainers, loadDefaultParams} from 'redux/modules/clusters/clusters';
 import {loadImages, loadImageTags, searchImages} from 'redux/modules/images/images';
 import {load as loadRegistries} from 'redux/modules/registries/registries';
-import {Alert, Accordion, Panel} from 'react-bootstrap';
+import {Alert, Accordion, Panel, Label} from 'react-bootstrap';
 import _ from 'lodash';
 import Select from 'react-select';
 
@@ -85,7 +85,8 @@ export default class ContainerCreate extends Component {
       environment: [{field1: '', field2: ''}],
       selectImageValue: {value: '', label: ''},
       checkboxes: {checkboxInitial: ''},
-      creationLogVisible: ''
+      creationLogVisible: '',
+      selectMenuVisible: false
     };
   }
 
@@ -188,6 +189,22 @@ export default class ContainerCreate extends Component {
     return imagesList;
   }
 
+  renderSelectValue(option) {
+    return <Label bsStyle="info">{option.label}</Label>;
+  }
+
+  onSelectMenuOpen() {
+    this.setState({
+      selectMenuVisible: true
+    });
+  }
+
+  onSelectMenuClose() {
+    setTimeout(function changeMenuState() {
+      this.setState({selectMenuVisible: false});
+    }.bind(this), 500);
+  }
+
   render() {
     let s = require('./ContainerCreate.scss');
     require('react-select/dist/react-select.css');
@@ -200,6 +217,7 @@ export default class ContainerCreate extends Component {
     let field;
     let image = this.getCurrentImage();
     let creating = containersUI.new.creating;
+    const selectMenuVisible = this.state.selectMenuVisible;
 
     return (
       <Dialog show
@@ -209,6 +227,8 @@ export default class ContainerCreate extends Component {
               onHide={creationLogVisible ? this.props.handleSubmit(this.onSubmit.bind(this)) : this.props.onHide}
               okTitle={creationLogVisible ? "Close" : null}
               cancelTitle={creationLogVisible ? "Again" : null}
+              keyboard={!selectMenuVisible}
+              backdrop="static"
       >
           {this.props.createError && (
             <Alert bsStyle="danger">
@@ -223,11 +243,14 @@ export default class ContainerCreate extends Component {
                             loadOptions={this.getImageOptions.bind(this)}
                             autoFocus
                             name="image"
+                            onOpen={this.onSelectMenuOpen.bind(this)}
+                            onClose={this.onSelectMenuClose.bind(this)}
+                            className="imageSelect"
                             minimumInput={ 1 }
                             value={this.state.selectImageValue}
                             autoload
                             placeholder = "Search..."
-                            clearable
+                            valueRenderer={this.renderSelectValue}
                             resetValue = ""
                             onChange={this.updateImageValue.bind(this)}
                             searchable={this.state.searchable} />
@@ -257,8 +280,12 @@ export default class ContainerCreate extends Component {
             <div className="form-group">
               <label>Tag:</label>
               <Select ref="tagSelect"
+                      className="tagSelect"
                       simpleValue
                       clearable
+                      onOpen={this.onSelectMenuOpen.bind(this)}
+                      onClose={this.onSelectMenuClose.bind(this)}
+                      valueRenderer={this.renderSelectValue}
                       name="tag"
                       value={this.state.selectTagValue}
                       onChange={this.updateTagValue.bind(this)}

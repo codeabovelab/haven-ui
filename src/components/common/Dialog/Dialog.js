@@ -29,6 +29,7 @@ export default class Dialog extends Component {
 
     allowSubmit: PropTypes.bool,
     submitting: PropTypes.bool,
+    keyboard: PropTypes.bool,
 
     hideOk: PropTypes.bool,
     hideCancel: PropTypes.bool,
@@ -53,7 +54,7 @@ export default class Dialog extends Component {
              onExiting={this.props.onExiting}
              onExited={this.props.onExited}
              onHide={this.props.onHide}
-             keyboard
+             keyboard={this.props.keyboard}
              id = {this.props.modalId || ''}
       >
 
