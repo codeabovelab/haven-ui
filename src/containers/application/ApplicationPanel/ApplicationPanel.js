@@ -57,18 +57,18 @@ export default class ApplicationPanel extends Component {
 
   ACTIONS = [
     {
-      key: "getCompose",
-      title: "Get Compose",
+      key: "start",
+      title: "Start (Up)",
       default: true
     },
     null,
     {
-      key: "start",
-      title: "Start"
-    },
-    {
       key: "stop",
       title: "Stop"
+    },
+    {
+      key: "update",
+      title: "Update"
     },
     {
       key: "delete",
@@ -77,7 +77,12 @@ export default class ApplicationPanel extends Component {
     {
       key: "getInitFile",
       title: "Get Init File"
+    },
+    {
+      key: "getCompose",
+      title: "Get Compose"
     }
+
   ];
 
   COLUMNS = [
@@ -324,6 +329,19 @@ export default class ApplicationPanel extends Component {
           actionDialog: (
             <ApplicationCreate title="Create New Application"
                                clusterName={name}
+                               loadContainers={this.props.loadContainers}
+                               onHide={this.onHideDialog.bind(this)}
+            />
+          )
+        });
+        return;
+
+      case "update":
+        this.setState({
+          actionDialog: (
+            <ApplicationCreate title={"Update Application " + '"' + currentApplication.name + '"'}
+                               clusterName={name}
+                               application={currentApplication}
                                loadContainers={this.props.loadContainers}
                                onHide={this.onHideDialog.bind(this)}
             />
