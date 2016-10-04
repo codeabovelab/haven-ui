@@ -23,10 +23,10 @@ const COLUMNS = [
     name: 'node'
   },
 
-  // {
-  //   name: 'ports',
-  //   label: 'Ports Mapping'
-  // },
+  {
+    name: 'cluster',
+    label: 'Cluster'
+  },
 
   {
     name: 'status',
@@ -40,7 +40,7 @@ const COLUMNS = [
 ];
 
 COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
-const GROUP_BY_SELECT = ['node', 'image', 'status'];
+const GROUP_BY_SELECT = ['node', 'image', 'status', 'cluster'];
 
 function renderTdImage(row) {
   const MAX_LENGTH = 30;
