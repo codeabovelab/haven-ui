@@ -87,7 +87,7 @@ export default class ApplicationPanel extends Component {
 
     {
       name: 'containers',
-      render: this.containersRender
+      render: this.containersRender.bind(this)
     },
 
     {
@@ -106,9 +106,21 @@ export default class ApplicationPanel extends Component {
   ];
 
   containersRender(application) {
+    let applicationContainers = [];
+    const containers = this.props.containers;
+    for (let el in application.containers) {
+      if (application.containers.hasOwnProperty(el)) {
+        let containerId = application.containers[el];
+        if (containers[containerId]) {
+          applicationContainers.push(containers[containerId].image);
+        }
+      }
+    }
     return (
       <td key="containers">
-        <Link to={`/clusters/${application.cluster}`}>{application.containers.length}</Link>
+        {applicationContainers.map(function listContainers(container, i) {
+          return <p key={i}>{container}</p>;
+        })}
       </td>
     );
   }
@@ -122,7 +134,7 @@ export default class ApplicationPanel extends Component {
 
   render() {
     this.COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
-    const GROUP_BY_SELECT = ['name', 'containers', 'creatingDate'];
+    const GROUP_BY_SELECT = ['name', 'creatingDate'];
     const {containers, application, params: {name}} = this.props;
     if (!application) {
       return (
