@@ -91,12 +91,8 @@ export default class ApplicationPanel extends Component {
     },
 
     {
-      name: 'creatingDate'
-    },
-
-    {
-      name: 'initFile',
-      width: '15%'
+      name: 'creatingDate',
+      width: '200px'
     },
 
     {
