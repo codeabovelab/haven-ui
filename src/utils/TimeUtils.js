@@ -10,7 +10,7 @@ export default class TimeUtils {
     if (type === "number") {
       date = new Date(dt);
     }
-    if(!date) {
+    if (!date) {
       return null;
     }
     return date.toLocaleString();
