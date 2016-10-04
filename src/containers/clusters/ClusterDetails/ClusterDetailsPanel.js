@@ -8,40 +8,6 @@ import {ContainerCreate, ContainerScale} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
 import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar} from 'react-bootstrap';
 
-
-const COLUMNS = [
-  {
-    name: 'name'
-  },
-
-  {
-    name: 'image',
-    render: renderTdImage
-  },
-
-  {
-    name: 'node'
-  },
-
-  {
-    name: 'cluster',
-    label: 'Cluster'
-  },
-
-  {
-    name: 'status',
-    width: '15%'
-  },
-
-  {
-    name: 'actions',
-    width: '50px'
-  }
-];
-
-COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
-const GROUP_BY_SELECT = ['node', 'image', 'status', 'cluster'];
-
 function renderTdImage(row) {
   const MAX_LENGTH = 30;
   let image = row.image;
@@ -108,6 +74,33 @@ export default class ClusterDetailsPanel extends Component {
       titles: 'Running Jobs'
     }
   ];
+
+  COLUMNS = [
+    {
+      name: 'name'
+    },
+
+    {
+      name: 'image',
+      render: renderTdImage
+    },
+
+    {
+      name: 'node'
+    },
+
+    {
+      name: 'status',
+      width: '15%'
+    },
+
+    {
+      name: 'actions',
+      width: '50px'
+    }
+  ];
+
+  GROUP_BY_SELECT = ['node', 'image', 'status'];
 
   ACTIONS = [
     {
@@ -224,6 +217,13 @@ export default class ClusterDetailsPanel extends Component {
       </div>
     );
     const isContainersPage = name === 'all';
+    let columns = this.COLUMNS;
+    let groupBySelect = this.GROUP_BY_SELECT;
+    if (isContainersPage && columns[3].name !== 'cluster') {
+      columns.splice(3, 0, {name: 'cluster', label: 'Cluster'});
+      groupBySelect.push('cluster');
+    }
+    columns.forEach(column => column.sortable = column.name !== 'actions');
 
     return (
       <div>
@@ -250,10 +250,11 @@ export default class ClusterDetailsPanel extends Component {
           {(rows && rows.length > 0) && (
             <div>
               <div className="containers">
-                <DockTable columns={COLUMNS}
+                <DockTable columns={columns}
                            rows={rows}
+                           key={name}
                            groupBy="node"
-                           groupBySelect={GROUP_BY_SELECT}
+                           groupBySelect={groupBySelect}
                            size={DockTable.SIZES.SM}
                 />
               </div>
@@ -283,7 +284,6 @@ export default class ClusterDetailsPanel extends Component {
   }
 
   additionalData(rows) {
-    console.log(rows);
     if (rows) {
       rows.forEach(row => {
         row.__attributes = {'data-id': row.id};
