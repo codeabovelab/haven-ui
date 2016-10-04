@@ -15,6 +15,14 @@ export default function reducer(state = {}, action = {}) {
           [action.id]: action.result
         }
       };
+    case ACTIONS.LOAD_LOG_SUCCESS:
+      return {
+        ...state,
+        jobLogs: {
+          ...state.jobLogs,
+          [action.id]: action.result
+        }
+      };
     default:
       return state;
   }
@@ -33,5 +41,13 @@ export function loadInfo(jobId) {
     types: [ACTIONS.LOAD_INFO, ACTIONS.LOAD_INFO_SUCCESS, ACTIONS.LOAD_INFO_FAIL],
     id: jobId,
     promise: (client) => client.get(`/ui/api/jobs/${jobId}/`)
+  };
+}
+
+export function loadLog(jobId) {
+  return {
+    types: [ACTIONS.LOAD_LOG, ACTIONS.LOAD_LOG_SUCCESS, ACTIONS.LOAD_LOG_FAIL],
+    id: jobId,
+    promise: (client) => client.get(`/ui/api/jobs/${jobId}/log`)
   };
 }

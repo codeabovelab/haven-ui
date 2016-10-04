@@ -1,18 +1,20 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import TimeUtils from 'utils/TimeUtils';
 import {Dialog, StatisticsPanel, JobsList, PropertyGrid} from 'components';
 import {Label, Badge, ButtonToolbar, ProgressBar, SplitButton, MenuItem} from 'react-bootstrap';
-import {loadList, loadInfo} from 'redux/modules/jobs/jobs';
+import {loadList, loadInfo, loadLog} from 'redux/modules/jobs/jobs';
 
 @connect(
   state => ({
     data: state.jobs
-  }), {loadList, loadInfo})
+  }), {loadList, loadInfo, loadLog})
 export default class JobsPanel extends Component {
   static propTypes = {
     data: PropTypes.object.isRequired,
     loadList: PropTypes.func.isRequired,
-    loadInfo: PropTypes.func.isRequired
+    loadInfo: PropTypes.func.isRequired,
+    loadLog: PropTypes.func.isRequired
   };
 
   statisticsMetrics = [
@@ -90,7 +92,7 @@ export default class JobsPanel extends Component {
     switch (type) {
       case "info": this.showInfo(job);
         break;
-      case "log":
+      case "log": this.showLog(job);
         break;
       default:
     }
@@ -114,6 +116,51 @@ export default class JobsPanel extends Component {
             <ProgressBar active now={100} />
           )}
         </Dialog>)
+    });
+  }
+
+  showLog(job) {
+    this.props.loadLog(job.id);
+    let entryRender = (e, i) => {
+      let info = e.info;
+      return (<tr>
+        <td>{i}</td>
+        <td>{TimeUtils.format(e.time)}</td>
+        <td>{info.status}</td>
+        <td>{e.message || (<i>none</i>)}</td>
+      </tr>);
+    };
+    this.setState({
+      actionDialogRender: () => {
+        let data = this.props.data.jobLogs && this.props.data.jobLogs[job.id];
+        return (
+          <Dialog show
+                hideCancel
+                size="large"
+                title={`Job log: ${job.title}`}
+                okTitle="Close"
+                onHide={this.hideDialog.bind(this)}
+                onSubmit={this.hideDialog.bind(this)}
+          >
+            {data && (
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>time</th>
+                    <th>status</th>
+                    <th>message</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.map(entryRender)}
+                </tbody>
+              </table>
+            ) || (
+              <ProgressBar active now={100} />
+            )}
+          </Dialog>);
+      }
     });
   }
 
