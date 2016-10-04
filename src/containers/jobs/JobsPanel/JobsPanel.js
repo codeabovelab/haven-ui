@@ -1,17 +1,18 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {StatisticsPanel, JobsList} from '../../../components/index';
-import {Label, Badge, ButtonToolbar, SplitButton, MenuItem} from 'react-bootstrap';
-import {loadList} from 'redux/modules/jobs/jobs';
+import {Dialog, StatisticsPanel, JobsList, PropertyGrid} from 'components';
+import {Label, Badge, ButtonToolbar, ProgressBar, SplitButton, MenuItem} from 'react-bootstrap';
+import {loadList, loadInfo} from 'redux/modules/jobs/jobs';
 
 @connect(
   state => ({
     data: state.jobs
-  }), {loadList})
+  }), {loadList, loadInfo})
 export default class JobsPanel extends Component {
   static propTypes = {
-    data: PropTypes.array.isRequired,
-    loadList: PropTypes.func.isRequired
+    data: PropTypes.object.isRequired,
+    loadList: PropTypes.func.isRequired,
+    loadInfo: PropTypes.func.isRequired
   };
 
   statisticsMetrics = [
@@ -31,6 +32,11 @@ export default class JobsPanel extends Component {
       titles: 'Failed or cancelled jobs',
     }
   ];
+
+  constructor(props) {
+    super(props);
+    this.state = {actionDialogRender: null};
+  }
 
   componentDidMount() {
     this.props.loadList();
@@ -58,16 +64,61 @@ export default class JobsPanel extends Component {
         }
       });
     }
+    let actions = {
+      list: [
+        {key: "info", title: "Info"},
+        {key: "log", title: "Log"}
+      ],
+      handler: this.onActionInvoke.bind(this)
+    };
     return (
       <div>
         <StatisticsPanel metrics={this.statisticsMetrics}
                         values={[running, successfully, failed]}
         />
         <JobsList loading={!data}
-                    data={data}
+                  data={data}
+                  actions={actions}
         />
+       {this.state.actionDialogRender && this.state.actionDialogRender()}
       </div>
     );
+  }
+
+
+  onActionInvoke(type, job) {
+    switch (type) {
+      case "info": this.showInfo(job);
+        break;
+      case "log":
+        break;
+      default:
+    }
+  }
+
+  showInfo(job) {
+    this.props.loadInfo(job.id);
+    this.setState({
+      actionDialogRender: () => (
+        <Dialog show
+              hideCancel
+              size="large"
+              title={`Job info: ${job.title}`}
+              okTitle="Close"
+              onHide={this.hideDialog.bind(this)}
+              onSubmit={this.hideDialog.bind(this)}
+        >
+          {this.props.data.jobInfos && (
+            <PropertyGrid data={this.props.data.jobInfos[job.id]} />
+          ) || (
+            <ProgressBar active now={100} />
+          )}
+        </Dialog>)
+    });
+  }
+
+  hideDialog() {
+    this.setState({actionDialogRender: null});
   }
 }
 

@@ -1,11 +1,12 @@
 import React, {Component, PropTypes} from 'react';
-import {DockTable} from '../index';
-import {ProgressBar, Panel} from 'react-bootstrap';
+import {ActionMenu, DockTable} from '../index';
+import {Panel, ProgressBar} from 'react-bootstrap';
 
 export default class JobsList extends Component {
   static propTypes = {
     data: PropTypes.array,
-    loading: PropTypes.bool
+    loading: PropTypes.bool,
+    actions: PropTypes.object.isRequired
   };
 
   COLUMNS = [
@@ -41,6 +42,20 @@ export default class JobsList extends Component {
       width: '10%',
       sortable: true,
       formatter: "dateTime"
+    },
+    {
+      name: 'none',
+      label: 'Actions',
+      width: '5%',
+      render: (job) => {
+        let actions = this.props.actions;
+        return (<td key="actions" className="td-actions">
+          <ActionMenu subject={job}
+                    actions={actions.list}
+                    actionHandler={actions.handler}
+          />
+        </td>);
+      }
     }
   ];
 
@@ -51,23 +66,22 @@ export default class JobsList extends Component {
       </div>
     );
     let loading = this.props.loading;
-    let hasData = !loading && this.props.data && this.props.data.length;
-    let noData = !loading && this.props.data && this.props.data.length === 0;
+    let data = this.props.data;
+    let hasData = !loading && data && data.length !== 0;
     return (
-      <Panel header={panelHeader}>
-        {loading && (
-          <ProgressBar active now={100} />
-        )}
-        {hasData && (
-          <DockTable columns={this.COLUMNS} rows={this.props.data} />
-        )}
-        {noData && (
-          <div className="alert alert-info">
-            No jobs yet
-          </div>
-        )}
-      </Panel>
+      <div>
+        <Panel header={panelHeader}>
+          {loading && (
+            <ProgressBar active now={100} />
+          ) || hasData && (
+            <DockTable columns={this.COLUMNS} rows={data} />
+          ) || (
+            <div className="alert alert-info">
+              No jobs yet
+            </div>
+          )}
+        </Panel>
+      </div>
     );
   }
 }
-
