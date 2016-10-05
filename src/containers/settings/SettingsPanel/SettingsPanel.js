@@ -39,6 +39,7 @@ export default class SettingsPanel extends Component {
     this.setState({
       actionDialog: (
         <UploadSettings onHide={this.onHideDialog.bind(this)}
+                        title="Upload Dockmaster's Config File"
         />
       )
     });
@@ -57,7 +58,7 @@ export default class SettingsPanel extends Component {
           <div className = "submit-buttons-block">
             <a id="downloadSettingsFile" className="btn btn-default">Download settings file</a>
             <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <a id="uploadSettingsFile" className="btn btn-default" onClick={this.showUploadSettingsDialog}>Upload settings file</a>
+            <a id="uploadSettingsFile" className="btn btn-default" onClick={this.showUploadSettingsDialog.bind(this)}>Upload settings file</a>
           </div>
         </div>
         {(this.state && this.state.actionDialog) && (

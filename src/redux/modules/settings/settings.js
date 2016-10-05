@@ -37,7 +37,7 @@ export default function reducer(state = {}, action = {}) {
 
 export function setSettings(formData) {
   return {
-    types: [ACTIONS.UPLOAD_FILE, ACTIONS.UPLOAD_FILE_SUCCESS, ACTIONS.UPLOAD_FILE_FAIL],
+    types: [ACTIONS.SET_SETTINGS, ACTIONS.SET_SETTINGS_SUCCESS, ACTIONS.SET_SETTINGS_FAIL],
     promise: (client) => client.post(`/ui/api/config`, {data: formData})
   };
 }
