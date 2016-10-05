@@ -162,9 +162,11 @@ export function stop(clusterId, appId) {
   };
 }
 
+let $iDownloadFrame;
 function downloadFile(uri) {
-  let link = document.createElement("a");
-  link.href = uri;
-  link.download = '';
-  link.click();
+  if ($iDownloadFrame) {
+    $iDownloadFrame.attr('src', uri);
+  } else {
+    $iDownloadFrame = $('<iframe>', {id: 'iDownloadFrame', src: uri}).hide().appendTo('body');
+  }
 }
