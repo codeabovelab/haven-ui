@@ -19,6 +19,7 @@ import registriesUI from './registries/registriesUI';
 import events from './events/events';
 import application from './application/application';
 import jobs from './jobs/jobs';
+import settings from './settings/settings';
 
 export default combineReducers({
   routing: routerReducer,
@@ -34,6 +35,7 @@ export default combineReducers({
   registries,
   events,
   jobs,
+  settings,
   //END models data
   application,
   imagesUI,

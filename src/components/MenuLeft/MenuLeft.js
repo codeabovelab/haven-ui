@@ -70,7 +70,7 @@ export default class MenuLeft extends Component {
           </li>
 
           <li className="al-sidebar-list-item" title="Jobs">
-            <Link to="/jobs" className="al-sidebar-list-link">
+            <Link to="/settings" className="al-sidebar-list-link">
               <i className="fa fa-wrench fa-fw"/>
               <span>Settings</span>
             </Link>
