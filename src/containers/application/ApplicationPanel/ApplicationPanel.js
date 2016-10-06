@@ -304,11 +304,11 @@ export default class ApplicationPanel extends Component {
 
       case "getCompose":
         this.props.getComposeApp(name, currentApplication.name).then((response)=> {
-          let link = document.createElement("a");
+          let $link = $('<a></a>').appendTo(document.body);
           let parsedData = "text/json;charset=utf-8," + encodeURIComponent(response._res.text);
-          link.href = 'data:' + parsedData;
-          link.download = 'data.json';
-          link.click();
+          $link.attr('href', 'data:' + parsedData);
+          $link.attr('download', 'config.json');
+          $link.get(0).click();
         });
         return;
       case "getInitFile":
