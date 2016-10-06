@@ -314,8 +314,8 @@ export default class ApplicationPanel extends Component {
 
       case "getInitFile":
         this.props.getInitFile(name, currentApplication.name).then((response)=>{
-          let header = response._res.headers['content-disposition'];
-          let filename = header.match(/filename=(.+)/)[1];
+          let header = response._res.headers['content-disposition'] || response._res.header['content-disposition'];
+          let filename = header ? header.match(/filename=(.+)/)[1] : currentApplication.name+'-init-file';
           let $link = $('<a></a>').appendTo(document.body);
           $link.attr('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(response._res.text));
           $link.attr('download', filename);
