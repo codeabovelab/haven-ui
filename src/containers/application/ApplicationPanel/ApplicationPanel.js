@@ -303,13 +303,13 @@ export default class ApplicationPanel extends Component {
         return;
 
       case "getCompose":
-         this.props.getComposeApp(name, currentApplication.name).then((response)=>{
-           let link = document.createElement("a");
-           let parsedData = "text/json;charset=utf-8," + encodeURIComponent(response._res.text);
-           link.href = 'data:' + parsedData;
-           link.download = 'data.json';
-           link.click();
-      });
+        this.props.getComposeApp(name, currentApplication.name).then((response)=> {
+          let link = document.createElement("a");
+          let parsedData = "text/json;charset=utf-8," + encodeURIComponent(response._res.text);
+          link.href = 'data:' + parsedData;
+          link.download = 'data.json';
+          link.click();
+        });
         return;
       case "getInitFile":
         this.props.getInitFile(name, currentApplication.name);
