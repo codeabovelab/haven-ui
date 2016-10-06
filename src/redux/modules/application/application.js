@@ -65,18 +65,6 @@ export default function reducer(state = {}, action = {}) {
         ...state,
         uploadStreamError: action.error.message
       };
-    case ACTIONS.GET_INIT_FILE_SUCCESS:
-      downloadFile(action.result._res.xhr.responseURL);
-      return {
-        ...state,
-        initFiles: {
-          ...state.initFiles,
-          [action.applicationName]: {
-            ...state[action.applicationName],
-            ...action.result
-          }
-        }
-      };
     default:
       return state;
   }
@@ -160,13 +148,4 @@ export function stop(clusterId, appId) {
     types: [ACTIONS.STOP, ACTIONS.STOP_SUCCESS, ACTIONS.STOP_FAIL],
     promise: (client) => client.post(`/ui/api/application/${clusterId}/${appId}/stop`)
   };
-}
-
-let $iDownloadFrame;
-function downloadFile(uri) {
-  if ($iDownloadFrame) {
-    $iDownloadFrame.attr('src', uri);
-  } else {
-    $iDownloadFrame = $('<iframe>', {id: 'iDownloadFrame', src: uri}).hide().appendTo('body');
-  }
 }

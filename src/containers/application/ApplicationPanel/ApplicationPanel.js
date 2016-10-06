@@ -241,7 +241,6 @@ export default class ApplicationPanel extends Component {
   onActionInvoke(action, application) {
     const {clusters, params: {name}} = this.props;
     let cluster = clusters[name];
-
     let currentApplication;
     if (application) {
       currentApplication = this.props.application[name][application];
@@ -311,8 +310,15 @@ export default class ApplicationPanel extends Component {
           $link.get(0).click();
         });
         return;
+
       case "getInitFile":
-        this.props.getInitFile(name, currentApplication.name);
+        this.props.getInitFile(name, currentApplication.name).then((response)=>{
+          let uri = response._res.xhr.responseURL;
+          let $link = $('<a></a>').appendTo(document.body);
+          $link.attr('href', uri);
+          $link.attr('download', '');
+          $link.get(0).click();
+        });
         return;
 
       case "create":
