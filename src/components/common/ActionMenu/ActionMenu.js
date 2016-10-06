@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {ButtonToolbar, SplitButton, MenuItem} from 'react-bootstrap';
+import {ButtonToolbar, DropdownButton, SplitButton, MenuItem} from 'react-bootstrap';
 
 export default class ActionMenu extends Component {
   DEFAULT_STYLE = "info";
@@ -7,6 +7,7 @@ export default class ActionMenu extends Component {
   static propTypes = {
     subject: PropTypes.any,
     actions: PropTypes.array,
+    title: PropTypes.str,
     actionHandler: PropTypes.func
   };
 
@@ -25,9 +26,22 @@ export default class ActionMenu extends Component {
   }
 
   render() {
-    if (this.props.actions && this.props.actions.length > 0) {
+    let actions = this.props.actions;
+    if (actions && actions.length > 0) {
+      let titleWithoutAction = this.props.title;
+      if (titleWithoutAction) {
+        return (
+          <ButtonToolbar>
+            <DropdownButton bsStyle={this.DEFAULT_STYLE}
+                         title={titleWithoutAction}
+                         pullRight
+            >
+              {this.renderItems()}
+            </DropdownButton>
+          </ButtonToolbar>
+        );
+      }
       let defaultAction = this.getDefaultAction();
-
       return (
         <ButtonToolbar>
           <SplitButton bsStyle={this.DEFAULT_STYLE}
@@ -36,26 +50,7 @@ export default class ActionMenu extends Component {
                        onClick={this.handleClick.bind(this, defaultAction.key, this.props.subject)}
                        pullRight
           >
-
-            {this.props.actions.map((action, index) => {
-              if (action) {
-                return (
-                  <MenuItem key={index}
-                            disabled={action.disabled}
-                            onClick={this.handleClick.bind(this, action.key, this.props.subject)}
-                  >
-                    {action.title}
-                  </MenuItem>
-                );
-              }
-
-              return (
-                <MenuItem key={index}
-                          divider
-                />
-              );
-            })}
-
+            {this.renderItems()}
           </SplitButton>
         </ButtonToolbar>
       );
@@ -64,5 +59,26 @@ export default class ActionMenu extends Component {
     return (
       <div />
     );
+  }
+
+  renderItems() {
+    return this.props.actions.map((action, index) => {
+      if (action) {
+        return (
+          <MenuItem key={index}
+                    disabled={action.disabled}
+                    onClick={this.handleClick.bind(this, action.key, this.props.subject)}
+          >
+            {action.title}
+          </MenuItem>
+        );
+      }
+
+      return (
+        <MenuItem key={index}
+                  divider
+        />
+      );
+    });
   }
 }
