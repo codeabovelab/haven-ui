@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import * as settingsActions from 'redux/modules/settings/settings';
 import {UploadSettings} from '../../../components/index';
+import {ProgressBar} from 'react-bootstrap';
 
 @connect(
   state => ({
@@ -48,7 +49,7 @@ export default class SettingsPanel extends Component {
   render() {
     const settingsFile = this.props.settings.settingsFile;
     if (!settingsFile) {
-      return <div></div>;
+      return <div><ProgressBar active now={100} /></div>;
     }
     return (
       <div>
