@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {loadImages} from 'redux/modules/images/images';
-import {load as loadRegistries} from 'redux/modules/registries/registries';
+import {deleteImages} from 'redux/modules/images/images';
 import {connect} from 'react-redux';
 import {DockTable, ImagesList, StatisticsPanel} from '../../../components/index';
 import {RegistryEdit} from '../../index';
@@ -13,7 +13,7 @@ import _ from 'lodash';
     imagesUI: state.imagesUI,
     registries: state.registries,
     registriesUI: state.registriesUI
-  }), {loadImages, loadRegistries})
+  }), {loadImages, deleteImages})
 
 export default class ImagesPanel extends Component {
   static propTypes = {
@@ -22,7 +22,7 @@ export default class ImagesPanel extends Component {
     registries: PropTypes.array.isRequired,
     registriesUI: PropTypes.object.isRequired,
     loadImages: PropTypes.func.isRequired,
-    loadRegistries: PropTypes.func.isRequired
+    deleteImages: PropTypes.func.isRequired
   };
 
   statisticsMetrics = [
@@ -39,10 +39,9 @@ export default class ImagesPanel extends Component {
   ];
 
   componentDidMount() {
-    const {loadImages, loadRegistries} = this.props;
+    const {loadImages} = this.props;
 
     loadImages();
-    loadRegistries();
 
     $('.input-search').focus();
   }
@@ -64,6 +63,14 @@ export default class ImagesPanel extends Component {
         }
       });
     }
+    let actions = {
+      list: [
+        {key: "delFromNodes", title: (<span>Delete<br/><small>from nodes</small></span>)},
+        {key: "delFromAll", title: (<span>Delete<br/><small>from everywhere</small></span>)},
+        {key: "delFromAllExceptLast", title: (<span>Delete<br/><small>from everywhere except last</small></span>)}
+      ],
+      handler: this.onActionInvoke.bind(this)
+    };
     return (
       <div>
         <StatisticsPanel metrics={this.statisticsMetrics}
@@ -71,17 +78,36 @@ export default class ImagesPanel extends Component {
         />
         <ImagesList loading={!imagesList}
                     data={imagesList}
+                    actions={actions}
         />
       </div>
     );
   }
 
-  addRegister() {
-    let contentComponent = <RegistryEdit/>;
-    window.simpleModal.show({
-      contentComponent,
-      focus: RegistryEdit.focusSelector
-    });
+  onActionInvoke(type, image) {
+    let startDeleteImage = (arg) => {
+      confirm('Are you sure you want to remove image:' + image.name + ' ?')
+        .then(() => {
+          this.props.deleteImages({
+            ...arg,
+            nodes: image.nodes,
+            name: image.name
+          });
+          //TODO reload images
+        });
+    };
+    switch (type) {
+      case "delFromNodes":
+        startDeleteImage();
+        break;
+      case "delFromAll":
+        startDeleteImage({fromRegistry: true});
+        break;
+      case "delFromAllExceptLast":
+        startDeleteImage({fromRegistry: true, retainLast: 2/*'last' and prev. tag*/});
+        break;
+      default:
+        break;
+    }
   }
 }
-

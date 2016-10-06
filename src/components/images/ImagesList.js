@@ -1,15 +1,13 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router';
-import {DockTable, OnOff, Chain, ImageInfo, NodeInfo} from '../index';
-import {deleteImages} from 'redux/modules/images/images';
+import {ActionMenu, DockTable, OnOff, Chain, ImageInfo, NodeInfo} from '../index';
 import {Label, Badge, ButtonToolbar, DropdownButton, MenuItem, Panel, Popover, Button, ProgressBar, Glyphicon} from 'react-bootstrap';
 
-@connect(state => ({}), {deleteImages})
 export default class ImagesList extends Component {
   static propTypes = {
     data: PropTypes.array,
-    deleteImages: PropTypes.func.isRequired,
+    actions: PropTypes.object.isRequired,
     loading: PropTypes.bool
   };
 
@@ -59,7 +57,7 @@ export default class ImagesList extends Component {
       label: 'Nodes',
       width: '20%',
       render: (image) => {
-        let data = this.getNodes(image);
+        let data = image.nodes;
         return (<td key="nodes">
           <Chain data={data}
             popoverPlacement="right"
@@ -71,20 +69,18 @@ export default class ImagesList extends Component {
     {
       name: 'Actions',
       width: '10%',
-      render: (image) => this.actionsRender(image)//it hold 'this'
+      render: (image) => {
+        let actions = this.props.actions;
+        return (<td key="actions" className="td-actions">
+          <ActionMenu subject={image}
+                    actions={actions.list}
+                    actionHandler={actions.handler}
+                    title="Delete"
+          />
+        </td>);
+      }
     }
   ];
-
-  getNodes(image) {
-    let data = image.ids || [];
-    if (data.length) {
-      data = data.map(img => img.nodes)
-        .reduce((a, b) => a.concat(b))
-        .sort()
-        .reduce((a, b) => {if (a[a.length - 1] !== b) a.push(b); return a;}, []);
-    }
-    return data;
-  }
 
   render() {
     const GROUP_BY_SELECT = ['registry', 'name'];
@@ -114,40 +110,6 @@ export default class ImagesList extends Component {
         </div>
       )}
       </Panel>
-    );
-  }
-
-  actionsRender(image) {
-    let deleteImages = this.props.deleteImages;
-    let deleteFactory = (arg) => {
-      return () => {
-        confirm('Are you sure you want to remove image:' + image.name + ' ?')
-          .then(() => {
-            deleteImages({
-              ...arg,
-              nodes: this.getNodes(image),
-              name: image.name
-            });
-            //TODO reload images
-          });
-      };
-    };
-    return (
-      <td key="actions" className="td-actions">
-        <ButtonToolbar bsStyle="default">
-          <DropdownButton bsStyle="info" title="Delete" id={"delete_" + image.name}>
-            <MenuItem onSelect={deleteFactory()} >
-              Delete<br/><small>from nodes</small>
-            </MenuItem>
-            <MenuItem onSelect={deleteFactory({fromRegistry: true})} >
-              Delete<br/><small>from everywhere</small>
-            </MenuItem>
-            <MenuItem onSelect={deleteFactory({fromRegistry: true, retainLast: 2/*'last' and prev. tag*/})} >
-              Delete<br/><small>from everywhere except last</small>
-            </MenuItem>
-          </DropdownButton>
-        </ButtonToolbar>
-      </td>
     );
   }
 }

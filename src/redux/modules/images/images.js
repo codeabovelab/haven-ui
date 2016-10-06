@@ -58,8 +58,21 @@ function mapLoadImagesToState(data) {
       byRegistry[registry] = {};
     }
     byRegistry[registry][image.name] = image;
+    //also calculate simple list of nodes on which image is installed
+    image.nodes = getNodes(image);
   });
   return state;
+}
+
+function getNodes(image) {
+  let data = image.ids || [];
+  if (data.length) {
+    data = data.map(img => img.nodes)
+      .reduce((a, b) => a.concat(b))
+      .sort()
+      .reduce((a, b) => {if (a[a.length - 1] !== b) a.push(b); return a;}, []);
+  }
+  return data;
 }
 
 export function loadImages() {
