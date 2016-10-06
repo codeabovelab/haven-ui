@@ -306,18 +306,21 @@ export default class ApplicationPanel extends Component {
           let $link = $('<a></a>').appendTo(document.body);
           let parsedData = "text/json;charset=utf-8," + encodeURIComponent(response._res.text);
           $link.attr('href', 'data:' + parsedData);
-          $link.attr('download', 'config.json');
+          $link.attr('download', currentApplication.name + '-config.json');
           $link.get(0).click();
+          $link.remove();
         });
         return;
 
       case "getInitFile":
         this.props.getInitFile(name, currentApplication.name).then((response)=>{
-          let uri = response._res.xhr.responseURL;
+          let header = response._res.headers['content-disposition'];
+          let filename = header.match(/filename=(.+)/)[1];
           let $link = $('<a></a>').appendTo(document.body);
-          $link.attr('href', uri);
-          $link.attr('download', '');
+          $link.attr('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(response._res.text));
+          $link.attr('download', filename);
           $link.get(0).click();
+          $link.remove();
         });
         return;
 
