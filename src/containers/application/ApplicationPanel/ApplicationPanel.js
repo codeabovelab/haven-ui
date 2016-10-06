@@ -80,7 +80,7 @@ export default class ApplicationPanel extends Component {
     },
     {
       key: "getCompose",
-      title: "Get Compose"
+      title: "Get Config"
     }
 
   ];
@@ -303,23 +303,14 @@ export default class ApplicationPanel extends Component {
         return;
 
       case "getCompose":
-        confirm('Are you sure you want to compose this application?')
-          .then(() => {
-            this.setState({
-              actionDialog: (
-                <LoadingDialog application={currentApplication}
-                               onHide={this.onHideDialog.bind(this)}
-                               name={name}
-                               longTermAction={this.props.getComposeApp}
-                               loadContainers={this.props.loadContainers}
-                               actionKey="composed"
-                               listApps={this.props.listApps}
-                />
-              )
-            });
-          });
+         this.props.getComposeApp(name, currentApplication.name).then((response)=>{
+           let link = document.createElement("a");
+           let parsedData = "text/json;charset=utf-8," + encodeURIComponent(response._res.text);
+           link.href = 'data:' + parsedData;
+           link.download = 'data.json';
+           link.click();
+      });
         return;
-
       case "getInitFile":
         this.props.getInitFile(name, currentApplication.name);
         return;
