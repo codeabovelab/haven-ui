@@ -7,6 +7,8 @@ import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, LoadingD
 import {ContainerCreate, ContainerScale} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
 import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar} from 'react-bootstrap';
+import {list as listApplications} from 'redux/modules/application/application';
+import _ from 'lodash';
 
 function renderTdImage(row) {
   const MAX_LENGTH = 30;
@@ -35,26 +37,30 @@ function renderTdImage(row) {
 @connect(
   state => ({
     clusters: state.clusters,
-    containers: state.containers
+    containers: state.containers,
+    application: state.application
   }), {
     loadContainers: clusterActions.loadContainers,
     deleteCluster: clusterActions.deleteCluster,
     startContainer: containerActions.start,
     stopContainer: containerActions.stop,
     restartContainer: containerActions.restart,
-    removeContainer: containerActions.remove
+    removeContainer: containerActions.remove,
+    listApplications
   })
 export default class ClusterDetailsPanel extends Component {
   static propTypes = {
     clusters: PropTypes.object,
     containers: PropTypes.object,
+    application: PropTypes.object,
     params: PropTypes.object,
     loadContainers: PropTypes.func.isRequired,
     deleteCluster: PropTypes.func.isRequired,
     startContainer: PropTypes.func.isRequired,
     stopContainer: PropTypes.func.isRequired,
     restartContainer: PropTypes.func.isRequired,
-    removeContainer: PropTypes.func.isRequired
+    removeContainer: PropTypes.func.isRequired,
+    listApplications: PropTypes.func.isRequired
   };
 
   statisticsMetrics = [
@@ -92,6 +98,10 @@ export default class ClusterDetailsPanel extends Component {
     {
       name: 'status',
       width: '15%'
+    },
+
+    {
+      name: 'application'
     },
 
     {
@@ -142,11 +152,12 @@ export default class ClusterDetailsPanel extends Component {
   ];
 
   componentDidMount() {
-    const {loadContainers, params: {name}} = this.props;
+    const {loadContainers, listApplications, params: {name}} = this.props;
 
     this.state = {};
 
     loadContainers(name);
+    listApplications(name);
 
     $('.input-search').focus();
   }
@@ -291,8 +302,32 @@ export default class ClusterDetailsPanel extends Component {
           row.__attributes['data-running'] = true;
         }
         row.actions = this.tdActions.bind(this);
+        row.application = this.tdApplication.bind(this);
       });
     }
+  }
+//We could avoid such nested loops, if API provided appNames with loadContainers() method
+  tdApplication(container) {
+    const {application, params: {name}} = this.props;
+    let clustersApps = _.has(application, 'applicationsList.' + name) ? application.applicationsList[name] : {};
+    let appName = '';
+    for (let app in clustersApps) {
+      if (!clustersApps.hasOwnProperty(app)) continue;
+      for (let key in clustersApps[app].containers) {
+        if (!clustersApps[app].containers.hasOwnProperty(key)) continue;
+        let containerId = clustersApps[app].containers[key];
+        if (container.id === containerId) {
+          appName = app;
+          break;
+        }
+      }
+      if (appName) {
+        break;
+      }
+    }
+    return (
+      <td key="application" title="application">{appName}</td>
+    );
   }
 
   tdActions(container) {
