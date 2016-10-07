@@ -68,11 +68,10 @@ export default class Login extends Component {
 
   render() {
     const {user, logout, loginError} = this.props;
-    const s = require('./Login.scss');
     return (
-      <div className={s.loginPage}>
-        <div className={s.loginWrapper}>
-          <div className={"container " + s.loginContainer}>
+      <div className="loginPage">
+        <div className="loginWrapper">
+          <div className={"container loginContainer"}>
             <Helmet title="Login"/>
             {!user &&
             <div>
