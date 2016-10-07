@@ -12,7 +12,8 @@ import {
   LoginSuccess,
   NotFound,
   ApplicationPanel,
-  JobsPanel
+  JobsPanel,
+  SettingsPanel
 } from 'containers';
 
 export default (store) => {
@@ -49,6 +50,7 @@ export default (store) => {
         <Route name="Registries" path="registries" component={RegistriesPanel}/>
         <Route name="Applications" path="clusters/:name/applications" component={ApplicationPanel}/>
         <Route name="Jobs" path="jobs" component={JobsPanel}/>
+        <Route name="Settings" path="settings" component={SettingsPanel}/>
       </Route>
 
       { /* Public Routes */ }
