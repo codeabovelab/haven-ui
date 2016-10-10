@@ -3,7 +3,7 @@ import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import { Link, browserHistory } from 'react-router';
-import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, LoadingDialog, StatisticsPanel, ActionMenu} from '../../../components/index';
+import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, LoadingDialog, StatisticsPanel, ActionMenu, ClusterUploadCompose} from '../../../components/index';
 import {ContainerCreate, ContainerScale} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
 import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar} from 'react-bootstrap';
@@ -218,6 +218,13 @@ export default class ClusterDetailsPanel extends Component {
         <h3>Containers</h3>
 
         <ButtonToolbar>
+          <Button
+            bsStyle="default"
+            onClick={this.deployCompose.bind(this)}
+          >
+            <i className="fa fa-upload" />&nbsp;
+            Deploy Compose
+          </Button>
           <Button
             bsStyle="default"
             onClick={this.getClusterConfig.bind(this)}
@@ -502,6 +509,16 @@ export default class ClusterDetailsPanel extends Component {
       $link.get(0).click();
       $link.remove();
     }).catch(()=>null);
+  }
+
+  deployCompose() {
+    this.setState({
+      actionDialog: (
+        <ClusterUploadCompose title="Deploy Cluster From Compose File"
+                              onHide={this.onHideDialog.bind(this)}
+        />
+      )
+    });
   }
 
 }

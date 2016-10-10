@@ -57,6 +57,17 @@ export default function reducer(state = {}, action = {}) {
         }
       };
 
+    case ACTIONS.UPLOAD_COMPOSE:
+      return {
+        ...state,
+        uploadComposeError: null
+      };
+    case ACTIONS.UPLOAD_COMPOSE_FAIL:
+      return {
+        ...state,
+        uploadComposeError: action.error.message
+      };
+
     default:
       return state;
   }
@@ -132,3 +143,13 @@ export function loadDefaultParams({clusterId, image, tag, registry}) {
     promise: (client) => client.get(`/ui/api/clusters/${clusterId}/defaultparams/${image}/${tag}/`, {params: {registry: registry }})
   };
 }
+
+export function uploadCompose(clusterId, file) {
+  let formData = new FormData();
+  formData.append( "data", file);
+  return {
+    types: [ACTIONS.UPLOAD_COMPOSE, ACTIONS.UPLOAD_COMPOSE_SUCCESS, ACTIONS.UPLOAD_COMPOSE_FAIL],
+    promise: (client) => client.post(`/ui/api/clusters/${clusterId}/compose`, {data: formData})
+  };
+}
+
