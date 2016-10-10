@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import * as settingsActions from 'redux/modules/settings/settings';
 import {UploadSettings} from '../../../components/index';
 import {ProgressBar} from 'react-bootstrap';
+import {downloadFile} from '../../../utils/fileActions';
 
 @connect(
   state => ({
@@ -68,11 +69,7 @@ export default class SettingsPanel extends Component {
       const settingsFile = this.props.settings.settingsFile;
       let wholeSettings = {version: settingsFile.version, date: settingsFile.date, data: settingsFile.data};
       let parsedData = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(wholeSettings));
-      let $link = $('<a></a>').appendTo(document.body);
-      $link.attr('href', 'data:' + parsedData);
-      $link.attr('download', 'dockmaster-settings.json');
-      $link.get(0).click();
-      $link.remove();
+      downloadFile(parsedData, 'dockmaster-settings.json');
     }).catch(()=>null);
   }
 
