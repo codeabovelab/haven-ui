@@ -52,11 +52,22 @@ export default class ClusterUploadCompose extends Component {
     });
     $spinner.show();
     return uploadCompose(fields.name.value, fields.file.value[0]).then((response) => {
-      $logBlockArea.val(response._res.text);
+      const status = response._res.status || response._res.code;
+      switch (status) {
+        case 200:
+          $logBlockArea.val('Successfully deployed');
+          break;
+        case 304:
+          $logBlockArea.val('Not modified');
+          break;
+        default:
+          $logBlockArea.val('Error. ' + response._res.message);
+      }
       $spinner.hide();
     }).catch((response) => {
       $spinner.hide();
-      throw new SubmissionError(response.message);
+      $logBlockArea.val('Error ' + status);
+      throw new SubmissionError(response._res.message);
     });
   }
 
@@ -113,7 +124,7 @@ export default class ClusterUploadCompose extends Component {
             )}
           </FormGroup>
           <div className="form-group" id="creation-log-block">
-            <label>Creation Log: <i className="fa fa-spinner fa-2x fa-pulse"/></label>
+            <label>Deploy Result: <i className="fa fa-spinner fa-2x fa-pulse"/></label>
             <textarea readOnly
                       className="container-creation-log"
                       defaultValue=""
