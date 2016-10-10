@@ -4,7 +4,7 @@ import {deleteImages} from 'redux/modules/images/images';
 import {connect} from 'react-redux';
 import {DockTable, ImagesList, StatisticsPanel} from '../../../components/index';
 import {RegistryEdit} from '../../index';
-import {Label, Badge, ButtonToolbar, SplitButton, MenuItem} from 'react-bootstrap';
+import {Button, Label, Badge, ButtonToolbar, SplitButton, MenuItem} from 'react-bootstrap';
 import _ from 'lodash';
 
 @connect(
@@ -85,16 +85,30 @@ export default class ImagesPanel extends Component {
   }
 
   onActionInvoke(type, image) {
-    let startDeleteImage = (arg) => {
-      confirm('Are you sure you want to remove image:' + image.name + ' ?')
-        .then(() => {
-          this.props.deleteImages({
-            ...arg,
-            nodes: image.nodes,
-            name: image.name
-          });
-          //TODO reload images
+    let startDeleteImage = (argi) => {
+      let arg = argi || {};
+      arg.dryRun = true;
+      let dlgRender = (dlg) => {
+        let toggleDryRun = () => {
+          arg.dryRun = !arg.dryRun;
+          // it need for refresh dlg view
+          dlg.setState(arg);
+        };
+        return (<span>
+          <p>Are you sure you want to remove image:{image.name} ?</p>
+          <Button active={arg.dryRun} bsStyle="danger" onClick={toggleDryRun}>
+            Dry run
+          </Button>
+          </span>);
+      };
+      confirm(dlgRender).then(() => {
+        this.props.deleteImages({
+          ...arg,
+          nodes: image.nodes,
+          name: image.name
         });
+        //TODO reload images
+      });
     };
     switch (type) {
       case "delFromNodes":
