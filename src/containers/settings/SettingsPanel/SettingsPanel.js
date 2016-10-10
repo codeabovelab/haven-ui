@@ -20,15 +20,7 @@ export default class SettingsPanel extends Component {
   };
 
   componentDidMount() {
-    this.props.getSettings().then(()=> {
-      const settingsFile = this.props.settings.settingsFile;
-      let wholeSettings = {version: settingsFile.version, date: settingsFile.date, data: settingsFile.data};
-      let parsedData = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(wholeSettings));
-      let $downloadLink = $('#downloadSettingsFile');
-      $downloadLink.attr('href', 'data:' + parsedData);
-      $downloadLink.attr('download', 'data.json');
-      $downloadLink.show();
-    }).catch(()=>null);
+    this.props.getSettings();
   }
 
   onHideDialog() {
@@ -57,7 +49,7 @@ export default class SettingsPanel extends Component {
         <div className="settingsList">
           <p>Version: <span>{settingsFile.version}</span></p>
           <div className = "submit-buttons-block">
-            <a id="downloadSettingsFile" className="btn btn-default">Download settings file</a>
+            <a id="downloadSettingsFile" className="btn btn-default" onClick={this.getSettingsFile.bind(this)}>Download settings file</a>
             <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
             <a id="uploadSettingsFile" className="btn btn-default" onClick={this.showUploadSettingsDialog.bind(this)}>Upload settings file</a>
           </div>
@@ -69,6 +61,19 @@ export default class SettingsPanel extends Component {
         )}
       </div>
     );
+  }
+
+  getSettingsFile() {
+    this.props.getSettings().then(()=> {
+      const settingsFile = this.props.settings.settingsFile;
+      let wholeSettings = {version: settingsFile.version, date: settingsFile.date, data: settingsFile.data};
+      let parsedData = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(wholeSettings));
+      let $link = $('<a></a>').appendTo(document.body);
+      $link.attr('href', 'data:' + parsedData);
+      $link.attr('download', 'dockmaster-settings.json');
+      $link.get(0).click();
+      $link.remove();
+    }).catch(()=>null);
   }
 
 }
