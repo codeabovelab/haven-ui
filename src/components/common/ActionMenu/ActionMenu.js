@@ -7,7 +7,7 @@ export default class ActionMenu extends Component {
   static propTypes = {
     subject: PropTypes.any,
     actions: PropTypes.array,
-    title: PropTypes.str,
+    title: PropTypes.string,
     actionHandler: PropTypes.func
   };
 
