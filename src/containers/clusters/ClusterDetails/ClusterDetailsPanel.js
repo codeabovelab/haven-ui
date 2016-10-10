@@ -59,7 +59,8 @@ function processTdVal(val) {
     stopContainer: containerActions.stop,
     restartContainer: containerActions.restart,
     removeContainer: containerActions.remove,
-    listApplications
+    listApplications,
+    getClusterConfig: clusterActions.clusterConfig
   })
 export default class ClusterDetailsPanel extends Component {
   static propTypes = {
@@ -73,7 +74,8 @@ export default class ClusterDetailsPanel extends Component {
     stopContainer: PropTypes.func.isRequired,
     restartContainer: PropTypes.func.isRequired,
     removeContainer: PropTypes.func.isRequired,
-    listApplications: PropTypes.func.isRequired
+    listApplications: PropTypes.func.isRequired,
+    getClusterConfig: PropTypes.func.isRequired
   };
 
   statisticsMetrics = [
@@ -216,6 +218,13 @@ export default class ClusterDetailsPanel extends Component {
         <h3>Containers</h3>
 
         <ButtonToolbar>
+          <Button
+            bsStyle="default"
+            onClick={this.getClusterConfig.bind(this)}
+          >
+            <i className="fa fa-download" />&nbsp;
+            Download Configuration
+          </Button>
           <Button
             bsStyle="primary"
             onClick={this.onActionInvoke.bind(this, "create")}
@@ -482,6 +491,17 @@ export default class ClusterDetailsPanel extends Component {
         deleteCluster(name)
           .then(() => browserHistory.push('/clusters'));
       }, () => null);
+  }
+
+  getClusterConfig() {
+    const {getClusterConfig, params: {name}} = this.props;
+    getClusterConfig(name).then((response)=> {
+      let $link = $('<a></a>').appendTo(document.body);
+      $link.attr('href', 'data:text/json;charset=utf-8,' + encodeURIComponent(response._res.text));
+      $link.attr('download', 'cluster-' + name + '-config.json');
+      $link.get(0).click();
+      $link.remove();
+    }).catch(()=>null);
   }
 
 }

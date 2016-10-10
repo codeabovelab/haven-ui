@@ -308,7 +308,7 @@ export default class ApplicationPanel extends Component {
           $link.attr('download', currentApplication.name + '-config.json');
           $link.get(0).click();
           $link.remove();
-        });
+        }).catch(()=>null);
         return;
 
       case "getInitFile":
@@ -320,7 +320,7 @@ export default class ApplicationPanel extends Component {
           $link.attr('download', filename);
           $link.get(0).click();
           $link.remove();
-        });
+        }).catch(()=>null);
         return;
 
       case "create":
