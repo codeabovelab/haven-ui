@@ -7,6 +7,7 @@ import {DockTable, LoadingDialog, ActionMenu} from '../../../components/index';
 import { asyncConnect } from 'redux-async-connect';
 import {Button, ButtonToolbar, Panel, ProgressBar} from 'react-bootstrap';
 import {ApplicationCreate} from '../../../containers/index';
+import {downloadFile} from '../../../utils/fileActions';
 
 @asyncConnect([{
   promise: ({store: {dispatch, getState}}) => {
@@ -303,23 +304,17 @@ export default class ApplicationPanel extends Component {
 
       case "getCompose":
         this.props.getComposeApp(name, currentApplication.name).then((response)=> {
-          let $link = $('<a></a>').appendTo(document.body);
-          $link.attr('href', 'data:text/json;charset=utf-8,' + encodeURIComponent(response._res.text));
-          $link.attr('download', currentApplication.name + '-config.json');
-          $link.get(0).click();
-          $link.remove();
+          let data = 'text/json;charset=utf-8,' + encodeURIComponent(response._res.text);
+          downloadFile(data, currentApplication.name + '-config.json' );
         });
         return;
 
       case "getInitFile":
         this.props.getInitFile(name, currentApplication.name).then((response)=>{
           let header = response._res.headers['content-disposition'] || response._res.header['content-disposition'];
-          let filename = header ? header.match(/filename=(.+)/)[1] : currentApplication.name + '-init-file.yml';
-          let $link = $('<a></a>').appendTo(document.body);
-          $link.attr('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(response._res.text));
-          $link.attr('download', filename);
-          $link.get(0).click();
-          $link.remove();
+          let fileName = header ? header.match(/filename=(.+)/)[1] : currentApplication.name + '-init-file.yml';
+          let data = 'application/octet-stream;charset=utf-8,' + encodeURIComponent(response._res.text);
+          downloadFile(data, fileName);
         });
         return;
 
