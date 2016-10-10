@@ -304,8 +304,7 @@ export default class ApplicationPanel extends Component {
       case "getCompose":
         this.props.getComposeApp(name, currentApplication.name).then((response)=> {
           let $link = $('<a></a>').appendTo(document.body);
-          let parsedData = "text/json;charset=utf-8," + encodeURIComponent(response._res.text);
-          $link.attr('href', 'data:' + parsedData);
+          $link.attr('href', 'data:text/json;charset=utf-8,' + encodeURIComponent(response._res.text));
           $link.attr('download', currentApplication.name + '-config.json');
           $link.get(0).click();
           $link.remove();
@@ -315,7 +314,7 @@ export default class ApplicationPanel extends Component {
       case "getInitFile":
         this.props.getInitFile(name, currentApplication.name).then((response)=>{
           let header = response._res.headers['content-disposition'] || response._res.header['content-disposition'];
-          let filename = header ? header.match(/filename=(.+)/)[1] : currentApplication.name+'-init-file';
+          let filename = header ? header.match(/filename=(.+)/)[1] : currentApplication.name + '-init-file.yml';
           let $link = $('<a></a>').appendTo(document.body);
           $link.attr('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(response._res.text));
           $link.attr('download', filename);
