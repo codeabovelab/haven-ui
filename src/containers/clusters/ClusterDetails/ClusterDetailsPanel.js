@@ -11,17 +11,30 @@ import {list as listApplications} from 'redux/modules/application/application';
 import _ from 'lodash';
 
 function renderTdImage(row) {
-  const MAX_LENGTH = 30;
-  let image = row.image;
-  let length = image.length;
-  let title = "";
-  if (length >= MAX_LENGTH + 5) {
-    image = image.substring(0, MAX_LENGTH) + '...';
-    title = row.image;
-  }
+  let resultValue = processTdVal(row.image);
   return (
-    <td key="image" title={title}>{image}</td>
+    <td key="image" title={resultValue.title}>{resultValue.val}</td>
   );
+}
+
+function renderTdApplication(row) {
+  let resultValue = processTdVal(row.application);
+  return (
+    <td key="application" title={resultValue.title}>{resultValue.val}</td>
+  );
+}
+
+function processTdVal(val) {
+  const MAX_LENGTH = 30;
+  let result = [];
+  result.val = val ? val : '';
+  let length = result.val.length;
+  result.title = "";
+  if (length >= MAX_LENGTH + 5) {
+    result.title = val;
+    result.val = val.substring(0, MAX_LENGTH) + '...';
+  }
+  return result;
 }
 
 @asyncConnect([{
@@ -101,7 +114,8 @@ export default class ClusterDetailsPanel extends Component {
     },
 
     {
-      name: 'application'
+      name: 'application',
+      render: renderTdApplication
     },
 
     {
@@ -302,32 +316,8 @@ export default class ClusterDetailsPanel extends Component {
           row.__attributes['data-running'] = true;
         }
         row.actions = this.tdActions.bind(this);
-        row.application = this.tdApplication.bind(this);
       });
     }
-  }
-//We could avoid such nested loops, if API provided appNames with loadContainers() method
-  tdApplication(container) {
-    const {application, params: {name}} = this.props;
-    let clustersApps = _.has(application, 'applicationsList.' + name) ? application.applicationsList[name] : {};
-    let appName = '';
-    for (let app in clustersApps) {
-      if (!clustersApps.hasOwnProperty(app)) continue;
-      for (let key in clustersApps[app].containers) {
-        if (!clustersApps[app].containers.hasOwnProperty(key)) continue;
-        let containerId = clustersApps[app].containers[key];
-        if (container.id === containerId) {
-          appName = app;
-          break;
-        }
-      }
-      if (appName) {
-        break;
-      }
-    }
-    return (
-      <td key="application" title="application">{appName}</td>
-    );
   }
 
   tdActions(container) {
