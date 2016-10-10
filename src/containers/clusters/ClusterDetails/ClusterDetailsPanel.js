@@ -109,13 +109,13 @@ export default class ClusterDetailsPanel extends Component {
     },
 
     {
-      name: 'status',
-      width: '15%'
+      name: 'application',
+      render: renderTdApplication
     },
 
     {
-      name: 'application',
-      render: renderTdApplication
+      name: 'status',
+      width: '15%'
     },
 
     {
