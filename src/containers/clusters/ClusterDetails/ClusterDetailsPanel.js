@@ -4,7 +4,7 @@ import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import { Link, browserHistory } from 'react-router';
 import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, LoadingDialog, StatisticsPanel, ActionMenu} from '../../../components/index';
-import {ContainerCreate, ContainerScale} from '../../../containers/index';
+import {ContainerCreate, ContainerScale, ContainerUpdate} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
 import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar} from 'react-bootstrap';
 import {list as listApplications} from 'redux/modules/application/application';
@@ -146,6 +146,10 @@ export default class ClusterDetailsPanel extends Component {
       title: "Restart"
     },
     null,
+    {
+      key: "edit",
+      title: "Edit"
+    },
     {
       key: "scale",
       title: "Scale"
@@ -468,6 +472,16 @@ export default class ClusterDetailsPanel extends Component {
               )
             });
           });
+        return;
+
+      case "edit":
+        this.setState({
+          actionDialog: (
+            <ContainerUpdate container={currentContainer}
+                             onHide={this.onHideDialog.bind(this)}
+            />
+          )
+        });
         return;
 
       default:

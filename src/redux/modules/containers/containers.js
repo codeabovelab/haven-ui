@@ -119,3 +119,12 @@ export function remove(container) {
     promise: (client) => client.post(`${url}/remove`)
   };
 }
+
+export function updateContainer(container, data) {
+  let url = _containerUrl(container);
+  return {
+    types: [ACTIONS.UPDATE_CONTAINER, ACTIONS.UPDATE_CONTAINER_SUCCESS, ACTIONS.UPDATE_CONTAINER_FAIL],
+    id: container.id,
+    promise: (client) => client.put(`${url}/update`, {data})
+  };
+}

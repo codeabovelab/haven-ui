@@ -124,6 +124,30 @@ export default function reducer(state = initialState, action = {}) {
           scaling: false
         }
       };
+    case ACTIONS.UPDATE_CONTAINER:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          updating: true
+        }
+      };
+    case ACTIONS.UPDATE_CONTAINER_FAIL:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          updating: false
+        }
+      };
+    case ACTIONS.UPDATE_CONTAINER_SUCCESS:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          updating: false
+        }
+      };
     default:
       return state;
   }
