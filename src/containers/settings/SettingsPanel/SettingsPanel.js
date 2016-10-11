@@ -50,9 +50,11 @@ export default class SettingsPanel extends Component {
         <div className="settingsList">
           <p>Version: <span>{settingsFile.version}</span></p>
           <div className = "submit-buttons-block">
-            <a id="downloadSettingsFile" className="btn btn-default" onClick={this.getSettingsFile.bind(this)}>Download settings file</a>
+            <a id="downloadSettingsFile" className="btn btn-default" onClick={this.getSettingsFile.bind(this)}>
+              <i className="fa fa-download" />&nbsp;Download settings file</a>
             <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <a id="uploadSettingsFile" className="btn btn-default" onClick={this.showUploadSettingsDialog.bind(this)}>Upload settings file</a>
+            <a id="uploadSettingsFile" className="btn btn-default" onClick={this.showUploadSettingsDialog.bind(this)}>
+              <i className="fa fa-upload" />&nbsp;Upload settings file</a>
           </div>
         </div>
         {(this.state && this.state.actionDialog) && (
