@@ -20,7 +20,7 @@ function renderTdImage(row) {
 function renderTdApplication(row) {
   let resultValue = processTdVal(row.application);
   return (
-    <td key="application" title={resultValue.title}>{resultValue.val}</td>
+    <td key="application" title={resultValue.title}><Link to={`/clusters/${row.cluster}/applications`}>{resultValue.val}</Link></td>
   );
 }
 
