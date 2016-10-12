@@ -139,7 +139,8 @@ export default class ClustersList extends Component {
     return (
       <td key="containers">
         <OnOff on={cluster.containers.on}
-               off={cluster.containers.off} />
+               off={cluster.containers.off}
+               href={"/clusters/" + cluster.name}/>
       </td>
     );
   }
@@ -148,7 +149,8 @@ export default class ClustersList extends Component {
     return (
       <td key="nodes">
         <OnOff on={cluster.nodes.on}
-               off={cluster.nodes.off} />
+               off={cluster.nodes.off}
+               href="/nodes"/>
       </td>
     );
   }

@@ -16,13 +16,19 @@ export function connectWebsocketEventsListener(store) {
 
   let stompClient = Stomp.over(ws);
   let stompHeaders = {
-    login: config.eventServerLogin,
-    password: config.eventServerPassword,
-    'client-id': config.app.title
+    command: 'CONNECT',
+    header: {
+      login: config.eventServerLogin,
+      passcode: config.eventServerPassword,
+      'accept-version': '1.1,1.0',
+      'heart-beat': '10000,10000',
+      'client-id': config.app.title
+    },
+    body: ''
   };
 
   stompClient.connect(stompHeaders, (connectFrame) => {
-    stompClient.debug = false;
+    stompClient.debug = true;
 
     stompClient.send('/app/subscriptions/available');
 
