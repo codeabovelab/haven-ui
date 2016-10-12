@@ -12,9 +12,16 @@ export function connectWebsocketEventsListener(store) {
     url = `http://${url}`;
   }
 
-  let ws = new SockJS(url);
+  let state = store.getState();
+  let token;
 
+  if (state && state.auth && state.auth.token) {
+    url = `${url}?token=${state.auth.token.key}`;
+  }
+
+  let ws = new SockJS(url);
   let stompClient = Stomp.over(ws);
+
   let stompHeaders = {
     command: 'CONNECT',
     header: {
@@ -27,9 +34,9 @@ export function connectWebsocketEventsListener(store) {
     body: ''
   };
 
-  stompClient.connect(stompHeaders, (connectFrame) => {
-    stompClient.debug = true;
+  stompClient.debug = false;
 
+  stompClient.connect(stompHeaders, (connectFrame) => {
     stompClient.send('/app/subscriptions/available');
 
     stompClient.subscribe('/user/queue/subscriptions/get', (message) => {
@@ -59,5 +66,6 @@ export function connectWebsocketEventsListener(store) {
         });
       }
     });
+  }, (error) => {
   });
 }
