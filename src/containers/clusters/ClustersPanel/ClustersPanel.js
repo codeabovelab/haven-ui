@@ -85,13 +85,13 @@ export default class ClustersPanel extends Component {
     if (clustersList) {
       clustersList = clustersList.map((element)=> {
         let alertsCount = alerts ? alerts[element.name] : 0;
-        let applicationsCount;
+        let applicationsList;
         if (application && application[element.name]) {
-          applicationsCount = _.size(application[element.name]);
+          applicationsList = _.keys(application[element.name]);
         } else {
-          applicationsCount = 0;
+          applicationsList = '';
         }
-        return Object.assign(element, alertsCount, {applicationsCount});
+        return Object.assign(element, alertsCount, {applicationsList});
       });
     }
     const clustersAll = clustersIds !== null ? clustersIds.filter(id => id === 'all').map(id => clusters[id]) : null;

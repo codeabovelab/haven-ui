@@ -7,7 +7,8 @@ export default class Chain extends Component {
     data: PropTypes.any.isRequired,
     render: PropTypes.func,
     popoverRender: PropTypes.func,
-    popoverPlacement: PropTypes.string
+    popoverPlacement: PropTypes.string,
+    link: PropTypes.string
   };
 
   render() {
@@ -24,6 +25,7 @@ export default class Chain extends Component {
     let first = maxCount >= src.length ? maxCount : maxCount - 2;
     let itemRender = this.props.render || ((a) => String(a));
     let buttonRender = (item, i) => (<Button key={"item." + i} bsStyle="info" className="spaced-items">{itemRender(item)}</Button>);
+    let simpleLinkRender = (item, i) => (<Button href={this.props.link} key={"item." + i} bsStyle="info" className="spaced-items">{itemRender(item)}</Button>);
     let labelRender;
     if (this.props.popoverRender) {
       labelRender = (item, i) => (
@@ -36,6 +38,8 @@ export default class Chain extends Component {
           {buttonRender(item, i)}
         </OverlayTrigger>
       );
+    } else if (this.props.link) {
+      labelRender = simpleLinkRender;
     } else {
       labelRender = buttonRender;
     }

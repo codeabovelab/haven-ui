@@ -144,13 +144,13 @@ export default class Dashboard extends Component {
     if (this.props.clusters) {
       clusters = clustersList.map((element)=> {
         let alertsCount = alerts ? alerts[element.name] : 0;
-        let applicationsCount;
+        let applicationsList;
         if (application && application[element.name]) {
-          applicationsCount = _.size(application[element.name]);
+          applicationsList = _.keys(application[element.name]);
         } else {
-          applicationsCount = 0;
+          applicationsList = '';
         }
-        return Object.assign(element, alertsCount, {applicationsCount});
+        return Object.assign(element, alertsCount, {applicationsList});
       });
     }
 

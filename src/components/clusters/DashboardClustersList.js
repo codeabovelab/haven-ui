@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {Link} from 'react-router';
-import {DockTable, OnOff} from '../index';
+import {DockTable, OnOff, Chain} from '../index';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Glyphicon} from 'react-bootstrap';
 
 export default class DashboardClustersList extends Component {
@@ -44,8 +44,8 @@ export default class DashboardClustersList extends Component {
       label: '# of Alerts'
     },
     {
-      name: 'applicationsCount',
-      label: '# of Applications',
+      name: 'applicationsList',
+      label: 'Applications',
       render: this.applicationsRender
     }
   ];
@@ -122,8 +122,11 @@ export default class DashboardClustersList extends Component {
 
   applicationsRender(cluster) {
     return (
-      <td key="applicationsCount">
-        <Link to={`/clusters/${cluster.name}/applications`}>{cluster.applicationsCount}</Link>
+      <td key="applicationsList">
+        <Chain data={cluster.applicationsList || []}
+               link={"/clusters/" + cluster.name + "/applications"}
+               maxCount={3}
+        />
       </td>
     );
   }
