@@ -17,7 +17,7 @@ export function connectWebsocketEventsListener(store) {
   let stompClient = Stomp.over(ws);
   let stompHeaders = {
     login: config.eventServerLogin,
-    password: config.eventServerPassword,
+    passcode: config.eventServerPassword,
     'client-id': config.app.title
   };
 
