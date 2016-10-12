@@ -175,7 +175,7 @@ export default class ApplicationPanel extends Component {
     return (
       <div>
         <h1>
-          <Link to={"/clusters/" + name}>Clusters/{name}</Link>
+          <Link to="/clusters">Clusters</Link>/<Link to={"/clusters/" + name}>{name}</Link>/Applications
         </h1>
 
         <Panel header={applicationsHeaderBar}>
