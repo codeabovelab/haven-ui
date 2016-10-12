@@ -103,7 +103,11 @@ export default class Dashboard extends Component {
     if (this.props.nodes) {
       const nodes = Object.values(this.props.nodes);
       //console.log('nodes', nodes);
-      top5Memory = nodes.filter((el) => typeof el.health !== "undefined").sort((a, b) => {
+      top5Memory = nodes.filter((el) => {
+        if (typeof el.health !== "undefined" && el.on === true) {
+          return true;
+        }
+      }).sort((a, b) => {
         runningNodes += 1;
         if (a.health.sysMemUsed > b.health.sysMemUsed) {
           return -1;
@@ -114,7 +118,11 @@ export default class Dashboard extends Component {
         return 0;
       });
 
-      top5CPU = nodes.filter((el) => typeof el.health !== "undefined").map((element)=> {
+      top5CPU = nodes.filter((el) => {
+        if (typeof el.health !== "undefined" && el.on === true) {
+          return true;
+        }
+      }).map((element)=> {
         if (typeof(element.health.sysCpuLoad) === 'undefined') {
           element.health.sysCpuLoad = 0;
         }
@@ -129,7 +137,11 @@ export default class Dashboard extends Component {
         return 0;
       });
 
-      top5Network = nodes.filter((el) => typeof el.health !== "undefined").sort((a, b) => {
+      top5Network = nodes.filter((el) => {
+        if (typeof el.health !== "undefined" && el.on === true) {
+          return true;
+        }
+      }).sort((a, b) => {
         if (a.health.netTotal > b.health.netTotal) {
           return -1;
         } else if (a.health.netTotal < b.health.netTotal) {
