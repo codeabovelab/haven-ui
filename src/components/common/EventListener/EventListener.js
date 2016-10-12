@@ -25,8 +25,6 @@ export function connectWebsocketEventsListener(store) {
   let stompHeaders = {
     command: 'CONNECT',
     header: {
-      login: config.eventServerLogin,
-      passcode: config.eventServerPassword,
       'accept-version': '1.1,1.0',
       'heart-beat': '10000,10000',
       'client-id': config.app.title
