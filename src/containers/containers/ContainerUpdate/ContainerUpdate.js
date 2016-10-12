@@ -47,11 +47,17 @@ export default class ContainerUpdate extends Component {
     loadDetails(container);
   }
 
+  onSubmit() {
+    const {fields, updateContainer} = this.props.fields;
+    updateContainer();
+  }
+
   render() {
     let s = require('./ContainerUpdate.scss');
     const {clusters, fields, containersUI, container, containers} = this.props;
+    console.log(containersUI);
     const creationLogVisible = this.state.creationLogVisible;
-    let updating = containersUI[container.id].updating;
+    let updating = containersUI.updating;
 
     return (
       <Dialog show
@@ -61,7 +67,6 @@ export default class ContainerUpdate extends Component {
               onHide={creationLogVisible ? this.props.handleSubmit(this.onSubmit.bind(this)) : this.props.onHide}
               okTitle={creationLogVisible ? "Close" : null}
               cancelTitle={creationLogVisible ? "Again" : null}
-              backdrop="static"
       >
         <form>
           <div className="form-group">
@@ -69,24 +74,6 @@ export default class ContainerUpdate extends Component {
         </form>
       </Dialog>
     );
-
-    function inputField(property, field) {
-      switch (property.type) {
-        case 'integer':
-          return inputNumber(property, field);
-        default:
-          return inputText(property, field);
-      }
-    }
-
-    function inputText(property, field) {
-      return <input type="text" {...field} className="form-control"/>;
-    }
-
-    function inputNumber(property, field) {
-      let props = Object.assign({}, field, _.pick(property, ['min', 'max']));
-      return <input type="number" step="1" {...props} className="form-control"/>;
-    }
   }
 }
 
