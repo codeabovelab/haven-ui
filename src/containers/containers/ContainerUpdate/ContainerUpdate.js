@@ -146,7 +146,7 @@ export default class ContainerUpdate extends Component {
             )}
           </div>
           <div className="form-group" id="creation-log-block">
-            <label>Creation Log: <i className="fa fa-spinner fa-2x fa-pulse"/></label>
+            <label>Update Log: <i className="fa fa-spinner fa-2x fa-pulse"/></label>
             <textarea readOnly
                       className="container-creation-log"
                       defaultValue=""
