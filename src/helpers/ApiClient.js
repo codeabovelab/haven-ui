@@ -1,7 +1,7 @@
 import superagent from 'superagent';
 import config from '../config';
 import {browserHistory} from 'react-router';
-import {push} from 'react-router-redux';
+import {replace} from 'react-router-redux';
 import {logout} from 'redux/modules/auth/auth';
 
 const methods = ['get', 'post', 'put', 'patch', 'del'];
@@ -32,11 +32,12 @@ export default class ApiClient {
 
         request.end((err, response = {}) => {
           let {body} = response;
-          if (response.status === 401) {
-            this._store.dispatch(logout);
-            this._store.dispatch(push('/login'));
-          }
           if (err) {
+            if (response.status === 401) {
+              this._store.dispatch(logout);
+              this._store.dispatch(replace('/login'));
+            }
+
             reject(body || err);
           } else {
             let res = body ? body : {};
