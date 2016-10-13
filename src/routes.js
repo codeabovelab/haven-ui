@@ -13,7 +13,8 @@ import {
   NotFound,
   ApplicationPanel,
   JobsPanel,
-  SettingsPanel
+  SettingsPanel,
+  EventsPanel
 } from 'containers';
 
 export default (store) => {
@@ -52,6 +53,8 @@ export default (store) => {
         <Route name="Applications" path="clusters/:name/applications" component={ApplicationPanel}/>
         <Route name="Jobs" path="jobs" component={JobsPanel}/>
         <Route name="Settings" path="settings" component={SettingsPanel}/>
+        <Route name="Events" path="events" component={EventsPanel}/>
+        <Route name="Events" path="clusters/:name/events" component={EventsPanel}/>
       </Route>
 
       { /* Public Routes */ }

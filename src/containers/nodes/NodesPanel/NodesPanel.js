@@ -70,6 +70,10 @@ export default class NodesPanel extends Component {
           <h1>
             <Link to="/clusters">Clusters</Link>/<Link to={"/clusters/" + params.name}>{params.name}</Link>/Nodes
           </h1>)}
+        { !params.name && (
+          <h1>
+            <Link to="/clusters">Clusters</Link>/<Link to="/clusters/all">all</Link>/Nodes
+          </h1>)}
 
         <NodesList loading={typeof nodesList === "undefined"}
                    data={nodesList}
