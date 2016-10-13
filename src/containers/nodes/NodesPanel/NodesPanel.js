@@ -3,7 +3,7 @@ import {load} from 'redux/modules/nodes/nodes';
 import {connect} from 'react-redux';
 import {DockTable, NodesList, StatisticsPanel} from '../../../components';
 import {NodeAdd} from '../../index';
-import {ButtonToolbar, SplitButton, Button, MenuItem} from 'react-bootstrap';
+import {Link} from 'react-router';
 
 @connect(
   state => ({
@@ -13,6 +13,7 @@ import {ButtonToolbar, SplitButton, Button, MenuItem} from 'react-bootstrap';
 export default class NodesPanel extends Component {
   static propTypes = {
     nodes: PropTypes.object,
+    params: PropTypes.object,
     nodesIds: PropTypes.array,
     load: PropTypes.func.isRequired
   };
@@ -42,9 +43,11 @@ export default class NodesPanel extends Component {
   }
 
   render() {
-    const {nodes, nodesIds} = this.props;
-    const nodesList = nodesIds !== null ? nodesIds.map(id => nodes[id]) : null;
-
+    const {nodes, nodesIds, params} = this.props;
+    let nodesList = nodesIds !== null ? nodesIds.map(id => nodes[id]) : null;
+    if (params.name && nodesList) {
+      nodesList = nodesList.filter((el)=>(el.cluster === params.name));
+    }
     let totalNodes = (nodesList !== null ? nodesList.length : 0);
     let runningNodes = 0;
     let stoppedNodes = 0;
@@ -63,10 +66,14 @@ export default class NodesPanel extends Component {
         <StatisticsPanel metrics={this.statisticsMetrics}
                          values={[runningNodes, stoppedNodes, totalNodes]}
         />
+        { params.name && (
+          <h1>
+            <Link to="/clusters">Clusters</Link>/<Link to={"/clusters/" + params.name}>{params.name}</Link>/Nodes
+          </h1>)}
 
         <NodesList loading={typeof nodesList === "undefined"}
-                    data={nodesList}
-                    onAddNode={this.addNode.bind()}
+                   data={nodesList}
+                   onAddNode={this.addNode.bind()}
         />
       </div>
     );
