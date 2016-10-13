@@ -37,7 +37,6 @@ export default class StatisticsPanel extends React.Component {
 
   renderLink(metric, index) {
     let cluster = this.props.cluster;
-    console.log(cluster);
     let href = '';
     switch (metric.link) {
       case '/containers':

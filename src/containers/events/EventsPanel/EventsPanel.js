@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import { Link } from 'react-router';
 import _ from 'lodash';
 import {DockTable, ClustersList, StatisticsPanel, Dialog, EventLog} from 'components';
-import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar} from 'react-bootstrap';
+import {Panel} from 'react-bootstrap';
 import {count as countEvents} from 'redux/modules/events/events';
 
 
@@ -18,9 +18,7 @@ import {count as countEvents} from 'redux/modules/events/events';
 export default class EventsPanel extends Component {
   static propTypes = {
     params: PropTypes.object,
-    events: PropTypes.object,
-    alerts: PropTypes.object,
-    countEvents: PropTypes.func.isRequired
+    events: PropTypes.object
   };
 
   statisticsMetrics = [
@@ -30,12 +28,6 @@ export default class EventsPanel extends Component {
       titles: 'Events in the Cluster'
     }
   ];
-
-  componentDidMount() {
-    const {countEvents, params: {name}} = this.props;
-    this.state = {};
-    countEvents('bus.cluman.errors', name || 'all');
-  }
 
   render() {
     const {params: {name}} = this.props;
@@ -61,6 +53,10 @@ export default class EventsPanel extends Component {
         {name && (
           <h1>
             <Link to="/clusters">Clusters</Link>/<Link to={"/clusters/" + name}>{name}</Link>/Events
+          </h1>)}
+        {!name && (
+          <h1>
+            <Link to="/clusters">Clusters</Link>/<Link to="/clusters/all">all</Link>/Events
           </h1>)}
         <Panel header={eventsHeaderBar}>
           {this.props.events && (
