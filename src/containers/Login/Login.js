@@ -11,6 +11,7 @@ export default class Login extends Component {
   static propTypes = {
     user: PropTypes.object,
     auth: PropTypes.object,
+    location: PropTypes.object,
     loginError: PropTypes.string,
     login: PropTypes.func.isRequired,
     logout: PropTypes.func.isRequired
@@ -35,9 +36,14 @@ export default class Login extends Component {
   }
 
   componentDidMount() {
-    const {user} = this.props;
+    const {user, location} = this.props;
     if (!user) {
       this.fillCredentialsFields();
+    } else {
+      // Redirect if back parameter supplied in route search parameters
+      if (location && location.query && location.query.back) {
+        browserHistory.push(location.query.back);
+      }
     }
   }
 
@@ -56,9 +62,11 @@ export default class Login extends Component {
     this.props.login(username, password)
       .then(() => {
         const {auth} = this.props;
+
         if (auth && auth.token) {
           iUsername.value = '';
           iPassword.value = '';
+
           if (this.state.outdatedToken) {
             browserHistory.go(-2);
           }

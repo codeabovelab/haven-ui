@@ -32,10 +32,30 @@ export default class ApiClient {
 
         request.end((err, response = {}) => {
           let {body} = response;
+
           if (err) {
             if (response && (response.status === 401 || (typeof response.status === "undefined" && typeof response.statusCode === "undefined"))) {
-              this._store.dispatch(logout);
-              this._store.dispatch(replace('/login'));
+              if (this._store) {
+                let backLocation;
+                let state = this._store.getState();
+                let stateLocation = state.routing.locationBeforeTransitions;
+
+                if (stateLocation && stateLocation.action === "POP" && stateLocation.pathname) {
+                  backLocation = stateLocation.pathname;
+                }
+
+                this._store.dispatch(logout);
+
+                if (backLocation && backLocation !== "") {
+                  this._store.dispatch(
+                    replace({
+                      pathname: '/login',
+                      search: `?back=${backLocation}`,
+                      state: null
+                    })
+                  );
+                }
+              }
             }
 
             reject(body || err);
