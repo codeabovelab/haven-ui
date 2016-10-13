@@ -32,7 +32,7 @@ export default class ApiClient {
 
         request.end((err, response = {}) => {
           let {body} = response;
-          if (response.status !== 401) {
+          if (response.status === 401) {
             this._store.dispatch(logout);
             this._store.dispatch(push('/login'));
           }
