@@ -54,7 +54,7 @@ export default class NodesPanel extends Component {
 
     if (totalNodes > 0) {
       nodesList.forEach((node) => {
-        if (node.health != null) {
+        if (node.health != null && node.on === true) {
           runningNodes++;
         } else {
           stoppedNodes++;

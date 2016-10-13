@@ -93,20 +93,20 @@ export default class ClusterDetailsPanel extends Component {
     },
     {
       type: 'number',
-      title: 'Node in the Cluster',
-      titles: 'Nodes in the Cluster',
+      title: 'Node Running',
+      titles: 'Nodes Running',
       link: '/nodes'
     },
     {
       type: 'number',
-      title: 'Application in the Cluster',
-      titles: 'Applications in the Cluster',
+      title: 'Application',
+      titles: 'Applications',
       link: '/applications'
     },
     {
       type: 'number',
-      title: 'Event in the Cluster',
-      titles: 'Events in the Cluster',
+      title: 'Event',
+      titles: 'Events',
       link: '/events'
     }
   ];
@@ -239,9 +239,8 @@ export default class ClusterDetailsPanel extends Component {
       });
     }
 
-    if (typeof(cluster.nodes.on) !== 'undefined' && typeof(cluster.nodes.off) !== 'undefined') {
-      runningJobs = cluster.nodes.on;
-      runningNodes = cluster.nodes.off + cluster.nodes.on;
+    if (typeof(cluster.nodes.on) !== 'undefined') {
+      runningNodes = cluster.nodes.on;
     }
 
     const containersHeaderBar = (
