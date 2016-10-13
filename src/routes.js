@@ -13,7 +13,8 @@ import {
   NotFound,
   ApplicationPanel,
   JobsPanel,
-  SettingsPanel
+  SettingsPanel,
+  EventsPanel
 } from 'containers';
 
 export default (store) => {
@@ -46,11 +47,14 @@ export default (store) => {
         <Route name="" path="clusters/:name" component={ClusterDetailsPanel}/>
         <Route name="Containers" path="clusters/all" component={ClusterDetailsPanel} />
         <Route name="Nodes" path="nodes" component={NodesPanel}/>
+        <Route name="Nodes" path="clusters/:name/nodes" component={NodesPanel}/>
         <Route name="Images" path="images" component={ImagesPanel}/>
         <Route name="Registries" path="registries" component={RegistriesPanel}/>
         <Route name="Applications" path="clusters/:name/applications" component={ApplicationPanel}/>
         <Route name="Jobs" path="jobs" component={JobsPanel}/>
         <Route name="Settings" path="settings" component={SettingsPanel}/>
+        <Route name="Events" path="events" component={EventsPanel}/>
+        <Route name="Events" path="clusters/:name/events" component={EventsPanel}/>
       </Route>
 
       { /* Public Routes */ }

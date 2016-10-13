@@ -51,7 +51,8 @@ function processTdVal(val) {
   state => ({
     clusters: state.clusters,
     containers: state.containers,
-    application: state.application
+    application: state.application,
+    events: state.events
   }), {
     loadContainers: clusterActions.loadContainers,
     deleteCluster: clusterActions.deleteCluster,
@@ -66,6 +67,7 @@ export default class ClusterDetailsPanel extends Component {
     clusters: PropTypes.object,
     containers: PropTypes.object,
     application: PropTypes.object,
+    events: PropTypes.object,
     params: PropTypes.object,
     loadContainers: PropTypes.func.isRequired,
     deleteCluster: PropTypes.func.isRequired,
@@ -80,17 +82,26 @@ export default class ClusterDetailsPanel extends Component {
     {
       type: 'number',
       title: 'Container Running',
-      titles: 'Containers Running'
+      titles: 'Containers Running',
+      link: '/containers'
     },
     {
       type: 'number',
       title: 'Node in the Cluster',
-      titles: 'Nodes in the Cluster'
+      titles: 'Nodes in the Cluster',
+      link: '/nodes'
     },
     {
       type: 'number',
-      title: 'Running Job',
-      titles: 'Running Jobs'
+      title: 'Application in the Cluster',
+      titles: 'Applications in the Cluster',
+      link: '/applications'
+    },
+    {
+      type: 'number',
+      title: 'Event in the Cluster',
+      titles: 'Events in the Cluster',
+      link: '/events'
     }
   ];
 
@@ -199,8 +210,20 @@ export default class ClusterDetailsPanel extends Component {
     let runningContainers = 0;
     let runningNodes = 0;
     let runningJobs = 0;
+    let runningApps = 0;
     let errorCount = 0;
-
+    let eventsCount = 0;
+    let events = this.props.events['bus.cluman.errors'];
+    if (events) {
+      eventsCount = name === 'all' ? _.size(events) : _.size(events.filter((el)=>(el.cluster === name)));
+    }
+    if (name === 'all') {
+      _.forEach(clusters, (el)=> {
+        runningApps += _.size(el.applications);
+      });
+    }else {
+      runningApps = _.size(cluster.applications);
+    }
 
     if (rows && rows.length > 0) {
       rows.forEach((container) => {
@@ -240,11 +263,6 @@ export default class ClusterDetailsPanel extends Component {
       </div>
     );
 
-    const eventsHeaderBar = (
-      <div className="clearfix">
-        <h3>Events</h3>
-      </div>
-    );
     const isContainersPage = name === 'all';
     let columns = this.COLUMNS;
     let groupBySelect = this.GROUP_BY_SELECT;
@@ -257,7 +275,9 @@ export default class ClusterDetailsPanel extends Component {
     return (
       <div>
         <StatisticsPanel metrics={this.statisticsMetrics}
-                         values={[runningContainers, runningNodes, runningJobs, errorCount]}
+                         link
+                         cluster={cluster}
+                         values={[runningContainers, runningNodes, runningApps, eventsCount]}
         />
 
         {isContainersPage && (
@@ -294,12 +314,6 @@ export default class ClusterDetailsPanel extends Component {
             <div className="alert alert-info">
               No containers yet
             </div>
-          )}
-        </Panel>
-
-        <Panel header={eventsHeaderBar}>
-          {!rows && (
-            <ProgressBar active now={100} />
           )}
         </Panel>
 
