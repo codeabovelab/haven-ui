@@ -42,7 +42,7 @@ export default class ClustersList extends Component {
       sortable: true
     },
     {
-      name: 'applicationsList',
+      name: 'applications',
       label: 'Applications',
       render: this.applicationsRender
     },
@@ -168,8 +168,8 @@ export default class ClustersList extends Component {
 
   applicationsRender(cluster) {
     return (
-      <td key="applicationsList">
-        <Chain data={cluster.applicationsList || []}
+      <td key="applications">
+        <Chain data={cluster.applications || []}
                link={"/clusters/" + cluster.name + "/applications"}
                maxCount={3}
         />

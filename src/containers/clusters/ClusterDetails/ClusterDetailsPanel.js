@@ -7,7 +7,6 @@ import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, Chain, L
 import {ContainerCreate, ContainerScale, ContainerUpdate} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
 import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar} from 'react-bootstrap';
-import {list as listApplications} from 'redux/modules/application/application';
 import _ from 'lodash';
 
 function renderTdImage(row) {
@@ -57,7 +56,6 @@ function processTdVal(val) {
   state => ({
     clusters: state.clusters,
     containers: state.containers,
-    application: state.application,
     events: state.events
   }), {
     loadContainers: clusterActions.loadContainers,
@@ -65,14 +63,12 @@ function processTdVal(val) {
     startContainer: containerActions.start,
     stopContainer: containerActions.stop,
     restartContainer: containerActions.restart,
-    removeContainer: containerActions.remove,
-    listApplications
+    removeContainer: containerActions.remove
   })
 export default class ClusterDetailsPanel extends Component {
   static propTypes = {
     clusters: PropTypes.object,
     containers: PropTypes.object,
-    application: PropTypes.object,
     events: PropTypes.object,
     params: PropTypes.object,
     loadContainers: PropTypes.func.isRequired,
@@ -80,8 +76,7 @@ export default class ClusterDetailsPanel extends Component {
     startContainer: PropTypes.func.isRequired,
     stopContainer: PropTypes.func.isRequired,
     restartContainer: PropTypes.func.isRequired,
-    removeContainer: PropTypes.func.isRequired,
-    listApplications: PropTypes.func.isRequired
+    removeContainer: PropTypes.func.isRequired
   };
 
   statisticsMetrics = [
@@ -187,12 +182,11 @@ export default class ClusterDetailsPanel extends Component {
   ];
 
   componentDidMount() {
-    const {loadContainers, listApplications, params: {name}} = this.props;
+    const {loadContainers, params: {name}} = this.props;
 
     this.state = {};
 
     loadContainers(name);
-    listApplications(name);
 
     $('.input-search').focus();
   }

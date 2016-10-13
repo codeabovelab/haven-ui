@@ -9,7 +9,6 @@ import {DockTable, StatisticsPanel, DashboardNodesList, DashboardClustersList} f
 import {load as loadClusters} from 'redux/modules/clusters/clusters';
 import {load as loadNodes} from 'redux/modules/nodes/nodes';
 import {count as countEvents} from 'redux/modules/events/events';
-import {list as listApplications} from 'redux/modules/application/application';
 
 @connect(
   state => ({
@@ -17,19 +16,16 @@ import {list as listApplications} from 'redux/modules/application/application';
     nodes: state.nodes,
     lastEvents: state.events.last,
     alerts: state.events.alerts,
-    application: state.application.applicationsList
-  }), {loadClusters, loadNodes, countEvents, listApplications})
+  }), {loadClusters, loadNodes, countEvents})
 export default class Dashboard extends Component {
   static propTypes = {
     lastEvents: PropTypes.array,
     clusters: PropTypes.object,
     alerts: PropTypes.object,
     nodes: PropTypes.object,
-    application: PropTypes.object,
     loadClusters: PropTypes.func.isRequired,
     loadNodes: PropTypes.func.isRequired,
     countEvents: PropTypes.func.isRequired,
-    listApplications: PropTypes.func.isRequired
   };
 
   statisticsMetrics = [
@@ -56,13 +52,12 @@ export default class Dashboard extends Component {
   ];
 
   componentDidMount() {
-    const {loadClusters, loadNodes, countEvents, listApplications} = this.props;
+    const {loadClusters, loadNodes, countEvents} = this.props;
     let clusterNames = [];
     loadClusters().then(() => {
       for (let key in this.props.clusters) {
         if (typeof(this.props.clusters[key] === 'Cluster')) {
           clusterNames.push('cluster:' + key);
-          listApplications(key);
         }
       }
       countEvents('bus.cluman.errors', clusterNames);
@@ -71,7 +66,7 @@ export default class Dashboard extends Component {
   }
 
   render() {
-    const {lastEvents, alerts, application} = this.props;
+    const {lastEvents, alerts} = this.props;
     let events = lastEvents ? lastEvents.slice(0, 20) : null;
 
     const styles = require('./Dashboard.scss');
@@ -156,13 +151,7 @@ export default class Dashboard extends Component {
     if (this.props.clusters) {
       clusters = clustersList.map((element)=> {
         let alertsCount = alerts ? alerts[element.name] : 0;
-        let applicationsList;
-        if (application && application[element.name]) {
-          applicationsList = _.keys(application[element.name]);
-        } else {
-          applicationsList = '';
-        }
-        return Object.assign(element, alertsCount, {applicationsList});
+        return Object.assign(element, alertsCount);
       });
     }
 
