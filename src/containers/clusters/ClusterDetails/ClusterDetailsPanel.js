@@ -80,17 +80,26 @@ export default class ClusterDetailsPanel extends Component {
     {
       type: 'number',
       title: 'Container Running',
-      titles: 'Containers Running'
+      titles: 'Containers Running',
+      link: '/containers'
     },
     {
       type: 'number',
       title: 'Node in the Cluster',
-      titles: 'Nodes in the Cluster'
+      titles: 'Nodes in the Cluster',
+      link: '/nodes'
     },
     {
       type: 'number',
-      title: 'Running Job',
-      titles: 'Running Jobs'
+      title: 'Application in the Cluster',
+      titles: 'Applications in the Cluster',
+      link: '/applications'
+    },
+    {
+      type: 'number',
+      title: 'Event in the Cluster',
+      titles: 'Events in the Cluster',
+      link: '/events'
     }
   ];
 
@@ -200,6 +209,7 @@ export default class ClusterDetailsPanel extends Component {
     let runningNodes = 0;
     let runningJobs = 0;
     let errorCount = 0;
+    let runningApps = _.size(cluster.applications);
 
 
     if (rows && rows.length > 0) {
@@ -257,7 +267,9 @@ export default class ClusterDetailsPanel extends Component {
     return (
       <div>
         <StatisticsPanel metrics={this.statisticsMetrics}
-                         values={[runningContainers, runningNodes, runningJobs, errorCount]}
+                         link
+                         cluster={cluster}
+                         values={[runningContainers, runningNodes, runningApps]}
         />
 
         {isContainersPage && (
