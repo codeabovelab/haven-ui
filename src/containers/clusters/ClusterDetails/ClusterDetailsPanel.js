@@ -3,7 +3,7 @@ import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import { Link, browserHistory } from 'react-router';
-import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, LoadingDialog, StatisticsPanel, ActionMenu} from '../../../components/index';
+import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, Chain, LoadingDialog, StatisticsPanel, ActionMenu} from '../../../components/index';
 import {ContainerCreate, ContainerScale, ContainerUpdate} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
 import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar} from 'react-bootstrap';
@@ -19,8 +19,14 @@ function renderTdImage(row) {
 
 function renderTdApplication(row) {
   let resultValue = processTdVal(row.application);
+  let val = resultValue.val.length ? [resultValue.val] : [];
   return (
-    <td key="application" title={resultValue.title}><Link to={`/clusters/${row.cluster}/applications`}>{resultValue.val}</Link></td>
+    <td key="application" title={resultValue.title}>
+      <Chain data={val || []}
+             link={`/clusters/${row.cluster}/applications`}
+             maxCount={1}
+      />
+    </td>
   );
 }
 
