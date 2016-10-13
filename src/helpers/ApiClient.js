@@ -33,9 +33,7 @@ export default class ApiClient {
         request.end((err, response = {}) => {
           let {body} = response;
           if (err) {
-            console.log('response err', response, err);
-
-            if (response.status === 401) {
+            if (response && (response.status === 401 || (typeof response.status === "undefined" && typeof response.statusCode === "undefined"))) {
               this._store.dispatch(logout);
               this._store.dispatch(replace('/login'));
             }
