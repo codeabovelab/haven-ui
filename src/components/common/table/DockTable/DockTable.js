@@ -383,8 +383,6 @@ export default class DockTable extends Component {
         <tr className="tr-group">
           <td colSpan={columns.length + (this.props.hideGroupColumn ? 0 : 1)}>
             <span className="group-title" onClick={this.toggleGroup.bind(this, group.key)}>
-            {!closed && <i className="fa fa-minus"/>}
-              {closed && <i className="fa fa-plus"/>}
               {group.key}
             </span>
             <span className="text-muted">{' '}({group.rows.length})</span>
