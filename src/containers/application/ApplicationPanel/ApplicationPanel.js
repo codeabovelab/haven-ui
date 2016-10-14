@@ -199,7 +199,7 @@ export default class ApplicationPanel extends Component {
     }
     if (containers && _.size(containers) > 0) {
       _.forEach(containers, (container) => {
-        if (container.run) {
+        if (container.run && (name === 'all' || name === container.cluster)) {
           runningContainers++;
         }
       });

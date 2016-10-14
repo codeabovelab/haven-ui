@@ -4,40 +4,93 @@ import { Link } from 'react-router';
 import _ from 'lodash';
 import {DockTable, ClustersList, StatisticsPanel, Dialog, EventLog} from 'components';
 import {Panel} from 'react-bootstrap';
-import {count as countEvents} from 'redux/modules/events/events';
+import {loadContainers} from 'redux/modules/clusters/clusters';
 
 
 @connect(
   state => ({
+    clusters: state.clusters,
+    containers: state.containers,
     events: state.events,
     alerts: state.events.alerts
   }), {
-    countEvents
+    loadContainers
   }
 )
 export default class EventsPanel extends Component {
   static propTypes = {
+    clusters: PropTypes.object,
+    containers: PropTypes.object,
     params: PropTypes.object,
-    events: PropTypes.object
+    events: PropTypes.object,
+    loadContainers: PropTypes.func
   };
 
   statisticsMetrics = [
     {
       type: 'number',
-      title: 'Event in the Cluster',
-      titles: 'Events in the Cluster'
+      title: 'Container Running',
+      titles: 'Containers Running',
+      link: '/containers'
+    },
+    {
+      type: 'number',
+      title: 'Node Running',
+      titles: 'Nodes Running',
+      link: '/nodes'
+    },
+    {
+      type: 'number',
+      title: 'Application',
+      titles: 'Applications',
+      link: '/applications'
+    },
+    {
+      type: 'number',
+      title: 'Event',
+      titles: 'Events',
+      link: '/events'
     }
   ];
 
+  componentDidMount() {
+    const {loadContainers, params: {name}} = this.props;
+    loadContainers(name);
+  }
+
   render() {
-    const {params: {name}} = this.props;
+    const {clusters, containers, params: {name}} = this.props;
+    const cluster = clusters[name];
     let events = this.props.events['bus.cluman.errors'];
+
+    let runningContainers = 0;
+    let runningNodes = 0;
+    let runningApps = 0;
     let eventsCount = 0;
     if (name && events && name !== 'all') {
       events = events.filter((el)=>(el.cluster === name));
     }
     if (events) {
       eventsCount = _.size(events);
+    }
+    if (name === 'all') {
+      _.forEach(clusters, (el)=> {
+        runningApps += _.size(el.applications);
+      });
+    }else {
+      runningApps = _.size(cluster.applications);
+    }
+
+    if (containers && _.size(containers) > 0) {
+      _.forEach(containers, (container) => {
+        if (container.run && (name === 'all' || name === container.cluster)) {
+          runningContainers++;
+        }
+      });
+    }
+
+    if (typeof(cluster.nodes.on) !== 'undefined') {
+      runningNodes = cluster.nodes.on;
     }
     const eventsHeaderBar = (
       <div className="clearfix">
@@ -48,7 +101,9 @@ export default class EventsPanel extends Component {
     return (
       <div>
         <StatisticsPanel metrics={this.statisticsMetrics}
-                         values={[eventsCount]}
+                         link
+                         cluster={cluster}
+                         values={[runningContainers, runningNodes, runningApps, eventsCount]}
         />
         {name && (
           <h1>
