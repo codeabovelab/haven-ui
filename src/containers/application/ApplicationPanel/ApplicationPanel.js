@@ -3,9 +3,9 @@ import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as applicationActions from 'redux/modules/application/application';
 import {connect} from 'react-redux';
 import { Link } from 'react-router';
-import {DockTable, LoadingDialog, ActionMenu, StatisticsPanel} from '../../../components/index';
+import {DockTable, LoadingDialog, Chain, NodeInfo, ActionMenu, StatisticsPanel} from '../../../components/index';
 import { asyncConnect } from 'redux-async-connect';
-import {Button, ButtonToolbar, Panel, ProgressBar} from 'react-bootstrap';
+import {Button, ButtonToolbar, Panel, ProgressBar, Popover} from 'react-bootstrap';
 import {ApplicationCreate} from '../../../containers/index';
 import {downloadFile} from '../../../utils/fileActions';
 import _ from 'lodash';
@@ -138,21 +138,30 @@ export default class ApplicationPanel extends Component {
   ];
 
   containersRender(application) {
-    let applicationContainers = [];
+    let chainContainers = [];
     const containers = this.props.containers;
     for (let el in application.containers) {
       if (application.containers.hasOwnProperty(el)) {
         let containerId = application.containers[el];
         if (containers[containerId]) {
-          applicationContainers.push(containers[containerId].name);
+          chainContainers.push(containers[containerId]);
         }
       }
     }
+    let popoverRender = (el) => (
+      <Popover>
+        <span>Image: {shortenName(el.image) || ''}</span>
+        <br></br>
+        <span>Status: {shortenName(el.status) || ''}</span>
+      </Popover>
+  );
     return (
       <td key="containers">
-        {applicationContainers.map(function listContainers(container, i) {
-          return <p key={i}>{container}</p>;
-        })}
+        <Chain data={chainContainers}
+               popoverPlacement="top"
+               popoverRender={popoverRender}
+               render={(container) => (<span title={String(container.name) || ""}>{String(container.name) || ""}</span>)}
+        />
       </td>
     );
   }
@@ -405,4 +414,13 @@ export default class ApplicationPanel extends Component {
         return;
     }
   }
+}
+
+function shortenName(name) {
+  let result = String(name);
+  const MAX_LENGTH = 25;
+  if (name.length > MAX_LENGTH) {
+    result = name.substr(0, MAX_LENGTH) + '...';
+  }
+  return result;
 }
