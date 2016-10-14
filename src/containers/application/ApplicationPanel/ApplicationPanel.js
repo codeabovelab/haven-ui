@@ -3,11 +3,12 @@ import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as applicationActions from 'redux/modules/application/application';
 import {connect} from 'react-redux';
 import { Link } from 'react-router';
-import {DockTable, LoadingDialog, ActionMenu} from '../../../components/index';
+import {DockTable, LoadingDialog, ActionMenu, StatisticsPanel} from '../../../components/index';
 import { asyncConnect } from 'redux-async-connect';
 import {Button, ButtonToolbar, Panel, ProgressBar} from 'react-bootstrap';
 import {ApplicationCreate} from '../../../containers/index';
 import {downloadFile} from '../../../utils/fileActions';
+import _ from 'lodash';
 
 @asyncConnect([{
   promise: ({store: {dispatch, getState}}) => {
@@ -23,7 +24,8 @@ import {downloadFile} from '../../../utils/fileActions';
   state => ({
     clusters: state.clusters,
     containers: state.containers,
-    application: state.application.applicationsList
+    application: state.application.applicationsList,
+    events: state.events
   }), {
     loadContainers: clusterActions.loadContainers,
     listApps: applicationActions.list,
@@ -43,6 +45,7 @@ export default class ApplicationPanel extends Component {
     application: PropTypes.object,
     containers: PropTypes.object,
     params: PropTypes.object,
+    events: PropTypes.object,
     loadContainers: PropTypes.func.isRequired,
     listApps: PropTypes.func.isRequired,
     deleteApp: PropTypes.func.isRequired,
@@ -55,6 +58,33 @@ export default class ApplicationPanel extends Component {
     startApp: PropTypes.func.isRequired,
     stopApp: PropTypes.func.isRequired
   };
+
+  statisticsMetrics = [
+    {
+      type: 'number',
+      title: 'Container Running',
+      titles: 'Containers Running',
+      link: '/containers'
+    },
+    {
+      type: 'number',
+      title: 'Node Running',
+      titles: 'Nodes Running',
+      link: '/nodes'
+    },
+    {
+      type: 'number',
+      title: 'Application',
+      titles: 'Applications',
+      link: '/applications'
+    },
+    {
+      type: 'number',
+      title: 'Event',
+      titles: 'Events',
+      link: '/events'
+    }
+  ];
 
   ACTIONS = [
     {
@@ -114,7 +144,7 @@ export default class ApplicationPanel extends Component {
       if (application.containers.hasOwnProperty(el)) {
         let containerId = application.containers[el];
         if (containers[containerId]) {
-          applicationContainers.push(containers[containerId].image);
+          applicationContainers.push(containers[containerId].name);
         }
       }
     }
@@ -137,7 +167,8 @@ export default class ApplicationPanel extends Component {
   render() {
     this.COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
     const GROUP_BY_SELECT = ['name', 'creatingDate'];
-    const {containers, application, params: {name}} = this.props;
+    const {containers, clusters, application, params: {name}} = this.props;
+    const cluster = clusters[name];
     if (!application) {
       return (
         <div></div>
@@ -153,6 +184,28 @@ export default class ApplicationPanel extends Component {
           rows.push(applications[el]);
         }
       }
+    }
+    let runningContainers = 0;
+    let runningNodes = 0;
+    let Apps = 0;
+    let eventsCount = 0;
+    let events = this.props.events['bus.cluman.errors'];
+
+    if (events) {
+      eventsCount = name === 'all' ? _.size(events) : _.size(events.filter((el)=>(el.cluster === name)));
+    }
+    if (rows) {
+      Apps = rows.length;
+    }
+    if (containers && _.size(containers) > 0) {
+      _.forEach(containers, (container) => {
+        if (container.run && (name === 'all' || name === container.cluster)) {
+          runningContainers++;
+        }
+      });
+    }
+    if (typeof(cluster.nodes.on) !== 'undefined') {
+      runningNodes = cluster.nodes.on;
     }
 
     this.additionalData(rows);
@@ -174,6 +227,11 @@ export default class ApplicationPanel extends Component {
 
     return (
       <div>
+        <StatisticsPanel metrics={this.statisticsMetrics}
+                         link
+                         cluster={cluster}
+                         values={[runningContainers, runningNodes, Apps, eventsCount]}
+        />
         <h1>
           <Link to="/clusters">Clusters</Link>/<Link to={"/clusters/" + name}>{name}</Link>/Applications
         </h1>

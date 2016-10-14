@@ -57,7 +57,7 @@ export default class StatisticsPanel extends React.Component {
       default:
         break;
     }
-    if (metric.link === '/applications' && cluster.name === 'all' || metric.link === '/containers' ) {
+    if (metric.link === '/applications' && cluster.name === 'all') {
       return (
         <div className="metric-label">{this.props.values[index] > 1 ? metric.titles : metric.title}</div>
       );
