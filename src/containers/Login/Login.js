@@ -59,6 +59,10 @@ export default class Login extends Component {
     const username = iUsername.value;
     const iPassword = this.refs.password;
     const password = iPassword.value;
+    if (username.trim() === '' || password.trim() === '' ) {
+      this.refs.error.textContent = 'Please, fill username and password';
+      return;
+    }
     this.props.login(username, password)
       .then(() => {
         const {auth} = this.props;
@@ -76,6 +80,10 @@ export default class Login extends Component {
 
   render() {
     const {user, logout, loginError} = this.props;
+    let errorMessage = 'Incorrect username or password';
+    if (loginError && loginError.substr(0, 13) === 'Error status:') {
+      errorMessage = loginError;
+    }
     return (
       <div className="loginPage">
         <div className="loginWrapper">
@@ -98,9 +106,9 @@ export default class Login extends Component {
                   className="fa fa-sign-in"/>{' '}Log In
                 </button>
               </form>
-              <div className="text-danger text-xs-center text-error">
+              <div ref="error" className="text-danger text-xs-center text-error">
                 {!loginError && <span>&nbsp;</span>}
-                {loginError}
+                {loginError && errorMessage}
               </div>
             </div>
             }
