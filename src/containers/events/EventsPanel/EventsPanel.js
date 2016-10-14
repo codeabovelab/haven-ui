@@ -65,7 +65,7 @@ export default class EventsPanel extends Component {
 
     let runningContainers = 0;
     let runningNodes = 0;
-    let runningApps = 0;
+    let Apps = 0;
     let eventsCount = 0;
     if (name && events && name !== 'all') {
       events = events.filter((el)=>(el.cluster === name));
@@ -75,10 +75,10 @@ export default class EventsPanel extends Component {
     }
     if (name === 'all') {
       _.forEach(clusters, (el)=> {
-        runningApps += _.size(el.applications);
+        Apps += _.size(el.applications);
       });
     }else {
-      runningApps = _.size(cluster.applications);
+      Apps = _.size(cluster.applications);
     }
 
     if (containers && _.size(containers) > 0) {
@@ -103,7 +103,7 @@ export default class EventsPanel extends Component {
         <StatisticsPanel metrics={this.statisticsMetrics}
                          link
                          cluster={cluster}
-                         values={[runningContainers, runningNodes, runningApps, eventsCount]}
+                         values={[runningContainers, runningNodes, Apps, eventsCount]}
         />
         {name && (
           <h1>

@@ -209,9 +209,7 @@ export default class ClusterDetailsPanel extends Component {
 
     let runningContainers = 0;
     let runningNodes = 0;
-    let runningJobs = 0;
-    let runningApps = 0;
-    let errorCount = 0;
+    let Apps = 0;
     let eventsCount = 0;
     let events = this.props.events['bus.cluman.errors'];
     if (events) {
@@ -219,10 +217,10 @@ export default class ClusterDetailsPanel extends Component {
     }
     if (name === 'all') {
       _.forEach(clusters, (el)=> {
-        runningApps += _.size(el.applications);
+        Apps += _.size(el.applications);
       });
-    }else {
-      runningApps = _.size(cluster.applications);
+    } else {
+      Apps = _.size(cluster.applications);
     }
 
     if (rows && rows.length > 0) {
@@ -276,7 +274,7 @@ export default class ClusterDetailsPanel extends Component {
         <StatisticsPanel metrics={this.statisticsMetrics}
                          link
                          cluster={cluster}
-                         values={[runningContainers, runningNodes, runningApps, eventsCount]}
+                         values={[runningContainers, runningNodes, Apps, eventsCount]}
         />
 
         {isContainersPage && (
