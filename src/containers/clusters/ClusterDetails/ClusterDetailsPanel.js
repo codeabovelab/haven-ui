@@ -4,9 +4,9 @@ import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import { Link, browserHistory } from 'react-router';
 import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, Chain, LoadingDialog, StatisticsPanel, ActionMenu} from '../../../components/index';
-import {ContainerCreate, ContainerScale, ContainerUpdate} from '../../../containers/index';
+import {ContainerCreate, ContainerScale, ContainerUpdate, ClusterNodesDialog} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
-import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar} from 'react-bootstrap';
+import {Label, Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar} from 'react-bootstrap';
 import _ from 'lodash';
 
 function renderTdCluster(row) {
@@ -61,6 +61,7 @@ function processTdVal(val) {
   }), {
     loadContainers: clusterActions.loadContainers,
     deleteCluster: clusterActions.deleteCluster,
+    loadNodesDetailed: clusterActions.loadNodesDetailed,
     startContainer: containerActions.start,
     stopContainer: containerActions.stop,
     restartContainer: containerActions.restart,
@@ -77,7 +78,8 @@ export default class ClusterDetailsPanel extends Component {
     startContainer: PropTypes.func.isRequired,
     stopContainer: PropTypes.func.isRequired,
     restartContainer: PropTypes.func.isRequired,
-    removeContainer: PropTypes.func.isRequired
+    removeContainer: PropTypes.func.isRequired,
+    loadNodesDetailed: PropTypes.func.isRequired
   };
 
   statisticsMetrics = [
@@ -137,6 +139,27 @@ export default class ClusterDetailsPanel extends Component {
     }
   ];
 
+  NODE_COLUMNS = [
+    {
+      name: 'name',
+      label: 'Name',
+      width: '30%',
+      sortable: true
+    },
+    {
+      name: 'address',
+      label: 'Address',
+      width: '30%',
+      sortable: true
+    },
+    {
+      name: 'health',
+      label: 'Health Status',
+      width: '20%',
+      render: this.healthRender
+    }
+  ];
+
   GROUP_BY_SELECT = ['node', 'image', 'status'];
 
   ACTIONS = [
@@ -183,11 +206,12 @@ export default class ClusterDetailsPanel extends Component {
   ];
 
   componentDidMount() {
-    const {loadContainers, params: {name}} = this.props;
+    const {loadContainers, loadNodesDetailed, params: {name}} = this.props;
 
     this.state = {};
 
     loadContainers(name);
+    loadNodesDetailed(name);
 
     $('.input-search').focus();
   }
@@ -236,6 +260,8 @@ export default class ClusterDetailsPanel extends Component {
       runningNodes = cluster.nodes.on;
     }
 
+    const nodes = cluster.nodesListDetailed;
+
     const containersHeaderBar = (
       <div className="clearfix">
         <h3></h3>
@@ -257,6 +283,22 @@ export default class ClusterDetailsPanel extends Component {
             Delete Cluster
           </Button>
           }
+        </ButtonToolbar>
+      </div>
+    );
+
+    const nodesHeaderBar = (
+      <div className="clearfix">
+        <h3>Nodes</h3>
+
+        <ButtonToolbar>
+          <Button
+            bsStyle="primary"
+            onClick={this.onActionInvoke.bind(this, "manageNodes")}
+          >
+            <i className="fa fa-plus" />&nbsp;
+            Add/Remove Node
+          </Button>
         </ButtonToolbar>
       </div>
     );
@@ -307,6 +349,30 @@ export default class ClusterDetailsPanel extends Component {
           {(rows && rows.length === 0) && (
             <div className="alert alert-info">
               No containers yet
+            </div>
+          )}
+        </Panel>
+
+        <Panel header={nodesHeaderBar}>
+          {!nodes && (
+            <ProgressBar active now={100} />
+          )}
+
+          {(nodes && nodes.length > 0) && (
+            <div>
+              <div className="containers">
+                <DockTable columns={this.NODE_COLUMNS}
+                           rows={nodes}
+                           key={name}
+                           size={DockTable.SIZES.SM}
+                />
+              </div>
+            </div>
+          )}
+
+          {(nodes && nodes.length === 0) && (
+            <div className="alert alert-info">
+              No nodes yet
             </div>
           )}
         </Panel>
@@ -492,6 +558,17 @@ export default class ClusterDetailsPanel extends Component {
         });
         return;
 
+      case "manageNodes":
+        this.setState({
+          actionDialog: (
+            <ClusterNodesDialog title="Manage Cluster Nodes"
+                             cluster={cluster}
+                             onHide={this.onHideDialog.bind(this)}
+            />
+          )
+        });
+        return;
+
       default:
         return;
     }
@@ -504,6 +581,19 @@ export default class ClusterDetailsPanel extends Component {
         deleteCluster(name)
           .then(() => browserHistory.push('/clusters'));
       }, () => null);
+  }
+
+  healthRender(registry) {
+    return (
+      <td>
+        {(registry.health.healthy) && (
+          <Label bsStyle="success">Healthy</Label>
+        )}
+        {(!registry.health.healthy) && (
+          <Label bsStyle="warning">Not Healthy</Label>
+        )}
+      </td>
+    );
   }
 
 }
