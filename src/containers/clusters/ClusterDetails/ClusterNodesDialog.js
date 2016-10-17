@@ -3,14 +3,14 @@ import {connect} from 'react-redux';
 import {Dialog} from 'components';
 import {reduxForm, SubmissionError} from 'redux-form';
 import {load as loadAllNodes, create as createNode, remove as removeNode} from 'redux/modules/nodes/nodes';
-import {loadNodesDetailed} from 'redux/modules/clusters/clusters';
+import {loadNodesDetailed, loadContainers} from 'redux/modules/clusters/clusters';
 import {Alert, Panel, Label, FormGroup, FormControl, ControlLabel, HelpBlock} from 'react-bootstrap';
 import _ from 'lodash';
 import Select from 'react-select';
 
 @connect(state => ({
   nodes: state.nodes
-}), {loadAllNodes, createNode, removeNode, loadNodesDetailed})
+}), {loadAllNodes, createNode, removeNode, loadNodesDetailed, loadContainers})
 @reduxForm({
   form: 'ManageNodes',
   fields: [
@@ -29,6 +29,7 @@ export default class ClusterNodesDialog extends Component {
     onHide: PropTypes.func.isRequired,
     loadAllNodes: PropTypes.func.isRequired,
     loadNodesDetailed: PropTypes.func.isRequired,
+    loadContainers: PropTypes.func.isRequired,
     createNode: PropTypes.func.isRequired,
     removeNode: PropTypes.func.isRequired
   };
@@ -36,9 +37,14 @@ export default class ClusterNodesDialog extends Component {
 
   componentWillMount() {
     const {loadAllNodes, loadNodesDetailed, cluster} = this.props;
+    let nodes = cluster.nodesListDetailed.map(node => {
+      return {
+        ...node,
+        className: node.health.healthy ? 'Select-value-success' : 'Select-value-warning'
+      };
+    });
     this.state = {
-      selectMenuVisible: false,
-      assignedNodes: cluster.nodesListDetailed
+      assignedNodes: nodes
     };
     loadNodesDetailed(cluster.name);
     loadAllNodes();
@@ -46,14 +52,14 @@ export default class ClusterNodesDialog extends Component {
 
   render() {
     require('react-select/dist/react-select.css');
-    const selectMenuVisible = this.state.selectMenuVisible;
+    //load some custom styles for node picker (note using a global scoped classes there)
+    require('css/theme/component-overrides/react-select.scss');
     return (
       <Dialog show
               size="large"
               title={this.props.title}
               onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}
               onHide={this.props.onHide}
-              keyboard={!selectMenuVisible}
       >
         {this.props.createError && (
           <Alert bsStyle="danger">
@@ -70,8 +76,6 @@ export default class ClusterNodesDialog extends Component {
                     autoFocus
                     multi
                     clearable
-                    onOpen={this.onSelectMenuOpen.bind(this)}
-                    onClose={this.onSelectMenuClose.bind(this)}
                     onChange={this.handleSelectChange.bind(this)}
                     name="assignedNodes"
                     value={this.state.assignedNodes}
@@ -94,7 +98,7 @@ export default class ClusterNodesDialog extends Component {
   }
 
   onSubmit() {
-    const {cluster, createNode, removeNode, loadNodesDetailed, onHide} = this.props;
+    const {cluster, createNode, removeNode, loadNodesDetailed, loadContainers, onHide} = this.props;
     let promises = [];
     let prevNodes = cluster.nodesListDetailed;
     let newNodes = this.state.assignedNodes;
@@ -107,7 +111,10 @@ export default class ClusterNodesDialog extends Component {
 
     Promise.all(promises)
       .then(() => {
-        window.setTimeout(() => { loadNodesDetailed(cluster.name); }, 10000); //?? with a lesser timeout the server doesn't return an updated list
+        window.setTimeout(() => {
+          loadContainers(cluster.name);
+          loadNodesDetailed(cluster.name);
+        }, 10000); //?? with a lesser timeout the server doesn't return an updated list
       })
       .then(() => {
         onHide();
@@ -118,25 +125,15 @@ export default class ClusterNodesDialog extends Component {
   }
 
   getNodeOptions() {
-    const {nodes} = this.props;
+    const {nodes, cluster} = this.props;
     let nodeOptions;
     nodeOptions = nodes && Object.keys(nodes).map((k) => {
-      return nodes[k];
-    });
+      return {
+        ...nodes[k],
+        className: nodes[k].health.healthy ? 'Select-value-success' : 'Select-value-warning'
+      };
+    }).filter(node => { return !node.cluster || node.cluster === cluster.name; });
     return nodeOptions;
-  }
-
-
-  onSelectMenuOpen() {
-    this.setState({
-      selectMenuVisible: true
-    });
-  }
-
-  onSelectMenuClose() {
-    setTimeout(function changeMenuState() {
-      this.setState({selectMenuVisible: false});
-    }.bind(this), 100);
   }
 
 }
