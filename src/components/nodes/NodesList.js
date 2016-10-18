@@ -158,10 +158,10 @@ export default class NodesList extends Component {
     }
     return (
       <td>
-        {(registry.health.healthy) && (
+        {(registry.health.healthy && registry.time) && (
           <Label bsStyle={labelStyle ? labelStyle : "success"}>Healthy</Label>
         )}
-        {(!registry.health.healthy) && (
+        {(!registry.health.healthy || !registry.time) && (
           <Label bsStyle={labelStyle ? labelStyle : "warning"}>Not Healthy</Label>
         )}
       </td>
