@@ -24,7 +24,8 @@ export default class RegistryEdit extends Component {
     addRegistry: PropTypes.func.isRequired,
     editRegistry: PropTypes.func.isRequired,
     loadRegistries: PropTypes.func.isRequired,
-    registriesUI: PropTypes.object.isRequired
+    registriesUI: PropTypes.object.isRequired,
+    okTitle: PropTypes.string.isRequired
   };
 
   constructor(...params) {
@@ -101,18 +102,21 @@ export default class RegistryEdit extends Component {
           initialValues={init}
           firstLoad={firstLoad}
           onHide={this.props.onHide}
+          okTitle={this.props.okTitle}
           onSubmit={this.onSubmit.bind(this)} />);
       case this.configType[2]:
         return ( <RegistryEditFormDockerHub
           initialValues={init}
           firstLoad={firstLoad}
           onHide={this.props.onHide}
+          okTitle={this.props.okTitle}
           onSubmit={this.onSubmit.bind(this)} />);
       default:
         return ( <RegistryEditFormPrivate
           initialValues={init}
           firstLoad={firstLoad}
           onHide={this.props.onHide}
+          okTitle={this.props.okTitle}
           onSubmit={this.onSubmit.bind(this)} />);
     }
   }

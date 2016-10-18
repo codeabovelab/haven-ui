@@ -165,6 +165,7 @@ export default class ClustersPanel extends Component {
                         cluster={undefined}
                         onHide={this.onHideDialog.bind(this)}
                         orphanNodes = {orphanNodes}
+                        okTitle="Create Cluster"
             />
           )
         });
@@ -179,6 +180,7 @@ export default class ClustersPanel extends Component {
                         description={description}
                         orphanNodes = {orphanNodes}
                         onHide={this.onHideDialog.bind(this)}
+                        okTitle="Update Cluster"
             />
           )
         });

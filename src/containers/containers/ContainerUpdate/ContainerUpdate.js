@@ -132,10 +132,9 @@ export default class ContainerUpdate extends Component {
       <Dialog show
               size="large"
               title={"Update Container " + container.name}
-              onSubmit={creationLogVisible ? this.props.onHide : this.props.handleSubmit(this.onSubmit.bind(this))}
-              onHide={creationLogVisible ? this.props.handleSubmit(this.onSubmit.bind(this)) : this.props.onHide}
-              okTitle={creationLogVisible ? "Close" : null}
-              cancelTitle={creationLogVisible ? "Again" : null}
+              onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}
+              onHide={this.props.onHide}
+              okTitle={creationLogVisible ? "Again" : "Update Container"}
       >
         <form>
           <div className="row">
