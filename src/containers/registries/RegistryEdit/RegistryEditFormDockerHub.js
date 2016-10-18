@@ -28,7 +28,8 @@ export default class RegistryEditFormDockerHub extends RegistryEditCommon {
     fields: PropTypes.object.isRequired,
     valid: PropTypes.bool,
     registry: PropTypes.any,
-    firstLoad: PropTypes.bool.isRequired
+    firstLoad: PropTypes.bool.isRequired,
+    okTitle: PropTypes.string.isRequired
   };
 
   constructor(...params) {
@@ -36,7 +37,7 @@ export default class RegistryEditFormDockerHub extends RegistryEditCommon {
   }
 
   render() {
-    const {fields, firstLoad} = this.props;
+    const {fields, firstLoad, okTitle} = this.props;
     const valid = this.props.valid;
     return (
       <form onSubmit={this.props.handleSubmit}>
@@ -45,7 +46,7 @@ export default class RegistryEditFormDockerHub extends RegistryEditCommon {
         {this.renderInput('password', 'Password', 'Password (required)', fields.password, firstLoad)}
         {this.renderTwoCheckboxes(fields)}
         <hr className="bottom-form-separator"/>
-        {this.renderButtonSubmit(valid)}
+        {this.renderButtonSubmit(valid, okTitle)}
       </form>
     );
   }

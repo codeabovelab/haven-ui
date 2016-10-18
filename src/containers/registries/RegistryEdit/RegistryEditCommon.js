@@ -77,14 +77,14 @@ export default class RegistryEditCommon extends Component {
     );
   }
 
-  renderButtonSubmit(valid) {
+  renderButtonSubmit(valid, okTitle) {
     return (
       <div className="form-group text-right submit-buttons-block">
         <Button bsStyle="primary"
                 disabled={!valid}
                 type="submit"
         >
-          OK
+          {okTitle}
         </Button>
         <span>&nbsp;&nbsp;</span>
         <Button bsStyle="default"

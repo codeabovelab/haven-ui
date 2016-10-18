@@ -97,6 +97,7 @@ export default class RegistriesPanel extends Component {
             <RegistryEditForms title="Create a New Registry"
                           registry={undefined}
                           onHide={this.onHideDialog.bind(this)}
+                          okTitle="Create Registry"
             />
           )
         });
@@ -108,6 +109,7 @@ export default class RegistriesPanel extends Component {
             <RegistryEditForms title="Edit Registry"
                           registry={registry}
                           onHide={this.onHideDialog.bind(this)}
+                          okTitle="Update Registry"
             />
           )
         });
