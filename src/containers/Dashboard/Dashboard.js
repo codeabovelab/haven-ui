@@ -100,10 +100,10 @@ export default class Dashboard extends Component {
       //console.log('nodes', nodes);
       top5Memory = nodes.filter((el) => {
         if (typeof el.health !== "undefined" && el.on === true) {
+          runningNodes += 1;
           return true;
         }
       }).sort((a, b) => {
-        runningNodes += 1;
         if (a.health.sysMemUsed > b.health.sysMemUsed) {
           return -1;
         } else if (a.health.sysMemUsed < b.health.sysMemUsed) {
