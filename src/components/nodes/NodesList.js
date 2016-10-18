@@ -22,7 +22,7 @@ export default class NodesList extends Component {
     {
       name: 'address',
       label: 'Address',
-      width: '30%',
+      width: '20%',
       sortable: true
     },
     {
@@ -34,9 +34,15 @@ export default class NodesList extends Component {
     },
     {
       name: 'health',
-      label: 'Health Status',
+      label: 'Docker Health',
       width: '10%',
       render: this.healthRender
+    },
+    {
+      name: 'agentHealth',
+      label: 'Agent Health',
+      width: '10%',
+      render: this.agentHealthRender
     },
     {
       name: 'time',
@@ -153,16 +159,30 @@ export default class NodesList extends Component {
 
   healthRender(registry) {
     let labelStyle;
-    if ((!registry.on && registry.health.health) || !registry.time ) {
+    if ((!registry.on && registry.health.healthy) || !registry.time ) {
       labelStyle = "default";
     }
     return (
       <td>
-        {(registry.health.healthy && registry.time) && (
+        {(registry.health.healthy) && (
           <Label bsStyle={labelStyle ? labelStyle : "success"}>Healthy</Label>
         )}
-        {(!registry.health.healthy || !registry.time) && (
+        {(!registry.health.healthy) && (
           <Label bsStyle={labelStyle ? labelStyle : "warning"}>Not Healthy</Label>
+        )}
+      </td>
+    );
+  }
+
+  agentHealthRender(registry) {
+    console.log(registry);
+    return (
+      <td>
+        {(registry.on) && (
+          <Label bsStyle="success">On</Label>
+        )}
+        {(!registry.on) && (
+          <Label bsStyle="default">Off</Label>
         )}
       </td>
     );
