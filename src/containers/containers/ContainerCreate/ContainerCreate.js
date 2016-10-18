@@ -223,10 +223,10 @@ export default class ContainerCreate extends Component {
       <Dialog show
               size="large"
               title="Create Container"
-              onSubmit={creationLogVisible ? this.props.onHide : this.props.handleSubmit(this.onSubmit.bind(this))}
-              onHide={creationLogVisible ? this.props.handleSubmit(this.onSubmit.bind(this)) : this.props.onHide}
-              okTitle={creationLogVisible ? "Close" : null}
-              cancelTitle={creationLogVisible ? "Again" : null}
+              onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}
+              onHide={this.props.onHide}
+              okTitle={creationLogVisible ? "Again" : "Create Container"}
+              cancelTitle={creationLogVisible ? "Cancel" : null}
               keyboard={!selectMenuVisible}
               backdrop="static"
       >
