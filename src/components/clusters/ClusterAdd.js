@@ -37,7 +37,8 @@ export default class ClusterAdd extends Component {
     valid: PropTypes.bool.isRequired,
     cluster: PropTypes.any,
     description: PropTypes.any,
-    onHide: PropTypes.func.isRequired
+    onHide: PropTypes.func.isRequired,
+    okTitle: PropTypes.string
   };
   constructor() {
     super();
@@ -71,7 +72,7 @@ export default class ClusterAdd extends Component {
   }
 
   render() {
-    const { fields } = this.props;
+    const { fields, okTitle } = this.props;
     let { cluster, description } = this.props;
     const orphanNodes = this.props.orphanNodes;
     return (
@@ -83,6 +84,7 @@ export default class ClusterAdd extends Component {
               onReset={this.props.resetForm}
               onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}
               onHide={this.props.onHide}
+              okTitle={okTitle || 'OK'}
       >
         {this.props.createError && (
           <Alert bsStyle="danger">
