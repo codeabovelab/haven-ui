@@ -25,7 +25,7 @@ export ContainerLog from './containers/ContainerLog/ContainerLog';
 export ContainerDetails from './containers/ContainerDetails/ContainerDetails';
 export ContainerStatistics from './containers/ContainerStatistics/ContainerStatistics';
 export LoadingDialog from './common/LoadingDialog/LoadingDialog';
-export UploadSettings from './common/UploadSettings/UploadSettings';
+export UploadSettings from './settings/UploadSettings';
 export NodeInfo from './nodes/NodeInfo';
 export JobsList from '../components/jobs/JobsList';
 

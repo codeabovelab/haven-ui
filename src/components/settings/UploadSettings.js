@@ -34,8 +34,13 @@ export default class UploadSettings extends Component {
   constructor(...params) {
     super(...params);
     this.state = {
-      creationLogVisible: ''
+      creationLogVisible: '',
+      fileInputTouched: false
     };
+  }
+
+  showValidationErr() {
+    this.setState({fileInputTouched: true});
   }
 
   onSubmit() {
@@ -68,6 +73,7 @@ export default class UploadSettings extends Component {
   }
   render() {
     const {fields} = this.props;
+    const fileInputTouched = this.state.fileInputTouched;
     const creationLogVisible = this.state.creationLogVisible;
     const fileInputVal = $('#fileInput').val();
     const fileName = fileInputVal ? fileInputVal.match(/[^\\\/]+$/g) : '';
@@ -90,7 +96,7 @@ export default class UploadSettings extends Component {
         )}
 
         <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
-            <FormGroup validationState={fields.file.error ? "error" : ""}>
+            <FormGroup validationState={(fields.file.error && fileInputTouched) ? "error" : ""}>
             <ControlLabel className="btn btn-default btn-file">
               Choose Settings File
               <FormControl type="file"
@@ -98,10 +104,11 @@ export default class UploadSettings extends Component {
                            {...fields.file}
                            value={null}
                            id="fileInput"
+                           onClick={this.showValidationErr.bind(this)}
               />
             </ControlLabel>
             <span className="upload-file-name">{fields.file.value && fileName}</span>
-            {fields.file.error && (
+            {(fields.file.error && fileInputTouched) && (
               <HelpBlock>{fields.file.error}</HelpBlock>
             )}
           </FormGroup>
