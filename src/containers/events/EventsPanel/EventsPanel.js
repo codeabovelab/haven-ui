@@ -1,12 +1,22 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import { asyncConnect } from 'redux-async-connect';
 import { Link } from 'react-router';
 import _ from 'lodash';
 import {DockTable, ClustersList, StatisticsPanel, Dialog, EventLog} from 'components';
 import {Panel} from 'react-bootstrap';
-import {loadContainers} from 'redux/modules/clusters/clusters';
+import * as clusterActions from 'redux/modules/clusters/clusters';
 
+@asyncConnect([{
+  promise: ({store: {dispatch, getState}}) => {
+    const promises = [];
 
+    if (!clusterActions.isLoaded(getState())) {
+      promises.push(dispatch(clusterActions.load()));
+    }
+    return Promise.all(promises);
+  }
+}])
 @connect(
   state => ({
     clusters: state.clusters,
@@ -14,7 +24,7 @@ import {loadContainers} from 'redux/modules/clusters/clusters';
     events: state.events,
     alerts: state.events.alerts
   }), {
-    loadContainers
+    loadContainers: clusterActions.loadContainers
   }
 )
 export default class EventsPanel extends Component {
@@ -73,12 +83,18 @@ export default class EventsPanel extends Component {
     if (events) {
       eventsCount = _.size(events);
     }
-    if (name === 'all') {
-      _.forEach(clusters, (el)=> {
-        Apps += _.size(el.applications);
-      });
-    }else {
-      Apps = _.size(cluster.applications);
+
+    if (clusters && cluster) {
+      if (name === 'all') {
+        _.forEach(clusters, (el)=> {
+          Apps += _.size(el.applications);
+        });
+      } else {
+        Apps = _.size(cluster.applications);
+      }
+      if (cluster.nodes && typeof(cluster.nodes.on) !== 'undefined') {
+        runningNodes = cluster.nodes.on;
+      }
     }
 
     if (containers && _.size(containers) > 0) {
@@ -89,22 +105,20 @@ export default class EventsPanel extends Component {
       });
     }
 
-    if (typeof(cluster.nodes.on) !== 'undefined') {
-      runningNodes = cluster.nodes.on;
-    }
     const eventsHeaderBar = (
       <div className="clearfix">
         <h3>Events</h3>
       </div>
     );
-
     return (
       <div>
-        <StatisticsPanel metrics={this.statisticsMetrics}
-                         link
-                         cluster={cluster}
-                         values={[runningContainers, runningNodes, Apps, eventsCount]}
-        />
+        {cluster && (
+          <StatisticsPanel metrics={this.statisticsMetrics}
+                           link
+                           cluster={cluster}
+                           values={[runningContainers, runningNodes, Apps, eventsCount]}
+          />
+        )}
         {name && (
           <h1>
             <Link to="/clusters">Clusters</Link>/<Link to={"/clusters/" + name}>{name}</Link>/Events
