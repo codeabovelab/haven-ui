@@ -161,7 +161,7 @@ export default class ClustersPanel extends Component {
       case "create":
         this.setState({
           actionDialog: (
-            <ClusterAdd title="Create a New Cluster"
+            <ClusterAdd title="Create Cluster"
                         cluster={undefined}
                         onHide={this.onHideDialog.bind(this)}
                         orphanNodes = {orphanNodes}
