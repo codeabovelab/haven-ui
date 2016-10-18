@@ -9,6 +9,13 @@ import { asyncConnect } from 'redux-async-connect';
 import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar} from 'react-bootstrap';
 import _ from 'lodash';
 
+function renderTdCluster(row) {
+  let resultValue = processTdVal(row.cluster);
+  return (
+    <td key="cluster" title={resultValue.title}><Link to={"/clusters/" + resultValue.val}>{resultValue.val}</Link></td>
+  );
+}
+
 function renderTdImage(row) {
   let resultValue = processTdVal(row.image);
   return (
@@ -264,7 +271,7 @@ export default class ClusterDetailsPanel extends Component {
     let columns = this.COLUMNS;
     let groupBySelect = this.GROUP_BY_SELECT;
     if (isContainersPage && columns[3].name !== 'cluster') {
-      columns.splice(3, 0, {name: 'cluster', label: 'Cluster'});
+      columns.splice(3, 0, {name: 'cluster', label: 'Cluster', render: renderTdCluster});
       groupBySelect.push('cluster');
     }
     columns.forEach(column => column.sortable = column.name !== 'actions');
