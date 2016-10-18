@@ -91,18 +91,13 @@ export default class ClusterAdd extends Component {
         )}
 
         <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
-          <FormGroup title="required" required validationState={(fields.name.error && !this.state.firstLoad) ? "error" : ""}>
+          <FormGroup title="required" required validationState={(fields.name.error && (!this.state.firstLoad || fields.name.touched)) ? "error" : ""}>
             <ControlLabel>Name</ControlLabel>
-
             <FormControl type="text"
                          {...fields.name}
+                         placeholder="Name (required)"
                          defaultValue = {cluster === 'undefined' ? '' : cluster}
             />
-
-            <FormControl.Feedback />
-            {(fields.name.error && !this.state.firstLoad) && (
-              <HelpBlock>{fields.name.error}</HelpBlock>
-            )}
           </FormGroup>
 
           <FormGroup validationState={fields.description.error ? "error" : ""}>
@@ -110,6 +105,7 @@ export default class ClusterAdd extends Component {
 
             <FormControl type="text"
                          {...fields.description}
+                         placeholder="Description"
                          defaultValue = {description === 'undefined' ? '' : description}
             />
 

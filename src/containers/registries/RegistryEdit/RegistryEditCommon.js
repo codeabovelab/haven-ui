@@ -11,7 +11,8 @@ export default class RegistryEditCommon extends Component {
 
   renderInput(type, title, placeholder, field, firstLoad) {
     return (
-      <FormGroup required title="required" validationState={(field.error && !firstLoad) ? "error" : ""}>
+      <FormGroup required title="required" validationState={(field.error &&
+      (field.touched || !firstLoad)) ? "error" : ""}>
         <ControlLabel>{title}</ControlLabel>
         <FormControl type={type} placeholder={placeholder} {...field} />
       </FormGroup>
