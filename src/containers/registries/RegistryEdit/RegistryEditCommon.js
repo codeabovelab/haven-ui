@@ -5,12 +5,14 @@ export default class RegistryEditCommon extends Component {
   static propTypes ={
     values: PropTypes.object.isRequired,
     param: PropTypes.object.isRequired,
-    onHide: PropTypes.func.isRequired
+    onHide: PropTypes.func.isRequired,
+    firstLoad: PropTypes.bool.isRequired
   };
 
-  renderInput(type, title, placeholder, field) {
+  renderInput(type, title, placeholder, field, firstLoad) {
     return (
-      <FormGroup validationState={field.error ? "error" : ""}>
+      <FormGroup required title="required" validationState={(field.error &&
+      (field.touched || !firstLoad)) ? "error" : ""}>
         <ControlLabel>{title}</ControlLabel>
         <FormControl type={type} placeholder={placeholder} {...field} />
       </FormGroup>

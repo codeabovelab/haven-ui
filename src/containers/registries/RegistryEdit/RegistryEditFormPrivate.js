@@ -28,7 +28,8 @@ export default class RegistryEditFormPrivate extends RegistryEditCommon {
   static propTypes= {
     fields: PropTypes.object.isRequired,
     valid: PropTypes.bool,
-    registry: PropTypes.any
+    registry: PropTypes.any,
+    firstLoad: PropTypes.bool.isRequired
   };
 
   constructor(...params) {
@@ -36,14 +37,14 @@ export default class RegistryEditFormPrivate extends RegistryEditCommon {
   }
 
   render() {
-    const {fields} = this.props;
+    const {fields, firstLoad} = this.props;
     const valid = this.props.valid;
     return (
       <form onSubmit={this.props.handleSubmit}>
         {this.renderLabel('Name', fields.name)}
-        {this.renderInput('text', 'User name', 'User Name', fields.username)}
-        {this.renderInput('password', 'Password', 'Password', fields.password)}
-        {this.renderInput('text', 'Url', 'Url', fields.url)}
+        {this.renderInput('text', 'User name', 'User Name (required)', fields.username, firstLoad)}
+        {this.renderInput('password', 'Password', 'Password (required)', fields.password, firstLoad)}
+        {this.renderInput('text', 'Url', 'Url (required)', fields.url, firstLoad)}
         {this.renderTwoCheckboxes(fields)}
         <hr className="bottom-form-separator"/>
         {this.renderButtonSubmit(valid)}

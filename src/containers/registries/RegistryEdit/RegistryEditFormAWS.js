@@ -29,7 +29,8 @@ export default class RegistryEditFormAWS extends RegistryEditCommon {
   static propTypes= {
     fields: PropTypes.object.isRequired,
     valid: PropTypes.bool,
-    registry: PropTypes.any
+    registry: PropTypes.any,
+    firstLoad: PropTypes.bool.isRequired
   };
 
   constructor(...params) {
@@ -37,14 +38,14 @@ export default class RegistryEditFormAWS extends RegistryEditCommon {
   }
 
   render() {
-    const {fields} = this.props;
+    const {fields, firstLoad} = this.props;
     const valid = this.props.valid;
     return (
       <form onSubmit={this.props.handleSubmit}>
         {this.renderLabel('Name', fields.name)}
-        {this.renderInput('text', 'Secret key', 'Secret key', fields.secretKey)}
-        {this.renderInput('text', 'Access key', 'Access key', fields.accessKey)}
-        {this.renderInput('text', 'Region', 'Region', fields.region)}
+        {this.renderInput('text', 'Secret key', 'Secret key (required)', fields.secretKey, firstLoad)}
+        {this.renderInput('text', 'Access key', 'Access key (required)', fields.accessKey, firstLoad)}
+        {this.renderInput('text', 'Region', 'Region (required)', fields.region, firstLoad)}
         {this.renderTwoCheckboxes(fields)}
         <hr className="bottom-form-separator"/>
         {this.renderButtonSubmit(valid)}
