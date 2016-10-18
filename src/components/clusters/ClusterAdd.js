@@ -39,8 +39,16 @@ export default class ClusterAdd extends Component {
     description: PropTypes.any,
     onHide: PropTypes.func.isRequired
   };
-
+  constructor() {
+    super();
+    this.state = {
+      firstLoad: true
+    };
+  }
   onSubmit() {
+    this.setState({
+      firstLoad: false
+    });
     const { fields } = this.props;
     return this.props.create(fields.name.value, {"description": fields.description.value}).then(() => {
       if (typeof(fields.assignedNodes.value) !== 'undefined' && fields.assignedNodes.value.length > 0) {
@@ -83,7 +91,7 @@ export default class ClusterAdd extends Component {
         )}
 
         <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
-          <FormGroup validationState={fields.name.error ? "error" : ""}>
+          <FormGroup title="required" required validationState={(fields.name.error && !this.state.firstLoad) ? "error" : ""}>
             <ControlLabel>Name</ControlLabel>
 
             <FormControl type="text"
@@ -92,7 +100,7 @@ export default class ClusterAdd extends Component {
             />
 
             <FormControl.Feedback />
-            {fields.name.error && (
+            {(fields.name.error && !this.state.firstLoad) && (
               <HelpBlock>{fields.name.error}</HelpBlock>
             )}
           </FormGroup>
