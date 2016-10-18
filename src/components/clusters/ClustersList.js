@@ -39,7 +39,8 @@ export default class ClustersList extends Component {
     {
       name: 'alertsCount',
       label: '# of Alerts',
-      sortable: true
+      sortable: true,
+      render: this.alertsRender
     },
     {
       name: 'applications',
@@ -173,6 +174,14 @@ export default class ClustersList extends Component {
                link={"/clusters/" + cluster.name + "/applications"}
                maxCount={3}
         />
+      </td>
+    );
+  }
+
+  alertsRender(cluster) {
+    return (
+      <td key="alerts">
+        <Link to={`/clusters/${cluster.name}/events`}>{cluster.alertsCount}</Link>
       </td>
     );
   }
