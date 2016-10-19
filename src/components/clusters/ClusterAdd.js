@@ -71,6 +71,13 @@ export default class ClusterAdd extends Component {
     });
   }
 
+  componentDidMount() {
+    const {fields, cluster} = this.props;
+    if (cluster) {
+      fields.name.onChange(cluster);
+    }
+  }
+
   render() {
     const { fields, okTitle } = this.props;
     let { cluster, description } = this.props;
@@ -98,6 +105,7 @@ export default class ClusterAdd extends Component {
             <FormControl type="text"
                          {...fields.name}
                          placeholder="Name (required)"
+                         disabled = {okTitle === 'Update Cluster'}
                          defaultValue = {cluster === 'undefined' ? '' : cluster}
             />
           </FormGroup>
@@ -117,23 +125,24 @@ export default class ClusterAdd extends Component {
               <HelpBlock>{fields.description.error}</HelpBlock>
             )}
           </FormGroup>
-          <FormGroup className={typeof(this.props.cluster) === 'undefined' ? '' : 'invisible'}
-                     validationState={fields.assignedNodes.error ? "error" : ""}>
-            <ControlLabel>Assigned Nodes</ControlLabel>
-            <FormControl multiple componentClass="select" {...fields.assignedNodes} >
-              {
-                orphanNodes.map(function listNodes(node, i) {
-                  if (typeof(node) !== 'undefined' && node.trim() !== '') {
-                    return <option key={i} value={node}>{node}</option>;
-                  }
-                })
-              }
-            </FormControl>
-            <FormControl.Feedback />
-            {fields.assignedNodes.error && (
-              <HelpBlock>{fields.assignedNodes.error}</HelpBlock>
-            )}
-          </FormGroup>
+          {typeof(this.props.cluster) === 'undefined' && (
+            <FormGroup validationState={fields.assignedNodes.error ? "error" : ""}>
+              <ControlLabel>Assigned Nodes</ControlLabel>
+              <FormControl multiple componentClass="select" {...fields.assignedNodes} >
+                {
+                  orphanNodes.map(function listNodes(node, i) {
+                    if (typeof(node) !== 'undefined' && node.trim() !== '') {
+                      return <option key={i} value={node}>{node}</option>;
+                    }
+                  })
+                }
+              </FormControl>
+              <FormControl.Feedback />
+              {fields.assignedNodes.error && (
+                <HelpBlock>{fields.assignedNodes.error}</HelpBlock>
+              )}
+            </FormGroup>
+          )}
         </form>
       </Dialog>
     );
