@@ -39,8 +39,8 @@ export default class ConfirmDialog extends Component {
               {messageRender(this)}
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-default" onClick={this.onCancel.bind(this)}>Cancel</button>
               <button type="button" className="btn btn-primary" onClick={this.onConfirm.bind(this)}>Yes</button>
+              <button type="button" className="btn btn-default" onClick={this.onCancel.bind(this)}>Cancel</button>
             </div>
           </div>
         </div>

@@ -37,15 +37,9 @@ function renderTdApplication(row) {
 }
 
 function processTdVal(val) {
-  const MAX_LENGTH = 30;
   let result = [];
   result.val = val ? val : '';
-  let length = result.val.length;
   result.title = "";
-  if (length >= MAX_LENGTH + 5) {
-    result.title = val;
-    result.val = val.substring(0, MAX_LENGTH) + '...';
-  }
   return result;
 }
 
