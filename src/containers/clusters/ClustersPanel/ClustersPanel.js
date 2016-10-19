@@ -160,6 +160,8 @@ export default class ClustersPanel extends Component {
 
   onActionInvoke(action, cluster, event) {
     let orphanNodes = [].concat(this.props.clusters.orphans.nodesList);
+    let clustersNames = _.keys(this.props.clusters);
+
     switch (action) {
       case "create":
         this.setState({
@@ -169,6 +171,7 @@ export default class ClustersPanel extends Component {
                         onHide={this.onHideDialog.bind(this)}
                         orphanNodes = {orphanNodes}
                         okTitle="Create Cluster"
+                        existingClusters={clustersNames}
             />
           )
         });
@@ -184,6 +187,7 @@ export default class ClustersPanel extends Component {
                         orphanNodes = {orphanNodes}
                         onHide={this.onHideDialog.bind(this)}
                         okTitle="Update Cluster"
+                        existingClusters={clustersNames}
             />
           )
         });
