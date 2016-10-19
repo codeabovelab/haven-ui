@@ -12,13 +12,10 @@ import Select from 'react-select';
 
 
 const EXTRA_FIELDS = {
-  containerName: {
+  name: {
     label: 'Container name'
   },
-  bindVolumes: {
-    label: 'Bind volumes'
-  },
-  memory: {
+  memoryLimit: {
     label: 'Memory limit'
   },
   cpuQuota: {
@@ -427,13 +424,16 @@ export default class ContainerCreate extends Component {
       cluster: cluster.name
     };
 
-    let fieldNames = ['image', 'tag', 'node'].concat(EXTRA_FIELDS_KEYS);
+    let fieldNames = ['node'].concat(EXTRA_FIELDS_KEYS);
     fieldNames.forEach(key => {
       let value = fields[key].value;
       if (value) {
         container[key] = value;
       }
     });
+    let registry = fields.registry.value ? fields.registry.value + '/' : '';
+    let tag = fields.tag.value ? ':' + fields.tag.value : '';
+    container.image = $.trim(registry + fields.image.value + tag);
     let $logBlock = $('#creation-log-block');
     let $spinner = $logBlock.find('i');
     container.publish = this.getPublish();
