@@ -67,15 +67,10 @@ export default class NodesList extends Component {
   render() {
     const {data} = this.props;
     const rows = this.additionalData(data);
-    const panelHeader = (
-      <div className="clearfix">
-        <h3>Nodes List</h3>
-      </div>
-    );
 
     return (
       <div>
-        <Panel header={panelHeader}>
+        <Panel>
           {this.props.loading && (
             <ProgressBar active now={100} />
           )}
