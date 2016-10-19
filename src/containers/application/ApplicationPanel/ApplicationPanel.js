@@ -236,15 +236,16 @@ export default class ApplicationPanel extends Component {
 
     return (
       <div>
+        <ul className="breadcrumb">
+          <li><a href="/clusters">Clusters</a></li>
+          <li><a href={"/clusters/" + name}>{name}</a></li>
+          <li className="active">Applications</li>
+        </ul>
         <StatisticsPanel metrics={this.statisticsMetrics}
                          link
                          cluster={cluster}
                          values={[runningContainers, runningNodes, Apps, eventsCount]}
         />
-        <h1>
-          <Link to="/clusters">Clusters</Link>/<Link to={"/clusters/" + name}>{name}</Link>/Applications
-        </h1>
-
         <Panel header={applicationsHeaderBar}>
           {!rows && (
             <ProgressBar active now={100} />

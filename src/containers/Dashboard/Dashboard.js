@@ -158,7 +158,9 @@ export default class Dashboard extends Component {
     return (
       <div className={styles.home}>
         <Helmet title="Home"/>
-
+        <ul className="breadcrumb">
+          <li className="active">Dashboard</li>
+        </ul>
         <StatisticsPanel metrics={this.statisticsMetrics}
                          values={[activeClusters, runningNodes, runningContainers, errorCount]}
         />

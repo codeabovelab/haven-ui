@@ -175,7 +175,6 @@ export default class NodesList extends Component {
   }
 
   agentHealthRender(registry) {
-    console.log(registry);
     return (
       <td>
         {(registry.on) && (

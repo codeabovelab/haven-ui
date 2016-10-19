@@ -46,7 +46,10 @@ export default class SettingsPanel extends Component {
     }
     return (
       <div>
-        <h3>Dockmaster</h3>
+        <ul className="breadcrumb">
+          <li className="active">Settings</li>
+        </ul>
+        <h4>Dockmaster</h4>
         <div className="settingsList">
           <p>Version: <span>{settingsFile.version}</span></p>
           <div className = "submit-buttons-block">

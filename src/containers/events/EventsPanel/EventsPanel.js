@@ -112,6 +112,11 @@ export default class EventsPanel extends Component {
     );
     return (
       <div>
+        <ul className="breadcrumb">
+          <li><a href="/clusters">Clusters</a></li>
+          <li><a href={"/clusters/" + name}>{name}</a></li>
+          <li className="active">Events</li>
+        </ul>
         {cluster && (
           <StatisticsPanel metrics={this.statisticsMetrics}
                            link
@@ -119,14 +124,6 @@ export default class EventsPanel extends Component {
                            values={[runningContainers, runningNodes, Apps, eventsCount]}
           />
         )}
-        {name && (
-          <h1>
-            <Link to="/clusters">Clusters</Link>/<Link to={"/clusters/" + name}>{name}</Link>/Events
-          </h1>)}
-        {!name && (
-          <h1>
-            <Link to="/clusters">Clusters</Link>/<Link to="/clusters/all">all</Link>/Events
-          </h1>)}
         <Panel header={eventsHeaderBar}>
           {this.props.events && (
             <EventLog data={events}
