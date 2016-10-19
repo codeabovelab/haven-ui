@@ -77,7 +77,7 @@ export default class ClusterDetailsPanel extends Component {
     startContainer: PropTypes.func.isRequired,
     stopContainer: PropTypes.func.isRequired,
     restartContainer: PropTypes.func.isRequired,
-    removeContainer: PropTypes.func.isRequired
+    removeContainer: PropTypes.func.isRequired,
   };
 
   statisticsMetrics = [
@@ -310,6 +310,7 @@ export default class ClusterDetailsPanel extends Component {
             </div>
           )}
         </Panel>
+
 
         {(this.state && this.state.actionDialog) && (
           <div>

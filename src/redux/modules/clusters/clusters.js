@@ -57,6 +57,15 @@ export default function reducer(state = {}, action = {}) {
         }
       };
 
+    case ACTIONS.LOAD_NODES_DETAILED_SUCCESS:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          nodesListDetailed: action.result
+        }
+      };
+
     default:
       return state;
   }
@@ -120,6 +129,14 @@ export function loadNodes(clusterId) {
     types: [ACTIONS.LOAD_NODES, ACTIONS.LOAD_NODES_SUCCESS, ACTIONS.LOAD_NODES_FAIL],
     id: clusterId,
     promise: (client) => client.get(`/ui/api/clusters/${clusterId}/nodes`)
+  };
+}
+
+export function loadNodesDetailed(clusterId) {
+  return {
+    types: [ACTIONS.LOAD_NODES_DETAILED, ACTIONS.LOAD_NODES_DETAILED_SUCCESS, ACTIONS.LOAD_NODES_DETAILED_FAIL],
+    id: clusterId,
+    promise: (client) => client.get(`/ui/api/clusters/${clusterId}/nodes-detailed`)
   };
 }
 

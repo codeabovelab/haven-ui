@@ -9,7 +9,8 @@ export default class NodesList extends Component {
   static propTypes = {
     data: PropTypes.array,
     loading: PropTypes.bool,
-    onAddNode: PropTypes.func
+    clusterName: PropTypes.string,
+    manageNodes: PropTypes.func
   };
 
   COLUMNS = [
@@ -67,10 +68,27 @@ export default class NodesList extends Component {
   render() {
     const {data} = this.props;
     const rows = this.additionalData(data);
+    const panelHeader = (
+      <div className="clearfix">
+        <h3>Nodes List</h3>
+
+        {this.props.clusterName && (
+        <ButtonToolbar>
+          <Button
+            bsStyle="primary"
+            onClick={this.props.manageNodes}
+          >
+            <i className="fa fa-plus" />&nbsp;
+            Add/Remove Node
+          </Button>
+        </ButtonToolbar>
+        )}
+      </div>
+    );
 
     return (
       <div>
-        <Panel>
+        <Panel header={panelHeader}>
           {this.props.loading && (
             <ProgressBar active now={100} />
           )}
@@ -80,6 +98,13 @@ export default class NodesList extends Component {
               rows={rows}
             />
           )}
+
+          {(this.props.data && this.props.data.length === 0) && (
+            <div className="alert alert-info">
+              No nodes yet
+            </div>
+          )}
+
         </Panel>
 
         {(this.state && this.state.actionDialog) && (
