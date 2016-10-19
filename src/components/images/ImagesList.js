@@ -85,14 +85,8 @@ export default class ImagesList extends Component {
   render() {
     const GROUP_BY_SELECT = ['registry', 'name'];
 
-    const panelHeader = (
-      <div className="clearfix">
-        <h3>Image List</h3>
-      </div>
-    );
-
     return (
-      <Panel header={panelHeader}>
+      <Panel>
         {this.props.loading && (
         <ProgressBar active now={100} />
         )}

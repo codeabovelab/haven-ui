@@ -238,7 +238,7 @@ export default class ClusterDetailsPanel extends Component {
 
     const containersHeaderBar = (
       <div className="clearfix">
-        <h3>Containers</h3>
+        <h3></h3>
 
         <ButtonToolbar>
           <Button
