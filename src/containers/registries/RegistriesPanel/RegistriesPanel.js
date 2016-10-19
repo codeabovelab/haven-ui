@@ -51,6 +51,9 @@ export default class RegistriesPanel extends Component {
 
     return (
       <div>
+        <ul className="breadcrumb">
+          <li className="active">Registries</li>
+        </ul>
         <StatisticsPanel metrics={this.statisticsMetrics} values={[connectedRegistries]}/>
 
         <RegistriesList loading={typeof RegistriesList === "undefined"}

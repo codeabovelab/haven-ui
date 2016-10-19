@@ -63,18 +63,24 @@ export default class NodesPanel extends Component {
     }
     return (
       <div>
+        { params.name && (
+          <ul className="breadcrumb">
+            <li><a href="/clusters">Clusters</a></li>
+            <li><a href={"/clusters/" + params.name}>{params.name}</a></li>
+            <li className="active">Nodes</li>
+          </ul>
+        )}
+        { !params.name && (
+          <ul className="breadcrumb">
+            <li><a href="/clusters">Clusters</a></li>
+            <li><a href="/clusters/all">all</a></li>
+            <li className="active">Nodes</li>
+          </ul>
+        )}
+
         <StatisticsPanel metrics={this.statisticsMetrics}
                          values={[runningNodes, stoppedNodes, totalNodes]}
         />
-        { params.name && (
-          <h1>
-            <Link to="/clusters">Clusters</Link>/<Link to={"/clusters/" + params.name}>{params.name}</Link>/Nodes
-          </h1>)}
-        { !params.name && (
-          <h1>
-            <Link to="/clusters">Clusters</Link>/<Link to="/clusters/all">all</Link>/Nodes
-          </h1>)}
-
         <NodesList loading={typeof nodesList === "undefined"}
                    data={nodesList}
                    onAddNode={this.addNode.bind()}

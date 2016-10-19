@@ -268,26 +268,22 @@ export default class ClusterDetailsPanel extends Component {
       columns.splice(3, 0, {name: 'cluster', label: 'Cluster', render: renderTdCluster});
       groupBySelect.push('cluster');
     }
+    if (isContainersPage) {
+      $('div.content-top').find('h1').text('Containers');
+    }
     columns.forEach(column => column.sortable = column.name !== 'actions');
 
     return (
       <div>
+        <ul className="breadcrumb">
+          <li><a href="/clusters">Clusters</a></li>
+          <li className="active">{name}</li>
+        </ul>
         <StatisticsPanel metrics={this.statisticsMetrics}
                          link
                          cluster={cluster}
                          values={[runningContainers, runningNodes, Apps, eventsCount]}
         />
-
-        {isContainersPage && (
-          <h1>
-            Containers
-          </h1>
-        )}
-        {!isContainersPage && (
-          <h1>
-            <Link to="/clusters">Clusters</Link> / {name}
-          </h1>
-        )}
 
         <Panel header={containersHeaderBar}>
           {!rows && (

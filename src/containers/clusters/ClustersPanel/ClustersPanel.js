@@ -122,6 +122,9 @@ export default class ClustersPanel extends Component {
 
     return (
       <div>
+        <ul className="breadcrumb">
+          <li className="active">Clusters</li>
+        </ul>
         <StatisticsPanel metrics={this.statisticsMetrics}
                          values={[clusterCount, runningNodes, runningContainers, errorCount]}
         />
