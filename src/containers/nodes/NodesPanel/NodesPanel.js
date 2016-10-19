@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {load} from 'redux/modules/nodes/nodes';
 import {connect} from 'react-redux';
+import {ClusterNodesDialog} from '../../../containers/index';
 import {DockTable, NodesList, StatisticsPanel} from '../../../components';
 import {NodeAdd} from '../../index';
 import {Link} from 'react-router';
@@ -83,8 +84,15 @@ export default class NodesPanel extends Component {
         />
         <NodesList loading={typeof nodesList === "undefined"}
                    data={nodesList}
-                   onAddNode={this.addNode.bind()}
+                   clusterName={params.name}
+                   manageNodes={this.manageNodes.bind(this)}
         />
+
+        {(this.state && this.state.actionDialog) && (
+          <div>
+            {this.state.actionDialog}
+          </div>
+        )}
       </div>
     );
   }
@@ -94,6 +102,24 @@ export default class NodesPanel extends Component {
     window.simpleModal.show({
       contentComponent,
       focus: NodeAdd.focusSelector
+    });
+  }
+
+  manageNodes() {
+    console.log('component', this);
+    this.setState({
+      actionDialog: (
+        <ClusterNodesDialog title="Manage Cluster Nodes"
+                            clusterName={this.props.params.name}
+                            onHide={this.onHideDialog.bind(this)}
+        />
+      )
+    });
+  }
+
+  onHideDialog() {
+    this.setState({
+      actionDialog: undefined
     });
   }
 }
