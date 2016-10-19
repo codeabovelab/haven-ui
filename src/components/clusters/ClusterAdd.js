@@ -6,6 +6,7 @@ import {create as createNode} from 'redux/modules/nodes/nodes';
 import {createValidator, required} from 'utils/validation';
 import {Dialog} from 'components';
 import {FormGroup, FormControl, ControlLabel, HelpBlock, Alert} from 'react-bootstrap';
+import _ from 'lodash';
 
 @connect(state => ({
   createError: state.clustersUI.createError
@@ -38,7 +39,8 @@ export default class ClusterAdd extends Component {
     cluster: PropTypes.any,
     description: PropTypes.any,
     onHide: PropTypes.func.isRequired,
-    okTitle: PropTypes.string
+    okTitle: PropTypes.string,
+    existingClusters: PropTypes.array
   };
   constructor() {
     super();
@@ -50,7 +52,12 @@ export default class ClusterAdd extends Component {
     this.setState({
       firstLoad: false
     });
-    const { fields } = this.props;
+    this.refs.error.textContent = '';
+    const {fields, existingClusters} = this.props;
+    if (_.includes(existingClusters, fields.name.value) && this.props.okTitle === 'Create Cluster') {
+      this.refs.error.textContent = 'Cluster with name: "' + fields.name.value + '" already exists. Please, try to use another name.';
+      return false;
+    }
     return this.props.create(fields.name.value, {"description": fields.description.value}).then(() => {
       if (typeof(fields.assignedNodes.value) !== 'undefined' && fields.assignedNodes.value.length > 0) {
         fields.assignedNodes.value.map(function createNode(node) {
@@ -61,7 +68,7 @@ export default class ClusterAdd extends Component {
         }.bind(this));
       }
     }).then(() =>{
-      window.setTimeout(this.props.load(), 2000);
+      window.setTimeout(function loadClusters() {this.props.load();}.bind(this), 2000);
       this.props.loadNodes('orphans');
     }).then(() =>{
       this.props.onHide();
@@ -144,6 +151,8 @@ export default class ClusterAdd extends Component {
             </FormGroup>
           )}
         </form>
+        <div ref="error" className="text-danger text-xs-center text-error">
+        </div>
       </Dialog>
     );
   }
