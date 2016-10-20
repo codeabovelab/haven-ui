@@ -12,9 +12,6 @@ import Select from 'react-select';
 
 
 const EXTRA_FIELDS = {
-  name: {
-    label: 'Container name'
-  },
   memoryLimit: {
     label: 'Memory limit'
   },
@@ -48,7 +45,7 @@ const EXTRA_FIELDS_KEYS = Object.keys(EXTRA_FIELDS);
 }), {create, loadNodes, loadImages, loadImageTags, searchImages, loadContainers, loadDefaultParams, loadRegistries})
 @reduxForm({
   form: 'newContainer',
-  fields: ['image', 'tag', 'node', 'registry', 'restart', 'restartRetries'].concat(EXTRA_FIELDS_KEYS)
+  fields: ['image', 'tag', 'name', 'node', 'registry', 'restart', 'restartRetries'].concat(EXTRA_FIELDS_KEYS)
 })
 export default class ContainerCreate extends Component {
   static propTypes = {
@@ -299,8 +296,13 @@ export default class ContainerCreate extends Component {
                 )}
               </select>
             </div>
+            <div className="form-group">
+              <label>Container Name:</label>
+              {fields.name.error && fields.name.touched && <div className="text-danger">{fields.name.error}</div>}
+              <input type="text" {...fields.name} className="form-control"/>
+            </div>
             <Accordion className="accordion-create-container">
-              <Panel header="Container & Volumes settings" eventKey="1">
+              <Panel header="Volumes settings" eventKey="1">
                 <div className="row">
                   {EXTRA_FIELDS_KEYS.map(key =>
                     <div className="col-md-6" key={key}>
