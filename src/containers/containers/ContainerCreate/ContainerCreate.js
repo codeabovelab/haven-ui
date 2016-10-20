@@ -66,7 +66,7 @@ const NETWORK_FIELDS_KEYS = Object.keys(NETWORK_FIELDS);
 }), {create, loadNodes, loadImages, loadImageTags, searchImages, loadContainers, loadDefaultParams, loadRegistries})
 @reduxForm({
   form: 'newContainer',
-  fields: ['image', 'tag', 'name', 'node', 'registry', 'restart', 'restartRetries', 'volumesFrom'].concat(EXTRA_FIELDS_KEYS, NETWORK_FIELDS_KEYS)
+  fields: ['image', 'tag', 'name', 'node', 'registry', 'restart', 'restartRetries', 'volumesFrom', 'dns', 'dnsSearch'].concat(EXTRA_FIELDS_KEYS, NETWORK_FIELDS_KEYS)
 })
 export default class ContainerCreate extends Component {
   static propTypes = {
@@ -97,6 +97,8 @@ export default class ContainerCreate extends Component {
     super(...params);
     this.state = {
       volumesFromValue: [],
+      dnsValue: [],
+      dnsSearchValue: [],
       publish: [{field1: '', field2: ''}],
       environment: [{field1: '', field2: ''}],
       selectImageValue: {value: '', label: ''},
@@ -232,8 +234,32 @@ export default class ContainerCreate extends Component {
     fields.volumesFrom.onChange(volumes);
   }
 
-  getCreatableLabel(label) {
+  dnsOnChange(value) {
+    let vals = [];
+    const fields = this.props.fields;
+    this.setState({dnsValue: value});
+    value.map((el) => {
+      vals.push(el.value);
+    });
+    fields.dns.onChange(vals);
+  }
+
+  dnsSearchOnChange(value) {
+    let vals = [];
+    const fields = this.props.fields;
+    this.setState({dnsSearchValue: value});
+    value.map((el) => {
+      vals.push(el.value);
+    });
+    fields.dnsSearch.onChange(vals);
+  }
+
+  getVolumesLabel(label) {
     return 'Add volume "' + label + '"';
+  }
+
+  getDnsLabel(label) {
+    return 'Add "' + label + '"';
   }
 
   render() {
@@ -241,6 +267,8 @@ export default class ContainerCreate extends Component {
     require('react-select/dist/react-select.css');
     const {clusters, cluster, fields, containersUI, registries} = this.props;
     const volumesFromValue = this.state.volumesFromValue;
+    const dnsValue = this.state.dnsValue;
+    const dnsSearchValue = this.state.dnsSearchValue;
     const creationLogVisible = this.state.creationLogVisible;
     let clusterDetailed = clusters[cluster.name];// to ensure loading of nodes with loadNodes;
     let nodes = clusterDetailed.nodesList;
@@ -340,7 +368,7 @@ export default class ContainerCreate extends Component {
               <input type="text" {...fields.name} className="form-control"/>
             </div>
             <Accordion className="accordion-create-container">
-              <Panel header="Volumes settings" eventKey="1">
+              <Panel header="CPU & Volumes settings" eventKey="1">
                 <div className="row">
                   {EXTRA_FIELDS_KEYS.map(key =>
                     <div className="col-md-6" key={key}>
@@ -355,19 +383,41 @@ export default class ContainerCreate extends Component {
                       placeholder="Enter volume's name to add it"
                       onChange={this.volumesFromOnChange.bind(this)}
                       value={volumesFromValue}
-                      promptTextCreator={this.getCreatableLabel}
+                      promptTextCreator={this.getVolumesLabel}
                     />
                   </div>
                 </div>
               </Panel>
-              <Panel header="Ports settings" eventKey="2">
+              <Panel header="Network settings" eventKey="2">
                 {this.fieldPublish()}
                 <div className="row">
-                {NETWORK_FIELDS_KEYS.map(key =>
-                  <div className="col-sm-6" key={key}>
-                    {fieldComponent(key)}
+                  {NETWORK_FIELDS_KEYS.map(key =>
+                    <div className="col-sm-6" key={key}>
+                      {fieldComponent(key)}
+                    </div>
+                  )}
+                  <div className="col-sm-6">
+                    <label>DNS:</label>
+                    <Select.Creatable
+                      multi
+                      noResultsText=""
+                      placeholder="Enter DNS to add it"
+                      onChange={this.dnsOnChange.bind(this)}
+                      value={dnsValue}
+                      promptTextCreator={this.getDnsLabel}
+                    />
                   </div>
-                )}
+                  <div className="col-sm-6">
+                    <label>DNS Search:</label>
+                    <Select.Creatable
+                      multi
+                      noResultsText=""
+                      placeholder="Enter DNS to add it"
+                      onChange={this.dnsSearchOnChange.bind(this)}
+                      value={dnsSearchValue}
+                      promptTextCreator={this.getDnsLabel}
+                    />
+                  </div>
                 </div>
               </Panel>
             </Accordion>
@@ -491,7 +541,7 @@ export default class ContainerCreate extends Component {
       cluster: cluster.name
     };
 
-    let fieldNames = ['node', 'volumesFrom', 'name'].concat(EXTRA_FIELDS_KEYS, NETWORK_FIELDS_KEYS);
+    let fieldNames = ['node', 'volumesFrom', 'name', 'dns', 'dnsSearch'].concat(EXTRA_FIELDS_KEYS, NETWORK_FIELDS_KEYS);
     fieldNames.forEach(key => {
       let value = fields[key].value;
       if (value) {
