@@ -55,7 +55,7 @@ export default class ClusterAdd extends Component {
     this.refs.error.textContent = '';
     const {fields, existingClusters} = this.props;
     if (_.includes(existingClusters, fields.name.value) && this.props.okTitle === 'Create Cluster') {
-      this.refs.error.textContent = 'Cluster with name: "' + fields.name.value + '" already exists. Please, try to use another name.';
+      this.refs.error.textContent = 'Cluster with name: "' + fields.name.value + '" already exists. Please use another name.';
       return false;
     }
     return this.props.create(fields.name.value, {"description": fields.description.value}).then(() => {
