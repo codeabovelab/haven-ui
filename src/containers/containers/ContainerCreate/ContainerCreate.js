@@ -44,7 +44,14 @@ const EXTRA_FIELDS = {
     label: 'Volume Driver'
   }
 };
+const NETWORK_FIELDS = {
+  publishAllPorts: {
+    type: 'boolean',
+    label: 'Publish All Ports'
+  }
+};
 const EXTRA_FIELDS_KEYS = Object.keys(EXTRA_FIELDS);
+const NETWORK_FIELDS_KEYS = Object.keys(NETWORK_FIELDS);
 
 @connect(state => ({
   clusters: state.clusters,
@@ -54,7 +61,7 @@ const EXTRA_FIELDS_KEYS = Object.keys(EXTRA_FIELDS);
 }), {create, loadNodes, loadImages, loadImageTags, searchImages, loadContainers, loadDefaultParams, loadRegistries})
 @reduxForm({
   form: 'newContainer',
-  fields: ['image', 'tag', 'name', 'node', 'registry', 'restart', 'restartRetries', 'application', 'imageId', 'volumesFrom'].concat(EXTRA_FIELDS_KEYS)
+  fields: ['image', 'tag', 'name', 'node', 'registry', 'restart', 'restartRetries', 'volumesFrom'].concat(EXTRA_FIELDS_KEYS, NETWORK_FIELDS_KEYS)
 })
 export default class ContainerCreate extends Component {
   static propTypes = {
@@ -100,6 +107,7 @@ export default class ContainerCreate extends Component {
     loadImages();
     loadRegistries();
     fields.restart.value = 'no';
+    fields.publishAllPorts.value = 'false';
   }
 
   getTagsOptions(image) {
@@ -326,16 +334,6 @@ export default class ContainerCreate extends Component {
               {fields.name.error && fields.name.touched && <div className="text-danger">{fields.name.error}</div>}
               <input type="text" {...fields.name} className="form-control"/>
             </div>
-            <div className="form-group">
-              <label>Image Id:</label>
-              {fields.imageId.error && fields.imageId.touched && <div className="text-danger">{fields.imageId.error}</div>}
-              <input type="text" {...fields.imageId} className="form-control"/>
-            </div>
-            <div className="form-group">
-              <label>Application:</label>
-              {fields.application.error && fields.application.touched && <div className="text-danger">{fields.application.error}</div>}
-              <input type="text" {...fields.application} className="form-control"/>
-            </div>
             <Accordion className="accordion-create-container">
               <Panel header="Volumes settings" eventKey="1">
                 <div className="row">
@@ -359,6 +357,13 @@ export default class ContainerCreate extends Component {
               </Panel>
               <Panel header="Ports settings" eventKey="2">
                 {this.fieldPublish()}
+                <div className="row">
+                {NETWORK_FIELDS_KEYS.map(key =>
+                  <div className="col-sm-6" key={key}>
+                    {fieldComponent(key)}
+                  </div>
+                )}
+                </div>
               </Panel>
             </Accordion>
             {this.fieldRestart()}
@@ -376,7 +381,7 @@ export default class ContainerCreate extends Component {
 
 
     function fieldComponent(name) {
-      let property = EXTRA_FIELDS[name];
+      let property = EXTRA_FIELDS[name] || NETWORK_FIELDS[name];
       let field = fields[name];
       return (
         <div className="form-group">
@@ -392,6 +397,8 @@ export default class ContainerCreate extends Component {
       switch (property.type) {
         case 'integer':
           return inputNumber(property, field);
+        case 'boolean':
+          return inputBinarySelect(property, field);
         default:
           return inputText(property, field);
       }
@@ -404,6 +411,13 @@ export default class ContainerCreate extends Component {
     function inputNumber(property, field) {
       let props = Object.assign({}, field, _.pick(property, ['min', 'max']));
       return <input type="number" step="1" {...props} className="form-control"/>;
+    }
+
+    function inputBinarySelect(property, field) {
+      return (<select className="form-control" {...field}>
+          <option key="No" value="false">No</option>
+          <option key="Yes" value="true">Yes</option>
+      </select>);
     }
   }
 
@@ -472,7 +486,7 @@ export default class ContainerCreate extends Component {
       cluster: cluster.name
     };
 
-    let fieldNames = ['node', 'application', 'imageId', 'volumesFrom'].concat(EXTRA_FIELDS_KEYS);
+    let fieldNames = ['node', 'volumesFrom'].concat(EXTRA_FIELDS_KEYS, NETWORK_FIELDS_KEYS);
     fieldNames.forEach(key => {
       let value = fields[key].value;
       if (value) {
@@ -507,7 +521,7 @@ export default class ContainerCreate extends Component {
   fieldPublish() {
     let items = this.state.publish;
     return (
-      <div className="field-publish">
+      <div className="field-publish form-group">
         <div className="field-header">
           <label>Publish</label>
           <a onClick={this.addPublishItem.bind(this)}><i className="fa fa-plus-circle"/></a>
