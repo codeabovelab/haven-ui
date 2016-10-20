@@ -15,7 +15,7 @@ const EXTRA_FIELDS = {
   memoryLimit: {
     label: 'Memory Limit'
   },
-  cpuSet: {
+  cpuset: {
     type: 'string',
     label: 'CPU Set',
     description: "CPUs in which to allow execution (0-3, 0,1)"
@@ -48,7 +48,12 @@ const NETWORK_FIELDS = {
   publishAllPorts: {
     type: 'boolean',
     label: 'Publish All Ports'
-  }
+  },
+  hostname: {
+    type: 'string',
+    label: 'Host Name'
+  },
+
 };
 const EXTRA_FIELDS_KEYS = Object.keys(EXTRA_FIELDS);
 const NETWORK_FIELDS_KEYS = Object.keys(NETWORK_FIELDS);
@@ -486,7 +491,7 @@ export default class ContainerCreate extends Component {
       cluster: cluster.name
     };
 
-    let fieldNames = ['node', 'volumesFrom'].concat(EXTRA_FIELDS_KEYS, NETWORK_FIELDS_KEYS);
+    let fieldNames = ['node', 'volumesFrom', 'name'].concat(EXTRA_FIELDS_KEYS, NETWORK_FIELDS_KEYS);
     fieldNames.forEach(key => {
       let value = fields[key].value;
       if (value) {
