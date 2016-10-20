@@ -15,6 +15,11 @@ const EXTRA_FIELDS = {
   memoryLimit: {
     label: 'Memory limit'
   },
+  cpuSet: {
+    type: 'string',
+    label: 'CPU Set',
+    description: "CPUs in which to allow execution (0-3, 0,1)"
+  },
   cpuQuota: {
     type: 'integer',
     label: 'CPU quota',
@@ -45,7 +50,7 @@ const EXTRA_FIELDS_KEYS = Object.keys(EXTRA_FIELDS);
 }), {create, loadNodes, loadImages, loadImageTags, searchImages, loadContainers, loadDefaultParams, loadRegistries})
 @reduxForm({
   form: 'newContainer',
-  fields: ['image', 'tag', 'name', 'node', 'registry', 'restart', 'restartRetries'].concat(EXTRA_FIELDS_KEYS)
+  fields: ['image', 'tag', 'name', 'node', 'registry', 'restart', 'restartRetries', 'application', 'imageId'].concat(EXTRA_FIELDS_KEYS)
 })
 export default class ContainerCreate extends Component {
   static propTypes = {
@@ -300,6 +305,16 @@ export default class ContainerCreate extends Component {
               <label>Container Name:</label>
               {fields.name.error && fields.name.touched && <div className="text-danger">{fields.name.error}</div>}
               <input type="text" {...fields.name} className="form-control"/>
+            </div>
+            <div className="form-group">
+              <label>Image Id:</label>
+              {fields.imageId.error && fields.imageId.touched && <div className="text-danger">{fields.imageId.error}</div>}
+              <input type="text" {...fields.imageId} className="form-control"/>
+            </div>
+            <div className="form-group">
+              <label>Application:</label>
+              {fields.application.error && fields.application.touched && <div className="text-danger">{fields.application.error}</div>}
+              <input type="text" {...fields.application} className="form-control"/>
             </div>
             <Accordion className="accordion-create-container">
               <Panel header="Volumes settings" eventKey="1">
