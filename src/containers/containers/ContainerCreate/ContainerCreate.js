@@ -38,6 +38,10 @@ const EXTRA_FIELDS = {
     min: 2,
     max: 1000,
     description: "Default is 500"
+  },
+  volumeDriver: {
+    type: 'string',
+    label: 'Volume Driver'
   }
 };
 const EXTRA_FIELDS_KEYS = Object.keys(EXTRA_FIELDS);
