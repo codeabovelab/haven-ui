@@ -13,7 +13,7 @@ import Select from 'react-select';
 
 const EXTRA_FIELDS = {
   memoryLimit: {
-    label: 'Memory limit'
+    label: 'Memory Limit'
   },
   cpuSet: {
     type: 'string',
@@ -22,13 +22,13 @@ const EXTRA_FIELDS = {
   },
   cpuQuota: {
     type: 'integer',
-    label: 'CPU quota',
+    label: 'CPU Quota',
     min: 0,
     description: "100 000 means 100% of 1 CPU. 0 also means 100% of 1 CPU."
   },
   cpuShares: {
     type: 'integer',
-    label: 'CPU shares',
+    label: 'CPU Shares',
     min: 2,
     description: "Default is 1024"
   },
@@ -50,7 +50,7 @@ const EXTRA_FIELDS_KEYS = Object.keys(EXTRA_FIELDS);
 }), {create, loadNodes, loadImages, loadImageTags, searchImages, loadContainers, loadDefaultParams, loadRegistries})
 @reduxForm({
   form: 'newContainer',
-  fields: ['image', 'tag', 'name', 'node', 'registry', 'restart', 'restartRetries', 'application', 'imageId'].concat(EXTRA_FIELDS_KEYS)
+  fields: ['image', 'tag', 'name', 'node', 'registry', 'restart', 'restartRetries', 'application', 'imageId', 'volumesFrom'].concat(EXTRA_FIELDS_KEYS)
 })
 export default class ContainerCreate extends Component {
   static propTypes = {
@@ -80,6 +80,7 @@ export default class ContainerCreate extends Component {
   constructor(...params) {
     super(...params);
     this.state = {
+      volumesFromValue: [],
       publish: [{field1: '', field2: ''}],
       environment: [{field1: '', field2: ''}],
       selectImageValue: {value: '', label: ''},
@@ -204,10 +205,25 @@ export default class ContainerCreate extends Component {
     }.bind(this), 500);
   }
 
+  volumesFromOnChange(value) {
+    let volumes = [];
+    const fields = this.props.fields;
+    this.setState({volumesFromValue: value});
+    value.map(function loop(volume) {
+      volumes.push(volume.value);
+    });
+    fields.volumesFrom.onChange(volumes);
+  }
+
+  getCreatableLabel(label) {
+    return 'Add volume "' + label + '"';
+  }
+
   render() {
     let s = require('./ContainerCreate.scss');
     require('react-select/dist/react-select.css');
     const {clusters, cluster, fields, containersUI, registries} = this.props;
+    const volumesFromValue = this.state.volumesFromValue;
     const creationLogVisible = this.state.creationLogVisible;
     let clusterDetailed = clusters[cluster.name];// to ensure loading of nodes with loadNodes;
     let nodes = clusterDetailed.nodesList;
@@ -324,6 +340,17 @@ export default class ContainerCreate extends Component {
                       {fieldComponent(key)}
                     </div>
                   )}
+                  <div className="col-md-6" key="Volumes From">
+                    <label>Volumes From:</label>
+                    <Select.Creatable
+                      multi
+                      noResultsText=""
+                      placeholder="Enter volume's name to add it"
+                      onChange={this.volumesFromOnChange.bind(this)}
+                      value={volumesFromValue}
+                      promptTextCreator={this.getCreatableLabel}
+                    />
+                  </div>
                 </div>
               </Panel>
               <Panel header="Ports settings" eventKey="2">
@@ -441,7 +468,7 @@ export default class ContainerCreate extends Component {
       cluster: cluster.name
     };
 
-    let fieldNames = ['node'].concat(EXTRA_FIELDS_KEYS);
+    let fieldNames = ['node', 'application', 'imageId', 'volumesFrom'].concat(EXTRA_FIELDS_KEYS);
     fieldNames.forEach(key => {
       let value = fields[key].value;
       if (value) {
