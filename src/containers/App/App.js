@@ -57,7 +57,7 @@ export default class App extends Component {
     const errors = nextProps.errors;
     if (errors && errors.length > 0) {
       errors.forEach((err, i) => {
-        let msg = (err.path ? `${err.path}: ${err.error}` : err.error);
+        let msg = err.message || (err.path ? `${err.path}: ${err.error}` : err.error);
         this._notificationSystem.addNotification({
           uid: i + 1,
           title: 'Server connection problem',
