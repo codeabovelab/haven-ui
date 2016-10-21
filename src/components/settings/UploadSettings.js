@@ -98,7 +98,7 @@ export default class UploadSettings extends Component {
         <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
             <FormGroup validationState={(fields.file.error && fileInputTouched) ? "error" : ""}>
             <ControlLabel className="btn btn-default btn-file">
-              Choose Settings File
+              Select a Local File
               <FormControl type="file"
                            name="file"
                            {...fields.file}

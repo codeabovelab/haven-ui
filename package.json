@@ -121,6 +121,7 @@
     "toastr": "^2.1.2",
     "url-loader": "^0.5.7",
     "warning": "^2.1.0",
+    "react-notification-system":"^0.2.10",
     "webpack-isomorphic-tools": "^2.2.18"
   },
   "devDependencies": {

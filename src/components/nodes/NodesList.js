@@ -16,13 +16,13 @@ export default class NodesList extends Component {
   COLUMNS = [
     {
       name: 'name',
-      label: 'Name',
+      label: 'Node Name',
       width: '30%',
       sortable: true
     },
     {
       name: 'address',
-      label: 'Address',
+      label: 'IP Address',
       width: '20%',
       sortable: true
     },
@@ -47,7 +47,7 @@ export default class NodesList extends Component {
     },
     {
       name: 'time',
-      label: 'Health time',
+      label: 'Healthy Since',
       width: '30%',
       render: this.timeFotmat
     },
@@ -223,7 +223,7 @@ export default class NodesList extends Component {
   timeFotmat(registry) {
     let time = 'none';
     if (registry.time) {
-      time = registry.time.substring(0, 10) + ' ' + registry.time.substring(11, 19);
+      time = registry.time.substring(11, 19) + ' ' + registry.time.substring(0, 10);
     }
     return (
       <td>

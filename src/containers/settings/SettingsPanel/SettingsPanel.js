@@ -33,7 +33,7 @@ export default class SettingsPanel extends Component {
     this.setState({
       actionDialog: (
         <UploadSettings onHide={this.onHideDialog.bind(this)}
-                        title="Upload Dockmaster's Config File"
+                        title="Upload Config File"
         />
       )
     });
