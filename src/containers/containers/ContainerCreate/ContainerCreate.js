@@ -17,10 +17,15 @@ const CPU_FIELDS = {
     label: 'Memory Limit',
     description: 'Number - a positive integer. Unit - one of b, k, m, or g. Minimum is 4M.'
   },
-  cpuset: {
+  cpusetCpus: {
     type: 'string',
-    label: 'CPU Set',
+    label: 'CPU SET CPUS',
     description: "CPUs in which to allow execution (0-3, 0,1)"
+  },
+  cpusetMems: {
+    type: 'string',
+    label: 'CPU SET MEMS',
+    description: 'Memory nodes (MEMs) in which to allow execution (0-3, 0,1).'
   },
   cpuQuota: {
     type: 'integer',
