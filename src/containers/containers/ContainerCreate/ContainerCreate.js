@@ -11,7 +11,7 @@ import _ from 'lodash';
 import Select from 'react-select';
 
 
-const EXTRA_FIELDS = {
+const CPU_FIELDS = {
   memoryLimit: {
     label: 'Memory Limit'
   },
@@ -38,10 +38,6 @@ const EXTRA_FIELDS = {
     min: 2,
     max: 1000,
     description: "Default is 500"
-  },
-  volumeDriver: {
-    type: 'string',
-    label: 'Volume Driver'
   }
 };
 const NETWORK_FIELDS = {
@@ -52,11 +48,17 @@ const NETWORK_FIELDS = {
   hostname: {
     type: 'string',
     label: 'Host Name'
-  },
-
+  }
 };
-const EXTRA_FIELDS_KEYS = Object.keys(EXTRA_FIELDS);
+const VOLUME_FIELDS = {
+  volumeDriver: {
+    type: 'string',
+    label: 'Volume Driver'
+  }
+};
+const CPU_FIELDS_KEYS = Object.keys(CPU_FIELDS);
 const NETWORK_FIELDS_KEYS = Object.keys(NETWORK_FIELDS);
+const VOLUME_FIELDS_KEYS = Object.keys(VOLUME_FIELDS);
 
 @connect(state => ({
   clusters: state.clusters,
@@ -67,7 +69,8 @@ const NETWORK_FIELDS_KEYS = Object.keys(NETWORK_FIELDS);
 }), {create, loadNodes, loadImages, loadImageTags, searchImages, loadContainers, loadDefaultParams, loadRegistries})
 @reduxForm({
   form: 'newContainer',
-  fields: ['image', 'tag', 'name', 'node', 'registry', 'restart', 'restartRetries', 'volumesFrom', 'dns', 'dnsSearch'].concat(EXTRA_FIELDS_KEYS, NETWORK_FIELDS_KEYS)
+  fields: ['image', 'tag', 'name', 'node', 'registry', 'restart', 'restartRetries', 'volumesFrom', 'dns', 'dnsSearch']
+    .concat(CPU_FIELDS_KEYS, NETWORK_FIELDS_KEYS, VOLUME_FIELDS_KEYS)
 })
 export default class ContainerCreate extends Component {
   static propTypes = {
@@ -370,9 +373,19 @@ export default class ContainerCreate extends Component {
               <input type="text" {...fields.name} className="form-control"/>
             </div>
             <Accordion className="accordion-create-container">
-              <Panel header="CPU & Volumes settings" eventKey="1">
+              <Panel header="CPU Settings" eventKey="1">
                 <div className="row">
-                  {EXTRA_FIELDS_KEYS.map(key =>
+                  {CPU_FIELDS_KEYS.map(key =>
+                    <div className="col-md-6" key={key}>
+                      {fieldComponent(key)}
+                    </div>
+                  )}
+                </div>
+              </Panel>
+              <Panel header="Volume Settings" eventKey="2">
+                {this.fieldLinks(containersNames)}
+                <div className="row">
+                  {VOLUME_FIELDS_KEYS.map(key =>
                     <div className="col-md-6" key={key}>
                       {fieldComponent(key)}
                     </div>
@@ -391,7 +404,7 @@ export default class ContainerCreate extends Component {
                   </div>
                 </div>
               </Panel>
-              <Panel header="Network settings" eventKey="2">
+              <Panel header="Network settings" eventKey="3">
                 {this.fieldPublish()}
                 <div className="row">
                   {NETWORK_FIELDS_KEYS.map(key =>
@@ -423,11 +436,6 @@ export default class ContainerCreate extends Component {
                   </div>
                 </div>
               </Panel>
-              <Panel header="Links" eventKey="3">
-                <div className="row">
-                  {this.fieldLinks(containersNames)}
-                </div>
-              </Panel>
             </Accordion>
             {this.fieldRestart()}
             <div className="form-group" id="creation-log-block">
@@ -444,7 +452,7 @@ export default class ContainerCreate extends Component {
 
 
     function fieldComponent(name) {
-      let property = EXTRA_FIELDS[name] || NETWORK_FIELDS[name];
+      let property = CPU_FIELDS[name] || NETWORK_FIELDS[name] || VOLUME_FIELDS[name];
       let field = fields[name];
       return (
         <div className="form-group">
@@ -549,7 +557,7 @@ export default class ContainerCreate extends Component {
       cluster: cluster.name
     };
 
-    let fieldNames = ['node', 'volumesFrom', 'name', 'dns', 'dnsSearch'].concat(EXTRA_FIELDS_KEYS, NETWORK_FIELDS_KEYS);
+    let fieldNames = ['node', 'volumesFrom', 'name', 'dns', 'dnsSearch'].concat(CPU_FIELDS_KEYS, NETWORK_FIELDS_KEYS, VOLUME_FIELDS_KEYS);
     fieldNames.forEach(key => {
       let value = fields[key].value;
       if (value) {
@@ -597,7 +605,7 @@ export default class ContainerCreate extends Component {
                      placeholder="Link"/>
             </div>
             <div className="col-sm-6">
-              <select className="form-control" onChange={handleChange.bind(this, key, 'field2')}>
+              <select placeholder="Volume" className="form-control" onChange={handleChange.bind(this, key, 'field2')}>
                 <option key="default" value="">{null}</option>
                 {
                   containersNames.map(function listNames(container, i) {
