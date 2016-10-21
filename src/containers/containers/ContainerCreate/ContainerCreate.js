@@ -13,7 +13,9 @@ import Select from 'react-select';
 
 const CPU_FIELDS = {
   memoryLimit: {
-    label: 'Memory Limit'
+    type: 'string',
+    label: 'Memory Limit',
+    description: 'Number - a positive integer. Unit - one of b, k, m, or g. Minimum is 4M.'
   },
   cpuset: {
     type: 'string',
@@ -53,7 +55,8 @@ const NETWORK_FIELDS = {
 const VOLUME_FIELDS = {
   volumeDriver: {
     type: 'string',
-    label: 'Volume Driver'
+    label: 'Volume Driver',
+    description: 'Driver that this container uses to mount volumes.'
   }
 };
 const CPU_FIELDS_KEYS = Object.keys(CPU_FIELDS);
@@ -256,10 +259,6 @@ export default class ContainerCreate extends Component {
     fields.dnsSearch.onChange(vals);
   }
 
-  getVolumesLabel(label) {
-    return 'Add volume "' + label + '"';
-  }
-
   getDnsLabel(label) {
     return 'Add "' + label + '"';
   }
@@ -399,7 +398,6 @@ export default class ContainerCreate extends Component {
                       placeholder="Choose volumes"
                       onChange={this.volumesFromOnChange.bind(this)}
                       value={volumesFromValue}
-                      promptTextCreator={this.getVolumesLabel}
                     />
                   </div>
                 </div>
@@ -428,11 +426,12 @@ export default class ContainerCreate extends Component {
                     <Select.Creatable
                       multi
                       noResultsText=""
-                      placeholder="Enter DNS to add it"
+                      placeholder="Enter domain name to add it"
                       onChange={this.dnsSearchOnChange.bind(this)}
                       value={dnsSearchValue}
                       promptTextCreator={this.getDnsLabel}
                     />
+                    <small className="text-muted">Sets the domain names that are searched when a bare unqualified hostname isused inside of the container.</small>
                   </div>
                 </div>
               </Panel>
@@ -605,16 +604,13 @@ export default class ContainerCreate extends Component {
                      placeholder="Link"/>
             </div>
             <div className="col-sm-6">
-              <select placeholder="Volume" className="form-control" onChange={handleChange.bind(this, key, 'field2')}>
-                <option key="default" value="">{null}</option>
-                {
-                  containersNames.map(function listNames(container, i) {
-                    if (typeof(container) !== 'undefined' && container.trim() !== '') {
-                      return <option key={i} value={container}>{container}</option>;
-                    }
-                  })
-                }
-              </select>
+              <Select
+                onChange={handleChange.bind(this, key, 'field2')}
+                options={this.getVolumesOptions(containersNames)}
+                noResultsText="No volumes available"
+                placeholder="Volume"
+                value={items[key].field2}
+              />
             </div>
           </div>)}
         </div>
@@ -623,7 +619,7 @@ export default class ContainerCreate extends Component {
 
     function handleChange(i, type, event) {
       let state = Object.assign({}, this.state);
-      state.links[i][type] = event.target.value;
+      state.links[i][type] = event.target ? event.target.value : event.value;
       this.setState(state);
     }
   }
