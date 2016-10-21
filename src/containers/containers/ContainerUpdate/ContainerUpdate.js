@@ -54,13 +54,13 @@ const MAIN_FIELDS = {
     description: 'A positive integer (Mb).'
   },
   memoryReservation: {
-    type: 'string',
+    type: 'integer',
     label: 'Memory Reservation',
     measurement: 'bytes',
     description: 'Memory soft limit. A positive integer (Mb).'
   },
   memorySwap: {
-    type: 'string',
+    type: 'integer',
     label: 'Memory Swap',
     measurement: 'bytes',
     description: 'Total memory limit. A positive integer (Mb).'
