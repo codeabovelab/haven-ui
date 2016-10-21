@@ -10,7 +10,7 @@ const MAIN_FIELDS = {
     type: 'integer',
     label: 'CPU shares',
     min: 2,
-    defaultValue: 1024,
+    defaultValue: "1024",
     description: "Default is 1024"
   },
   cpusetCpus: {
@@ -38,28 +38,32 @@ const MAIN_FIELDS = {
     label: 'Blkio Weight',
     min: 2,
     max: 1000,
-    defaultValue: 500,
+    defaultValue: "500",
     description: "Default is 500"
   },
   memoryLimit: {
     type: 'integer',
     label: 'Memory limit',
-    description: 'A positive integer (bytes).'
+    measurement: 'bytes',
+    description: 'A positive integer (Mb).'
   },
   kernelMemory: {
     type: 'integer',
     label: 'Kernel Memory',
-    description: 'A positive integer (bytes).'
+    measurement: 'bytes',
+    description: 'A positive integer (Mb).'
   },
   memoryReservation: {
     type: 'string',
     label: 'Memory Reservation',
-    description: 'Memory soft limit. A positive integer (bytes).'
+    measurement: 'bytes',
+    description: 'Memory soft limit. A positive integer (Mb).'
   },
   memorySwap: {
     type: 'string',
     label: 'Memory Swap',
-    description: 'Total memory limit. A positive integer (bytes).'
+    measurement: 'bytes',
+    description: 'Total memory limit. A positive integer (Mb).'
   }
 };
 const MAIN_FIELDS_KEYS = Object.keys(MAIN_FIELDS);
@@ -72,8 +76,19 @@ function updateFields(response, fields) {
       continue;
     }
     let value = response[field] !== 'null' ? response[field] : '';
+    if (value && allFields[field].measurement && allFields[field].measurement === 'bytes') {
+      value = bytesToMb(value);
+    }
     fields[field].onChange(value);
   }
+}
+
+function bytesToMb(value) {
+  return value / 1048576;
+}
+
+function mbToBytes(value) {
+  return value * 1048576;
 }
 
 @connect(state => ({
@@ -110,6 +125,11 @@ export default class ContainerUpdate extends Component {
 
   componentWillMount() {
     const {loadDetails, container, fields} = this.props;
+    _.each(fields, function loopFields(value, key) {
+      if (MAIN_FIELDS[key] && MAIN_FIELDS[key].defaultValue) {
+        fields[key].onChange(MAIN_FIELDS[key].defaultValue);
+      }
+    });
     loadDetails(container).then((response)=> {
       updateFields(response, fields);
     }).catch(()=>null);
@@ -121,6 +141,9 @@ export default class ContainerUpdate extends Component {
     let fieldValue = '';
     MAIN_FIELDS_KEYS.forEach(key => {
       fieldValue = fields[key].value !== 'null' ? fields[key].value : '';
+      if (fieldValue && MAIN_FIELDS[key].measurement === 'bytes') {
+        fieldValue = mbToBytes(fieldValue);
+      }
       containerUpdData[key] = fieldValue;
     });
     containerUpdData.restart = this.getRestart();
@@ -207,7 +230,7 @@ export default class ContainerUpdate extends Component {
     }
 
     function inputNumber(property, field) {
-      let props = Object.assign({}, field, _.pick(property, ['min', 'max', 'defaultValue']));
+      let props = Object.assign({}, field, _.pick(property, ['min', 'max']));
       return <input type="number" step="1" {...props} className="form-control"/>;
     }
   }
