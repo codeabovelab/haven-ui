@@ -13,14 +13,20 @@ import Select from 'react-select';
 
 const CPU_FIELDS = {
   memoryLimit: {
-    type: 'string',
-    label: 'Memory Limit',
-    description: 'Number - a positive integer. Unit - one of b, k, m, or g. Minimum is 4M.'
+    type: 'integer',
+    label: 'Memory limit',
+    measurement: 'bytes',
+    description: 'A positive integer (Mb).'
   },
-  cpuset: {
+  cpusetCpus: {
     type: 'string',
-    label: 'CPU Set',
+    label: 'CPU SET CPUS',
     description: "CPUs in which to allow execution (0-3, 0,1)"
+  },
+  cpusetMems: {
+    type: 'string',
+    label: 'CPU SET MEMS',
+    description: 'Memory nodes (MEMs) in which to allow execution (0-3, 0,1).'
   },
   cpuQuota: {
     type: 'integer',
@@ -32,6 +38,7 @@ const CPU_FIELDS = {
     type: 'integer',
     label: 'CPU Shares',
     min: 2,
+    defaultValue: "1024",
     description: "Default is 1024"
   },
   blkioWeight: {
@@ -39,6 +46,7 @@ const CPU_FIELDS = {
     label: 'Blkio Weight',
     min: 2,
     max: 1000,
+    defaultValue: "500",
     description: "Default is 500"
   }
 };
@@ -124,6 +132,11 @@ export default class ContainerCreate extends Component {
     loadRegistries();
     fields.restart.value = 'no';
     fields.publishAllPorts.value = 'false';
+    _.each(fields, function loopFields(value, key) {
+      if (CPU_FIELDS[key] && CPU_FIELDS[key].defaultValue) {
+        fields[key].onChange(CPU_FIELDS[key].defaultValue);
+      }
+    });
   }
 
   getTagsOptions(image) {
@@ -560,6 +573,9 @@ export default class ContainerCreate extends Component {
     fieldNames.forEach(key => {
       let value = fields[key].value;
       if (value) {
+        if (CPU_FIELDS[key] && CPU_FIELDS[key].measurement === 'bytes') {
+          value = mbToBytes(value);
+        }
         container[key] = value;
       }
     });
@@ -766,4 +782,12 @@ export default class ContainerCreate extends Component {
     }
     return value;
   }
+}
+
+function bytesToMb(value) {
+  return value / 1048576;
+}
+
+function mbToBytes(value) {
+  return value * 1048576;
 }

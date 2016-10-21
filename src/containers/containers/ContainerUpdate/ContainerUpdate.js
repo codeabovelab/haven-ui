@@ -5,54 +5,91 @@ import {reduxForm, SubmissionError} from 'redux-form';
 import {updateContainer, loadDetails} from 'redux/modules/containers/containers';
 import _ from 'lodash';
 
-const FIELDS = {
+const MAIN_FIELDS = {
   cpuShares: {
     type: 'integer',
-    label: 'CPU shares'
-  },
-  memory: {
-    label: 'Memory limit'
-  },
-  kernelMemory: {
-    label: 'Kernel Memory',
-    type: 'integer'
-  },
-  memoryReservation: {
-    label: 'Memory Reservation',
-    type: 'integer'
+    label: 'CPU shares',
+    min: 2,
+    defaultValue: "1024",
+    description: "Default is 1024"
   },
   cpusetCpus: {
-    label: 'CPU SET CPUS'
+    label: 'CPU SET CPUS',
+    description: "CPUs in which to allow execution (0-3, 0,1)"
   },
   cpusetMems: {
-    label: 'CPU SET MEMS'
+    type: 'string',
+    label: 'CPU SET MEMS',
+    description: 'Memory nodes (MEMs) in which to allow execution (0-3, 0,1).'
   },
   cpuPeriod: {
-    label: 'CPU Period'
+    type: 'integer',
+    label: 'CPU Period',
+    description: 'Limit the CPU CFS (Completely Fair Scheduler) period'
   },
   cpuQuota: {
     type: 'integer',
-    label: 'CPU quota',
+    label: 'CPU Quota',
     min: 0,
     description: "100 000 means 100% of 1 CPU. 0 also means 100% of 1 CPU."
   },
   blkioWeight: {
     type: 'integer',
-    label: 'Blkio Weight'
+    label: 'Blkio Weight',
+    min: 2,
+    max: 1000,
+    defaultValue: "500",
+    description: "Default is 500"
+  },
+  memoryLimit: {
+    type: 'integer',
+    label: 'Memory limit',
+    measurement: 'bytes',
+    description: 'A positive integer (Mb).'
+  },
+  kernelMemory: {
+    type: 'integer',
+    label: 'Kernel Memory',
+    measurement: 'bytes',
+    description: 'A positive integer (Mb).'
+  },
+  memoryReservation: {
+    type: 'string',
+    label: 'Memory Reservation',
+    measurement: 'bytes',
+    description: 'Memory soft limit. A positive integer (Mb).'
+  },
+  memorySwap: {
+    type: 'string',
+    label: 'Memory Swap',
+    measurement: 'bytes',
+    description: 'Total memory limit. A positive integer (Mb).'
   }
 };
+const MAIN_FIELDS_KEYS = Object.keys(MAIN_FIELDS);
+const ALL_FIELDS_KEYS = ['restart', 'restartRetries'].concat(MAIN_FIELDS_KEYS);
 
 function updateFields(response, fields) {
-  for (let field in FIELDS) {
-    if (!FIELDS.hasOwnProperty(field)) {
+  let allFields = _.merge(MAIN_FIELDS, {'restart': null, 'restartRetries': null});
+  for (let field in allFields) {
+    if (!allFields.hasOwnProperty(field)) {
       continue;
     }
     let value = response[field] !== 'null' ? response[field] : '';
+    if (value && allFields[field].measurement && allFields[field].measurement === 'bytes') {
+      value = bytesToMb(value);
+    }
     fields[field].onChange(value);
   }
 }
 
-const FIELDS_KEYS = Object.keys(FIELDS);
+function bytesToMb(value) {
+  return value / 1048576;
+}
+
+function mbToBytes(value) {
+  return value * 1048576;
+}
 
 @connect(state => ({
   clusters: state.clusters,
@@ -61,7 +98,7 @@ const FIELDS_KEYS = Object.keys(FIELDS);
 }), {updateContainer, loadDetails})
 @reduxForm({
   form: 'updateContainer',
-  fields: FIELDS_KEYS
+  fields: ALL_FIELDS_KEYS
 })
 export default class ContainerUpdate extends Component {
   static propTypes = {
@@ -88,6 +125,11 @@ export default class ContainerUpdate extends Component {
 
   componentWillMount() {
     const {loadDetails, container, fields} = this.props;
+    _.each(fields, function loopFields(value, key) {
+      if (MAIN_FIELDS[key] && MAIN_FIELDS[key].defaultValue) {
+        fields[key].onChange(MAIN_FIELDS[key].defaultValue);
+      }
+    });
     loadDetails(container).then((response)=> {
       updateFields(response, fields);
     }).catch(()=>null);
@@ -97,10 +139,14 @@ export default class ContainerUpdate extends Component {
     const {fields, updateContainer, loadDetails, container} = this.props;
     let containerUpdData = {};
     let fieldValue = '';
-    FIELDS_KEYS.forEach(key => {
+    MAIN_FIELDS_KEYS.forEach(key => {
       fieldValue = fields[key].value !== 'null' ? fields[key].value : '';
+      if (fieldValue && MAIN_FIELDS[key].measurement === 'bytes') {
+        fieldValue = mbToBytes(fieldValue);
+      }
       containerUpdData[key] = fieldValue;
     });
+    containerUpdData.restart = this.getRestart();
     let $logBlock = $('#creation-log-block');
     let $spinner = $logBlock.find('i');
     let $logArea = $('#creation-log');
@@ -138,11 +184,12 @@ export default class ContainerUpdate extends Component {
       >
         <form>
           <div className="row">
-            {FIELDS_KEYS.map(key =>
+            {MAIN_FIELDS_KEYS.map(key =>
               <div className="col-md-6" key={key}>
                 {fieldComponent(key)}
               </div>
             )}
+            {this.fieldRestart()}
           </div>
           <div className="form-group" id="creation-log-block">
             <label>Update Log: <i className="fa fa-spinner fa-2x fa-pulse"/></label>
@@ -157,7 +204,7 @@ export default class ContainerUpdate extends Component {
     );
 
     function fieldComponent(name) {
-      let property = FIELDS[name];
+      let property = MAIN_FIELDS[name];
       let field = fields[name];
       return (
         <div className="form-group" id="containerUpdateInputs">
@@ -186,6 +233,39 @@ export default class ContainerUpdate extends Component {
       let props = Object.assign({}, field, _.pick(property, ['min', 'max']));
       return <input type="number" step="1" {...props} className="form-control"/>;
     }
+  }
+
+  fieldRestart() {
+    let {fields: {restart, restartRetries}} = this.props;
+    let values = ['no', 'on-failure', 'always', 'unless-stopped'];
+    return (
+      <div className="form-group">
+        <div className="col-md-6">
+          <label>Restart policy:</label>
+          <div className="field-body">
+            <select className="form-control" {...restart}>
+              {values.map(value =>
+                <option key={value} value={value}>{value}</option>
+              )}
+            </select>
+          </div>
+        </div>
+        {(restart.value === "on-failure") && <div className="col-md-6">
+          <label>Max retries:</label>
+          <input {...restartRetries} type="number" step="1" min="0"
+                 className="form-control" placeholder="max retries"/>
+        </div>}
+      </div>
+    );
+  }
+
+  getRestart() {
+    let {fields: {restart, restartRetries}} = this.props;
+    let value = restart.value;
+    if (restart.value === "on-failure" && restartRetries.value) {
+      value += `[:${restartRetries.value}]`;
+    }
+    return value;
   }
 }
 
