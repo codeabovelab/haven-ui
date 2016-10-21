@@ -60,6 +60,7 @@ const NETWORK_FIELDS_KEYS = Object.keys(NETWORK_FIELDS);
 
 @connect(state => ({
   clusters: state.clusters,
+  containers: state.containers,
   containersUI: state.containersUI,
   images: state.images,
   registries: state.registries
@@ -71,6 +72,7 @@ const NETWORK_FIELDS_KEYS = Object.keys(NETWORK_FIELDS);
 export default class ContainerCreate extends Component {
   static propTypes = {
     clusters: PropTypes.object.isRequired,
+    containers: PropTypes.object.isRequired,
     registries: PropTypes.array.isRequired,
     containersUI: PropTypes.object.isRequired,
     images: PropTypes.object.isRequired,
@@ -100,6 +102,7 @@ export default class ContainerCreate extends Component {
       dnsValue: [],
       dnsSearchValue: [],
       publish: [{field1: '', field2: ''}],
+      links: [{field1: '', field2: ''}],
       environment: [{field1: '', field2: ''}],
       selectImageValue: {value: '', label: ''},
       checkboxes: {checkboxInitial: ''},
@@ -195,19 +198,6 @@ export default class ContainerCreate extends Component {
     $checkboxBlock.slideToggle(200);
   }
 
-  getImagesList() {
-    let imagesList = [];
-    const {images} = this.props;
-    Object.keys(images).filter((key) => (key === "all")).forEach(registerName => {
-      let register = images[registerName];
-      _.forOwn(register, image => {
-        let i = Object.assign({}, image, {label: `${registerName} | ${image.name}`});
-        imagesList.push(i);
-      });
-    });
-    return imagesList;
-  }
-
   renderSelectValue(option) {
     return <Label bsStyle="info">{option.label}</Label>;
   }
@@ -232,6 +222,15 @@ export default class ContainerCreate extends Component {
       volumes.push(volume.value);
     });
     fields.volumesFrom.onChange(volumes);
+  }
+
+  getVolumesOptions(containersNames) {
+    let options = [];
+    for (let i = 0; i < containersNames.length; i++) {
+      let containerName = containersNames[i];
+      options.push({value: containerName, label: containerName});
+    }
+    return options;
   }
 
   dnsOnChange(value) {
@@ -265,7 +264,11 @@ export default class ContainerCreate extends Component {
   render() {
     let s = require('./ContainerCreate.scss');
     require('react-select/dist/react-select.css');
-    const {clusters, cluster, fields, containersUI, registries} = this.props;
+    const {clusters, cluster, fields, containersUI, registries, containers} = this.props;
+    let containersNames = [];
+    _.forEach(containers, (container) => {
+      containersNames.push(container.name);
+    });
     const volumesFromValue = this.state.volumesFromValue;
     const dnsValue = this.state.dnsValue;
     const dnsSearchValue = this.state.dnsSearchValue;
@@ -273,7 +276,6 @@ export default class ContainerCreate extends Component {
     let clusterDetailed = clusters[cluster.name];// to ensure loading of nodes with loadNodes;
     let nodes = clusterDetailed.nodesList;
     nodes = nodes ? nodes : [];
-    let imagesList = this.getImagesList();
     let field;
     let image = this.getCurrentImage();
     let creating = containersUI.new.creating;
@@ -377,10 +379,11 @@ export default class ContainerCreate extends Component {
                   )}
                   <div className="col-md-6" key="Volumes From">
                     <label>Volumes From:</label>
-                    <Select.Creatable
+                    <Select
                       multi
-                      noResultsText=""
-                      placeholder="Enter volume's name to add it"
+                      options={this.getVolumesOptions(containersNames)}
+                      noResultsText="No volumes available"
+                      placeholder="Choose volumes"
                       onChange={this.volumesFromOnChange.bind(this)}
                       value={volumesFromValue}
                       promptTextCreator={this.getVolumesLabel}
@@ -418,6 +421,11 @@ export default class ContainerCreate extends Component {
                       promptTextCreator={this.getDnsLabel}
                     />
                   </div>
+                </div>
+              </Panel>
+              <Panel header="Links" eventKey="3">
+                <div className="row">
+                  {this.fieldLinks(containersNames)}
                 </div>
               </Panel>
             </Accordion>
@@ -470,8 +478,8 @@ export default class ContainerCreate extends Component {
 
     function inputBinarySelect(property, field) {
       return (<select className="form-control" {...field}>
-          <option key="No" value="false">No</option>
-          <option key="Yes" value="true">Yes</option>
+          <option key="no" value="false">no</option>
+          <option key="yes" value="true">yes</option>
       </select>);
     }
   }
@@ -556,6 +564,7 @@ export default class ContainerCreate extends Component {
     container.publish = this.getPublish();
     container.environment = this.getEnvironment();
     container.restart = this.getRestart();
+    container.links = this.getLinks();
     $logBlock.show();
     this.setState({
       creationLogVisible: true
@@ -571,6 +580,55 @@ export default class ContainerCreate extends Component {
         $spinner.hide();
         throw new SubmissionError(response.message);
       });
+  }
+
+  fieldLinks(containersNames) {
+    let items = this.state.links;
+    return (
+      <div className="field-links form-group">
+        <div className="field-header">
+          <label>Link</label>
+          <a onClick={this.addLinkItem.bind(this)}><i className="fa fa-plus-circle"/></a>
+        </div>
+        <div className="field-body">
+          {items.map((item, key) => <div className="row" key={key}>
+            <div className="col-sm-6">
+              <input type="string" onChange={handleChange.bind(this, key, 'field1')} className="form-control"
+                     placeholder="Link"/>
+            </div>
+            <div className="col-sm-6">
+              <select className="form-control" onChange={handleChange.bind(this, key, 'field2')}>
+                <option key="default" value="">{null}</option>
+                {
+                  containersNames.map(function listNames(container, i) {
+                    if (typeof(container) !== 'undefined' && container.trim() !== '') {
+                      return <option key={i} value={container}>{container}</option>;
+                    }
+                  })
+                }
+              </select>
+            </div>
+          </div>)}
+        </div>
+      </div>
+    );
+
+    function handleChange(i, type, event) {
+      let state = Object.assign({}, this.state);
+      state.links[i][type] = event.target.value;
+      this.setState(state);
+    }
+  }
+
+  addLinkItem() {
+    this.setState({
+      ...this.state,
+      links: [...this.state.links, {field1: '', field2: ''}]
+    });
+  }
+
+  getLinks() {
+    return this.getMapField('links');
   }
 
   fieldPublish() {
