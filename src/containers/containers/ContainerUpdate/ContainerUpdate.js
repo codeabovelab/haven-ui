@@ -10,6 +10,7 @@ const MAIN_FIELDS = {
     type: 'integer',
     label: 'CPU shares',
     min: 2,
+    defaultValue: 1024,
     description: "Default is 1024"
   },
   cpusetCpus: {
@@ -37,27 +38,28 @@ const MAIN_FIELDS = {
     label: 'Blkio Weight',
     min: 2,
     max: 1000,
+    defaultValue: 500,
     description: "Default is 500"
   },
   memoryLimit: {
-    type: 'string',
+    type: 'integer',
     label: 'Memory limit',
-    description: 'Number - a positive integer. Unit - one of b, k, m, or g. Minimum is 4M.'
+    description: 'A positive integer (bytes).'
   },
   kernelMemory: {
-    type: 'string',
+    type: 'integer',
     label: 'Kernel Memory',
-    description: 'Number - a positive integer. Unit - one of b, k, m, or g. Minimum is 4M.'
+    description: 'A positive integer (bytes).'
   },
   memoryReservation: {
     type: 'string',
     label: 'Memory Reservation',
-    description: 'Memory soft limit. Number is a positive integer. Unit can be one of b, k, m, or g.'
+    description: 'Memory soft limit. A positive integer (bytes).'
   },
   memorySwap: {
     type: 'string',
     label: 'Memory Swap',
-    description: 'Total memory limit. Number is a positive integer. Unit can be one of b, k, m, or g.'
+    description: 'Total memory limit. A positive integer (bytes).'
   }
 };
 const MAIN_FIELDS_KEYS = Object.keys(MAIN_FIELDS);
@@ -205,7 +207,7 @@ export default class ContainerUpdate extends Component {
     }
 
     function inputNumber(property, field) {
-      let props = Object.assign({}, field, _.pick(property, ['min', 'max']));
+      let props = Object.assign({}, field, _.pick(property, ['min', 'max', 'defaultValue']));
       return <input type="number" step="1" {...props} className="form-control"/>;
     }
   }

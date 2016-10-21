@@ -13,9 +13,9 @@ import Select from 'react-select';
 
 const CPU_FIELDS = {
   memoryLimit: {
-    type: 'string',
-    label: 'Memory Limit',
-    description: 'Number - a positive integer. Unit - one of b, k, m, or g. Minimum is 4M.'
+    type: 'integer',
+    label: 'Memory limit',
+    description: 'A positive integer (bytes).'
   },
   cpusetCpus: {
     type: 'string',
@@ -37,6 +37,7 @@ const CPU_FIELDS = {
     type: 'integer',
     label: 'CPU Shares',
     min: 2,
+    defaultValue: 1024,
     description: "Default is 1024"
   },
   blkioWeight: {
@@ -44,6 +45,7 @@ const CPU_FIELDS = {
     label: 'Blkio Weight',
     min: 2,
     max: 1000,
+    defaultValue: 500,
     description: "Default is 500"
   }
 };
@@ -484,7 +486,7 @@ export default class ContainerCreate extends Component {
     }
 
     function inputNumber(property, field) {
-      let props = Object.assign({}, field, _.pick(property, ['min', 'max']));
+      let props = Object.assign({}, field, _.pick(property, ['min', 'max', 'defaultValue']));
       return <input type="number" step="1" {...props} className="form-control"/>;
     }
 
