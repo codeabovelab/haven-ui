@@ -610,6 +610,7 @@ export default class ContainerCreate extends Component {
                 noResultsText="No volumes available"
                 placeholder="Volume"
                 value={items[key].field2}
+                clearable={false}
               />
             </div>
           </div>)}
