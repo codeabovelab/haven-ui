@@ -23,6 +23,13 @@ function renderTdImage(row) {
   );
 }
 
+function renderTdContainerName(row) {
+  let resultValue = processTdVal(row.name);
+  return (
+    <td key="name" title={resultValue.title}><Link to={"/clusters/" + row.cluster + "/" + resultValue.val}>{resultValue.val}</Link></td>
+  );
+}
+
 function renderTdApplication(row) {
   let resultValue = processTdVal(row.application);
   let val = resultValue.val.length ? [resultValue.val] : [];
@@ -109,7 +116,8 @@ export default class ClusterDetailsPanel extends Component {
 
   COLUMNS = [
     {
-      name: 'name'
+      name: 'name',
+      render: renderTdContainerName
     },
 
     {
