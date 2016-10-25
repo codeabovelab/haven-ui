@@ -64,7 +64,7 @@ export default class App extends Component {
           message: msg,
           level: 'error',
           autoDismiss: 0,
-          position: 'tr',
+          position: 'tc',
           onRemove: this.removeNotification.bind(this)
         });
       });
