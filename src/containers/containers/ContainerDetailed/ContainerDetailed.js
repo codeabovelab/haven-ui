@@ -2,10 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
-import { Link, browserHistory } from 'react-router';
 import {PropertyGrid} from '../../../components/index';
-import {ContainerCreate, ContainerScale, ContainerUpdate} from '../../../containers/index';
-import { asyncConnect } from 'redux-async-connect';
+import {ContainerScale, ContainerUpdate} from '../../../containers/index';
 import {Dropdown, SplitButton, Button, ButtonToolbar, Accordion, Panel, ProgressBar, Tabs, Tab} from 'react-bootstrap';
 import _ from 'lodash';
 
@@ -41,14 +39,11 @@ export default class ContainerDetailed extends Component {
     require('bootstrap-switch/dist/js/bootstrap-switch.js');
     require('bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css');
     require('./ContainerDetailed.scss');
-    const {loadDetailsByName, params: {name}, params: {subname}, loadLogs} = this.props;
+    const {loadDetailsByName, params: {name}, params: {subname}} = this.props;
     loadDetailsByName(name, subname).then(()=> {
       initializeToggle();
       this.addToggleListener();
-      const {containersByName} = this.props;
-      loadLogs(containersByName[subname]).then((response)=>{
-        $('#containerLog').val(response._res.text);
-      });
+      this.refreshLogs();
     });
   }
 
@@ -77,6 +72,13 @@ export default class ContainerDetailed extends Component {
     });
   }
 
+  refreshLogs() {
+    const {loadLogs, containersByName, params: {subname}} = this.props;
+    loadLogs(containersByName[subname]).then((response)=>{
+      $('#containerLog').val(response._res.text);
+    });
+  }
+
   processToggleResponse(action, name, container, loadDetailsByName, $toggleBox) {
     const {startContainer} = this.props;
     let flag = action !== startContainer;
@@ -97,10 +99,11 @@ export default class ContainerDetailed extends Component {
     const {containersByName, containers, containersUI, params: {name}, params: {subname}} = this.props;
     const container = containersByName ? containersByName[subname] : null;
     let loading = '';
+    let loadingLogs = '';
     let containerHeaderBar = '';
-
     if (container) {
       loading = (containersUI[container.id] && (containersUI[container.id].starting || containersUI[container.id].stopping));
+      loadingLogs = (containersUI[container.id] && containersUI[container.id].loadingLogs);
       containerHeaderBar = (
         <div className="clearfix">
           <h3 id="containerDetailsHeader">{container.name} {loading && (
@@ -116,6 +119,13 @@ export default class ContainerDetailed extends Component {
         </div>
       );
     }
+    let logsHeaderBar = (
+      <div className="clearfix">
+        <h4 id="logHeader">Logs {loadingLogs && (
+          <i className="fa fa-spinner fa-pulse"/>
+        )}</h4>
+      </div>
+    );
 
     if (!container) {
       return (
@@ -157,7 +167,7 @@ export default class ContainerDetailed extends Component {
               {lockCause: container.lockCause}, {command: container.command})}/></Tab>
           </Tabs>
           <Accordion className="accordion-container-detailed">
-            <Panel header="LOGS" eventKey="1">
+            <Panel header={logsHeaderBar} eventKey="1" onEnter={this.refreshLogs.bind(this)}>
                <textarea readOnly
                          id="containerLog"
                          defaultValue=""
