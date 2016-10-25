@@ -6,17 +6,19 @@ import { Link, browserHistory } from 'react-router';
 import {PropertyGrid} from '../../../components/index';
 import {ContainerCreate, ContainerScale, ContainerUpdate} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
-import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar, Tabs, Tab} from 'react-bootstrap';
+import {Dropdown, SplitButton, Button, ButtonToolbar, Accordion, Panel, ProgressBar, Tabs, Tab} from 'react-bootstrap';
 import _ from 'lodash';
 
 @connect(state => ({
   clusters: state.clusters,
-  containers: state.containers.detailsByName,
+  containers: state.containers,
+  containersByName: state.containers.detailsByName,
   containersUI: state.containersUI
 }), {
   loadContainers: clusterActions.loadContainers,
   startContainer: containerActions.start,
   stopContainer: containerActions.stop,
+  loadLogs: containerActions.loadLogs,
   loadDetailsByName: containerActions.loadDetailsByName,
   restartContainer: containerActions.restart,
   removeContainer: containerActions.remove})
@@ -24,29 +26,35 @@ export default class ContainerDetailed extends Component {
   static propTypes = {
     clusters: PropTypes.object.isRequired,
     containers: PropTypes.object,
+    containersByName: PropTypes.object,
     container: PropTypes.object,
     containersUI: PropTypes.object,
     params: PropTypes.object,
     loadDetailsByName: PropTypes.func.isRequired,
     startContainer: PropTypes.func.isRequired,
     stopContainer: PropTypes.func.isRequired,
-    loadContainers: PropTypes.func.isRequired
+    loadContainers: PropTypes.func.isRequired,
+    loadLogs: PropTypes.func.isRequired
   };
 
   componentWillMount() {
     require('bootstrap-switch/dist/js/bootstrap-switch.js');
     require('bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css');
     require('./ContainerDetailed.scss');
-    const {loadDetailsByName, params: {name}, params: {subname}} = this.props;
+    const {loadDetailsByName, params: {name}, params: {subname}, loadLogs} = this.props;
     loadDetailsByName(name, subname).then(()=> {
       initializeToggle();
       this.addToggleListener();
+      const {containersByName} = this.props;
+      loadLogs(containersByName[subname]).then((response)=>{
+        $('#containerLog').val(response._res.text);
+      });
     });
   }
 
   addToggleListener() {
-    const {startContainer, loadDetailsByName, stopContainer, params: {subname}, params: {name}, containers} = this.props;
-    const container = containers[subname];
+    const {startContainer, loadDetailsByName, stopContainer, params: {subname}, params: {name}, containersByName} = this.props;
+    const container = containersByName[subname];
     const $toggleBox = $('#toggle-box');
     $toggleBox.on('switchChange.bootstrapSwitch', (event, state)=> {
       event.preventDefault();
@@ -86,10 +94,11 @@ export default class ContainerDetailed extends Component {
   }
 
   render() {
-    const {containers, containersUI, params: {name}, params: {subname}} = this.props;
-    const container = containers ? containers[subname] : null;
+    const {containersByName, containers, containersUI, params: {name}, params: {subname}} = this.props;
+    const container = containersByName ? containersByName[subname] : null;
     let loading = '';
     let containerHeaderBar = '';
+
     if (container) {
       loading = (containersUI[container.id] && (containersUI[container.id].starting || containersUI[container.id].stopping));
       containerHeaderBar = (
@@ -147,6 +156,14 @@ export default class ContainerDetailed extends Component {
               {reschedule: container.reschedule}, {restartCount: container.restartCount}, {lock: container.lock},
               {lockCause: container.lockCause}, {command: container.command})}/></Tab>
           </Tabs>
+          <Accordion className="accordion-container-detailed">
+            <Panel header="LOGS" eventKey="1">
+               <textarea readOnly
+                         id="containerLog"
+                         defaultValue=""
+               />
+            </Panel>
+          </Accordion>
         </Panel>
 
         {(this.state && this.state.actionDialog) && (
