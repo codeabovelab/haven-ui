@@ -36,6 +36,7 @@ export default class ContainerDetailed extends Component {
   componentWillMount() {
     require('bootstrap-switch/dist/js/bootstrap-switch.js');
     require('bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css');
+    require('./ContainerDetailed.scss');
     const {loadDetailsByName, params: {name}, params: {subname}} = this.props;
     loadDetailsByName(name, subname).then(()=> {
       initializeToggle();
@@ -120,7 +121,7 @@ export default class ContainerDetailed extends Component {
           <PropertyGrid data={_.assign({},
             {name: container.name}, {hostname: container.hostname}, {image: container.image},
             {cluster: container.cluster}, {node: container.node}, {status: container.status})}/>
-          <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
+          <Tabs defaultActiveKey={1} id="tabContainerProps">
             <Tab eventKey={1} title="Labels"><PropertyGrid data={container.labels}/></Tab>
             <Tab eventKey={2} title="Network&Ports"><PropertyGrid data={_.assign({},
               {publishAllPorts: container.publishAllPorts}, {ports: container.ports}, {network: container.network},
