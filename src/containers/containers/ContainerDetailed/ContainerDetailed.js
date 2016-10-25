@@ -3,10 +3,10 @@ import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import { Link, browserHistory } from 'react-router';
-import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, Chain, LoadingDialog, StatisticsPanel, ActionMenu} from '../../../components/index';
+import {PropertyGrid} from '../../../components/index';
 import {ContainerCreate, ContainerScale, ContainerUpdate} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
-import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar} from 'react-bootstrap';
+import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar, Tabs, Tab} from 'react-bootstrap';
 import _ from 'lodash';
 
 @connect(state => ({
@@ -117,7 +117,31 @@ export default class ContainerDetailed extends Component {
           <li className="active">{subname}</li>
         </ul>
         <Panel header={containerHeaderBar}>
-          {container.name}
+          <PropertyGrid data={_.assign({},
+            {name: container.name}, {hostname: container.hostname}, {image: container.image},
+            {cluster: container.cluster}, {node: container.node}, {status: container.status})}/>
+          <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
+            <Tab eventKey={1} title="Labels"><PropertyGrid data={container.labels}/></Tab>
+            <Tab eventKey={2} title="Network&Ports"><PropertyGrid data={_.assign({},
+              {publishAllPorts: container.publishAllPorts}, {ports: container.ports}, {network: container.network},
+              {networks: container.networks}, {dns: container.dns}, {dnsSearch: container.dnsSearch},
+              {extraHosts: container.extraHosts}, {domainname: container.domainname})}/></Tab>
+            <Tab eventKey={3} title="CPU & Memory"><PropertyGrid data={_.assign({},
+              {cpuShares: container.cpuShares}, {cpuQuota: container.cpuQuota}, {blkioWeight: container.blkioWeight},
+              {cpuPeriod: container.cpuPeriod}, {cpusetCpus: container.cpusetCpus}, {cpusetMems: container.cpusetMems},
+              {memoryLimit: container.memoryLimit}, {memorySwap: container.memorySwap}, {memoryReservation: container.memoryReservation},
+              {kernelMemory: container.kernelMemory})}/></Tab>
+            <Tab eventKey={4} title="Environment"><PropertyGrid data={container.environment}/></Tab>
+            <Tab eventKey={5} title="Volumes"><PropertyGrid data={_.assign({},
+              {volumes: container.volumes}, {volumeBinds: container.volumeBinds}, {volumeDriver: container.volumeDriver},
+              {volumesFrom: container.volumesFrom}, {links: container.links})}/></Tab>
+            <Tab eventKey={6} title="Security Opts & Args"><PropertyGrid data={_.assign({},
+              {securityOpt: container.securityOpt}, {args: container.args})}/></Tab>
+            <Tab eventKey={7} title="Stats"><PropertyGrid data={_.assign({},
+              {created: container.created}, {started: container.started}, {finished: container.finished},
+              {reschedule: container.reschedule}, {restartCount: container.restartCount}, {lock: container.lock},
+              {lockCause: container.lockCause}, {command: container.command})}/></Tab>
+          </Tabs>
         </Panel>
 
         {(this.state && this.state.actionDialog) && (
