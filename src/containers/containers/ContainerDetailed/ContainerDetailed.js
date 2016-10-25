@@ -51,30 +51,10 @@ export default class ContainerDetailed extends Component {
       event.preventDefault();
       switch (state) {
         case true:
-          startContainer(container).then((response)=> {
-            loadDetailsByName(name, container.name);
-            if (response.code !== 200) {
-              $toggleBox.bootstrapSwitch('state', false, true);
-            }
-          }).catch((response)=>{
-            loadDetailsByName(name, container.name);
-            if (response.status !== 304) {
-              $toggleBox.bootstrapSwitch('state', false, true);
-            }
-          });
+          this.processToggleResponse(startContainer, name, container, loadDetailsByName, $toggleBox);
           break;
         case false:
-          stopContainer(container).then((response)=> {
-            loadDetailsByName(name, container.name);
-            if (response.code !== 200) {
-              $toggleBox.bootstrapSwitch('state', true, true);
-            }
-          }).catch((response)=>{
-            loadDetailsByName(name, container.name);
-            if (response.status !== 304) {
-              $toggleBox.bootstrapSwitch('state', true, true);
-            }
-          });
+          this.processToggleResponse(stopContainer, name, container, loadDetailsByName, $toggleBox);
           break;
         default:
           break;
@@ -88,9 +68,40 @@ export default class ContainerDetailed extends Component {
     });
   }
 
+  processToggleResponse(action, name, container, loadDetailsByName, $toggleBox) {
+    const {startContainer} = this.props;
+    let flag = action !== startContainer;
+    action(container).then((response)=> {
+      loadDetailsByName(name, container.name);
+      if (response.code !== 200) {
+        $toggleBox.bootstrapSwitch('state', flag, true);
+      }
+    }).catch((response)=> {
+      loadDetailsByName(name, container.name);
+      if (response.status !== 304) {
+        $toggleBox.bootstrapSwitch('state', flag, true);
+      }
+    });
+  }
+
   render() {
     const {containers, clusters, params: {name}, params: {subname}} = this.props;
     const container = containers ? containers[subname] : null;
+    let containerHeaderBar = '';
+    if (container) {
+      containerHeaderBar = (
+        <div className="clearfix">
+          <h3>{container.name}</h3>
+          <ButtonToolbar>
+            <input type="checkbox"
+                   name="my-checkbox"
+                   id="toggle-box"
+                   defaultChecked={container.run}
+            />
+          </ButtonToolbar>
+        </div>
+      );
+    }
 
     if (!container) {
       return (
@@ -105,12 +116,10 @@ export default class ContainerDetailed extends Component {
           <li><a href={"/clusters" + "/" + name}>{name}</a></li>
           <li className="active">{subname}</li>
         </ul>
-        {container.name}
-        <input type="checkbox"
-               name="my-checkbox"
-               id="toggle-box"
-               defaultChecked={container.run}
-        />
+        <Panel header={containerHeaderBar}>
+          {container.name}
+        </Panel>
+
         {(this.state && this.state.actionDialog) && (
           <div>
             {this.state.actionDialog}

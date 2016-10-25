@@ -34,7 +34,6 @@ export default function reducer(state = {}, action = {}) {
         }
       };
     case ACTIONS.LOAD_DETAILS_BY_NAME_SUCCESS:
-      console.log(action.result);
       return {
         ...state,
         detailsByName: {
