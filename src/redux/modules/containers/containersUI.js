@@ -148,6 +148,54 @@ export default function reducer(state = initialState, action = {}) {
           updating: false
         }
       };
+    case ACTIONS.START:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          starting: true
+        }
+      };
+    case ACTIONS.START_SUCCESS:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          starting: false
+        }
+      };
+    case ACTIONS.START_FAIL:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          starting: false
+        }
+      };
+    case ACTIONS.STOP:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          stopping: true
+        }
+      };
+    case ACTIONS.STOP_SUCCESS:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          stopping: false
+        }
+      };
+    case ACTIONS.STOP_FAIL:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          stopping: false
+        }
+      };
     default:
       return state;
   }

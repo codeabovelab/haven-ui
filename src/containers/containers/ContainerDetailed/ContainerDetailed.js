@@ -86,13 +86,17 @@ export default class ContainerDetailed extends Component {
   }
 
   render() {
-    const {containers, clusters, params: {name}, params: {subname}} = this.props;
+    const {containers, containersUI, params: {name}, params: {subname}} = this.props;
     const container = containers ? containers[subname] : null;
+    let loading = '';
     let containerHeaderBar = '';
     if (container) {
+      loading = (containersUI[container.id] && (containersUI[container.id].starting || containersUI[container.id].stopping));
       containerHeaderBar = (
         <div className="clearfix">
-          <h3>{container.name}</h3>
+          <h3 id="containerDetailsHeader">{container.name} {loading && (
+            <i className="fa fa-spinner fa-pulse"/>
+          )}</h3>
           <ButtonToolbar>
             <input type="checkbox"
                    name="my-checkbox"
