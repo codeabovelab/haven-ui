@@ -15,6 +15,7 @@ import {browserHistory} from 'react-router';
   containersUI: state.containersUI
 }), {
   loadContainers: clusterActions.loadContainers,
+  loadStatistics: containerActions.loadStatistics,
   startContainer: containerActions.start,
   stopContainer: containerActions.stop,
   loadLogs: containerActions.loadLogs,
@@ -34,7 +35,8 @@ export default class ContainerDetailed extends Component {
     stopContainer: PropTypes.func.isRequired,
     loadContainers: PropTypes.func.isRequired,
     loadLogs: PropTypes.func.isRequired,
-    removeContainer: PropTypes.func.isRequired
+    removeContainer: PropTypes.func.isRequired,
+    loadStatistics: PropTypes.func.isRequired
   };
 
   componentWillMount() {
@@ -46,6 +48,7 @@ export default class ContainerDetailed extends Component {
       initializeToggle();
       this.addToggleListener();
       this.refreshLogs();
+      this.refreshStats();
     });
   }
 
@@ -129,6 +132,11 @@ export default class ContainerDetailed extends Component {
     });
   }
 
+  refreshStats() {
+    const {loadStatistics, containersByName, params: {subname}} = this.props;
+    loadStatistics(containersByName[subname]);
+  }
+
   processToggleResponse(action, name, container, loadDetailsByName, $toggleBox) {
     const {startContainer} = this.props;
     let flag = action !== startContainer;
@@ -150,8 +158,12 @@ export default class ContainerDetailed extends Component {
     const container = containersByName ? containersByName[subname] : null;
     let loading = '';
     let loadingLogs = '';
+    let loadingStatistics = '';
     let containerHeaderBar = '';
+    let stats = {};
     if (container) {
+      stats = containers[container.id].statistics ? containers[container.id].statistics : {};
+      loadingStatistics = (containersUI[container.id] && containersUI[container.id].loadingStatistics);
       loading = (containersUI[container.id] && (containersUI[container.id].starting || containersUI[container.id].stopping));
       loadingLogs = (containersUI[container.id] && containersUI[container.id].loadingLogs);
       containerHeaderBar = (
@@ -190,6 +202,13 @@ export default class ContainerDetailed extends Component {
     let logsHeaderBar = (
       <div className="clearfix">
         <h4 id="logHeader">Logs {loadingLogs && (
+          <i className="fa fa-spinner fa-pulse"/>
+        )}</h4>
+      </div>
+    );
+    let statsHeaderBar = (
+      <div className="clearfix">
+        <h4 id="logHeader">Stats {loadingStatistics && (
           <i className="fa fa-spinner fa-pulse"/>
         )}</h4>
       </div>
@@ -240,6 +259,9 @@ export default class ContainerDetailed extends Component {
                          id="containerLog"
                          defaultValue=""
                />
+            </Panel>
+            <Panel header={statsHeaderBar} eventKey="2" onEnter={this.refreshStats.bind(this)}>
+              <PropertyGrid data={stats}/>
             </Panel>
           </Accordion>
         </Panel>
