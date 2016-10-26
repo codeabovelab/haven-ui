@@ -9,13 +9,6 @@ import { asyncConnect } from 'redux-async-connect';
 import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar} from 'react-bootstrap';
 import _ from 'lodash';
 
-function renderTdCluster(row) {
-  let resultValue = processTdVal(row.cluster);
-  return (
-    <td key="cluster" title={resultValue.title}><Link to={"/clusters/" + resultValue.val}>{resultValue.val}</Link></td>
-  );
-}
-
 function renderTdImage(row) {
   let resultValue = processTdVal(row.image);
   return (
@@ -190,6 +183,15 @@ export default class ClusterDetailsPanel extends Component {
     }
   ];
 
+  shouldComponentUpdate(nextProps, nextState) {
+    const {loadContainers, params: {name}} = this.props;
+    const nextName = nextProps.params.name;
+    if (name !== nextName && nextName === 'all') {
+      loadContainers(nextName);
+    }
+    return true;
+  }
+
   componentDidMount() {
     const {loadContainers, params: {name}} = this.props;
 
@@ -198,6 +200,17 @@ export default class ClusterDetailsPanel extends Component {
     loadContainers(name);
 
     $('.input-search').focus();
+  }
+
+  renderTdCluster(row) {
+    const {loadContainers} = this.props;
+    let resultValue = processTdVal(row.cluster);
+    return (
+      <td key="cluster" title={resultValue.title}>
+        <Link to={"/clusters/" + resultValue.val}
+              onClick={() => {loadContainers(resultValue.val);}}>
+          {resultValue.val}</Link></td>
+    );
   }
 
   render() {
@@ -273,18 +286,21 @@ export default class ClusterDetailsPanel extends Component {
     let columns = this.COLUMNS;
     let groupBySelect = this.GROUP_BY_SELECT;
     if (isContainersPage && columns[3].name !== 'cluster') {
-      columns.splice(3, 0, {name: 'cluster', label: 'Cluster', render: renderTdCluster});
+      columns.splice(3, 0, {name: 'cluster', label: 'Cluster', render: this.renderTdCluster.bind(this)});
       groupBySelect.push('cluster');
     }
-    if (isContainersPage) {
+    if (!isContainersPage) {
+      columns = columns.filter((object)=> object.name !== 'cluster');
+      groupBySelect = groupBySelect.filter((object)=> object !== 'cluster');
+    } else {
       $('div.content-top').find('h1').text('Containers');
     }
     columns.forEach(column => column.sortable = column.name !== 'actions');
 
     return (
-      <div>
+      <div key={name}>
         <ul className="breadcrumb">
-          <li><a href="/clusters">Clusters</a></li>
+          <li><Link to="/clusters">Clusters</Link></li>
           <li className="active">{name}</li>
         </ul>
         <StatisticsPanel metrics={this.statisticsMetrics}
