@@ -7,6 +7,10 @@ export default class DockTable extends Component {
     title: PropTypes.string,
     columns: PropTypes.array.isRequired,
     rows: PropTypes.array.isRequired,
+    // String to be display if the value is 'null' string
+    nullDisplayName: PropTypes.string,
+    // String to display if the value is empty string
+    emptyDisplayName: PropTypes.string,
     groupBy: PropTypes.string,
     hideGroupColumn: PropTypes.bool,
     groupBySelect: PropTypes.array,
@@ -18,7 +22,9 @@ export default class DockTable extends Component {
   static defaultProps = {
     searchable: true,
     striped: true,
-    hideGroupColumn: false
+    hideGroupColumn: false,
+    nullDisplayName: '',
+    emptyDisplayName: ''
   };
 
   static SIZES = {SM: 'SM'};
@@ -378,6 +384,13 @@ export default class DockTable extends Component {
     this.currentGroups.forEach(group => {
       let closed = _.get(closedGroups, group.key, false);
       // hiding group for single image is confused some users, therefore we remove this part
+      // Figure out if we need to sub in empty or null string values for display
+      let groupKeyDisplayName = group.key;
+      if (group.key === '') {
+        groupKeyDisplayName = this.props.emptyDisplayName;
+      } else if (group.key === 'null') {
+        groupKeyDisplayName = this.props.nullDisplayName;
+      }
       groupEls.push(
         <tbody key={group.key}>
         <tr className="tr-group">
@@ -385,7 +398,7 @@ export default class DockTable extends Component {
             <span className="group-title" onClick={this.toggleGroup.bind(this, group.key)}>
               {!closed && <i className="fa fa-minus"/>}
               {closed && <i className="fa fa-plus"/>}
-              {group.key}
+              {groupKeyDisplayName}
             </span>
             <span className="text-muted">{' '}({group.rows.length})</span>
           </td>

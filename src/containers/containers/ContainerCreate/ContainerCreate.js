@@ -415,7 +415,7 @@ export default class ContainerCreate extends Component {
                   </div>
                 </div>
               </Panel>
-              <Panel header="Network settings" eventKey="3">
+              <Panel header="Network Settings" eventKey="3">
                 {this.fieldPublish()}
                 <div className="row">
                   {NETWORK_FIELDS_KEYS.map(key =>
@@ -451,7 +451,7 @@ export default class ContainerCreate extends Component {
             </Accordion>
             {this.fieldRestart()}
             <div className="form-group" id="creation-log-block">
-              <label>Creation Log: <i className="fa fa-spinner fa-2x fa-pulse"/></label>
+              <label>Create Log: <i className="fa fa-spinner fa-2x fa-pulse"/></label>
               <textarea readOnly
                         className="container-creation-log"
                         defaultValue=""

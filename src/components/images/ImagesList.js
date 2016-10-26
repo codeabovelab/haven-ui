@@ -92,10 +92,12 @@ export default class ImagesList extends Component {
         )}
       {(this.props.data && !this.props.loading) && (
         <DockTable columns={this.COLUMNS}
-                  rows={this.props.data}
-                  groupBy="registry"
-                  groupBySelect={GROUP_BY_SELECT}
-                  hideGroupColumn
+                   rows={this.props.data}
+                   groupBy="registry"
+                   groupBySelect={GROUP_BY_SELECT}
+                   hideGroupColumn
+                   nullDisplayName="Detached Images"
+                   emptyDisplayName="Docker Hub"
                   />
       )}
       {this.props.data && this.props.data.length === 0 && (
