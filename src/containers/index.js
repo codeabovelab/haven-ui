@@ -15,6 +15,7 @@ export ClusterInformation from '../components/clusters/ClusterInformation';
 export ContainerCreate from './containers/ContainerCreate/ContainerCreate';
 export ContainerScale from './containers/ContainerScale/ContainerScale';
 export ContainerUpdate from './containers/ContainerUpdate/ContainerUpdate';
+export ContainerDetailed from './containers/ContainerDetailed/ContainerDetailed';
 export NodesPanel from './nodes/NodesPanel/NodesPanel';
 export ImagesPanel from './images/ImagesPanel/ImagesPanel';
 export RegistriesPanel from './registries/RegistriesPanel/RegistriesPanel';
