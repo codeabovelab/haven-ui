@@ -2,10 +2,11 @@ import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
-import {PropertyGrid} from '../../../components/index';
+import {PropertyGrid, LoadingDialog} from '../../../components/index';
 import {ContainerScale, ContainerUpdate} from '../../../containers/index';
 import {Dropdown, SplitButton, Button, ButtonToolbar, Accordion, Panel, ProgressBar, Tabs, Tab} from 'react-bootstrap';
 import _ from 'lodash';
+import {browserHistory} from 'react-router';
 
 @connect(state => ({
   clusters: state.clusters,
@@ -32,7 +33,8 @@ export default class ContainerDetailed extends Component {
     startContainer: PropTypes.func.isRequired,
     stopContainer: PropTypes.func.isRequired,
     loadContainers: PropTypes.func.isRequired,
-    loadLogs: PropTypes.func.isRequired
+    loadLogs: PropTypes.func.isRequired,
+    removeContainer: PropTypes.func.isRequired
   };
 
   componentWillMount() {
@@ -66,10 +68,58 @@ export default class ContainerDetailed extends Component {
     });
   }
 
+  updateContainer() {
+    const {containersByName, params: {subname}} = this.props;
+    this.setState({
+      actionDialog: (
+        <ContainerUpdate container={containersByName[subname]}
+                         onHide={this.onHideDialog.bind(this)}
+        />
+      )
+    });
+  }
+
+  scaleContainer() {
+    const {containersByName, params: {subname}} = this.props;
+    this.setState({
+      actionDialog: (
+        <ContainerScale container={containersByName[subname]}
+                        onHide={this.onHideDialog.bind(this)}
+        />
+      )
+    });
+  }
+
+  deleteContainer() {
+    const {containersByName, params: {subname}, params: {name}} = this.props;
+    confirm('Are you sure you want to remove this container?')
+      .then(() => {
+        this.setState({
+          actionDialog: (
+            <LoadingDialog container={containersByName[subname]}
+                           onHide={this.onHideDialogAfterDelete.bind(this)}
+                           name={name}
+                           longTermAction={this.props.removeContainer}
+                           loadContainers={this.props.loadContainers}
+                           actionKey="removed"
+            />
+          )
+        });
+      });
+  }
+
   onHideDialog() {
     this.setState({
       actionDialog: undefined
     });
+  }
+
+  onHideDialogAfterDelete() {
+    const {params: {name}} = this.props;
+    this.setState({
+      actionDialog: undefined
+    });
+    browserHistory.push(`/clusters/${name}`);
   }
 
   refreshLogs() {
@@ -110,6 +160,24 @@ export default class ContainerDetailed extends Component {
             <i className="fa fa-spinner fa-pulse"/>
           )}</h3>
           <ButtonToolbar>
+            <Button
+              bsStyle="default"
+              onClick={this.deleteContainer.bind(this)}
+            ><i className="fa fa-close" />&nbsp;
+              Delete
+            </Button>&nbsp;&nbsp;
+            <Button
+              bsStyle="default"
+              onClick={this.scaleContainer.bind(this)}
+            >
+              Scale
+            </Button>&nbsp;&nbsp;
+            <Button
+              bsStyle="default"
+              onClick={this.updateContainer.bind(this)}
+            >
+              Update
+            </Button>&nbsp;&nbsp;
             <input type="checkbox"
                    name="my-checkbox"
                    id="toggle-box"
@@ -161,7 +229,7 @@ export default class ContainerDetailed extends Component {
               {volumesFrom: container.volumesFrom}, {links: container.links})}/></Tab>
             <Tab eventKey={6} title="Security Opts & Args"><PropertyGrid data={_.assign({},
               {securityOpt: container.securityOpt}, {args: container.args})}/></Tab>
-            <Tab eventKey={7} title="Stats"><PropertyGrid data={_.assign({},
+            <Tab eventKey={7} title="Time Stats"><PropertyGrid data={_.assign({},
               {created: container.created}, {started: container.started}, {finished: container.finished},
               {reschedule: container.reschedule}, {restartCount: container.restartCount}, {lock: container.lock},
               {lockCause: container.lockCause}, {command: container.command})}/></Tab>
