@@ -26,7 +26,7 @@ function renderTdImage(row) {
 function renderTdContainerName(row) {
   let resultValue = processTdVal(row.name);
   return (
-    <td key="name" title={resultValue.title}><Link to={"/clusters/" + row.cluster + "/" + resultValue.val}>{resultValue.val}</Link></td>
+    <td key="name" title={resultValue.title}><Link to={"/clusters/" + row.cluster + "/containers/" + resultValue.val}>{resultValue.val}</Link></td>
   );
 }
 

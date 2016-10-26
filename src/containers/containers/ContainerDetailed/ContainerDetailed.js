@@ -162,7 +162,7 @@ export default class ContainerDetailed extends Component {
     let containerHeaderBar = '';
     let stats = {};
     if (container) {
-      stats = containers[container.id].statistics ? containers[container.id].statistics : {};
+      stats = (containers[container.id] && containers[container.id].statistics) ? containers[container.id].statistics : {};
       loadingStatistics = (containersUI[container.id] && containersUI[container.id].loadingStatistics);
       loading = (containersUI[container.id] && (containersUI[container.id].starting || containersUI[container.id].stopping));
       loadingLogs = (containersUI[container.id] && containersUI[container.id].loadingLogs);
