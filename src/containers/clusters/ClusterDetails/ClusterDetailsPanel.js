@@ -183,6 +183,15 @@ export default class ClusterDetailsPanel extends Component {
     }
   ];
 
+  shouldComponentUpdate(nextProps, nextState) {
+    const {loadContainers, params: {name}} = this.props;
+    const nextName = nextProps.params.name;
+    if (name !== nextName && nextName === 'all') {
+      loadContainers(nextName);
+    }
+    return true;
+  }
+
   componentDidMount() {
     const {loadContainers, params: {name}} = this.props;
 
@@ -291,7 +300,7 @@ export default class ClusterDetailsPanel extends Component {
     return (
       <div key={name}>
         <ul className="breadcrumb">
-          <li><a href="/clusters">Clusters</a></li>
+          <li><Link to="/clusters">Clusters</Link></li>
           <li className="active">{name}</li>
         </ul>
         <StatisticsPanel metrics={this.statisticsMetrics}
