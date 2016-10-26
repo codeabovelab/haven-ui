@@ -280,13 +280,16 @@ export default class ClusterDetailsPanel extends Component {
       columns.splice(3, 0, {name: 'cluster', label: 'Cluster', render: this.renderTdCluster.bind(this)});
       groupBySelect.push('cluster');
     }
-    if (isContainersPage) {
+    if (!isContainersPage) {
+      columns = columns.filter((object)=> object.name !== 'cluster');
+      groupBySelect = groupBySelect.filter((object)=> object !== 'cluster');
+    } else {
       $('div.content-top').find('h1').text('Containers');
     }
     columns.forEach(column => column.sortable = column.name !== 'actions');
 
     return (
-      <div>
+      <div key={name}>
         <ul className="breadcrumb">
           <li><a href="/clusters">Clusters</a></li>
           <li className="active">{name}</li>
