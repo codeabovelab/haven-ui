@@ -195,6 +195,8 @@ export default class ContainerDetailed extends Component {
   }
 
   toggleCheckbox(e) {
+    const {params: {subname}} = this.props;
+    let containerLogChannel = 'container:' + subname + ':stdout';
     let checked = e.target.checked;
     if (checked === true) {
       stompClient.subscribe('/user/queue/*', (message) => {
@@ -208,15 +210,13 @@ export default class ContainerDetailed extends Component {
       let yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
 
-      console.log('subscribing');
       stompClient.send('/app/subscriptions/add', {}, JSON.stringify([{
-        source: 'container:stable:stdout',
+        source: containerLogChannel,
         historyCount: 7,
         historySince: yesterday
       }]));
     } else {
-      console.log('unsubscribing');
-      stompClient.send('/app/subscriptions/del', {}, JSON.stringify(['container:stable:stdout']));
+      stompClient.send('/app/subscriptions/del', {}, JSON.stringify([containerLogChannel]));
     }
   }
 
