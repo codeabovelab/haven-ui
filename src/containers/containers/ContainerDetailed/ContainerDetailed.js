@@ -200,10 +200,10 @@ export default class ContainerDetailed extends Component {
     let checked = e.target.checked;
     if (checked === true) {
       stompClient.subscribe('/user/queue/*', (message) => {
-        console.log('ku');
+        let entry = JSON.parse(message.body).message;
         if (message.headers && message.body && checked) {
           $('#containerLog').val((_, val)=> {
-            return val + '\n' + message.body;
+            return entry + '\n' + val;
           });
         }
       });

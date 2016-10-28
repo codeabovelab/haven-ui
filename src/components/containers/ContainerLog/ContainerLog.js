@@ -4,11 +4,17 @@ import {Dialog} from 'components';
 import {Row, Col, FormGroup, FormControl, Checkbox, ControlLabel, HelpBlock, Alert} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import _ from 'lodash';
+import SockJS from 'sockjs-client';
+import { Stomp } from 'stompjs/lib/stomp.min.js';
+import config from '../../../config';
+
+let stompClient = null;
 
 @connect(
   state => ({
     containers: state.containers,
-    containersUI: state.containersUI
+    containersUI: state.containersUI,
+    token: state.auth.token
   }),
   containerActions)
 export default class ContainerLog extends Component {
@@ -16,6 +22,7 @@ export default class ContainerLog extends Component {
     containers: PropTypes.object.isRequired,
     containersUI: PropTypes.object.isRequired,
     container: PropTypes.object.isRequired,
+    token: PropTypes.object,
     loadLogs: PropTypes.func.isRequired,
 
     onHide: PropTypes.func.isRequired
@@ -29,6 +36,7 @@ export default class ContainerLog extends Component {
 
   componentDidMount() {
     $("#container-log-modal").draggable({ handle: ".modal-header" });
+    this.connectToStomp();
   }
 
   componentWillUpdate(nextProps) {
@@ -36,6 +44,62 @@ export default class ContainerLog extends Component {
     if (container.id !== nextProps.container.id) {
       loadLogs(nextProps.container);
     }
+  }
+
+  componentWillUnmount() {
+    stompClient.disconnect();
+  }
+
+  toggleCheckbox(e) {
+    const {container} = this.props;
+    let containerLogChannel = 'container:' + container.name + ':stdout';
+    let checked = e.target.checked;
+    if (checked === true) {
+      stompClient.subscribe('/user/queue/*', (message) => {
+        if (message.headers && message.body && checked) {
+          let entry = JSON.parse(message.body).message;
+          $('#containerLog').val((_, val)=> {
+            return entry + '\n' + val;
+          });
+        }
+      });
+      let yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      stompClient.send('/app/subscriptions/add', {}, JSON.stringify([{
+        source: containerLogChannel,
+        historyCount: 7,
+        historySince: yesterday
+      }]));
+    } else {
+      stompClient.send('/app/subscriptions/del', {}, JSON.stringify([containerLogChannel]));
+    }
+  }
+
+  connectToStomp() {
+    const {token} = this.props;
+    let url = config.eventServer;
+    if (!url.startsWith('http')) {
+      url = `http://${url}`;
+    }
+    if (token) {
+      url = `${url}?token=${token.key}`;
+    }
+    let ws = new SockJS(url);
+    stompClient = Stomp.over(ws);
+    let stompHeaders = {
+      command: 'CONNECT',
+      header: {
+        'accept-version': '1.1,1.0',
+        'heart-beat': '10000,10000',
+        'client-id': config.app.title
+      },
+      body: ''
+    };
+    stompClient.debug = false;
+    stompClient.connect(stompHeaders, (connectFrame) => {
+    }, (error) => {
+    });
   }
 
   render() {
@@ -72,11 +136,24 @@ export default class ContainerLog extends Component {
         )}
 
         {(!loadingLogs && !error) && (
-          <textarea readOnly
-                    className={s["container-log"]}
-                    defaultValue={logs}
-          />
-        )}
+          <div>
+            <div className="checkbox-button"><label>
+              <input type="checkbox"
+                     id="logCheck"
+                     className="checkbox-control"
+                     defaultChecked={false}
+                     onChange={this.toggleCheckbox.bind(this)}
+                     name="subscribeCheckBox"
+              />
+              <span className="checkbox-label">Real Time Log</span>
+            </label></div>
+            <textarea readOnly
+                      className={s["container-log"]}
+                      defaultValue={logs}
+                      id="containerLog"
+            />
+          </div>
+          )}
       </Dialog>
     );
   }
