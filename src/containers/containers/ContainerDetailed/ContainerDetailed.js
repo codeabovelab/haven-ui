@@ -7,12 +7,17 @@ import {ContainerScale, ContainerUpdate} from '../../../containers/index';
 import {Dropdown, SplitButton, Button, ButtonToolbar, Accordion, Panel, ProgressBar, Tabs, Tab} from 'react-bootstrap';
 import _ from 'lodash';
 import {browserHistory} from 'react-router';
+import { Stomp } from 'stompjs/lib/stomp.min.js';
+import {connectToStomp} from '../../../utils/stompUtils';
+
+let stompClient = null;
 
 @connect(state => ({
   clusters: state.clusters,
   containers: state.containers,
   containersByName: state.containers.detailsByName,
-  containersUI: state.containersUI
+  containersUI: state.containersUI,
+  token: state.auth.token
 }), {
   loadContainers: clusterActions.loadContainers,
   loadStatistics: containerActions.loadStatistics,
@@ -30,6 +35,7 @@ export default class ContainerDetailed extends Component {
     container: PropTypes.object,
     containersUI: PropTypes.object,
     params: PropTypes.object,
+    token: PropTypes.object,
     loadDetailsByName: PropTypes.func.isRequired,
     startContainer: PropTypes.func.isRequired,
     stopContainer: PropTypes.func.isRequired,
@@ -50,6 +56,15 @@ export default class ContainerDetailed extends Component {
       this.refreshLogs();
       this.refreshStats();
     });
+  }
+
+  componentDidMount() {
+    const {token} = this.props;
+    stompClient = connectToStomp(stompClient, token);
+  }
+
+  componentWillUnmount() {
+    stompClient.disconnect();
   }
 
   addToggleListener() {
@@ -151,6 +166,32 @@ export default class ContainerDetailed extends Component {
         $toggleBox.bootstrapSwitch('state', flag, true);
       }
     });
+  }
+
+  toggleCheckbox(e) {
+    const {params: {subname}} = this.props;
+    let containerLogChannel = 'container:' + subname + ':stdout';
+    let checked = e.target.checked;
+    if (checked === true) {
+      stompClient.subscribe('/user/queue/*', (message) => {
+        let entry = JSON.parse(message.body).message;
+        if (message.headers && message.body && checked) {
+          $('#containerLog').val((_, val)=> {
+            return entry + '\n' + val;
+          });
+        }
+      });
+      let yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      stompClient.send('/app/subscriptions/add', {}, JSON.stringify([{
+        source: containerLogChannel,
+        historyCount: 7,
+        historySince: yesterday
+      }]));
+    } else {
+      stompClient.send('/app/subscriptions/del', {}, JSON.stringify([containerLogChannel]));
+    }
   }
 
   render() {
@@ -255,6 +296,16 @@ export default class ContainerDetailed extends Component {
           </Tabs>
           <Accordion className="accordion-container-detailed">
             <Panel header={logsHeaderBar} eventKey="1" onEnter={this.refreshLogs.bind(this)}>
+              <div className="checkbox-button"><label>
+                <input type="checkbox"
+                       id="logCheck"
+                       className="checkbox-control"
+                       defaultChecked={false}
+                       onChange={this.toggleCheckbox.bind(this)}
+                       name="subscribeCheckBox"
+                />
+                <span className="checkbox-label">Real Time Log</span>
+              </label></div>
                <textarea readOnly
                          id="containerLog"
                          defaultValue=""
