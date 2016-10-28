@@ -7,12 +7,18 @@ import {ContainerScale, ContainerUpdate} from '../../../containers/index';
 import {Dropdown, SplitButton, Button, ButtonToolbar, Accordion, Panel, ProgressBar, Tabs, Tab} from 'react-bootstrap';
 import _ from 'lodash';
 import {browserHistory} from 'react-router';
+import SockJS from 'sockjs-client';
+import { Stomp } from 'stompjs/lib/stomp.min.js';
+import config from '../../../config';
+
+let stompClient = null;
 
 @connect(state => ({
   clusters: state.clusters,
   containers: state.containers,
   containersByName: state.containers.detailsByName,
-  containersUI: state.containersUI
+  containersUI: state.containersUI,
+  token: state.auth.token
 }), {
   loadContainers: clusterActions.loadContainers,
   loadStatistics: containerActions.loadStatistics,
@@ -30,6 +36,7 @@ export default class ContainerDetailed extends Component {
     container: PropTypes.object,
     containersUI: PropTypes.object,
     params: PropTypes.object,
+    token: PropTypes.object,
     loadDetailsByName: PropTypes.func.isRequired,
     startContainer: PropTypes.func.isRequired,
     stopContainer: PropTypes.func.isRequired,
@@ -50,6 +57,14 @@ export default class ContainerDetailed extends Component {
       this.refreshLogs();
       this.refreshStats();
     });
+  }
+
+  componentDidMount() {
+    this.connectToStomp();
+  }
+
+  componentWillUnmount() {
+    stompClient.disconnect();
   }
 
   addToggleListener() {
@@ -151,6 +166,58 @@ export default class ContainerDetailed extends Component {
         $toggleBox.bootstrapSwitch('state', flag, true);
       }
     });
+  }
+
+  connectToStomp() {
+    const {token} = this.props;
+    let url = config.eventServer;
+    if (!url.startsWith('http')) {
+      url = `http://${url}`;
+    }
+    if (token) {
+      url = `${url}?token=${token.key}`;
+    }
+    let ws = new SockJS(url);
+    stompClient = Stomp.over(ws);
+    let stompHeaders = {
+      command: 'CONNECT',
+      header: {
+        'accept-version': '1.1,1.0',
+        'heart-beat': '10000,10000',
+        'client-id': config.app.title
+      },
+      body: ''
+    };
+    stompClient.debug = false;
+    stompClient.connect(stompHeaders, (connectFrame) => {
+    }, (error) => {
+    });
+  }
+
+  toggleCheckbox(e) {
+    let checked = e.target.checked;
+    if (checked === true) {
+      stompClient.subscribe('/user/queue/*', (message) => {
+        console.log('ku');
+        if (message.headers && message.body && checked) {
+          $('#containerLog').val((_, val)=> {
+            return val + '\n' + message.body;
+          });
+        }
+      });
+      let yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      console.log('subscribing');
+      stompClient.send('/app/subscriptions/add', {}, JSON.stringify([{
+        source: 'container:stable:stdout',
+        historyCount: 7,
+        historySince: yesterday
+      }]));
+    } else {
+      console.log('unsubscribing');
+      stompClient.send('/app/subscriptions/del', {}, JSON.stringify(['container:stable:stdout']));
+    }
   }
 
   render() {
@@ -255,6 +322,16 @@ export default class ContainerDetailed extends Component {
           </Tabs>
           <Accordion className="accordion-container-detailed">
             <Panel header={logsHeaderBar} eventKey="1" onEnter={this.refreshLogs.bind(this)}>
+              <div className="checkbox-button"><label>
+                <input type="checkbox"
+                       id="logCheck"
+                       className="checkbox-control"
+                       defaultChecked={false}
+                       onChange={this.toggleCheckbox.bind(this)}
+                       name="subscribeCheckBox"
+                />
+                <span className="checkbox-label">Real Time Log</span>
+              </label></div>
                <textarea readOnly
                          id="containerLog"
                          defaultValue=""
