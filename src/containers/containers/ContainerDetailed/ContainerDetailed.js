@@ -7,9 +7,8 @@ import {ContainerScale, ContainerUpdate} from '../../../containers/index';
 import {Dropdown, SplitButton, Button, ButtonToolbar, Accordion, Panel, ProgressBar, Tabs, Tab} from 'react-bootstrap';
 import _ from 'lodash';
 import {browserHistory} from 'react-router';
-import SockJS from 'sockjs-client';
 import { Stomp } from 'stompjs/lib/stomp.min.js';
-import config from '../../../config';
+import {connectToStomp} from '../../../utils/stompUtils';
 
 let stompClient = null;
 
@@ -60,7 +59,8 @@ export default class ContainerDetailed extends Component {
   }
 
   componentDidMount() {
-    this.connectToStomp();
+    const {token} = this.props;
+    stompClient = connectToStomp(stompClient, token);
   }
 
   componentWillUnmount() {
@@ -165,32 +165,6 @@ export default class ContainerDetailed extends Component {
       if (response.status !== 304) {
         $toggleBox.bootstrapSwitch('state', flag, true);
       }
-    });
-  }
-
-  connectToStomp() {
-    const {token} = this.props;
-    let url = config.eventServer;
-    if (!url.startsWith('http')) {
-      url = `http://${url}`;
-    }
-    if (token) {
-      url = `${url}?token=${token.key}`;
-    }
-    let ws = new SockJS(url);
-    stompClient = Stomp.over(ws);
-    let stompHeaders = {
-      command: 'CONNECT',
-      header: {
-        'accept-version': '1.1,1.0',
-        'heart-beat': '10000,10000',
-        'client-id': config.app.title
-      },
-      body: ''
-    };
-    stompClient.debug = false;
-    stompClient.connect(stompHeaders, (connectFrame) => {
-    }, (error) => {
     });
   }
 
