@@ -6,7 +6,7 @@ export default class PropertyGridLeaf extends Component {
     hideRoot: React.PropTypes.bool,
     level: React.PropTypes.number,
     label: React.PropTypes.string.isRequired,
-    data: React.PropTypes.any.isRequired
+    data: React.PropTypes.any
   };
 
   constructor(props) {
@@ -74,6 +74,7 @@ export default class PropertyGridLeaf extends Component {
           <PropertyGridLeaf data={data[key]}
                             level={level + 1}
                             label={key}
+                            key={key}
           />
         );
       });

@@ -100,12 +100,8 @@ export default class ContainerDetailed extends Component {
   }
 
   onActionInvoke(action, container) {
-    const {clusters, params: {name}} = this.props;
-    let cluster = clusters[name];
+    const {params: {name}} = this.props;
     let currentContainer = container;
-    console.log('onActionInvoke', action, cluster);
-
-    console.log('container', container, currentContainer);
 
     switch (action) {
       case "scale":
