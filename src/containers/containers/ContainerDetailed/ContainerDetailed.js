@@ -177,7 +177,7 @@ export default class ContainerDetailed extends Component {
         let entry = JSON.parse(message.body).message;
         if (message.headers && message.body && checked) {
           $('#containerLog').val((_, val)=> {
-            return entry + '\n' + val;
+            return val + '\n' + entry;
           });
         }
       });

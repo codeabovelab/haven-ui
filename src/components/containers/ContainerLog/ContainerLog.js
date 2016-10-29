@@ -59,7 +59,7 @@ export default class ContainerLog extends Component {
         if (message.headers && message.body && checked) {
           let entry = JSON.parse(message.body).message;
           $('#containerLog').val((_, val)=> {
-            return entry + '\n' + val;
+            return val + '\n' + entry;
           });
         }
       });
