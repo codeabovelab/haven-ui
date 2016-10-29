@@ -216,8 +216,8 @@ export default class ContainerDetailed extends Component {
   }
 
   toggleCheckbox(e) {
-    const {params: {subname}} = this.props;
-    let containerLogChannel = 'container:' + subname + ':stdout';
+    const {params: {subname}, params: {name}} = this.props;
+    let containerLogChannel = 'container:' + name + ':' + subname + ':stdout';
     let checked = e.target.checked;
     if (checked === true) {
       stompClient.subscribe('/user/queue/*', (message) => {

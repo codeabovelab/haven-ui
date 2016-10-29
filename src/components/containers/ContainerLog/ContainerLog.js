@@ -57,7 +57,7 @@ export default class ContainerLog extends Component {
 
   toggleCheckbox(e) {
     const {container} = this.props;
-    let containerLogChannel = 'container:' + container.name + ':stdout';
+    let containerLogChannel = 'container:' + container.cluster + ':' + container.name + ':stdout';
     let checked = e.target.checked;
     if (checked === true) {
       stompClient.subscribe('/user/queue/*', (message) => {
