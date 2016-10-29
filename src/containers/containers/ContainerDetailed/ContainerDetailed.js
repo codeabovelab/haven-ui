@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
-import {PropertyGrid, LoadingDialog} from '../../../components/index';
+import {PropertyGrid, LoadingDialog, ActionMenu, ContainerStatistics} from '../../../components/index';
 import {ContainerScale, ContainerUpdate} from '../../../containers/index';
 import {Dropdown, SplitButton, Button, ButtonToolbar, Accordion, Panel, ProgressBar, Tabs, Tab} from 'react-bootstrap';
 import _ from 'lodash';
@@ -41,9 +41,35 @@ export default class ContainerDetailed extends Component {
     stopContainer: PropTypes.func.isRequired,
     loadContainers: PropTypes.func.isRequired,
     loadLogs: PropTypes.func.isRequired,
+    restartContainer: PropTypes.func.isRequired,
     removeContainer: PropTypes.func.isRequired,
     loadStatistics: PropTypes.func.isRequired
   };
+
+  ACTIONS = [
+    {
+      key: "delete",
+      title: "Delete"
+    },
+    null,
+    {
+      key: "restart",
+      title: "Restart"
+    },
+    null,
+    {
+      key: "scale",
+      title: "Scale"
+    },
+    {
+      key: "edit",
+      title: "Edit"
+    },
+    {
+      key: "stats",
+      title: "Stats"
+    }
+  ];
 
   componentWillMount() {
     require('./ContainerDetailed.scss');
@@ -73,33 +99,79 @@ export default class ContainerDetailed extends Component {
     });
   }
 
-  scaleContainer() {
-    const {containersByName, params: {subname}} = this.props;
-    this.setState({
-      actionDialog: (
-        <ContainerScale container={containersByName[subname]}
-                        onHide={this.onHideDialog.bind(this)}
-        />
-      )
-    });
-  }
+  onActionInvoke(action, container) {
+    const {clusters, params: {name}} = this.props;
+    let cluster = clusters[name];
+    let currentContainer = container;
+    console.log('onActionInvoke', action, cluster);
 
-  deleteContainer() {
-    const {containersByName, params: {subname}, params: {name}} = this.props;
-    confirm('Are you sure you want to remove this container?')
-      .then(() => {
+    console.log('container', container, currentContainer);
+
+    switch (action) {
+      case "scale":
         this.setState({
           actionDialog: (
-            <LoadingDialog container={containersByName[subname]}
-                           onHide={this.onHideDialogAfterDelete.bind(this)}
-                           name={name}
-                           longTermAction={this.props.removeContainer}
-                           loadContainers={this.props.loadContainers}
-                           actionKey="removed"
+            <ContainerScale container={currentContainer}
+                            onHide={this.onHideDialog.bind(this)}
             />
           )
         });
-      });
+        return;
+
+      case "stats":
+        this.setState({
+          actionDialog: (
+            <ContainerStatistics container={currentContainer}
+                                 onHide={this.onHideDialog.bind(this)}
+            />
+          )
+        });
+        return;
+
+      case "restart":
+        this.setState({
+          actionDialog: (
+            <LoadingDialog container={currentContainer}
+                           onHide={this.onHideDialogAfterRestart.bind(this)}
+                           name={name}
+                           longTermAction={this.props.restartContainer}
+                           loadContainers={this.props.loadContainers}
+                           actionKey="restarted"
+            />
+          )
+        });
+        return;
+
+      case "delete":
+        confirm('Are you sure you want to remove this container?')
+          .then(() => {
+            this.setState({
+              actionDialog: (
+                <LoadingDialog container={currentContainer}
+                               onHide={this.onHideDialogAfterDelete.bind(this)}
+                               name={name}
+                               longTermAction={this.props.removeContainer}
+                               loadContainers={this.props.loadContainers}
+                               actionKey="removed"
+                />
+              )
+            });
+          });
+        return;
+
+      case "edit":
+        this.setState({
+          actionDialog: (
+            <ContainerUpdate container={currentContainer}
+                             onHide={this.onHideDialog.bind(this)}
+            />
+          )
+        });
+        return;
+
+      default:
+        return;
+    }
   }
 
   onHideDialog() {
@@ -116,6 +188,14 @@ export default class ContainerDetailed extends Component {
     browserHistory.push(`/clusters/${name}`);
   }
 
+  onHideDialogAfterRestart() {
+    const {loadDetailsByName, params: {name}, params: {subname}} = this.props;
+    loadDetailsByName(name, subname);
+    this.setState({
+      actionDialog: undefined
+    });
+  }
+
   refreshLogs() {
     const {loadLogs, containersByName, params: {subname}} = this.props;
     loadLogs(containersByName[subname]).then((response)=> {
@@ -125,11 +205,6 @@ export default class ContainerDetailed extends Component {
         $containerLog.scrollTop($containerLog[0].scrollHeight - $containerLog.height());
       }
     });
-  }
-
-  refreshStats() {
-    const {loadStatistics, containersByName, params: {subname}} = this.props;
-    loadStatistics(containersByName[subname]);
   }
 
   processToggleResponse(action, name, container, loadDetailsByName) {
@@ -203,13 +278,11 @@ export default class ContainerDetailed extends Component {
                 <i className="fa fa-play"/>&nbsp;Start
               </Button>
             )}
-            <Button
-              bsStyle="default"
-              onClick={this.updateContainer.bind(this)}
-            >
-              Update
-            </Button>&nbsp;&nbsp;
           </ButtonToolbar>
+          <ActionMenu subject={containersByName[subname]}
+                      actions={this.ACTIONS}
+                      actionHandler={this.onActionInvoke.bind(this)}
+          />
         </div>
       );
     }
