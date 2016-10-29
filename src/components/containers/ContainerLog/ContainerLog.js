@@ -29,7 +29,12 @@ export default class ContainerLog extends Component {
 
   componentWillMount() {
     const {container, loadLogs} = this.props;
-    loadLogs(container);
+    loadLogs(container).then(()=> {
+      let $containerLog = $('#containerLog');
+      if ($containerLog.length) {
+        $containerLog.scrollTop($containerLog[0].scrollHeight - $containerLog.height());
+      }
+    });
     require('jquery-ui/ui/widgets/draggable');
   }
 
@@ -52,14 +57,14 @@ export default class ContainerLog extends Component {
 
   toggleCheckbox(e) {
     const {container} = this.props;
-    let containerLogChannel = 'container:' + container.name + ':stdout';
+    let containerLogChannel = 'container:' + container.cluster + ':' + container.name + ':stdout';
     let checked = e.target.checked;
     if (checked === true) {
       stompClient.subscribe('/user/queue/*', (message) => {
         if (message.headers && message.body && checked) {
           let entry = JSON.parse(message.body).message;
           $('#containerLog').val((_, val)=> {
-            return entry + '\n' + val;
+            return val + '\n' + entry;
           });
         }
       });

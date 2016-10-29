@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
-import {PropertyGrid, LoadingDialog} from '../../../components/index';
+import {PropertyGrid, LoadingDialog, ActionMenu, ContainerStatistics} from '../../../components/index';
 import {ContainerScale, ContainerUpdate} from '../../../containers/index';
 import {Dropdown, SplitButton, Button, ButtonToolbar, Accordion, Panel, ProgressBar, Tabs, Tab} from 'react-bootstrap';
 import _ from 'lodash';
@@ -41,20 +41,41 @@ export default class ContainerDetailed extends Component {
     stopContainer: PropTypes.func.isRequired,
     loadContainers: PropTypes.func.isRequired,
     loadLogs: PropTypes.func.isRequired,
+    restartContainer: PropTypes.func.isRequired,
     removeContainer: PropTypes.func.isRequired,
     loadStatistics: PropTypes.func.isRequired
   };
 
+  ACTIONS = [
+    {
+      key: "delete",
+      title: "Delete"
+    },
+    null,
+    {
+      key: "restart",
+      title: "Restart"
+    },
+    null,
+    {
+      key: "scale",
+      title: "Scale"
+    },
+    {
+      key: "edit",
+      title: "Edit"
+    },
+    {
+      key: "stats",
+      title: "Stats"
+    }
+  ];
+
   componentWillMount() {
-    require('bootstrap-switch/dist/js/bootstrap-switch.js');
-    require('bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css');
     require('./ContainerDetailed.scss');
     const {loadDetailsByName, params: {name}, params: {subname}} = this.props;
     loadDetailsByName(name, subname).then(()=> {
-      initializeToggle();
-      this.addToggleListener();
       this.refreshLogs();
-      this.refreshStats();
     });
   }
 
@@ -65,25 +86,6 @@ export default class ContainerDetailed extends Component {
 
   componentWillUnmount() {
     stompClient.disconnect();
-  }
-
-  addToggleListener() {
-    const {startContainer, loadDetailsByName, stopContainer, params: {subname}, params: {name}, containersByName} = this.props;
-    const container = containersByName[subname];
-    const $toggleBox = $('#toggle-box');
-    $toggleBox.on('switchChange.bootstrapSwitch', (event, state)=> {
-      event.preventDefault();
-      switch (state) {
-        case true:
-          this.processToggleResponse(startContainer, name, container, loadDetailsByName, $toggleBox);
-          break;
-        case false:
-          this.processToggleResponse(stopContainer, name, container, loadDetailsByName, $toggleBox);
-          break;
-        default:
-          break;
-      }
-    });
   }
 
   updateContainer() {
@@ -97,33 +99,75 @@ export default class ContainerDetailed extends Component {
     });
   }
 
-  scaleContainer() {
-    const {containersByName, params: {subname}} = this.props;
-    this.setState({
-      actionDialog: (
-        <ContainerScale container={containersByName[subname]}
-                        onHide={this.onHideDialog.bind(this)}
-        />
-      )
-    });
-  }
+  onActionInvoke(action, container) {
+    const {params: {name}} = this.props;
+    let currentContainer = container;
 
-  deleteContainer() {
-    const {containersByName, params: {subname}, params: {name}} = this.props;
-    confirm('Are you sure you want to remove this container?')
-      .then(() => {
+    switch (action) {
+      case "scale":
         this.setState({
           actionDialog: (
-            <LoadingDialog container={containersByName[subname]}
-                           onHide={this.onHideDialogAfterDelete.bind(this)}
-                           name={name}
-                           longTermAction={this.props.removeContainer}
-                           loadContainers={this.props.loadContainers}
-                           actionKey="removed"
+            <ContainerScale container={currentContainer}
+                            onHide={this.onHideDialog.bind(this)}
             />
           )
         });
-      });
+        return;
+
+      case "stats":
+        this.setState({
+          actionDialog: (
+            <ContainerStatistics container={currentContainer}
+                                 onHide={this.onHideDialog.bind(this)}
+            />
+          )
+        });
+        return;
+
+      case "restart":
+        this.setState({
+          actionDialog: (
+            <LoadingDialog container={currentContainer}
+                           onHide={this.onHideDialogAfterRestart.bind(this)}
+                           name={name}
+                           longTermAction={this.props.restartContainer}
+                           loadContainers={this.props.loadContainers}
+                           actionKey="restarted"
+            />
+          )
+        });
+        return;
+
+      case "delete":
+        confirm('Are you sure you want to remove this container?')
+          .then(() => {
+            this.setState({
+              actionDialog: (
+                <LoadingDialog container={currentContainer}
+                               onHide={this.onHideDialogAfterDelete.bind(this)}
+                               name={name}
+                               longTermAction={this.props.removeContainer}
+                               loadContainers={this.props.loadContainers}
+                               actionKey="removed"
+                />
+              )
+            });
+          });
+        return;
+
+      case "edit":
+        this.setState({
+          actionDialog: (
+            <ContainerUpdate container={currentContainer}
+                             onHide={this.onHideDialog.bind(this)}
+            />
+          )
+        });
+        return;
+
+      default:
+        return;
+    }
   }
 
   onHideDialog() {
@@ -140,44 +184,43 @@ export default class ContainerDetailed extends Component {
     browserHistory.push(`/clusters/${name}`);
   }
 
-  refreshLogs() {
-    const {loadLogs, containersByName, params: {subname}} = this.props;
-    loadLogs(containersByName[subname]).then((response)=>{
-      $('#containerLog').val(response._res.text);
+  onHideDialogAfterRestart() {
+    const {loadDetailsByName, params: {name}, params: {subname}} = this.props;
+    loadDetailsByName(name, subname);
+    this.setState({
+      actionDialog: undefined
     });
   }
 
-  refreshStats() {
-    const {loadStatistics, containersByName, params: {subname}} = this.props;
-    loadStatistics(containersByName[subname]);
+  refreshLogs() {
+    const {loadLogs, containersByName, params: {subname}} = this.props;
+    loadLogs(containersByName[subname]).then((response)=> {
+      let $containerLog = $('#containerLog');
+      $containerLog.val(response._res.text);
+      if ($containerLog.length) {
+        $containerLog.scrollTop($containerLog[0].scrollHeight - $containerLog.height());
+      }
+    });
   }
 
-  processToggleResponse(action, name, container, loadDetailsByName, $toggleBox) {
-    const {startContainer} = this.props;
-    let flag = action !== startContainer;
-    action(container).then((response)=> {
+  processToggleResponse(action, name, container, loadDetailsByName) {
+    action(container).then(()=> {
       loadDetailsByName(name, container.name);
-      if (response.code !== 200) {
-        $toggleBox.bootstrapSwitch('state', flag, true);
-      }
-    }).catch((response)=> {
+    }).catch(()=> {
       loadDetailsByName(name, container.name);
-      if (response.status !== 304) {
-        $toggleBox.bootstrapSwitch('state', flag, true);
-      }
     });
   }
 
   toggleCheckbox(e) {
-    const {params: {subname}} = this.props;
-    let containerLogChannel = 'container:' + subname + ':stdout';
+    const {params: {subname}, params: {name}} = this.props;
+    let containerLogChannel = 'container:' + name + ':' + subname + ':stdout';
     let checked = e.target.checked;
     if (checked === true) {
       stompClient.subscribe('/user/queue/*', (message) => {
         let entry = JSON.parse(message.body).message;
         if (message.headers && message.body && checked) {
           $('#containerLog').val((_, val)=> {
-            return entry + '\n' + val;
+            return val + '\n' + entry;
           });
         }
       });
@@ -195,66 +238,50 @@ export default class ContainerDetailed extends Component {
   }
 
   render() {
-    const {containersByName, containers, containersUI, params: {name}, params: {subname}} = this.props;
+    const {containersByName, containersUI, params: {name}, params: {subname}, startContainer, stopContainer, loadDetailsByName} = this.props;
     const container = containersByName ? containersByName[subname] : null;
     let loading = '';
-    let loadingLogs = '';
-    let loadingStatistics = '';
     let containerHeaderBar = '';
-    let stats = {};
     if (container) {
-      stats = (containers[container.id] && containers[container.id].statistics) ? containers[container.id].statistics : {};
-      loadingStatistics = (containersUI[container.id] && containersUI[container.id].loadingStatistics);
+      let containerStatus = container.run ? 'RUNNING' : 'EXITED';
       loading = (containersUI[container.id] && (containersUI[container.id].starting || containersUI[container.id].stopping));
-      loadingLogs = (containersUI[container.id] && containersUI[container.id].loadingLogs);
       containerHeaderBar = (
         <div className="clearfix">
-          <h3 id="containerDetailsHeader">{container.name} {loading && (
-            <i className="fa fa-spinner fa-pulse"/>
-          )}</h3>
+          <h3 id="containerDetailsHeader">{container.name}&nbsp;&nbsp;
+              <span className={container.run ? 'success-header' : ''}>{containerStatus}</span>&nbsp;&nbsp;
+            {loading && (
+              <i className="fa fa-spinner fa-pulse"/>
+            )}
+          </h3>
           <ButtonToolbar>
-            <Button
-              bsStyle="default"
-              onClick={this.deleteContainer.bind(this)}
-            ><i className="fa fa-close" />&nbsp;
-              Delete
-            </Button>&nbsp;&nbsp;
-            <Button
-              bsStyle="default"
-              onClick={this.scaleContainer.bind(this)}
-            >
-              Scale
-            </Button>&nbsp;&nbsp;
-            <Button
-              bsStyle="default"
-              onClick={this.updateContainer.bind(this)}
-            >
-              Update
-            </Button>&nbsp;&nbsp;
-            <input type="checkbox"
-                   name="my-checkbox"
-                   id="toggle-box"
-                   defaultChecked={container.run}
-            />
+            {container.run && (
+              <Button
+                bsStyle="primary"
+                onClick={()=> {
+                  this.processToggleResponse(stopContainer, name, container, loadDetailsByName);
+                }}
+              >
+                <i className="fa fa-stop"/>&nbsp;Stop
+              </Button>
+            )}
+            {!container.run && (
+              <Button
+                bsStyle="primary"
+                onClick={()=> {
+                  this.processToggleResponse(startContainer, name, container, loadDetailsByName);
+                }}
+              >
+                <i className="fa fa-play"/>&nbsp;Start
+              </Button>
+            )}
           </ButtonToolbar>
+          <ActionMenu subject={containersByName[subname]}
+                      actions={this.ACTIONS}
+                      actionHandler={this.onActionInvoke.bind(this)}
+          />
         </div>
       );
     }
-    let logsHeaderBar = (
-      <div className="clearfix">
-        <h4 id="logHeader">Logs {loadingLogs && (
-          <i className="fa fa-spinner fa-pulse"/>
-        )}</h4>
-      </div>
-    );
-    let statsHeaderBar = (
-      <div className="clearfix">
-        <h4 id="logHeader">Stats {loadingStatistics && (
-          <i className="fa fa-spinner fa-pulse"/>
-        )}</h4>
-      </div>
-    );
-
     if (!container) {
       return (
         <div><ProgressBar active now={100} /></div>
@@ -271,7 +298,9 @@ export default class ContainerDetailed extends Component {
         <Panel header={containerHeaderBar}>
           <PropertyGrid data={_.assign({},
             {name: container.name}, {hostname: container.hostname}, {image: container.image},
-            {cluster: container.cluster}, {node: container.node}, {status: container.status})}/>
+            {cluster: container.cluster}, {node: container.node})}/>
+        </Panel>
+        <div className="panel panel-default">
           <Tabs defaultActiveKey={1} id="tabContainerProps">
             <Tab eventKey={1} title="Labels"><PropertyGrid data={container.labels}/></Tab>
             <Tab eventKey={2} title="Network&Ports"><PropertyGrid data={_.assign({},
@@ -293,9 +322,7 @@ export default class ContainerDetailed extends Component {
               {created: container.created}, {started: container.started}, {finished: container.finished},
               {reschedule: container.reschedule}, {restartCount: container.restartCount}, {lock: container.lock},
               {lockCause: container.lockCause}, {command: container.command})}/></Tab>
-          </Tabs>
-          <Accordion className="accordion-container-detailed">
-            <Panel header={logsHeaderBar} eventKey="1" onEnter={this.refreshLogs.bind(this)}>
+            <Tab eventKey={8} title="Logs" onEnter={this.refreshLogs.bind(this)}>
               <div className="checkbox-button"><label>
                 <input type="checkbox"
                        id="logCheck"
@@ -306,16 +333,13 @@ export default class ContainerDetailed extends Component {
                 />
                 <span className="checkbox-label">Real Time Log</span>
               </label></div>
-               <textarea readOnly
-                         id="containerLog"
-                         defaultValue=""
-               />
-            </Panel>
-            <Panel header={statsHeaderBar} eventKey="2" onEnter={this.refreshStats.bind(this)}>
-              <PropertyGrid data={stats}/>
-            </Panel>
-          </Accordion>
-        </Panel>
+              <textarea readOnly
+                        id="containerLog"
+                        defaultValue=""
+              />
+            </Tab>
+          </Tabs>
+          </div>
 
         {(this.state && this.state.actionDialog) && (
           <div>
@@ -328,9 +352,3 @@ export default class ContainerDetailed extends Component {
 
 }
 
-function initializeToggle() {
-  $.fn.bootstrapSwitch.defaults.onColor = 'success';
-  $.fn.bootstrapSwitch.defaults.onText = 'Running';
-  $.fn.bootstrapSwitch.defaults.offText = 'Stopped';
-  $("#toggle-box").bootstrapSwitch();
-}
