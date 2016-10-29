@@ -142,8 +142,12 @@ export default class ContainerDetailed extends Component {
 
   refreshLogs() {
     const {loadLogs, containersByName, params: {subname}} = this.props;
-    loadLogs(containersByName[subname]).then((response)=>{
-      $('#containerLog').val(response._res.text);
+    loadLogs(containersByName[subname]).then((response)=> {
+      let $containerLog = $('#containerLog');
+      $containerLog.val(response._res.text);
+      if ($containerLog.length) {
+        $containerLog.scrollTop($containerLog[0].scrollHeight - $containerLog.height());
+      }
     });
   }
 

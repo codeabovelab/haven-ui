@@ -29,7 +29,12 @@ export default class ContainerLog extends Component {
 
   componentWillMount() {
     const {container, loadLogs} = this.props;
-    loadLogs(container);
+    loadLogs(container).then(()=> {
+      let $containerLog = $('#containerLog');
+      if ($containerLog.length) {
+        $containerLog.scrollTop($containerLog[0].scrollHeight - $containerLog.height());
+      }
+    });
     require('jquery-ui/ui/widgets/draggable');
   }
 
