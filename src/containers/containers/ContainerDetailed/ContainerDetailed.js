@@ -276,6 +276,8 @@ export default class ContainerDetailed extends Component {
           <PropertyGrid data={_.assign({},
             {name: container.name}, {hostname: container.hostname}, {image: container.image},
             {cluster: container.cluster}, {node: container.node}, {status: container.status})}/>
+        </Panel>
+        <div className="panel panel-default">
           <Tabs defaultActiveKey={1} id="tabContainerProps">
             <Tab eventKey={1} title="Labels"><PropertyGrid data={container.labels}/></Tab>
             <Tab eventKey={2} title="Network&Ports"><PropertyGrid data={_.assign({},
@@ -297,9 +299,7 @@ export default class ContainerDetailed extends Component {
               {created: container.created}, {started: container.started}, {finished: container.finished},
               {reschedule: container.reschedule}, {restartCount: container.restartCount}, {lock: container.lock},
               {lockCause: container.lockCause}, {command: container.command})}/></Tab>
-          </Tabs>
-          <Accordion className="accordion-container-detailed">
-            <Panel header={logsHeaderBar} eventKey="1" onEnter={this.refreshLogs.bind(this)}>
+            <Tab eventKey={8} title="Logs" onEnter={this.refreshLogs.bind(this)}>
               <div className="checkbox-button"><label>
                 <input type="checkbox"
                        id="logCheck"
@@ -310,16 +310,13 @@ export default class ContainerDetailed extends Component {
                 />
                 <span className="checkbox-label">Real Time Log</span>
               </label></div>
-               <textarea readOnly
-                         id="containerLog"
-                         defaultValue=""
-               />
-            </Panel>
-            <Panel header={statsHeaderBar} eventKey="2" onEnter={this.refreshStats.bind(this)}>
-              <PropertyGrid data={stats}/>
-            </Panel>
-          </Accordion>
-        </Panel>
+              <textarea readOnly
+                        id="containerLog"
+                        defaultValue=""
+              />
+            </Tab>
+          </Tabs>
+          </div>
 
         {(this.state && this.state.actionDialog) && (
           <div>
