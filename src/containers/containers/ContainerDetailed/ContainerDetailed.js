@@ -46,15 +46,10 @@ export default class ContainerDetailed extends Component {
   };
 
   componentWillMount() {
-    require('bootstrap-switch/dist/js/bootstrap-switch.js');
-    require('bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css');
     require('./ContainerDetailed.scss');
     const {loadDetailsByName, params: {name}, params: {subname}} = this.props;
     loadDetailsByName(name, subname).then(()=> {
-      initializeToggle();
-      this.addToggleListener();
       this.refreshLogs();
-      this.refreshStats();
     });
   }
 
@@ -65,25 +60,6 @@ export default class ContainerDetailed extends Component {
 
   componentWillUnmount() {
     stompClient.disconnect();
-  }
-
-  addToggleListener() {
-    const {startContainer, loadDetailsByName, stopContainer, params: {subname}, params: {name}, containersByName} = this.props;
-    const container = containersByName[subname];
-    const $toggleBox = $('#toggle-box');
-    $toggleBox.on('switchChange.bootstrapSwitch', (event, state)=> {
-      event.preventDefault();
-      switch (state) {
-        case true:
-          this.processToggleResponse(startContainer, name, container, loadDetailsByName, $toggleBox);
-          break;
-        case false:
-          this.processToggleResponse(stopContainer, name, container, loadDetailsByName, $toggleBox);
-          break;
-        default:
-          break;
-      }
-    });
   }
 
   updateContainer() {
@@ -156,19 +132,11 @@ export default class ContainerDetailed extends Component {
     loadStatistics(containersByName[subname]);
   }
 
-  processToggleResponse(action, name, container, loadDetailsByName, $toggleBox) {
-    const {startContainer} = this.props;
-    let flag = action !== startContainer;
-    action(container).then((response)=> {
+  processToggleResponse(action, name, container, loadDetailsByName) {
+    action(container).then(()=> {
       loadDetailsByName(name, container.name);
-      if (response.code !== 200) {
-        $toggleBox.bootstrapSwitch('state', flag, true);
-      }
-    }).catch((response)=> {
+    }).catch(()=> {
       loadDetailsByName(name, container.name);
-      if (response.status !== 304) {
-        $toggleBox.bootstrapSwitch('state', flag, true);
-      }
     });
   }
 
@@ -199,66 +167,52 @@ export default class ContainerDetailed extends Component {
   }
 
   render() {
-    const {containersByName, containers, containersUI, params: {name}, params: {subname}} = this.props;
+    const {containersByName, containersUI, params: {name}, params: {subname}, startContainer, stopContainer, loadDetailsByName} = this.props;
     const container = containersByName ? containersByName[subname] : null;
     let loading = '';
-    let loadingLogs = '';
-    let loadingStatistics = '';
     let containerHeaderBar = '';
-    let stats = {};
     if (container) {
-      stats = (containers[container.id] && containers[container.id].statistics) ? containers[container.id].statistics : {};
-      loadingStatistics = (containersUI[container.id] && containersUI[container.id].loadingStatistics);
+      let containerStatus = container.run ? 'RUNNING' : 'EXITED';
       loading = (containersUI[container.id] && (containersUI[container.id].starting || containersUI[container.id].stopping));
-      loadingLogs = (containersUI[container.id] && containersUI[container.id].loadingLogs);
       containerHeaderBar = (
         <div className="clearfix">
-          <h3 id="containerDetailsHeader">{container.name} {loading && (
-            <i className="fa fa-spinner fa-pulse"/>
-          )}</h3>
+          <h3 id="containerDetailsHeader">{container.name}&nbsp;&nbsp;
+              <span className={container.run ? 'success-header' : ''}>{containerStatus}</span>&nbsp;&nbsp;
+            {loading && (
+              <i className="fa fa-spinner fa-pulse"/>
+            )}
+          </h3>
           <ButtonToolbar>
-            <Button
-              bsStyle="default"
-              onClick={this.deleteContainer.bind(this)}
-            ><i className="fa fa-close" />&nbsp;
-              Delete
-            </Button>&nbsp;&nbsp;
-            <Button
-              bsStyle="default"
-              onClick={this.scaleContainer.bind(this)}
-            >
-              Scale
-            </Button>&nbsp;&nbsp;
+            {container.run && (
+              <Button
+                bsStyle="primary"
+                onClick={()=> {
+                  this.processToggleResponse(stopContainer, name, container, loadDetailsByName);
+                }}
+              >
+                <i className="fa fa-stop"/>&nbsp;Stop
+              </Button>
+            )}
+            {!container.run && (
+              <Button
+                bsStyle="primary"
+                onClick={()=> {
+                  this.processToggleResponse(startContainer, name, container, loadDetailsByName);
+                }}
+              >
+                <i className="fa fa-play"/>&nbsp;Start
+              </Button>
+            )}
             <Button
               bsStyle="default"
               onClick={this.updateContainer.bind(this)}
             >
               Update
             </Button>&nbsp;&nbsp;
-            <input type="checkbox"
-                   name="my-checkbox"
-                   id="toggle-box"
-                   defaultChecked={container.run}
-            />
           </ButtonToolbar>
         </div>
       );
     }
-    let logsHeaderBar = (
-      <div className="clearfix">
-        <h4 id="logHeader">Logs {loadingLogs && (
-          <i className="fa fa-spinner fa-pulse"/>
-        )}</h4>
-      </div>
-    );
-    let statsHeaderBar = (
-      <div className="clearfix">
-        <h4 id="logHeader">Stats {loadingStatistics && (
-          <i className="fa fa-spinner fa-pulse"/>
-        )}</h4>
-      </div>
-    );
-
     if (!container) {
       return (
         <div><ProgressBar active now={100} /></div>
@@ -275,7 +229,7 @@ export default class ContainerDetailed extends Component {
         <Panel header={containerHeaderBar}>
           <PropertyGrid data={_.assign({},
             {name: container.name}, {hostname: container.hostname}, {image: container.image},
-            {cluster: container.cluster}, {node: container.node}, {status: container.status})}/>
+            {cluster: container.cluster}, {node: container.node})}/>
         </Panel>
         <div className="panel panel-default">
           <Tabs defaultActiveKey={1} id="tabContainerProps">
@@ -329,9 +283,3 @@ export default class ContainerDetailed extends Component {
 
 }
 
-function initializeToggle() {
-  $.fn.bootstrapSwitch.defaults.onColor = 'success';
-  $.fn.bootstrapSwitch.defaults.onText = 'Running';
-  $.fn.bootstrapSwitch.defaults.offText = 'Stopped';
-  $("#toggle-box").bootstrapSwitch();
-}
