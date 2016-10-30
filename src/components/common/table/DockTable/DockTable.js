@@ -137,12 +137,15 @@ export default class DockTable extends Component {
             </div>
           )}
         </div>
+          <div className="table-responsive">
 
-        {this.groups && this.renderGroups()}
+          {this.groups && this.renderGroups()}
 
-        {this.sortedRows && this.renderNoGroups()}
+          {this.sortedRows && this.renderNoGroups()}
 
-        {this.renderPagination()}
+          {this.renderPagination()}
+
+          </div>
       </div>
     );
   }
