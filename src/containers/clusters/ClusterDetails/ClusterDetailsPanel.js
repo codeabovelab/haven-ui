@@ -2,11 +2,12 @@ import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
-import { Link, browserHistory } from 'react-router';
+import { Link, browserHistory, Route, RouteHandler } from 'react-router';
+import { LinkContainer } from 'react-router-bootstrap';
 import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, Chain, LoadingDialog, StatisticsPanel, ActionMenu} from '../../../components/index';
 import {ContainerCreate, ContainerScale, ContainerUpdate} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
-import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar} from 'react-bootstrap';
+import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar, Nav, NavItem} from 'react-bootstrap';
 import _ from 'lodash';
 
 function renderTdImage(row) {
@@ -259,8 +260,20 @@ export default class ClusterDetailsPanel extends Component {
 
     const containersHeaderBar = (
       <div className="clearfix">
-        <h3></h3>
-
+        <Nav bsStyle="tabs" pullLeft>
+          <LinkContainer to={"/clusters/" + name}>
+            <NavItem eventKey={1}>Containers</NavItem>
+          </LinkContainer>
+          <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
+            <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
+          </LinkContainer>
+          <LinkContainer to={"/clusters/" + name + "/" + "nodes"}>
+            <NavItem eventKey={2}>Nodes</NavItem>
+          </LinkContainer>
+          <LinkContainer to={"/clusters/" + name + "/" + "events"}>
+            <NavItem eventKey={2}>Events</NavItem>
+          </LinkContainer>
+        </Nav>
         <ButtonToolbar>
           <Button
             bsStyle="primary"

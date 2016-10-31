@@ -2,10 +2,11 @@ import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as applicationActions from 'redux/modules/application/application';
 import {connect} from 'react-redux';
-import { Link } from 'react-router';
+import { Link, RouteHandler } from 'react-router';
+import { LinkContainer } from 'react-router-bootstrap';
 import {DockTable, LoadingDialog, Chain, NodeInfo, ActionMenu, StatisticsPanel} from '../../../components/index';
 import { asyncConnect } from 'redux-async-connect';
-import {Button, ButtonToolbar, Panel, ProgressBar, Popover} from 'react-bootstrap';
+import {Button, ButtonToolbar, Panel, ProgressBar, Popover, Nav, NavItem} from 'react-bootstrap';
 import {ApplicationCreate} from '../../../containers/index';
 import {downloadFile} from '../../../utils/fileActions';
 import _ from 'lodash';
@@ -220,7 +221,20 @@ export default class ApplicationPanel extends Component {
     this.additionalData(rows);
     const applicationsHeaderBar = (
       <div className="clearfix">
-        <h3>Applications</h3>
+        <Nav bsStyle="tabs" pullLeft>
+          <LinkContainer to={"/clusters/" + name}>
+            <NavItem eventKey={1}>Containers</NavItem>
+          </LinkContainer>
+          <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
+            <NavItem eventKey={2}>Applications</NavItem>
+          </LinkContainer>
+          <LinkContainer to={"/clusters/" + name + "/" + "nodes"}>
+            <NavItem eventKey={2}>Nodes</NavItem>
+          </LinkContainer>
+          <LinkContainer to={"/clusters/" + name + "/" + "events"}>
+            <NavItem eventKey={2}>Events</NavItem>
+          </LinkContainer>
+        </Nav>
 
         <ButtonToolbar>
           <Button

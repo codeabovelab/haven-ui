@@ -1,7 +1,8 @@
 import React, {Component, PropTypes} from 'react';
-import {Link} from 'react-router';
+import { Link, RouteHandler } from 'react-router';
+import { LinkContainer } from 'react-router-bootstrap';
 import {DockTable, ActionMenu} from '../index';
-import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Glyphicon} from 'react-bootstrap';
+import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Nav, NavItem} from 'react-bootstrap';
 import {Dialog, PropertyGrid} from 'components';
 import _ from 'lodash';
 
@@ -66,11 +67,27 @@ export default class NodesList extends Component {
   ];
 
   render() {
-    const {data} = this.props;
+    const {data, clusterName} = this.props;
     const rows = this.additionalData(data);
+    let nodesNavId = clusterName ? "/clusters/" + clusterName + "/" + "nodes" : "/nodes";
+    let name = clusterName ? clusterName : "all";
+
     const panelHeader = (
       <div className="clearfix">
-        <h3>Nodes List</h3>
+        <Nav bsStyle="tabs" pullLeft>
+          <LinkContainer to={"/clusters/" + name}>
+            <NavItem eventKey={1}>Containers</NavItem>
+          </LinkContainer>
+          <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
+            <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
+          </LinkContainer>
+          <LinkContainer to={nodesNavId}>
+            <NavItem eventKey={2}>Nodes</NavItem>
+          </LinkContainer>
+          <LinkContainer to={"/clusters/" + name + "/" + "events"}>
+            <NavItem eventKey={2}>Events</NavItem>
+          </LinkContainer>
+        </Nav>
 
         {this.props.clusterName && (
         <ButtonToolbar>
