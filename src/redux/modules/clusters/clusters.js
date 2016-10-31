@@ -77,6 +77,17 @@ export default function reducer(state = {}, action = {}) {
         uploadComposeError: action.error.message
       };
 
+    case ACTIONS.SET_SOURCE:
+      return {
+        ...state,
+        setSourceError: null
+      };
+    case ACTIONS.SET_SOURCE_FAIL:
+      return {
+        ...state,
+        setSourceError: action.error.message
+      };
+
     default:
       return state;
   }
@@ -113,6 +124,14 @@ export function getClusterSource(clusterId) {
     types: [ACTIONS.GET_SOURCE, ACTIONS.GET_SOURCE_SUCCESS, ACTIONS.GET_SOURCE_FAIL],
     id: clusterId,
     promise: (client) => client.get(`/ui/api/clusters/${clusterId}/source`)
+  };
+}
+
+export function setClusterSource(clusterId, file) {
+  return {
+    types: [ACTIONS.SET_SOURCE, ACTIONS.SET_SOURCE_SUCCESS, ACTIONS.SET_SOURCE_FAIL],
+    id: clusterId,
+    promise: (client) => client.post(`/ui/api/clusters/${clusterId}/source`, {data: file})
   };
 }
 

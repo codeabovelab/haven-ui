@@ -3,7 +3,7 @@ import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import { Link, browserHistory } from 'react-router';
-import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, Chain, LoadingDialog, StatisticsPanel, ActionMenu, ClusterUploadCompose} from '../../../components/index';
+import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, Chain, LoadingDialog, StatisticsPanel, ActionMenu, ClusterUploadCompose, ClusterSetSource} from '../../../components/index';
 import {ContainerCreate, ContainerScale, ContainerUpdate} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
 import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar} from 'react-bootstrap';
@@ -270,6 +270,13 @@ export default class ClusterDetailsPanel extends Component {
           >
             <i className="fa fa-upload" />&nbsp;
             Deploy Compose
+          </Button>
+          <Button
+            bsStyle="default"
+            onClick={this.setClusterSource.bind(this)}
+          >
+            <i className="fa fa-upload" />&nbsp;
+            Upload Source
           </Button>
           <Button
             bsStyle="default"
@@ -551,7 +558,7 @@ export default class ClusterDetailsPanel extends Component {
     const {getClusterSource, params: {name}} = this.props;
     getClusterSource(name).then((response)=> {
       let data = 'text/json;charset=utf-8,' + encodeURIComponent(response._res.text);
-      downloadFile(data, name + '-cluster-' + '-source.json');
+      downloadFile(data, name + '.json');
     }).catch(()=>null);
   }
 
@@ -560,6 +567,18 @@ export default class ClusterDetailsPanel extends Component {
       actionDialog: (
         <ClusterUploadCompose title="Deploy Cluster From Compose File"
                               onHide={this.onHideDialog.bind(this)}
+        />
+      )
+    });
+  }
+
+  setClusterSource() {
+    const {params: {name}} = this.props;
+    this.setState({
+      actionDialog: (
+        <ClusterSetSource title={"Set " + name + " Cluster Source"}
+                          cluster={name}
+                          onHide={this.onHideDialog.bind(this)}
         />
       )
     });
