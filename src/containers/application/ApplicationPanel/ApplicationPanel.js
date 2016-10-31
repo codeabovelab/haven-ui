@@ -2,10 +2,11 @@ import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as applicationActions from 'redux/modules/application/application';
 import {connect} from 'react-redux';
-import { Link } from 'react-router';
+import { Link, RouteHandler } from 'react-router';
+import { LinkContainer } from 'react-router-bootstrap';
 import {DockTable, LoadingDialog, Chain, NodeInfo, ActionMenu, StatisticsPanel} from '../../../components/index';
 import { asyncConnect } from 'redux-async-connect';
-import {Button, ButtonToolbar, Panel, ProgressBar, Popover} from 'react-bootstrap';
+import {Button, ButtonToolbar, Panel, ProgressBar, Popover, Nav, NavItem} from 'react-bootstrap';
 import {ApplicationCreate} from '../../../containers/index';
 import {downloadFile} from '../../../utils/fileActions';
 import _ from 'lodash';
@@ -218,41 +219,52 @@ export default class ApplicationPanel extends Component {
     }
 
     this.additionalData(rows);
-    const applicationsHeaderBar = (
-      <div className="clearfix">
-        <h3>Applications</h3>
-
-        <ButtonToolbar>
-          <Button
-            bsStyle="primary"
-            onClick={this.onActionInvoke.bind(this, "create")}
-          >
-            <i className="fa fa-plus" />&nbsp;
-            New Application
-          </Button>
-        </ButtonToolbar>
-      </div>
-    );
 
     return (
       <div>
         <ul className="breadcrumb">
-          <li><a href="/clusters">Clusters</a></li>
-          <li><a href={"/clusters/" + name}>{name}</a></li>
+          <li><Link to="/clusters">Clusters</Link></li>
+          <li><Link to={"/clusters/" + name}>{name}</Link></li>
           <li className="active">Applications</li>
         </ul>
         <StatisticsPanel metrics={this.statisticsMetrics}
-                         link
                          cluster={cluster}
                          values={[runningContainers, runningNodes, Apps, eventsCount]}
         />
-        <Panel header={applicationsHeaderBar}>
+        <div className="panel panel-default">
           {!rows && (
-            <ProgressBar active now={100} />
+            <ProgressBar active now={100}/>
           )}
 
           {(rows && rows.length > 0) && (
             <div>
+
+              <Nav bsStyle="tabs" className="dockTable-nav">
+                <LinkContainer to={"/clusters/" + name}>
+                  <NavItem eventKey={1}>Containers</NavItem>
+                </LinkContainer>
+                <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
+                  <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
+                </LinkContainer>
+                <LinkContainer to={"/clusters/" + name + "/" + "nodes"}>
+                  <NavItem eventKey={3}>Nodes</NavItem>
+                </LinkContainer>
+                <LinkContainer to={"/clusters/" + name + "/" + "events"}>
+                  <NavItem eventKey={4}>Events</NavItem>
+                </LinkContainer>
+              </Nav>
+
+              <ButtonToolbar className="pulled-right-toolbar">
+                <Button
+                  bsStyle="primary"
+                  className="pulled-right"
+                  onClick={this.onActionInvoke.bind(this, "create")}
+                >
+                  <i className="fa fa-plus"/>&nbsp;
+                  New Application
+                </Button>
+              </ButtonToolbar>
+
               <div className="applications">
                 <DockTable columns={this.COLUMNS}
                            rows={rows}
@@ -268,7 +280,7 @@ export default class ApplicationPanel extends Component {
               No applications yet
             </div>
           )}
-        </Panel>
+        </div>
 
         {(this.state && this.state.actionDialog) && (
           <div>

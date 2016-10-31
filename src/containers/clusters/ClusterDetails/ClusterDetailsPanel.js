@@ -2,11 +2,12 @@ import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
-import { Link, browserHistory } from 'react-router';
+import { Link, browserHistory, Route, RouteHandler } from 'react-router';
+import { LinkContainer } from 'react-router-bootstrap';
 import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, Chain, LoadingDialog, StatisticsPanel, ActionMenu} from '../../../components/index';
 import {ContainerCreate, ContainerScale, ContainerUpdate} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
-import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar} from 'react-bootstrap';
+import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar, Nav, NavItem} from 'react-bootstrap';
 import _ from 'lodash';
 
 function renderTdImage(row) {
@@ -257,31 +258,6 @@ export default class ClusterDetailsPanel extends Component {
       runningNodes = cluster.nodes.on;
     }
 
-    const containersHeaderBar = (
-      <div className="clearfix">
-        <h3></h3>
-
-        <ButtonToolbar>
-          <Button
-            bsStyle="primary"
-            onClick={this.onActionInvoke.bind(this, "create")}
-          >
-            <i className="fa fa-plus" />&nbsp;
-            New Container
-          </Button>
-
-          {false && <Button
-            bsStyle="danger"
-            onClick={this.deleteCluster.bind(this)}
-          >
-            <i className="fa fa-trash" />&nbsp;
-            Delete Cluster
-          </Button>
-          }
-        </ButtonToolbar>
-      </div>
-    );
-
     const isContainersPage = name === 'all';
     let columns = this.COLUMNS;
     let groupBySelect = this.GROUP_BY_SELECT;
@@ -301,21 +277,56 @@ export default class ClusterDetailsPanel extends Component {
       <div key={name}>
         <ul className="breadcrumb">
           <li><Link to="/clusters">Clusters</Link></li>
-          <li className="active">{name}</li>
+          <li><Link to={"/clusters/" + name}>{name}</Link></li>
+          <li className="active">Containers</li>
         </ul>
         <StatisticsPanel metrics={this.statisticsMetrics}
-                         link
                          cluster={cluster}
                          values={[runningContainers, runningNodes, Apps, eventsCount]}
         />
 
-        <Panel header={containersHeaderBar}>
+        <div className="panel panel-default">
           {!rows && (
             <ProgressBar active now={100} />
           )}
 
           {(rows && rows.length > 0) && (
             <div>
+              <Nav bsStyle="tabs" className="dockTable-nav">
+                <LinkContainer to={"/clusters/" + name}>
+                  <NavItem eventKey={1}>Containers</NavItem>
+                </LinkContainer>
+                <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
+                  <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
+                </LinkContainer>
+                <LinkContainer to={"/clusters/" + name + "/" + "nodes"}>
+                  <NavItem eventKey={3}>Nodes</NavItem>
+                </LinkContainer>
+                <LinkContainer to={"/clusters/" + name + "/" + "events"}>
+                  <NavItem eventKey={4}>Events</NavItem>
+                </LinkContainer>
+              </Nav>
+
+              <ButtonToolbar className="pulled-right-toolbar">
+                <Button
+                  bsStyle="primary"
+                  className="pulled-right"
+                  onClick={this.onActionInvoke.bind(this, "create")}
+                >
+                  <i className="fa fa-plus"/>&nbsp;
+                  New Container
+                </Button>
+
+                {false && <Button
+                  bsStyle="danger"
+                  onClick={this.deleteCluster.bind(this)}
+                >
+                  <i className="fa fa-trash"/>&nbsp;
+                  Delete Cluster
+                </Button>
+                }
+              </ButtonToolbar>
+
               <div className="containers">
                 <DockTable columns={columns}
                            rows={rows}
@@ -333,7 +344,7 @@ export default class ClusterDetailsPanel extends Component {
               No containers yet
             </div>
           )}
-        </Panel>
+        </div>
 
 
         {(this.state && this.state.actionDialog) && (

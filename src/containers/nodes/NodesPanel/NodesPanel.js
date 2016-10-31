@@ -66,15 +66,15 @@ export default class NodesPanel extends Component {
       <div>
         { params.name && (
           <ul className="breadcrumb">
-            <li><a href="/clusters">Clusters</a></li>
-            <li><a href={"/clusters/" + params.name}>{params.name}</a></li>
+            <li><Link to="/clusters">Clusters</Link></li>
+            <li><Link to={"/clusters/" + params.name}>{params.name}</Link></li>
             <li className="active">Nodes</li>
           </ul>
         )}
         { !params.name && (
           <ul className="breadcrumb">
-            <li><a href="/clusters">Clusters</a></li>
-            <li><a href="/clusters/all">all</a></li>
+            <li><Link to="/clusters">Clusters</Link></li>
+            <li><Link to="/clusters/all">all</Link></li>
             <li className="active">Nodes</li>
           </ul>
         )}

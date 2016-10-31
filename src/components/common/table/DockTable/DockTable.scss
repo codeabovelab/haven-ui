@@ -2,19 +2,24 @@
 
 .dockTable {
   :global(.docktable-header) {
+
+    margin-top: 10px;
+
     h2 {
       margin-right: 1.6rem;
     }
 
     :global(.input-search) {
-      float: right;
+      float: left;
       max-width: 25rem;
       margin-bottom: 0.5rem;
+      margin-left: 0.5rem;
     }
 
     :global(.select-container) {
       form {
-        float: right;
+        float: left;
+        margin-left: 0.7rem;
       }
 
       select {
