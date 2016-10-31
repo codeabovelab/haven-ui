@@ -13,12 +13,12 @@ export default function reducer(state = {}, action = {}) {
       });
       return _.merge({}, state, _.keyBy(clusters, 'name'));
 
-    case ACTIONS.CONFIG_SUCCESS:
+    case ACTIONS.GET_SOURCE_SUCCESS:
       return {
         ...state,
         [action.id]: {
           ...state[action.id],
-          configuration: action.result
+          source: action.result
         }
       };
 
@@ -108,11 +108,11 @@ export function deleteCluster(clusterId) {
   };
 }
 
-export function clusterConfig(clusterId) {
+export function getClusterSource(clusterId) {
   return {
-    types: [ACTIONS.CONFIG, ACTIONS.CONFIG_SUCCESS, ACTIONS.CONFIG_FAIL],
+    types: [ACTIONS.GET_SOURCE, ACTIONS.GET_SOURCE_SUCCESS, ACTIONS.GET_SOURCE_FAIL],
     id: clusterId,
-    promise: (client) => client.get(`/ui/api/clusters/${clusterId}/config`)
+    promise: (client) => client.get(`/ui/api/clusters/${clusterId}/source`)
   };
 }
 

@@ -8,6 +8,7 @@ import {ContainerCreate, ContainerScale, ContainerUpdate} from '../../../contain
 import { asyncConnect } from 'redux-async-connect';
 import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar} from 'react-bootstrap';
 import _ from 'lodash';
+import {downloadFile} from '../../../utils/fileActions';
 
 function renderTdImage(row) {
   let resultValue = processTdVal(row.image);
@@ -65,7 +66,7 @@ function processTdVal(val) {
     stopContainer: containerActions.stop,
     restartContainer: containerActions.restart,
     removeContainer: containerActions.remove,
-    getClusterConfig: clusterActions.clusterConfig
+    getClusterSource: clusterActions.getClusterSource
   })
 export default class ClusterDetailsPanel extends Component {
   static propTypes = {
@@ -79,7 +80,7 @@ export default class ClusterDetailsPanel extends Component {
     stopContainer: PropTypes.func.isRequired,
     restartContainer: PropTypes.func.isRequired,
     removeContainer: PropTypes.func.isRequired,
-    getClusterConfig: PropTypes.func.isRequired
+    getClusterSource: PropTypes.func.isRequired
   };
 
   statisticsMetrics = [
@@ -262,7 +263,6 @@ export default class ClusterDetailsPanel extends Component {
     const containersHeaderBar = (
       <div className="clearfix">
         <h3></h3>
-
         <ButtonToolbar>
           <Button
             bsStyle="default"
@@ -273,10 +273,10 @@ export default class ClusterDetailsPanel extends Component {
           </Button>
           <Button
             bsStyle="default"
-            onClick={this.getClusterConfig.bind(this)}
+            onClick={this.getClusterSource.bind(this)}
           >
             <i className="fa fa-download" />&nbsp;
-            Download Configuration
+            Download Source
           </Button>
           <Button
             bsStyle="primary"
@@ -547,14 +547,11 @@ export default class ClusterDetailsPanel extends Component {
       }, () => null);
   }
 
-  getClusterConfig() {
-    const {getClusterConfig, params: {name}} = this.props;
-    getClusterConfig(name).then((response)=> {
-      let $link = $('<a></a>').appendTo(document.body);
-      $link.attr('href', 'data:text/json;charset=utf-8,' + encodeURIComponent(response._res.text));
-      $link.attr('download', 'cluster-' + name + '-config.json');
-      $link.get(0).click();
-      $link.remove();
+  getClusterSource() {
+    const {getClusterSource, params: {name}} = this.props;
+    getClusterSource(name).then((response)=> {
+      let data = 'text/json;charset=utf-8,' + encodeURIComponent(response._res.text);
+      downloadFile(data, name + '-cluster-' + '-source.json');
     }).catch(()=>null);
   }
 
