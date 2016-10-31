@@ -259,7 +259,6 @@ export default class ClusterDetailsPanel extends Component {
     }
 
     const containersHeaderBar = (
-      <div className="clearfix">
         <Nav bsStyle="tabs" pullLeft>
           <LinkContainer to={"/clusters/" + name}>
             <NavItem eventKey={1}>Containers</NavItem>
@@ -274,26 +273,6 @@ export default class ClusterDetailsPanel extends Component {
             <NavItem eventKey={2}>Events</NavItem>
           </LinkContainer>
         </Nav>
-        <ButtonToolbar>
-          <Button
-            bsStyle="primary"
-            className="pulled-right"
-            onClick={this.onActionInvoke.bind(this, "create")}
-          >
-            <i className="fa fa-plus" />&nbsp;
-            New Container
-          </Button>
-
-          {false && <Button
-            bsStyle="danger"
-            onClick={this.deleteCluster.bind(this)}
-          >
-            <i className="fa fa-trash" />&nbsp;
-            Delete Cluster
-          </Button>
-          }
-        </ButtonToolbar>
-      </div>
     );
 
     const isContainersPage = name === 'all';
@@ -323,13 +302,27 @@ export default class ClusterDetailsPanel extends Component {
                          values={[runningContainers, runningNodes, Apps, eventsCount]}
         />
 
-        <Panel header={containersHeaderBar}>
+        <div className="panel panel-default">
           {!rows && (
             <ProgressBar active now={100} />
           )}
 
           {(rows && rows.length > 0) && (
             <div>
+              <Nav bsStyle="tabs" className="dockTable-nav">
+                <LinkContainer to={"/clusters/" + name}>
+                  <NavItem eventKey={1}>Containers</NavItem>
+                </LinkContainer>
+                <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
+                  <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
+                </LinkContainer>
+                <LinkContainer to={"/clusters/" + name + "/" + "nodes"}>
+                  <NavItem eventKey={2}>Nodes</NavItem>
+                </LinkContainer>
+                <LinkContainer to={"/clusters/" + name + "/" + "events"}>
+                  <NavItem eventKey={2}>Events</NavItem>
+                </LinkContainer>
+              </Nav>
               <div className="containers">
                 <DockTable columns={columns}
                            rows={rows}
@@ -347,7 +340,7 @@ export default class ClusterDetailsPanel extends Component {
               No containers yet
             </div>
           )}
-        </Panel>
+        </div>
 
 
         {(this.state && this.state.actionDialog) && (
