@@ -76,6 +76,11 @@ export default class EventLog extends Component {
                      searchable={false}
           />
         )}
+        {(this.props.data && this.props.data.length === 0) && (
+          <div className="alert alert-info">
+            No events yet
+          </div>
+        )}
       </div>
     );
   }
