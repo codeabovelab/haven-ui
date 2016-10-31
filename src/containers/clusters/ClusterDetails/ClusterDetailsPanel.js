@@ -258,23 +258,6 @@ export default class ClusterDetailsPanel extends Component {
       runningNodes = cluster.nodes.on;
     }
 
-    const containersHeaderBar = (
-        <Nav bsStyle="tabs" pullLeft>
-          <LinkContainer to={"/clusters/" + name}>
-            <NavItem eventKey={1}>Containers</NavItem>
-          </LinkContainer>
-          <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
-            <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
-          </LinkContainer>
-          <LinkContainer to={"/clusters/" + name + "/" + "nodes"}>
-            <NavItem eventKey={2}>Nodes</NavItem>
-          </LinkContainer>
-          <LinkContainer to={"/clusters/" + name + "/" + "events"}>
-            <NavItem eventKey={2}>Events</NavItem>
-          </LinkContainer>
-        </Nav>
-    );
-
     const isContainersPage = name === 'all';
     let columns = this.COLUMNS;
     let groupBySelect = this.GROUP_BY_SELECT;
@@ -317,12 +300,33 @@ export default class ClusterDetailsPanel extends Component {
                   <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
                 </LinkContainer>
                 <LinkContainer to={"/clusters/" + name + "/" + "nodes"}>
-                  <NavItem eventKey={2}>Nodes</NavItem>
+                  <NavItem eventKey={3}>Nodes</NavItem>
                 </LinkContainer>
                 <LinkContainer to={"/clusters/" + name + "/" + "events"}>
-                  <NavItem eventKey={2}>Events</NavItem>
+                  <NavItem eventKey={4}>Events</NavItem>
                 </LinkContainer>
               </Nav>
+
+              <ButtonToolbar className="pulled-right-toolbar">
+                <Button
+                  bsStyle="primary"
+                  className="pulled-right"
+                  onClick={this.onActionInvoke.bind(this, "create")}
+                >
+                  <i className="fa fa-plus"/>&nbsp;
+                  New Container
+                </Button>
+
+                {false && <Button
+                  bsStyle="danger"
+                  onClick={this.deleteCluster.bind(this)}
+                >
+                  <i className="fa fa-trash"/>&nbsp;
+                  Delete Cluster
+                </Button>
+                }
+              </ButtonToolbar>
+
               <div className="containers">
                 <DockTable columns={columns}
                            rows={rows}

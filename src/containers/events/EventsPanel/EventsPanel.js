@@ -136,13 +136,27 @@ export default class EventsPanel extends Component {
                            values={[runningContainers, runningNodes, Apps, eventsCount]}
           />
         )}
-        <Panel header={eventsHeaderBar}>
+        <div className="panel panel-default">
+          <Nav bsStyle="tabs" className="dockTable-nav">
+            <LinkContainer to={"/clusters/" + name}>
+              <NavItem eventKey={1}>Containers</NavItem>
+            </LinkContainer>
+            <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
+              <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
+            </LinkContainer>
+            <LinkContainer to={"/clusters/" + name + "/" + "nodes"}>
+              <NavItem eventKey={2}>Nodes</NavItem>
+            </LinkContainer>
+            <LinkContainer to={"/clusters/" + name + "/" + "events"}>
+              <NavItem eventKey={2}>Events</NavItem>
+            </LinkContainer>
+          </Nav>
           {this.props.events && (
             <EventLog data={events}
                       loading={!this.props.events}
             />
           )}
-        </Panel>
+        </div>
       </div>
     );
   }

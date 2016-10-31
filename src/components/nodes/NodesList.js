@@ -106,15 +106,46 @@ export default class NodesList extends Component {
 
     return (
       <div>
-        <Panel header={panelHeader}>
+        <div className="panel panel-default">
           {this.props.loading && (
-            <ProgressBar active now={100} />
+            <ProgressBar active now={100}/>
           )}
 
           {(this.props.data && !this.props.loading) && (
-            <DockTable columns={this.COLUMNS}
-              rows={rows}
-            />
+            <div>
+
+              <Nav bsStyle="tabs" className="dockTable-nav">
+                <LinkContainer to={"/clusters/" + name}>
+                  <NavItem eventKey={1}>Containers</NavItem>
+                </LinkContainer>
+                <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
+                  <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
+                </LinkContainer>
+                <LinkContainer to={nodesNavId}>
+                  <NavItem eventKey={3}>Nodes</NavItem>
+                </LinkContainer>
+                <LinkContainer to={"/clusters/" + name + "/" + "events"}>
+                  <NavItem eventKey={4}>Events</NavItem>
+                </LinkContainer>
+              </Nav>
+              {this.props.clusterName && (
+                <ButtonToolbar className="pulled-right-toolbar">
+                  <Button
+                    bsStyle="primary"
+                    className="pulled-right"
+                    onClick={this.props.manageNodes}
+                  >
+                    <i className="fa fa-plus" />&nbsp;
+                    Add/Remove Node
+                  </Button>
+                </ButtonToolbar>
+              )}
+              <div className="nodes">
+              <DockTable columns={this.COLUMNS}
+                         rows={rows}
+              />
+              </div>
+            </div>
           )}
 
           {(this.props.data && this.props.data.length === 0) && (
@@ -123,7 +154,7 @@ export default class NodesList extends Component {
             </div>
           )}
 
-        </Panel>
+        </div>
 
         {(this.state && this.state.actionDialog) && (
           <div>

@@ -219,35 +219,6 @@ export default class ApplicationPanel extends Component {
     }
 
     this.additionalData(rows);
-    const applicationsHeaderBar = (
-      <div className="clearfix">
-        <Nav bsStyle="tabs" pullLeft>
-          <LinkContainer to={"/clusters/" + name}>
-            <NavItem eventKey={1}>Containers</NavItem>
-          </LinkContainer>
-          <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
-            <NavItem eventKey={2}>Applications</NavItem>
-          </LinkContainer>
-          <LinkContainer to={"/clusters/" + name + "/" + "nodes"}>
-            <NavItem eventKey={2}>Nodes</NavItem>
-          </LinkContainer>
-          <LinkContainer to={"/clusters/" + name + "/" + "events"}>
-            <NavItem eventKey={2}>Events</NavItem>
-          </LinkContainer>
-        </Nav>
-
-        <ButtonToolbar>
-          <Button
-            bsStyle="primary"
-            className="pulled-right"
-            onClick={this.onActionInvoke.bind(this, "create")}
-          >
-            <i className="fa fa-plus" />&nbsp;
-            New Application
-          </Button>
-        </ButtonToolbar>
-      </div>
-    );
 
     return (
       <div>
@@ -260,13 +231,40 @@ export default class ApplicationPanel extends Component {
                          cluster={cluster}
                          values={[runningContainers, runningNodes, Apps, eventsCount]}
         />
-        <Panel header={applicationsHeaderBar}>
+        <div className="panel panel-default">
           {!rows && (
-            <ProgressBar active now={100} />
+            <ProgressBar active now={100}/>
           )}
 
           {(rows && rows.length > 0) && (
             <div>
+
+              <Nav bsStyle="tabs" className="dockTable-nav">
+                <LinkContainer to={"/clusters/" + name}>
+                  <NavItem eventKey={1}>Containers</NavItem>
+                </LinkContainer>
+                <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
+                  <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
+                </LinkContainer>
+                <LinkContainer to={"/clusters/" + name + "/" + "nodes"}>
+                  <NavItem eventKey={3}>Nodes</NavItem>
+                </LinkContainer>
+                <LinkContainer to={"/clusters/" + name + "/" + "events"}>
+                  <NavItem eventKey={4}>Events</NavItem>
+                </LinkContainer>
+              </Nav>
+
+              <ButtonToolbar className="pulled-right-toolbar">
+                <Button
+                  bsStyle="primary"
+                  className="pulled-right"
+                  onClick={this.onActionInvoke.bind(this, "create")}
+                >
+                  <i className="fa fa-plus"/>&nbsp;
+                  New Application
+                </Button>
+              </ButtonToolbar>
+
               <div className="applications">
                 <DockTable columns={this.COLUMNS}
                            rows={rows}
@@ -282,7 +280,7 @@ export default class ApplicationPanel extends Component {
               No applications yet
             </div>
           )}
-        </Panel>
+        </div>
 
         {(this.state && this.state.actionDialog) && (
           <div>
