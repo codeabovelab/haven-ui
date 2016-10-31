@@ -237,8 +237,8 @@ export default class ApplicationPanel extends Component {
     return (
       <div>
         <ul className="breadcrumb">
-          <li><a href="/clusters">Clusters</a></li>
-          <li><a href={"/clusters/" + name}>{name}</a></li>
+          <li><Link to="/clusters">Clusters</Link></li>
+          <li><Link to={"/clusters/" + name}>{name}</Link></li>
           <li className="active">Applications</li>
         </ul>
         <StatisticsPanel metrics={this.statisticsMetrics}

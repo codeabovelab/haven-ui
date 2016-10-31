@@ -301,7 +301,8 @@ export default class ClusterDetailsPanel extends Component {
       <div key={name}>
         <ul className="breadcrumb">
           <li><Link to="/clusters">Clusters</Link></li>
-          <li className="active">{name}</li>
+          <li><Link to={"/clusters/" + name}>{name}</Link></li>
+          <li className="active">Containers</li>
         </ul>
         <StatisticsPanel metrics={this.statisticsMetrics}
                          link
