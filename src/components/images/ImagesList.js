@@ -85,23 +85,19 @@ export default class ImagesList extends Component {
   render() {
     const GROUP_BY_SELECT = ['registry', 'name'];
 
-    const panelHeader = (
-      <div className="clearfix">
-        <h3>Image List</h3>
-      </div>
-    );
-
     return (
-      <Panel header={panelHeader}>
+      <Panel>
         {this.props.loading && (
         <ProgressBar active now={100} />
         )}
       {(this.props.data && !this.props.loading) && (
         <DockTable columns={this.COLUMNS}
-                  rows={this.props.data}
-                  groupBy="registry"
-                  groupBySelect={GROUP_BY_SELECT}
-                  hideGroupColumn
+                   rows={this.props.data}
+                   groupBy="registry"
+                   groupBySelect={GROUP_BY_SELECT}
+                   hideGroupColumn
+                   nullDisplayName="Detached Images"
+                   emptyDisplayName="Docker Hub"
                   />
       )}
       {this.props.data && this.props.data.length === 0 && (

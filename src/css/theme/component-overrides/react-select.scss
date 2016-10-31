@@ -1,0 +1,21 @@
+@import "../conf/_mixins";
+@import "../conf/colorScheme/mint";
+
+:global(.Select-multi-value-wrapper){
+  :global(.Select-value-success) {
+    background-color: $success-light !important;
+    color: $label-text !important;
+  }
+  :global(.Select-value-warning) {
+    background-color: $warning-light !important;
+    color: $label-text !important;
+  }
+}
+:global(.Select-menu-outer) {
+  :global(.Select-value-success) {
+    color: $success !important;
+  }
+  :global(.Select-value-warning) {
+    color: $warning !important;
+  }
+}

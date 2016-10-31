@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import * as settingsActions from 'redux/modules/settings/settings';
 import {UploadSettings} from '../../../components/index';
 import {ProgressBar} from 'react-bootstrap';
+import {downloadFile} from '../../../utils/fileActions';
 
 @connect(
   state => ({
@@ -20,15 +21,7 @@ export default class SettingsPanel extends Component {
   };
 
   componentDidMount() {
-    this.props.getSettings().then(()=> {
-      const settingsFile = this.props.settings.settingsFile;
-      let wholeSettings = {version: settingsFile.version, date: settingsFile.date, data: settingsFile.data};
-      let parsedData = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(wholeSettings));
-      let $downloadLink = $('#downloadSettingsFile');
-      $downloadLink.attr('href', 'data:' + parsedData);
-      $downloadLink.attr('download', 'data.json');
-      $downloadLink.show();
-    }).catch(()=>null);
+    this.props.getSettings();
   }
 
   onHideDialog() {
@@ -40,7 +33,7 @@ export default class SettingsPanel extends Component {
     this.setState({
       actionDialog: (
         <UploadSettings onHide={this.onHideDialog.bind(this)}
-                        title="Upload Dockmaster's Config File"
+                        title="Upload Config File"
         />
       )
     });
@@ -53,13 +46,18 @@ export default class SettingsPanel extends Component {
     }
     return (
       <div>
-        <h3>Dockmaster</h3>
+        <ul className="breadcrumb">
+          <li className="active">Settings</li>
+        </ul>
+        <h4>Dockmaster</h4>
         <div className="settingsList">
           <p>Version: <span>{settingsFile.version}</span></p>
           <div className = "submit-buttons-block">
-            <a id="downloadSettingsFile" className="btn btn-default">Download settings file</a>
+            <a id="downloadSettingsFile" className="btn btn-default" onClick={this.getSettingsFile.bind(this)}>
+              <i className="fa fa-download" />&nbsp;Download settings file</a>
             <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <a id="uploadSettingsFile" className="btn btn-default" onClick={this.showUploadSettingsDialog.bind(this)}>Upload settings file</a>
+            <a id="uploadSettingsFile" className="btn btn-default" onClick={this.showUploadSettingsDialog.bind(this)}>
+              <i className="fa fa-upload" />&nbsp;Upload settings file</a>
           </div>
         </div>
         {(this.state && this.state.actionDialog) && (
@@ -69,6 +67,15 @@ export default class SettingsPanel extends Component {
         )}
       </div>
     );
+  }
+
+  getSettingsFile() {
+    this.props.getSettings().then(()=> {
+      const settingsFile = this.props.settings.settingsFile;
+      let wholeSettings = {version: settingsFile.version, date: settingsFile.date, data: settingsFile.data};
+      let parsedData = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(wholeSettings));
+      downloadFile(parsedData, 'dockmaster-settings.json');
+    }).catch(()=>null);
   }
 
 }

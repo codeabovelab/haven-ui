@@ -1,0 +1,20 @@
+:global(#tabContainerProps) {
+  :global(.tab-content) {
+    padding-left: 0;
+  }
+}
+:global(#containerLog) {
+white-space: pre;
+font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+width: 100%;
+font-size: 0.8em;
+min-height: 500px;
+margin: 0;
+resize: vertical;
+overflow: auto;
+box-sizing: border-box;
+}
+:global(#logHeader) {
+font-size: 16px;
+}
+

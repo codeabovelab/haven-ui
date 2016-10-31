@@ -126,7 +126,7 @@ export default class ApplicationCreate extends Component {
             )}
           </FormGroup>
           <div className="form-group" id="creation-log-block">
-            <label>Creation Log: <i className="fa fa-spinner fa-2x fa-pulse"/></label>
+            <label>Create Log: <i className="fa fa-spinner fa-2x fa-pulse"/></label>
             <textarea readOnly
                       className="container-creation-log"
                       defaultValue=""

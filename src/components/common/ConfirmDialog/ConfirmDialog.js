@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 export default class ConfirmDialog extends Component {
   static propTypes = {
-    message: PropTypes.string
+    message: PropTypes.any // allow JSX markup
   };
 
   componentDidMount() {
@@ -24,6 +24,7 @@ export default class ConfirmDialog extends Component {
 
   render() {
     const {message = "Are you sure?"} = this.props;
+    let messageRender = (typeof message === "function") ? message : () => String(message);
     return (
       <div id="confirm" className="modal">
         <div className="modal-dialog">
@@ -35,11 +36,11 @@ export default class ConfirmDialog extends Component {
               <h4 className="modal-title">Confirmation</h4>
             </div>
             <div className="modal-body">
-              {message}
+              {messageRender(this)}
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-link" onClick={this.onCancel.bind(this)}>Cancel</button>
-              <button type="button" className="btn btn-primary" onClick={this.onConfirm.bind(this)}>Ok</button>
+              <button type="button" className="btn btn-primary" onClick={this.onConfirm.bind(this)}>Yes</button>
+              <button type="button" className="btn btn-default" onClick={this.onCancel.bind(this)}>Cancel</button>
             </div>
           </div>
         </div>

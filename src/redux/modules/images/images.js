@@ -113,6 +113,7 @@ export function deleteImages(arg) {
     parameters: {
     //TODO after debug "dryRun":false,
       random: new Date().toUTCString(), //this line allow to create new job at each call
+      dryRun: arg.dryRun,
       retainLast: arg.retainLast,
       nodes: arg.nodes,
       fullImageName: arg.name,

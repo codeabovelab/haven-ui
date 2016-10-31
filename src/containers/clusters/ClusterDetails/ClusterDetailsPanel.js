@@ -3,11 +3,10 @@ import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import { Link, browserHistory } from 'react-router';
-import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, LoadingDialog, StatisticsPanel, ActionMenu, ClusterUploadCompose} from '../../../components/index';
-import {ContainerCreate, ContainerScale} from '../../../containers/index';
+import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, Chain, LoadingDialog, StatisticsPanel, ActionMenu, ClusterUploadCompose} from '../../../components/index';
+import {ContainerCreate, ContainerScale, ContainerUpdate} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
 import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar} from 'react-bootstrap';
-import {list as listApplications} from 'redux/modules/application/application';
 import _ from 'lodash';
 
 function renderTdImage(row) {
@@ -17,23 +16,30 @@ function renderTdImage(row) {
   );
 }
 
+function renderTdContainerName(row) {
+  let resultValue = processTdVal(row.name);
+  return (
+    <td key="name" title={resultValue.title}><Link to={"/clusters/" + row.cluster + "/containers/" + resultValue.val}>{resultValue.val}</Link></td>
+  );
+}
+
 function renderTdApplication(row) {
   let resultValue = processTdVal(row.application);
+  let val = resultValue.val.length ? [resultValue.val] : [];
   return (
-    <td key="application" title={resultValue.title}>{resultValue.val}</td>
+    <td key="application" title={resultValue.title}>
+      <Chain data={val || []}
+             link={`/clusters/${row.cluster}/applications`}
+             maxCount={1}
+      />
+    </td>
   );
 }
 
 function processTdVal(val) {
-  const MAX_LENGTH = 30;
   let result = [];
   result.val = val ? val : '';
-  let length = result.val.length;
   result.title = "";
-  if (length >= MAX_LENGTH + 5) {
-    result.title = val;
-    result.val = val.substring(0, MAX_LENGTH) + '...';
-  }
   return result;
 }
 
@@ -51,7 +57,7 @@ function processTdVal(val) {
   state => ({
     clusters: state.clusters,
     containers: state.containers,
-    application: state.application
+    events: state.events
   }), {
     loadContainers: clusterActions.loadContainers,
     deleteCluster: clusterActions.deleteCluster,
@@ -59,14 +65,13 @@ function processTdVal(val) {
     stopContainer: containerActions.stop,
     restartContainer: containerActions.restart,
     removeContainer: containerActions.remove,
-    listApplications,
     getClusterConfig: clusterActions.clusterConfig
   })
 export default class ClusterDetailsPanel extends Component {
   static propTypes = {
     clusters: PropTypes.object,
     containers: PropTypes.object,
-    application: PropTypes.object,
+    events: PropTypes.object,
     params: PropTypes.object,
     loadContainers: PropTypes.func.isRequired,
     deleteCluster: PropTypes.func.isRequired,
@@ -74,7 +79,6 @@ export default class ClusterDetailsPanel extends Component {
     stopContainer: PropTypes.func.isRequired,
     restartContainer: PropTypes.func.isRequired,
     removeContainer: PropTypes.func.isRequired,
-    listApplications: PropTypes.func.isRequired,
     getClusterConfig: PropTypes.func.isRequired
   };
 
@@ -82,23 +86,33 @@ export default class ClusterDetailsPanel extends Component {
     {
       type: 'number',
       title: 'Container Running',
-      titles: 'Containers Running'
+      titles: 'Containers Running',
+      link: '/containers'
     },
     {
       type: 'number',
-      title: 'Node in the Cluster',
-      titles: 'Nodes in the Cluster'
+      title: 'Node Running',
+      titles: 'Nodes Running',
+      link: '/nodes'
     },
     {
       type: 'number',
-      title: 'Running Job',
-      titles: 'Running Jobs'
+      title: 'Application',
+      titles: 'Applications',
+      link: '/applications'
+    },
+    {
+      type: 'number',
+      title: 'Event',
+      titles: 'Events',
+      link: '/events'
     }
   ];
 
   COLUMNS = [
     {
-      name: 'name'
+      name: 'name',
+      render: renderTdContainerName
     },
 
     {
@@ -149,6 +163,10 @@ export default class ClusterDetailsPanel extends Component {
     },
     null,
     {
+      key: "edit",
+      title: "Edit"
+    },
+    {
       key: "scale",
       title: "Scale"
     },
@@ -167,15 +185,34 @@ export default class ClusterDetailsPanel extends Component {
     }
   ];
 
+  shouldComponentUpdate(nextProps, nextState) {
+    const {loadContainers, params: {name}} = this.props;
+    const nextName = nextProps.params.name;
+    if (name !== nextName && nextName === 'all') {
+      loadContainers(nextName);
+    }
+    return true;
+  }
+
   componentDidMount() {
-    const {loadContainers, listApplications, params: {name}} = this.props;
+    const {loadContainers, params: {name}} = this.props;
 
     this.state = {};
 
     loadContainers(name);
-    listApplications(name);
 
     $('.input-search').focus();
+  }
+
+  renderTdCluster(row) {
+    const {loadContainers} = this.props;
+    let resultValue = processTdVal(row.cluster);
+    return (
+      <td key="cluster" title={resultValue.title}>
+        <Link to={"/clusters/" + resultValue.val}
+              onClick={() => {loadContainers(resultValue.val);}}>
+          {resultValue.val}</Link></td>
+    );
   }
 
   render() {
@@ -196,9 +233,19 @@ export default class ClusterDetailsPanel extends Component {
 
     let runningContainers = 0;
     let runningNodes = 0;
-    let runningJobs = 0;
-    let errorCount = 0;
-
+    let Apps = 0;
+    let eventsCount = 0;
+    let events = this.props.events['bus.cluman.errors'];
+    if (events) {
+      eventsCount = name === 'all' ? _.size(events) : _.size(events.filter((el)=>(el.cluster === name)));
+    }
+    if (name === 'all') {
+      _.forEach(clusters, (el)=> {
+        Apps += _.size(el.applications);
+      });
+    } else {
+      Apps = _.size(cluster.applications);
+    }
 
     if (rows && rows.length > 0) {
       rows.forEach((container) => {
@@ -208,14 +255,13 @@ export default class ClusterDetailsPanel extends Component {
       });
     }
 
-    if (typeof(cluster.nodes.on) !== 'undefined' && typeof(cluster.nodes.off) !== 'undefined') {
-      runningJobs = cluster.nodes.on;
-      runningNodes = cluster.nodes.off + cluster.nodes.on;
+    if (typeof(cluster.nodes.on) !== 'undefined') {
+      runningNodes = cluster.nodes.on;
     }
 
     const containersHeaderBar = (
       <div className="clearfix">
-        <h3>Containers</h3>
+        <h3></h3>
 
         <ButtonToolbar>
           <Button
@@ -252,36 +298,32 @@ export default class ClusterDetailsPanel extends Component {
       </div>
     );
 
-    const eventsHeaderBar = (
-      <div className="clearfix">
-        <h3>Events</h3>
-      </div>
-    );
     const isContainersPage = name === 'all';
     let columns = this.COLUMNS;
     let groupBySelect = this.GROUP_BY_SELECT;
     if (isContainersPage && columns[3].name !== 'cluster') {
-      columns.splice(3, 0, {name: 'cluster', label: 'Cluster'});
+      columns.splice(3, 0, {name: 'cluster', label: 'Cluster', render: this.renderTdCluster.bind(this)});
       groupBySelect.push('cluster');
+    }
+    if (!isContainersPage) {
+      columns = columns.filter((object)=> object.name !== 'cluster');
+      groupBySelect = groupBySelect.filter((object)=> object !== 'cluster');
+    } else {
+      $('div.content-top').find('h1').text('Containers');
     }
     columns.forEach(column => column.sortable = column.name !== 'actions');
 
     return (
-      <div>
+      <div key={name}>
+        <ul className="breadcrumb">
+          <li><Link to="/clusters">Clusters</Link></li>
+          <li className="active">{name}</li>
+        </ul>
         <StatisticsPanel metrics={this.statisticsMetrics}
-                         values={[runningContainers, runningNodes, runningJobs, errorCount]}
+                         link
+                         cluster={cluster}
+                         values={[runningContainers, runningNodes, Apps, eventsCount]}
         />
-
-        {isContainersPage && (
-          <h1>
-            Containers
-          </h1>
-        )}
-        {!isContainersPage && (
-          <h1>
-            <Link to="/clusters">Clusters</Link> / {name}
-          </h1>
-        )}
 
         <Panel header={containersHeaderBar}>
           {!rows && (
@@ -309,11 +351,6 @@ export default class ClusterDetailsPanel extends Component {
           )}
         </Panel>
 
-        <Panel header={eventsHeaderBar}>
-          {!rows && (
-            <ProgressBar active now={100} />
-          )}
-        </Panel>
 
         {(this.state && this.state.actionDialog) && (
           <div>
@@ -484,6 +521,16 @@ export default class ClusterDetailsPanel extends Component {
               )
             });
           });
+        return;
+
+      case "edit":
+        this.setState({
+          actionDialog: (
+            <ContainerUpdate container={currentContainer}
+                             onHide={this.onHideDialog.bind(this)}
+            />
+          )
+        });
         return;
 
       default:

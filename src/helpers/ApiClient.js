@@ -1,6 +1,7 @@
 import superagent from 'superagent';
 import config from '../config';
 import {browserHistory} from 'react-router';
+import {replace} from 'react-router-redux';
 import {logout} from 'redux/modules/auth/auth';
 
 const methods = ['get', 'post', 'put', 'patch', 'del'];
@@ -31,11 +32,32 @@ export default class ApiClient {
 
         request.end((err, response = {}) => {
           let {body} = response;
-          if (response.status === 401) {
-            this._store.dispatch(logout);
-            browserHistory.push('/login');
-          }
+
           if (err) {
+            if (response && (response.status === 401 || (typeof response.status === "undefined" && typeof response.statusCode === "undefined"))) {
+              if (this._store) {
+                let backLocation;
+                let state = this._store.getState();
+                let stateLocation = state.routing.locationBeforeTransitions;
+
+                if (stateLocation && stateLocation.action === "POP" && stateLocation.pathname) {
+                  backLocation = stateLocation.pathname;
+                }
+
+                this._store.dispatch(logout);
+
+                if (backLocation && backLocation !== "") {
+                  this._store.dispatch(
+                    replace({
+                      pathname: '/login',
+                      search: `?back=${backLocation}`,
+                      state: null
+                    })
+                  );
+                }
+              }
+            }
+
             reject(body || err);
           } else {
             let res = body ? body : {};

@@ -11,6 +11,7 @@ export default class Login extends Component {
   static propTypes = {
     user: PropTypes.object,
     auth: PropTypes.object,
+    location: PropTypes.object,
     loginError: PropTypes.string,
     login: PropTypes.func.isRequired,
     logout: PropTypes.func.isRequired
@@ -35,9 +36,14 @@ export default class Login extends Component {
   }
 
   componentDidMount() {
-    const {user} = this.props;
+    const {user, location} = this.props;
     if (!user) {
       this.fillCredentialsFields();
+    } else {
+      // Redirect if back parameter supplied in route search parameters
+      if (location && location.query && location.query.back) {
+        browserHistory.push(location.query.back);
+      }
     }
   }
 
@@ -53,12 +59,18 @@ export default class Login extends Component {
     const username = iUsername.value;
     const iPassword = this.refs.password;
     const password = iPassword.value;
+    if (username.trim() === '' || password.trim() === '' ) {
+      this.refs.error.textContent = 'Please, fill username and password';
+      return;
+    }
     this.props.login(username, password)
       .then(() => {
         const {auth} = this.props;
+
         if (auth && auth.token) {
           iUsername.value = '';
           iPassword.value = '';
+
           if (this.state.outdatedToken) {
             browserHistory.go(-2);
           }
@@ -68,6 +80,10 @@ export default class Login extends Component {
 
   render() {
     const {user, logout, loginError} = this.props;
+    let errorMessage = 'Incorrect username or password';
+    if (loginError && loginError.substr(0, 13) === 'Error status:') {
+      errorMessage = loginError;
+    }
     return (
       <div className="loginPage">
         <div className="loginWrapper">
@@ -90,9 +106,9 @@ export default class Login extends Component {
                   className="fa fa-sign-in"/>{' '}Log In
                 </button>
               </form>
-              <div className="text-danger text-xs-center text-error">
+              <div ref="error" className="text-danger text-xs-center text-error">
                 {!loginError && <span>&nbsp;</span>}
-                {loginError}
+                {loginError && errorMessage}
               </div>
             </div>
             }

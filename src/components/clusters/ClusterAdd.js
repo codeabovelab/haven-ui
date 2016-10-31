@@ -6,6 +6,7 @@ import {create as createNode} from 'redux/modules/nodes/nodes';
 import {createValidator, required} from 'utils/validation';
 import {Dialog} from 'components';
 import {FormGroup, FormControl, ControlLabel, HelpBlock, Alert} from 'react-bootstrap';
+import _ from 'lodash';
 
 @connect(state => ({
   createError: state.clustersUI.createError
@@ -37,11 +38,26 @@ export default class ClusterAdd extends Component {
     valid: PropTypes.bool.isRequired,
     cluster: PropTypes.any,
     description: PropTypes.any,
-    onHide: PropTypes.func.isRequired
+    onHide: PropTypes.func.isRequired,
+    okTitle: PropTypes.string,
+    existingClusters: PropTypes.array
   };
-
+  constructor() {
+    super();
+    this.state = {
+      firstLoad: true
+    };
+  }
   onSubmit() {
-    const { fields } = this.props;
+    this.setState({
+      firstLoad: false
+    });
+    this.refs.error.textContent = '';
+    const {fields, existingClusters} = this.props;
+    if (_.includes(existingClusters, fields.name.value) && this.props.okTitle === 'Create Cluster') {
+      this.refs.error.textContent = 'Cluster with name: "' + fields.name.value + '" already exists. Please use another name.';
+      return false;
+    }
     return this.props.create(fields.name.value, {"description": fields.description.value}).then(() => {
       if (typeof(fields.assignedNodes.value) !== 'undefined' && fields.assignedNodes.value.length > 0) {
         fields.assignedNodes.value.map(function createNode(node) {
@@ -52,7 +68,7 @@ export default class ClusterAdd extends Component {
         }.bind(this));
       }
     }).then(() =>{
-      window.setTimeout(this.props.load(), 2000);
+      window.setTimeout(function loadClusters() {this.props.load();}.bind(this), 2000);
       this.props.loadNodes('orphans');
     }).then(() =>{
       this.props.onHide();
@@ -62,8 +78,15 @@ export default class ClusterAdd extends Component {
     });
   }
 
+  componentDidMount() {
+    const {fields, cluster} = this.props;
+    if (cluster) {
+      fields.name.onChange(cluster);
+    }
+  }
+
   render() {
-    const { fields } = this.props;
+    const { fields, okTitle } = this.props;
     let { cluster, description } = this.props;
     const orphanNodes = this.props.orphanNodes;
     return (
@@ -75,6 +98,7 @@ export default class ClusterAdd extends Component {
               onReset={this.props.resetForm}
               onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}
               onHide={this.props.onHide}
+              okTitle={okTitle || 'OK'}
       >
         {this.props.createError && (
           <Alert bsStyle="danger">
@@ -83,18 +107,14 @@ export default class ClusterAdd extends Component {
         )}
 
         <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
-          <FormGroup validationState={fields.name.error ? "error" : ""}>
+          <FormGroup title="required" required validationState={(fields.name.error && (!this.state.firstLoad || fields.name.touched)) ? "error" : ""}>
             <ControlLabel>Name</ControlLabel>
-
             <FormControl type="text"
                          {...fields.name}
+                         placeholder="Name (required)"
+                         disabled = {okTitle === 'Update Cluster'}
                          defaultValue = {cluster === 'undefined' ? '' : cluster}
             />
-
-            <FormControl.Feedback />
-            {fields.name.error && (
-              <HelpBlock>{fields.name.error}</HelpBlock>
-            )}
           </FormGroup>
 
           <FormGroup validationState={fields.description.error ? "error" : ""}>
@@ -102,6 +122,7 @@ export default class ClusterAdd extends Component {
 
             <FormControl type="text"
                          {...fields.description}
+                         placeholder="Description"
                          defaultValue = {description === 'undefined' ? '' : description}
             />
 
@@ -111,24 +132,27 @@ export default class ClusterAdd extends Component {
               <HelpBlock>{fields.description.error}</HelpBlock>
             )}
           </FormGroup>
-          <FormGroup className={typeof(this.props.cluster) === 'undefined' ? '' : 'invisible'}
-                     validationState={fields.assignedNodes.error ? "error" : ""}>
-            <ControlLabel>Assigned Nodes</ControlLabel>
-            <FormControl multiple componentClass="select" {...fields.assignedNodes} >
-              {
-                orphanNodes.map(function listNodes(node, i) {
-                  if (typeof(node) !== 'undefined' && node.trim() !== '') {
-                    return <option key={i} value={node}>{node}</option>;
-                  }
-                })
-              }
-            </FormControl>
-            <FormControl.Feedback />
-            {fields.assignedNodes.error && (
-              <HelpBlock>{fields.assignedNodes.error}</HelpBlock>
-            )}
-          </FormGroup>
+          {typeof(this.props.cluster) === 'undefined' && (
+            <FormGroup validationState={fields.assignedNodes.error ? "error" : ""}>
+              <ControlLabel>Assigned Nodes</ControlLabel>
+              <FormControl multiple componentClass="select" {...fields.assignedNodes} >
+                {
+                  orphanNodes.map(function listNodes(node, i) {
+                    if (typeof(node) !== 'undefined' && node.trim() !== '') {
+                      return <option key={i} value={node}>{node}</option>;
+                    }
+                  })
+                }
+              </FormControl>
+              <FormControl.Feedback />
+              {fields.assignedNodes.error && (
+                <HelpBlock>{fields.assignedNodes.error}</HelpBlock>
+              )}
+            </FormGroup>
+          )}
         </form>
+        <div ref="error" className="text-danger text-xs-center text-error">
+        </div>
       </Dialog>
     );
   }

@@ -6,8 +6,13 @@ import Helmet from 'react-helmet';
 import { MenuLeft, Navbar } from 'components';
 import { routerActions } from 'react-router-redux';
 import config from '../../config';
+import {removeErrorMessage} from 'redux/modules/errors/errors';
 import {Breadcrumbs} from '../../components/common/Breadcrumbs/Breadcrumbs';
 import { asyncConnect } from 'redux-async-connect';
+
+//this component works only as CommonJS module
+let NotificationSystem = require('react-notification-system');
+
 //require('bootstrap/dist/css/bootstrap.css');
 
 @asyncConnect([{
@@ -17,17 +22,23 @@ import { asyncConnect } from 'redux-async-connect';
   }
 }])
 @connect(
-  state => ({user: state.auth.user}),
+  state => ({
+    user: state.auth.user,
+    errors: state.errors
+  }),
   {
-    pushState: routerActions.push
+    pushState: routerActions.push,
+    removeErrorMessage
   })
 export default class App extends Component {
   static propTypes = {
     children: PropTypes.object.isRequired,
     routes: PropTypes.array,
+    errors: PropTypes.array,
     params: PropTypes.object,
     user: PropTypes.object,
-    pushState: PropTypes.func.isRequired
+    pushState: PropTypes.func.isRequired,
+    removeErrorMessage: PropTypes.func.isRequired
   };
 
   static contextTypes = {
@@ -42,6 +53,30 @@ export default class App extends Component {
       // logout
       this.props.pushState('/login');
     }
+
+    const errors = nextProps.errors;
+    if (errors && errors.length > 0) {
+      errors.forEach((err, i) => {
+        let msg = err.message || (err.path ? `${err.path}: ${err.error}` : err.error);
+        this._notificationSystem.addNotification({
+          uid: i + 1,
+          title: 'Server connection problem',
+          message: msg,
+          level: 'error',
+          autoDismiss: 0,
+          position: 'tc',
+          onRemove: this.removeNotification.bind(this)
+        });
+      });
+    }
+  }
+
+  removeNotification(n) {
+    this.props.removeErrorMessage(n.uid - 1);
+  }
+
+  componentDidMount() {
+    this._notificationSystem = this.refs.notificationSystem;
   }
 
   render() {
@@ -50,6 +85,8 @@ export default class App extends Component {
 
     return (
       <div className={"app" + rootClass}>
+        <NotificationSystem ref="notificationSystem" />
+
         <Helmet {...config.app.head} />
 
         {this.props.user && (

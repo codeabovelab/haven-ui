@@ -33,6 +33,14 @@ export default function reducer(state = {}, action = {}) {
           statistics: _.omit(action.result, '_res')
         }
       };
+    case ACTIONS.LOAD_DETAILS_BY_NAME_SUCCESS:
+      return {
+        ...state,
+        detailsByName: {
+          ...state.detailsByName,
+          [action.result.name]: _.omit(action.result, '_res')
+        }
+      };
     default:
       return state;
   }
@@ -102,6 +110,13 @@ export function loadDetails(container) {
   };
 }
 
+export function loadDetailsByName(clusterName, containerName) {
+  return {
+    types: [ACTIONS.LOAD_DETAILS_BY_NAME, ACTIONS.LOAD_DETAILS_BY_NAME_SUCCESS, ACTIONS.LOAD_DETAILS_BY_NAME_FAIL],
+    promise: (client) => client.get(`/ui/api/containers/${clusterName}/${containerName}`)
+  };
+}
+
 export function loadStatistics(container) {
   let url = _containerUrl(container);
   return {
@@ -117,5 +132,14 @@ export function remove(container) {
     types: [ACTIONS.REMOVE, ACTIONS.REMOVE_SUCCESS, ACTIONS.REMOVE_FAIL],
     id: container.id,
     promise: (client) => client.post(`${url}/remove`)
+  };
+}
+
+export function updateContainer(container, data) {
+  let url = _containerUrl(container);
+  return {
+    types: [ACTIONS.UPDATE_CONTAINER, ACTIONS.UPDATE_CONTAINER_SUCCESS, ACTIONS.UPDATE_CONTAINER_FAIL],
+    id: container.id,
+    promise: (client) => client.put(`${url}/update`, {data})
   };
 }

@@ -20,6 +20,7 @@ import events from './events/events';
 import application from './application/application';
 import jobs from './jobs/jobs';
 import settings from './settings/settings';
+import errors from './errors/errors';
 
 export default combineReducers({
   routing: routerReducer,
@@ -42,5 +43,6 @@ export default combineReducers({
   registriesUI,
   clustersUI,
   containersUI,
-  nodesUI
+  nodesUI,
+  errors
 });

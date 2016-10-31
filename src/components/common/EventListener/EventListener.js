@@ -12,18 +12,29 @@ export function connectWebsocketEventsListener(store) {
     url = `http://${url}`;
   }
 
-  let ws = new SockJS(url);
+  let state = store.getState();
+  let token;
 
+  if (state && state.auth && state.auth.token) {
+    url = `${url}?token=${state.auth.token.key}`;
+  }
+
+  let ws = new SockJS(url);
   let stompClient = Stomp.over(ws);
+
   let stompHeaders = {
-    login: config.eventServerLogin,
-    password: config.eventServerPassword,
-    'client-id': config.app.title
+    command: 'CONNECT',
+    header: {
+      'accept-version': '1.1,1.0',
+      'heart-beat': '10000,10000',
+      'client-id': config.app.title
+    },
+    body: ''
   };
 
-  stompClient.connect(stompHeaders, (connectFrame) => {
-    stompClient.debug = false;
+  stompClient.debug = false;
 
+  stompClient.connect(stompHeaders, (connectFrame) => {
     stompClient.send('/app/subscriptions/available');
 
     stompClient.subscribe('/user/queue/subscriptions/get', (message) => {
@@ -53,5 +64,6 @@ export function connectWebsocketEventsListener(store) {
         });
       }
     });
+  }, (error) => {
   });
 }

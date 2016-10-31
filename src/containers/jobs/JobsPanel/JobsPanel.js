@@ -75,6 +75,9 @@ export default class JobsPanel extends Component {
     };
     return (
       <div>
+        <ul className="breadcrumb">
+          <li className="active">Jobs</li>
+        </ul>
         <StatisticsPanel metrics={this.statisticsMetrics}
                         values={[running, successfully, failed]}
         />

@@ -3,10 +3,12 @@ import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as applicationActions from 'redux/modules/application/application';
 import {connect} from 'react-redux';
 import { Link } from 'react-router';
-import {DockTable, LoadingDialog, ActionMenu} from '../../../components/index';
+import {DockTable, LoadingDialog, Chain, NodeInfo, ActionMenu, StatisticsPanel} from '../../../components/index';
 import { asyncConnect } from 'redux-async-connect';
-import {Button, ButtonToolbar, Panel, ProgressBar} from 'react-bootstrap';
+import {Button, ButtonToolbar, Panel, ProgressBar, Popover} from 'react-bootstrap';
 import {ApplicationCreate} from '../../../containers/index';
+import {downloadFile} from '../../../utils/fileActions';
+import _ from 'lodash';
 
 @asyncConnect([{
   promise: ({store: {dispatch, getState}}) => {
@@ -22,7 +24,8 @@ import {ApplicationCreate} from '../../../containers/index';
   state => ({
     clusters: state.clusters,
     containers: state.containers,
-    application: state.application.applicationsList
+    application: state.application.applicationsList,
+    events: state.events
   }), {
     loadContainers: clusterActions.loadContainers,
     listApps: applicationActions.list,
@@ -42,6 +45,7 @@ export default class ApplicationPanel extends Component {
     application: PropTypes.object,
     containers: PropTypes.object,
     params: PropTypes.object,
+    events: PropTypes.object,
     loadContainers: PropTypes.func.isRequired,
     listApps: PropTypes.func.isRequired,
     deleteApp: PropTypes.func.isRequired,
@@ -54,6 +58,33 @@ export default class ApplicationPanel extends Component {
     startApp: PropTypes.func.isRequired,
     stopApp: PropTypes.func.isRequired
   };
+
+  statisticsMetrics = [
+    {
+      type: 'number',
+      title: 'Container Running',
+      titles: 'Containers Running',
+      link: '/containers'
+    },
+    {
+      type: 'number',
+      title: 'Node Running',
+      titles: 'Nodes Running',
+      link: '/nodes'
+    },
+    {
+      type: 'number',
+      title: 'Application',
+      titles: 'Applications',
+      link: '/applications'
+    },
+    {
+      type: 'number',
+      title: 'Event',
+      titles: 'Events',
+      link: '/events'
+    }
+  ];
 
   ACTIONS = [
     {
@@ -107,21 +138,30 @@ export default class ApplicationPanel extends Component {
   ];
 
   containersRender(application) {
-    let applicationContainers = [];
+    let chainContainers = [];
     const containers = this.props.containers;
     for (let el in application.containers) {
       if (application.containers.hasOwnProperty(el)) {
         let containerId = application.containers[el];
         if (containers[containerId]) {
-          applicationContainers.push(containers[containerId].image);
+          chainContainers.push(containers[containerId]);
         }
       }
     }
+    let popoverRender = (el) => (
+      <Popover>
+        <span>Image: {shortenName(el.image) || ''}</span>
+        <br></br>
+        <span>Status: {shortenName(el.status) || ''}</span>
+      </Popover>
+  );
     return (
       <td key="containers">
-        {applicationContainers.map(function listContainers(container, i) {
-          return <p key={i}>{container}</p>;
-        })}
+        <Chain data={chainContainers}
+               popoverPlacement="top"
+               popoverRender={popoverRender}
+               render={(container) => (<span title={String(container.name) || ""}>{String(container.name) || ""}</span>)}
+        />
       </td>
     );
   }
@@ -136,7 +176,8 @@ export default class ApplicationPanel extends Component {
   render() {
     this.COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
     const GROUP_BY_SELECT = ['name', 'creatingDate'];
-    const {containers, application, params: {name}} = this.props;
+    const {containers, clusters, application, params: {name}} = this.props;
+    const cluster = clusters[name];
     if (!application) {
       return (
         <div></div>
@@ -152,6 +193,28 @@ export default class ApplicationPanel extends Component {
           rows.push(applications[el]);
         }
       }
+    }
+    let runningContainers = 0;
+    let runningNodes = 0;
+    let Apps = 0;
+    let eventsCount = 0;
+    let events = this.props.events['bus.cluman.errors'];
+
+    if (events) {
+      eventsCount = name === 'all' ? _.size(events) : _.size(events.filter((el)=>(el.cluster === name)));
+    }
+    if (rows) {
+      Apps = rows.length;
+    }
+    if (containers && _.size(containers) > 0) {
+      _.forEach(containers, (container) => {
+        if (container.run && (name === 'all' || name === container.cluster)) {
+          runningContainers++;
+        }
+      });
+    }
+    if (typeof(cluster.nodes.on) !== 'undefined') {
+      runningNodes = cluster.nodes.on;
     }
 
     this.additionalData(rows);
@@ -173,10 +236,16 @@ export default class ApplicationPanel extends Component {
 
     return (
       <div>
-        <h1>
-          <Link to={"/clusters/" + name}>Clusters/{name}</Link>
-        </h1>
-
+        <ul className="breadcrumb">
+          <li><a href="/clusters">Clusters</a></li>
+          <li><a href={"/clusters/" + name}>{name}</a></li>
+          <li className="active">Applications</li>
+        </ul>
+        <StatisticsPanel metrics={this.statisticsMetrics}
+                         link
+                         cluster={cluster}
+                         values={[runningContainers, runningNodes, Apps, eventsCount]}
+        />
         <Panel header={applicationsHeaderBar}>
           {!rows && (
             <ProgressBar active now={100} />
@@ -303,24 +372,18 @@ export default class ApplicationPanel extends Component {
 
       case "getCompose":
         this.props.getComposeApp(name, currentApplication.name).then((response)=> {
-          let $link = $('<a></a>').appendTo(document.body);
-          $link.attr('href', 'data:text/json;charset=utf-8,' + encodeURIComponent(response._res.text));
-          $link.attr('download', currentApplication.name + '-config.json');
-          $link.get(0).click();
-          $link.remove();
-        }).catch(()=>null);
+          let data = 'text/json;charset=utf-8,' + encodeURIComponent(response._res.text);
+          downloadFile(data, currentApplication.name + '-config.json' );
+        });
         return;
 
       case "getInitFile":
         this.props.getInitFile(name, currentApplication.name).then((response)=>{
           let header = response._res.headers['content-disposition'] || response._res.header['content-disposition'];
-          let filename = header ? header.match(/filename=(.+)/)[1] : currentApplication.name + '-init-file.yml';
-          let $link = $('<a></a>').appendTo(document.body);
-          $link.attr('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(response._res.text));
-          $link.attr('download', filename);
-          $link.get(0).click();
-          $link.remove();
-        }).catch(()=>null);
+          let fileName = header ? header.match(/filename=(.+)/)[1] : currentApplication.name + '-init-file.yml';
+          let data = 'application/octet-stream;charset=utf-8,' + encodeURIComponent(response._res.text);
+          downloadFile(data, fileName);
+        });
         return;
 
       case "create":
@@ -352,4 +415,13 @@ export default class ApplicationPanel extends Component {
         return;
     }
   }
+}
+
+function shortenName(name) {
+  let result = String(name);
+  const MAX_LENGTH = 25;
+  if (name.length > MAX_LENGTH) {
+    result = name.substr(0, MAX_LENGTH) + '...';
+  }
+  return result;
 }

@@ -49,7 +49,7 @@ export default class EventLog extends Component {
   dateRender(row) {
     return (
       <td key="date">
-        {moment(row.date).fromNow()}
+        {row.date.substring(11, 19) + ' ' + row.date.substring(0, 10)}
       </td>
     );
   }

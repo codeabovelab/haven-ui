@@ -24,12 +24,16 @@ export default class RegistryEdit extends Component {
     addRegistry: PropTypes.func.isRequired,
     editRegistry: PropTypes.func.isRequired,
     loadRegistries: PropTypes.func.isRequired,
-    registriesUI: PropTypes.object.isRequired
+    registriesUI: PropTypes.object.isRequired,
+    okTitle: PropTypes.string.isRequired
   };
 
   constructor(...params) {
     super(...params);
-    this.state = {currentRegType: this.getType()};
+    this.state = {
+      currentRegType: this.getType(),
+      firstLoad: true
+    };
   }
 
   configType = [
@@ -42,7 +46,9 @@ export default class RegistryEdit extends Component {
     delete values.name;
     values.registryType = this.getCurrentType();
 //    values.name = values.username;
-
+    this.setState({
+      firstLoad: false
+    });
     let promise;
 
     if (this.props.registry) {
@@ -89,21 +95,28 @@ export default class RegistryEdit extends Component {
 
   renderSelectForm(type) {
     const init = this.getInit();
+    const firstLoad = this.state.firstLoad;
     switch (type) {
       case this.configType[1]:
         return ( <RegistryEditFormAWS
           initialValues={init}
+          firstLoad={firstLoad}
           onHide={this.props.onHide}
+          okTitle={this.props.okTitle}
           onSubmit={this.onSubmit.bind(this)} />);
       case this.configType[2]:
         return ( <RegistryEditFormDockerHub
           initialValues={init}
+          firstLoad={firstLoad}
           onHide={this.props.onHide}
+          okTitle={this.props.okTitle}
           onSubmit={this.onSubmit.bind(this)} />);
       default:
         return ( <RegistryEditFormPrivate
           initialValues={init}
+          firstLoad={firstLoad}
           onHide={this.props.onHide}
+          okTitle={this.props.okTitle}
           onSubmit={this.onSubmit.bind(this)} />);
     }
   }

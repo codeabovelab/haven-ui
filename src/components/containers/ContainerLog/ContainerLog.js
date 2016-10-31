@@ -4,11 +4,16 @@ import {Dialog} from 'components';
 import {Row, Col, FormGroup, FormControl, Checkbox, ControlLabel, HelpBlock, Alert} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import _ from 'lodash';
+import { Stomp } from 'stompjs/lib/stomp.min.js';
+import {connectToStomp} from '../../../utils/stompUtils';
+
+let stompClient = null;
 
 @connect(
   state => ({
     containers: state.containers,
-    containersUI: state.containersUI
+    containersUI: state.containersUI,
+    token: state.auth.token
   }),
   containerActions)
 export default class ContainerLog extends Component {
@@ -16,6 +21,7 @@ export default class ContainerLog extends Component {
     containers: PropTypes.object.isRequired,
     containersUI: PropTypes.object.isRequired,
     container: PropTypes.object.isRequired,
+    token: PropTypes.object,
     loadLogs: PropTypes.func.isRequired,
 
     onHide: PropTypes.func.isRequired
@@ -23,18 +29,55 @@ export default class ContainerLog extends Component {
 
   componentWillMount() {
     const {container, loadLogs} = this.props;
-    loadLogs(container);
+    loadLogs(container).then(()=> {
+      let $containerLog = $('#containerLog');
+      if ($containerLog.length) {
+        $containerLog.scrollTop($containerLog[0].scrollHeight - $containerLog.height());
+      }
+    });
     require('jquery-ui/ui/widgets/draggable');
   }
 
   componentDidMount() {
+    const {token} = this.props;
     $("#container-log-modal").draggable({ handle: ".modal-header" });
+    stompClient = connectToStomp(stompClient, token);
   }
 
   componentWillUpdate(nextProps) {
     const {container, loadLogs} = this.props;
     if (container.id !== nextProps.container.id) {
       loadLogs(nextProps.container);
+    }
+  }
+
+  componentWillUnmount() {
+    stompClient.disconnect();
+  }
+
+  toggleCheckbox(e) {
+    const {container} = this.props;
+    let containerLogChannel = 'container:' + container.cluster + ':' + container.name + ':stdout';
+    let checked = e.target.checked;
+    if (checked === true) {
+      stompClient.subscribe('/user/queue/*', (message) => {
+        if (message.headers && message.body && checked) {
+          let entry = JSON.parse(message.body).message;
+          $('#containerLog').val((_, val)=> {
+            return val + '\n' + entry;
+          });
+        }
+      });
+      let yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      stompClient.send('/app/subscriptions/add', {}, JSON.stringify([{
+        source: containerLogChannel,
+        historyCount: 7,
+        historySince: yesterday
+      }]));
+    } else {
+      stompClient.send('/app/subscriptions/del', {}, JSON.stringify([containerLogChannel]));
     }
   }
 
@@ -72,11 +115,24 @@ export default class ContainerLog extends Component {
         )}
 
         {(!loadingLogs && !error) && (
-          <textarea readOnly
-                    className={s["container-log"]}
-                    defaultValue={logs}
-          />
-        )}
+          <div>
+            <div className="checkbox-button"><label>
+              <input type="checkbox"
+                     id="logCheck"
+                     className="checkbox-control"
+                     defaultChecked={false}
+                     onChange={this.toggleCheckbox.bind(this)}
+                     name="subscribeCheckBox"
+              />
+              <span className="checkbox-label">Real Time Log</span>
+            </label></div>
+            <textarea readOnly
+                      className={s["container-log"]}
+                      defaultValue={logs}
+                      id="containerLog"
+            />
+          </div>
+          )}
       </Dialog>
     );
   }

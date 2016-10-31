@@ -5,12 +5,14 @@ export default class RegistryEditCommon extends Component {
   static propTypes ={
     values: PropTypes.object.isRequired,
     param: PropTypes.object.isRequired,
-    onHide: PropTypes.func.isRequired
+    onHide: PropTypes.func.isRequired,
+    firstLoad: PropTypes.bool.isRequired
   };
 
-  renderInput(type, title, placeholder, field) {
+  renderInput(type, title, placeholder, field, firstLoad) {
     return (
-      <FormGroup validationState={field.error ? "error" : ""}>
+      <FormGroup required title="required" validationState={(field.error &&
+      (field.touched || !firstLoad)) ? "error" : ""}>
         <ControlLabel>{title}</ControlLabel>
         <FormControl type={type} placeholder={placeholder} {...field} />
       </FormGroup>
@@ -75,14 +77,14 @@ export default class RegistryEditCommon extends Component {
     );
   }
 
-  renderButtonSubmit(valid) {
+  renderButtonSubmit(valid, okTitle) {
     return (
       <div className="form-group text-right submit-buttons-block">
         <Button bsStyle="primary"
                 disabled={!valid}
                 type="submit"
         >
-          OK
+          {okTitle}
         </Button>
         <span>&nbsp;&nbsp;</span>
         <Button bsStyle="default"

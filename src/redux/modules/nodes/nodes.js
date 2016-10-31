@@ -54,3 +54,10 @@ export function create({name, cluster}) {
     promise: (client) => client.post(`/ui/api/clusters/${cluster}/nodes/${name}`)
   };
 }
+
+export function remove({name, cluster}) {
+  return {
+    types: [ACTIONS.REMOVE, ACTIONS.REMOVE_SUCCESS, ACTIONS.REMOVE_FAIL],
+    promise: (client) => client.del(`/ui/api/clusters/${cluster}/nodes/${name}`)
+  };
+}

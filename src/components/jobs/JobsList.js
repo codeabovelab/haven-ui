@@ -60,17 +60,12 @@ export default class JobsList extends Component {
   ];
 
   render() {
-    const panelHeader = (
-      <div className="clearfix">
-        <h3>Jobs List</h3>
-      </div>
-    );
     let loading = this.props.loading;
     let data = this.props.data;
     let hasData = !loading && data && data.length !== 0;
     return (
       <div>
-        <Panel header={panelHeader}>
+        <Panel>
           {loading && (
             <ProgressBar active now={100} />
           ) || hasData && (

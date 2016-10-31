@@ -66,7 +66,7 @@ export default class RegistriesList extends Component {
   render() {
     const panelHeader = (
       <div className="clearfix">
-        <h3>Registry List</h3>
+        <h3></h3>
 
         <ButtonToolbar>
           <Button

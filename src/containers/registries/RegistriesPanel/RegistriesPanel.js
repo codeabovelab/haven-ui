@@ -51,6 +51,9 @@ export default class RegistriesPanel extends Component {
 
     return (
       <div>
+        <ul className="breadcrumb">
+          <li className="active">Registries</li>
+        </ul>
         <StatisticsPanel metrics={this.statisticsMetrics} values={[connectedRegistries]}/>
 
         <RegistriesList loading={typeof RegistriesList === "undefined"}
@@ -94,9 +97,10 @@ export default class RegistriesPanel extends Component {
       case "create":
         this.setState({
           actionDialog: (
-            <RegistryEditForms title="Create a New Registry"
+            <RegistryEditForms title="Create New Registry"
                           registry={undefined}
                           onHide={this.onHideDialog.bind(this)}
+                          okTitle="Create Registry"
             />
           )
         });
@@ -108,6 +112,7 @@ export default class RegistriesPanel extends Component {
             <RegistryEditForms title="Edit Registry"
                           registry={registry}
                           onHide={this.onHideDialog.bind(this)}
+                          okTitle="Update Registry"
             />
           )
         });

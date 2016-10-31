@@ -11,26 +11,34 @@ import _ from 'lodash';
 import Select from 'react-select';
 
 
-const EXTRA_FIELDS = {
-  containerName: {
-    label: 'Container name'
+const CPU_FIELDS = {
+  memoryLimit: {
+    type: 'integer',
+    label: 'Memory limit',
+    measurement: 'bytes',
+    description: 'A positive integer (Mb).'
   },
-  bindVolumes: {
-    label: 'Bind volumes'
+  cpusetCpus: {
+    type: 'string',
+    label: 'CPU SET CPUS',
+    description: "CPUs in which to allow execution (0-3, 0,1)"
   },
-  memory: {
-    label: 'Memory limit'
+  cpusetMems: {
+    type: 'string',
+    label: 'CPU SET MEMS',
+    description: 'Memory nodes (MEMs) in which to allow execution (0-3, 0,1).'
   },
   cpuQuota: {
     type: 'integer',
-    label: 'CPU quota',
+    label: 'CPU Quota',
     min: 0,
     description: "100 000 means 100% of 1 CPU. 0 also means 100% of 1 CPU."
   },
   cpuShares: {
     type: 'integer',
-    label: 'CPU shares',
+    label: 'CPU Shares',
     min: 2,
+    defaultValue: "1024",
     description: "Default is 1024"
   },
   blkioWeight: {
@@ -38,24 +46,47 @@ const EXTRA_FIELDS = {
     label: 'Blkio Weight',
     min: 2,
     max: 1000,
+    defaultValue: "500",
     description: "Default is 500"
   }
 };
-const EXTRA_FIELDS_KEYS = Object.keys(EXTRA_FIELDS);
+const NETWORK_FIELDS = {
+  publishAllPorts: {
+    type: 'boolean',
+    label: 'Publish All Ports'
+  },
+  hostname: {
+    type: 'string',
+    label: 'Host Name'
+  }
+};
+const VOLUME_FIELDS = {
+  volumeDriver: {
+    type: 'string',
+    label: 'Volume Driver',
+    description: 'Driver that this container uses to mount volumes.'
+  }
+};
+const CPU_FIELDS_KEYS = Object.keys(CPU_FIELDS);
+const NETWORK_FIELDS_KEYS = Object.keys(NETWORK_FIELDS);
+const VOLUME_FIELDS_KEYS = Object.keys(VOLUME_FIELDS);
 
 @connect(state => ({
   clusters: state.clusters,
+  containers: state.containers,
   containersUI: state.containersUI,
   images: state.images,
   registries: state.registries
 }), {create, loadNodes, loadImages, loadImageTags, searchImages, loadContainers, loadDefaultParams, loadRegistries})
 @reduxForm({
   form: 'newContainer',
-  fields: ['image', 'tag', 'node', 'registry', 'restart', 'restartRetries'].concat(EXTRA_FIELDS_KEYS)
+  fields: ['image', 'tag', 'name', 'node', 'registry', 'restart', 'restartRetries', 'volumesFrom', 'dns', 'dnsSearch']
+    .concat(CPU_FIELDS_KEYS, NETWORK_FIELDS_KEYS, VOLUME_FIELDS_KEYS)
 })
 export default class ContainerCreate extends Component {
   static propTypes = {
     clusters: PropTypes.object.isRequired,
+    containers: PropTypes.object.isRequired,
     registries: PropTypes.array.isRequired,
     containersUI: PropTypes.object.isRequired,
     images: PropTypes.object.isRequired,
@@ -81,7 +112,11 @@ export default class ContainerCreate extends Component {
   constructor(...params) {
     super(...params);
     this.state = {
+      volumesFromValue: [],
+      dnsValue: [],
+      dnsSearchValue: [],
       publish: [{field1: '', field2: ''}],
+      links: [{field1: '', field2: ''}],
       environment: [{field1: '', field2: ''}],
       selectImageValue: {value: '', label: ''},
       checkboxes: {checkboxInitial: ''},
@@ -96,6 +131,12 @@ export default class ContainerCreate extends Component {
     loadImages();
     loadRegistries();
     fields.restart.value = 'no';
+    fields.publishAllPorts.value = 'false';
+    _.each(fields, function loopFields(value, key) {
+      if (CPU_FIELDS[key] && CPU_FIELDS[key].defaultValue) {
+        fields[key].onChange(CPU_FIELDS[key].defaultValue);
+      }
+    });
   }
 
   getTagsOptions(image) {
@@ -176,19 +217,6 @@ export default class ContainerCreate extends Component {
     $checkboxBlock.slideToggle(200);
   }
 
-  getImagesList() {
-    let imagesList = [];
-    const {images} = this.props;
-    Object.keys(images).filter((key) => (key === "all")).forEach(registerName => {
-      let register = images[registerName];
-      _.forOwn(register, image => {
-        let i = Object.assign({}, image, {label: `${registerName} | ${image.name}`});
-        imagesList.push(i);
-      });
-    });
-    return imagesList;
-  }
-
   renderSelectValue(option) {
     return <Label bsStyle="info">{option.label}</Label>;
   }
@@ -205,15 +233,64 @@ export default class ContainerCreate extends Component {
     }.bind(this), 500);
   }
 
+  volumesFromOnChange(value) {
+    let volumes = [];
+    const fields = this.props.fields;
+    this.setState({volumesFromValue: value});
+    value.map(function loop(volume) {
+      volumes.push(volume.value);
+    });
+    fields.volumesFrom.onChange(volumes);
+  }
+
+  getVolumesOptions(containersNames) {
+    let options = [];
+    for (let i = 0; i < containersNames.length; i++) {
+      let containerName = containersNames[i];
+      options.push({value: containerName, label: containerName});
+    }
+    return options;
+  }
+
+  dnsOnChange(value) {
+    let vals = [];
+    const fields = this.props.fields;
+    this.setState({dnsValue: value});
+    value.map((el) => {
+      vals.push(el.value);
+    });
+    fields.dns.onChange(vals);
+  }
+
+  dnsSearchOnChange(value) {
+    let vals = [];
+    const fields = this.props.fields;
+    this.setState({dnsSearchValue: value});
+    value.map((el) => {
+      vals.push(el.value);
+    });
+    fields.dnsSearch.onChange(vals);
+  }
+
+  getDnsLabel(label) {
+    return 'Add "' + label + '"';
+  }
+
   render() {
     let s = require('./ContainerCreate.scss');
     require('react-select/dist/react-select.css');
-    const {clusters, cluster, fields, containersUI, registries} = this.props;
+    const {clusters, cluster, fields, containersUI, registries, containers} = this.props;
+    let containersNames = [];
+    _.forEach(containers, (container) => {
+      containersNames.push(container.name);
+    });
+    const volumesFromValue = this.state.volumesFromValue;
+    const dnsValue = this.state.dnsValue;
+    const dnsSearchValue = this.state.dnsSearchValue;
     const creationLogVisible = this.state.creationLogVisible;
     let clusterDetailed = clusters[cluster.name];// to ensure loading of nodes with loadNodes;
     let nodes = clusterDetailed.nodesList;
     nodes = nodes ? nodes : [];
-    let imagesList = this.getImagesList();
     let field;
     let image = this.getCurrentImage();
     let creating = containersUI.new.creating;
@@ -223,10 +300,10 @@ export default class ContainerCreate extends Component {
       <Dialog show
               size="large"
               title="Create Container"
-              onSubmit={creationLogVisible ? this.props.onHide : this.props.handleSubmit(this.onSubmit.bind(this))}
-              onHide={creationLogVisible ? this.props.handleSubmit(this.onSubmit.bind(this)) : this.props.onHide}
-              okTitle={creationLogVisible ? "Close" : null}
-              cancelTitle={creationLogVisible ? "Again" : null}
+              onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}
+              onHide={this.props.onHide}
+              okTitle={creationLogVisible ? "Again" : "Create Container"}
+              cancelTitle={creationLogVisible ? "Cancel" : null}
               keyboard={!selectMenuVisible}
               backdrop="static"
       >
@@ -302,23 +379,79 @@ export default class ContainerCreate extends Component {
                 )}
               </select>
             </div>
+            <div className="form-group">
+              <label>Container Name:</label>
+              {fields.name.error && fields.name.touched && <div className="text-danger">{fields.name.error}</div>}
+              <input type="text" {...fields.name} className="form-control"/>
+            </div>
             <Accordion className="accordion-create-container">
-              <Panel header="Container & Volumes settings" eventKey="1">
+              <Panel header="CPU Settings" eventKey="1">
                 <div className="row">
-                  {EXTRA_FIELDS_KEYS.map(key =>
+                  {CPU_FIELDS_KEYS.map(key =>
                     <div className="col-md-6" key={key}>
                       {fieldComponent(key)}
                     </div>
                   )}
                 </div>
               </Panel>
-              <Panel header="Ports settings" eventKey="2">
+              <Panel header="Volume Settings" eventKey="2">
+                {this.fieldLinks(containersNames)}
+                <div className="row">
+                  {VOLUME_FIELDS_KEYS.map(key =>
+                    <div className="col-md-6" key={key}>
+                      {fieldComponent(key)}
+                    </div>
+                  )}
+                  <div className="col-md-6" key="Volumes From">
+                    <label>Volumes From:</label>
+                    <Select
+                      multi
+                      options={this.getVolumesOptions(containersNames)}
+                      noResultsText="No volumes available"
+                      placeholder="Choose volumes"
+                      onChange={this.volumesFromOnChange.bind(this)}
+                      value={volumesFromValue}
+                    />
+                  </div>
+                </div>
+              </Panel>
+              <Panel header="Network Settings" eventKey="3">
                 {this.fieldPublish()}
+                <div className="row">
+                  {NETWORK_FIELDS_KEYS.map(key =>
+                    <div className="col-sm-6" key={key}>
+                      {fieldComponent(key)}
+                    </div>
+                  )}
+                  <div className="col-sm-6">
+                    <label>DNS:</label>
+                    <Select.Creatable
+                      multi
+                      noResultsText=""
+                      placeholder="Enter DNS to add it"
+                      onChange={this.dnsOnChange.bind(this)}
+                      value={dnsValue}
+                      promptTextCreator={this.getDnsLabel}
+                    />
+                  </div>
+                  <div className="col-sm-6">
+                    <label>DNS Search:</label>
+                    <Select.Creatable
+                      multi
+                      noResultsText=""
+                      placeholder="Enter domain name to add it"
+                      onChange={this.dnsSearchOnChange.bind(this)}
+                      value={dnsSearchValue}
+                      promptTextCreator={this.getDnsLabel}
+                    />
+                    <small className="text-muted">Sets the domain names that are searched when a bare unqualified hostname isused inside of the container.</small>
+                  </div>
+                </div>
               </Panel>
             </Accordion>
             {this.fieldRestart()}
             <div className="form-group" id="creation-log-block">
-              <label>Creation Log: <i className="fa fa-spinner fa-2x fa-pulse"/></label>
+              <label>Create Log: <i className="fa fa-spinner fa-2x fa-pulse"/></label>
               <textarea readOnly
                         className="container-creation-log"
                         defaultValue=""
@@ -331,7 +464,7 @@ export default class ContainerCreate extends Component {
 
 
     function fieldComponent(name) {
-      let property = EXTRA_FIELDS[name];
+      let property = CPU_FIELDS[name] || NETWORK_FIELDS[name] || VOLUME_FIELDS[name];
       let field = fields[name];
       return (
         <div className="form-group">
@@ -347,6 +480,8 @@ export default class ContainerCreate extends Component {
       switch (property.type) {
         case 'integer':
           return inputNumber(property, field);
+        case 'boolean':
+          return inputBinarySelect(property, field);
         default:
           return inputText(property, field);
       }
@@ -359,6 +494,13 @@ export default class ContainerCreate extends Component {
     function inputNumber(property, field) {
       let props = Object.assign({}, field, _.pick(property, ['min', 'max']));
       return <input type="number" step="1" {...props} className="form-control"/>;
+    }
+
+    function inputBinarySelect(property, field) {
+      return (<select className="form-control" {...field}>
+          <option key="no" value="false">no</option>
+          <option key="yes" value="true">yes</option>
+      </select>);
     }
   }
 
@@ -427,18 +569,25 @@ export default class ContainerCreate extends Component {
       cluster: cluster.name
     };
 
-    let fieldNames = ['image', 'tag', 'node'].concat(EXTRA_FIELDS_KEYS);
+    let fieldNames = ['node', 'volumesFrom', 'name', 'dns', 'dnsSearch'].concat(CPU_FIELDS_KEYS, NETWORK_FIELDS_KEYS, VOLUME_FIELDS_KEYS);
     fieldNames.forEach(key => {
       let value = fields[key].value;
       if (value) {
+        if (CPU_FIELDS[key] && CPU_FIELDS[key].measurement === 'bytes') {
+          value = mbToBytes(value);
+        }
         container[key] = value;
       }
     });
+    let registry = fields.registry.value ? fields.registry.value + '/' : '';
+    let tag = fields.tag.value ? ':' + fields.tag.value : '';
+    container.image = $.trim(registry + fields.image.value + tag);
     let $logBlock = $('#creation-log-block');
     let $spinner = $logBlock.find('i');
     container.publish = this.getPublish();
     container.environment = this.getEnvironment();
     container.restart = this.getRestart();
+    container.links = this.getLinks();
     $logBlock.show();
     this.setState({
       creationLogVisible: true
@@ -456,10 +605,57 @@ export default class ContainerCreate extends Component {
       });
   }
 
+  fieldLinks(containersNames) {
+    let items = this.state.links;
+    return (
+      <div className="field-links form-group">
+        <div className="field-header">
+          <label>Link</label>
+          <a onClick={this.addLinkItem.bind(this)}><i className="fa fa-plus-circle"/></a>
+        </div>
+        <div className="field-body">
+          {items.map((item, key) => <div className="row" key={key}>
+            <div className="col-sm-6">
+              <input type="string" onChange={handleChange.bind(this, key, 'field1')} className="form-control"
+                     placeholder="Link"/>
+            </div>
+            <div className="col-sm-6">
+              <Select
+                onChange={handleChange.bind(this, key, 'field2')}
+                options={this.getVolumesOptions(containersNames)}
+                noResultsText="No volumes available"
+                placeholder="Volume"
+                value={items[key].field2}
+                clearable={false}
+              />
+            </div>
+          </div>)}
+        </div>
+      </div>
+    );
+
+    function handleChange(i, type, event) {
+      let state = Object.assign({}, this.state);
+      state.links[i][type] = event.target ? event.target.value : event.value;
+      this.setState(state);
+    }
+  }
+
+  addLinkItem() {
+    this.setState({
+      ...this.state,
+      links: [...this.state.links, {field1: '', field2: ''}]
+    });
+  }
+
+  getLinks() {
+    return this.getMapField('links');
+  }
+
   fieldPublish() {
     let items = this.state.publish;
     return (
-      <div className="field-publish">
+      <div className="field-publish form-group">
         <div className="field-header">
           <label>Publish</label>
           <a onClick={this.addPublishItem.bind(this)}><i className="fa fa-plus-circle"/></a>
@@ -586,4 +782,12 @@ export default class ContainerCreate extends Component {
     }
     return value;
   }
+}
+
+function bytesToMb(value) {
+  return value / 1048576;
+}
+
+function mbToBytes(value) {
+  return value * 1048576;
 }

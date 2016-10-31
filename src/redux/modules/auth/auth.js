@@ -34,7 +34,10 @@ export default function reducer(state = {}, action = {}) {
       saveToLS(newState);
       return newState;
     case ACTIONS.LOGIN_FAIL:
-      let error = _.get(action, 'error.error', action.error);
+      let error = _.get(action, 'error.message', 'Error');
+      if (!error) {
+        error = 'Error status: ' + _.get(action, 'error.code');
+      }
       return {
         ...state,
         token: null,

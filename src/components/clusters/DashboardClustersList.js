@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {Link} from 'react-router';
-import {DockTable, OnOff} from '../index';
+import {DockTable, OnOff, Chain} from '../index';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Glyphicon} from 'react-bootstrap';
 
 export default class DashboardClustersList extends Component {
@@ -41,11 +41,12 @@ export default class DashboardClustersList extends Component {
     },
     {
       name: 'alertsCount',
-      label: '# of Alerts'
+      label: '# of Alerts',
+      render: this.alertsRender
     },
     {
-      name: 'applicationsCount',
-      label: '# of Applications',
+      name: 'applications',
+      label: 'Applications',
       render: this.applicationsRender
     }
   ];
@@ -104,7 +105,8 @@ export default class DashboardClustersList extends Component {
     return (
       <td key="containers">
         <OnOff on={cluster.containers.on}
-               off={cluster.containers.off} />
+               off={cluster.containers.off}
+               href={"/clusters/" + cluster.name}/>
       </td>
     );
   }
@@ -113,15 +115,27 @@ export default class DashboardClustersList extends Component {
     return (
       <td key="nodes">
         <OnOff on={cluster.nodes.on}
-               off={cluster.nodes.off} />
+               off={cluster.nodes.off}
+               href="/nodes"/>
       </td>
     );
   }
 
   applicationsRender(cluster) {
     return (
-      <td key="applicationsCount">
-        <Link to={`/clusters/${cluster.name}/applications`}>{cluster.applicationsCount}</Link>
+      <td key="applications">
+        <Chain data={cluster.applications || []}
+               link={"/clusters/" + cluster.name + "/applications"}
+               maxCount={3}
+        />
+      </td>
+    );
+  }
+
+  alertsRender(cluster) {
+    return (
+      <td key="alerts">
+        <Link to={`/clusters/${cluster.name}/events`}>{cluster.alertsCount}</Link>
       </td>
     );
   }

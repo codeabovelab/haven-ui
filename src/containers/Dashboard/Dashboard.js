@@ -9,7 +9,6 @@ import {DockTable, StatisticsPanel, DashboardNodesList, DashboardClustersList} f
 import {load as loadClusters} from 'redux/modules/clusters/clusters';
 import {load as loadNodes} from 'redux/modules/nodes/nodes';
 import {count as countEvents} from 'redux/modules/events/events';
-import {list as listApplications} from 'redux/modules/application/application';
 
 @connect(
   state => ({
@@ -17,19 +16,16 @@ import {list as listApplications} from 'redux/modules/application/application';
     nodes: state.nodes,
     lastEvents: state.events.last,
     alerts: state.events.alerts,
-    application: state.application.applicationsList
-  }), {loadClusters, loadNodes, countEvents, listApplications})
+  }), {loadClusters, loadNodes, countEvents})
 export default class Dashboard extends Component {
   static propTypes = {
     lastEvents: PropTypes.array,
     clusters: PropTypes.object,
     alerts: PropTypes.object,
     nodes: PropTypes.object,
-    application: PropTypes.object,
     loadClusters: PropTypes.func.isRequired,
     loadNodes: PropTypes.func.isRequired,
     countEvents: PropTypes.func.isRequired,
-    listApplications: PropTypes.func.isRequired
   };
 
   statisticsMetrics = [
@@ -56,13 +52,12 @@ export default class Dashboard extends Component {
   ];
 
   componentDidMount() {
-    const {loadClusters, loadNodes, countEvents, listApplications} = this.props;
+    const {loadClusters, loadNodes, countEvents} = this.props;
     let clusterNames = [];
     loadClusters().then(() => {
       for (let key in this.props.clusters) {
         if (typeof(this.props.clusters[key] === 'Cluster')) {
           clusterNames.push('cluster:' + key);
-          listApplications(key);
         }
       }
       countEvents('bus.cluman.errors', clusterNames);
@@ -71,7 +66,7 @@ export default class Dashboard extends Component {
   }
 
   render() {
-    const {lastEvents, alerts, application} = this.props;
+    const {lastEvents, alerts} = this.props;
     let events = lastEvents ? lastEvents.slice(0, 20) : null;
 
     const styles = require('./Dashboard.scss');
@@ -103,8 +98,12 @@ export default class Dashboard extends Component {
     if (this.props.nodes) {
       const nodes = Object.values(this.props.nodes);
       //console.log('nodes', nodes);
-      top5Memory = nodes.filter((el) => typeof el.health !== "undefined").sort((a, b) => {
-        runningNodes += 1;
+      top5Memory = nodes.filter((el) => {
+        if (typeof el.health !== "undefined" && el.on === true) {
+          runningNodes += 1;
+          return true;
+        }
+      }).sort((a, b) => {
         if (a.health.sysMemUsed > b.health.sysMemUsed) {
           return -1;
         } else if (a.health.sysMemUsed < b.health.sysMemUsed) {
@@ -114,7 +113,11 @@ export default class Dashboard extends Component {
         return 0;
       });
 
-      top5CPU = nodes.filter((el) => typeof el.health !== "undefined").map((element)=> {
+      top5CPU = nodes.filter((el) => {
+        if (typeof el.health !== "undefined" && el.on === true) {
+          return true;
+        }
+      }).map((element)=> {
         if (typeof(element.health.sysCpuLoad) === 'undefined') {
           element.health.sysCpuLoad = 0;
         }
@@ -129,7 +132,11 @@ export default class Dashboard extends Component {
         return 0;
       });
 
-      top5Network = nodes.filter((el) => typeof el.health !== "undefined").sort((a, b) => {
+      top5Network = nodes.filter((el) => {
+        if (typeof el.health !== "undefined" && el.on === true) {
+          return true;
+        }
+      }).sort((a, b) => {
         if (a.health.netTotal > b.health.netTotal) {
           return -1;
         } else if (a.health.netTotal < b.health.netTotal) {
@@ -144,20 +151,16 @@ export default class Dashboard extends Component {
     if (this.props.clusters) {
       clusters = clustersList.map((element)=> {
         let alertsCount = alerts ? alerts[element.name] : 0;
-        let applicationsCount;
-        if (application && application[element.name]) {
-          applicationsCount = _.size(application[element.name]);
-        } else {
-          applicationsCount = 0;
-        }
-        return Object.assign(element, alertsCount, {applicationsCount});
+        return Object.assign(element, alertsCount);
       });
     }
 
     return (
       <div className={styles.home}>
         <Helmet title="Home"/>
-
+        <ul className="breadcrumb">
+          <li className="active">Dashboard</li>
+        </ul>
         <StatisticsPanel metrics={this.statisticsMetrics}
                          values={[activeClusters, runningNodes, runningContainers, errorCount]}
         />

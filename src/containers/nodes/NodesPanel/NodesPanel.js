@@ -1,9 +1,10 @@
 import React, {Component, PropTypes} from 'react';
 import {load} from 'redux/modules/nodes/nodes';
 import {connect} from 'react-redux';
+import {ClusterNodesDialog} from '../../../containers/index';
 import {DockTable, NodesList, StatisticsPanel} from '../../../components';
 import {NodeAdd} from '../../index';
-import {ButtonToolbar, SplitButton, Button, MenuItem} from 'react-bootstrap';
+import {Link} from 'react-router';
 
 @connect(
   state => ({
@@ -13,6 +14,7 @@ import {ButtonToolbar, SplitButton, Button, MenuItem} from 'react-bootstrap';
 export default class NodesPanel extends Component {
   static propTypes = {
     nodes: PropTypes.object,
+    params: PropTypes.object,
     nodesIds: PropTypes.array,
     load: PropTypes.func.isRequired
   };
@@ -42,16 +44,18 @@ export default class NodesPanel extends Component {
   }
 
   render() {
-    const {nodes, nodesIds} = this.props;
-    const nodesList = nodesIds !== null ? nodesIds.map(id => nodes[id]) : null;
-
+    const {nodes, nodesIds, params} = this.props;
+    let nodesList = nodesIds !== null ? nodesIds.map(id => nodes[id]) : null;
+    if (params.name && nodesList) {
+      nodesList = nodesList.filter((el)=>(el.cluster === params.name));
+    }
     let totalNodes = (nodesList !== null ? nodesList.length : 0);
     let runningNodes = 0;
     let stoppedNodes = 0;
 
     if (totalNodes > 0) {
       nodesList.forEach((node) => {
-        if (node.health != null) {
+        if (node.health != null && node.on === true) {
           runningNodes++;
         } else {
           stoppedNodes++;
@@ -60,14 +64,35 @@ export default class NodesPanel extends Component {
     }
     return (
       <div>
+        { params.name && (
+          <ul className="breadcrumb">
+            <li><a href="/clusters">Clusters</a></li>
+            <li><a href={"/clusters/" + params.name}>{params.name}</a></li>
+            <li className="active">Nodes</li>
+          </ul>
+        )}
+        { !params.name && (
+          <ul className="breadcrumb">
+            <li><a href="/clusters">Clusters</a></li>
+            <li><a href="/clusters/all">all</a></li>
+            <li className="active">Nodes</li>
+          </ul>
+        )}
+
         <StatisticsPanel metrics={this.statisticsMetrics}
                          values={[runningNodes, stoppedNodes, totalNodes]}
         />
-
         <NodesList loading={typeof nodesList === "undefined"}
-                    data={nodesList}
-                    onAddNode={this.addNode.bind()}
+                   data={nodesList}
+                   clusterName={params.name}
+                   manageNodes={this.manageNodes.bind(this)}
         />
+
+        {(this.state && this.state.actionDialog) && (
+          <div>
+            {this.state.actionDialog}
+          </div>
+        )}
       </div>
     );
   }
@@ -77,6 +102,24 @@ export default class NodesPanel extends Component {
     window.simpleModal.show({
       contentComponent,
       focus: NodeAdd.focusSelector
+    });
+  }
+
+  manageNodes() {
+    console.log('component', this);
+    this.setState({
+      actionDialog: (
+        <ClusterNodesDialog title="Manage Cluster Nodes"
+                            clusterName={this.props.params.name}
+                            onHide={this.onHideDialog.bind(this)}
+        />
+      )
+    });
+  }
+
+  onHideDialog() {
+    this.setState({
+      actionDialog: undefined
     });
   }
 }

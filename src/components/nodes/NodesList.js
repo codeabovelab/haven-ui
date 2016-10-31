@@ -9,20 +9,21 @@ export default class NodesList extends Component {
   static propTypes = {
     data: PropTypes.array,
     loading: PropTypes.bool,
-    onAddNode: PropTypes.func
+    clusterName: PropTypes.string,
+    manageNodes: PropTypes.func
   };
 
   COLUMNS = [
     {
       name: 'name',
-      label: 'Name',
+      label: 'Node Name',
       width: '30%',
       sortable: true
     },
     {
       name: 'address',
-      label: 'Address',
-      width: '30%',
+      label: 'IP Address',
+      width: '20%',
       sortable: true
     },
     {
@@ -34,13 +35,19 @@ export default class NodesList extends Component {
     },
     {
       name: 'health',
-      label: 'Health Status',
+      label: 'Docker Health',
       width: '10%',
       render: this.healthRender
     },
     {
+      name: 'agentHealth',
+      label: 'Agent Health',
+      width: '10%',
+      render: this.agentHealthRender
+    },
+    {
       name: 'time',
-      label: 'Health time',
+      label: 'Healthy Since',
       width: '30%',
       render: this.timeFotmat
     },
@@ -64,6 +71,18 @@ export default class NodesList extends Component {
     const panelHeader = (
       <div className="clearfix">
         <h3>Nodes List</h3>
+
+        {this.props.clusterName && (
+        <ButtonToolbar>
+          <Button
+            bsStyle="primary"
+            onClick={this.props.manageNodes}
+          >
+            <i className="fa fa-plus" />&nbsp;
+            Add/Remove Node
+          </Button>
+        </ButtonToolbar>
+        )}
       </div>
     );
 
@@ -79,6 +98,13 @@ export default class NodesList extends Component {
               rows={rows}
             />
           )}
+
+          {(this.props.data && this.props.data.length === 0) && (
+            <div className="alert alert-info">
+              No nodes yet
+            </div>
+          )}
+
         </Panel>
 
         {(this.state && this.state.actionDialog) && (
@@ -153,7 +179,7 @@ export default class NodesList extends Component {
 
   healthRender(registry) {
     let labelStyle;
-    if ((!registry.on && registry.health.health) || !registry.time ) {
+    if ((!registry.on && registry.health.healthy) || !registry.time ) {
       labelStyle = "default";
     }
     return (
@@ -163,6 +189,19 @@ export default class NodesList extends Component {
         )}
         {(!registry.health.healthy) && (
           <Label bsStyle={labelStyle ? labelStyle : "warning"}>Not Healthy</Label>
+        )}
+      </td>
+    );
+  }
+
+  agentHealthRender(registry) {
+    return (
+      <td>
+        {(registry.on) && (
+          <Label bsStyle="success">On</Label>
+        )}
+        {(!registry.on) && (
+          <Label bsStyle="default">Off</Label>
         )}
       </td>
     );
@@ -184,7 +223,7 @@ export default class NodesList extends Component {
   timeFotmat(registry) {
     let time = 'none';
     if (registry.time) {
-      time = registry.time.substring(0, 10) + ' ' + registry.time.substring(11, 19);
+      time = registry.time.substring(11, 19) + ' ' + registry.time.substring(0, 10);
     }
     return (
       <td>
