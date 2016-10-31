@@ -257,7 +257,6 @@ export default class ApplicationPanel extends Component {
           <li className="active">Applications</li>
         </ul>
         <StatisticsPanel metrics={this.statisticsMetrics}
-                         link
                          cluster={cluster}
                          values={[runningContainers, runningNodes, Apps, eventsCount]}
         />

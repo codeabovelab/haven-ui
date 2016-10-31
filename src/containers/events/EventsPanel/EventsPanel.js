@@ -132,7 +132,6 @@ export default class EventsPanel extends Component {
         </ul>
         {cluster && (
           <StatisticsPanel metrics={this.statisticsMetrics}
-                           link
                            cluster={cluster}
                            values={[runningContainers, runningNodes, Apps, eventsCount]}
           />
