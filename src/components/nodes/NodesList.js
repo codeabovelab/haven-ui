@@ -93,6 +93,7 @@ export default class NodesList extends Component {
         <ButtonToolbar>
           <Button
             bsStyle="primary"
+            className="pulled-right"
             onClick={this.props.manageNodes}
           >
             <i className="fa fa-plus" />&nbsp;

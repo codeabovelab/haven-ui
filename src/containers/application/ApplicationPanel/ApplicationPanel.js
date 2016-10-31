@@ -239,6 +239,7 @@ export default class ApplicationPanel extends Component {
         <ButtonToolbar>
           <Button
             bsStyle="primary"
+            className="pulled-right"
             onClick={this.onActionInvoke.bind(this, "create")}
           >
             <i className="fa fa-plus" />&nbsp;
