@@ -258,14 +258,15 @@ export default class ClusterDetailsPanel extends Component {
       runningNodes = cluster.nodes.on;
     }
 
-    const isContainersPage = name === 'all';
+    const isAllPage = name === 'all';
     let columns = this.COLUMNS;
     let groupBySelect = this.GROUP_BY_SELECT;
-    if (isContainersPage && columns[3].name !== 'cluster') {
+    let nodesNavId = isAllPage ? "/nodes" : "/clusters/" + name + "/" + "nodes";
+    if (isAllPage && columns[3].name !== 'cluster') {
       columns.splice(3, 0, {name: 'cluster', label: 'Cluster', render: this.renderTdCluster.bind(this)});
       groupBySelect.push('cluster');
     }
-    if (!isContainersPage) {
+    if (!isAllPage) {
       columns = columns.filter((object)=> object.name !== 'cluster');
       groupBySelect = groupBySelect.filter((object)=> object !== 'cluster');
     } else {
@@ -299,7 +300,7 @@ export default class ClusterDetailsPanel extends Component {
                 <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
                   <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
                 </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "nodes"}>
+                <LinkContainer to={nodesNavId}>
                   <NavItem eventKey={3}>Nodes</NavItem>
                 </LinkContainer>
                 <LinkContainer to={"/clusters/" + name + "/" + "events"}>

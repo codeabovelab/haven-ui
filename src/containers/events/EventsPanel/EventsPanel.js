@@ -76,6 +76,7 @@ export default class EventsPanel extends Component {
     let runningContainers = 0;
     let runningNodes = 0;
     let Apps = 0;
+    let nodesNavId = name === 'all' ? "/nodes" : "/clusters/" + name + "/" + "nodes";
     let eventsCount = 0;
     if (name && events && name !== 'all') {
       events = events.filter((el)=>(el.cluster === name));
@@ -105,24 +106,6 @@ export default class EventsPanel extends Component {
       });
     }
 
-    const eventsHeaderBar = (
-      <div className="clearfix">
-        <Nav bsStyle="tabs" pullLeft>
-          <LinkContainer to={"/clusters/" + name}>
-            <NavItem eventKey={1}>Containers</NavItem>
-          </LinkContainer>
-          <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
-            <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
-          </LinkContainer>
-          <LinkContainer to={"/clusters/" + name + "/" + "nodes"}>
-            <NavItem eventKey={2}>Nodes</NavItem>
-          </LinkContainer>
-          <LinkContainer to={"/clusters/" + name + "/" + "events"}>
-            <NavItem eventKey={2}>Events</NavItem>
-          </LinkContainer>
-        </Nav>
-      </div>
-    );
     return (
       <div>
         <ul className="breadcrumb">
@@ -144,7 +127,7 @@ export default class EventsPanel extends Component {
             <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
               <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
             </LinkContainer>
-            <LinkContainer to={"/clusters/" + name + "/" + "nodes"}>
+            <LinkContainer to={nodesNavId}>
               <NavItem eventKey={2}>Nodes</NavItem>
             </LinkContainer>
             <LinkContainer to={"/clusters/" + name + "/" + "events"}>
