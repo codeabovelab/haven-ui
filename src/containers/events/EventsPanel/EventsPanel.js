@@ -76,6 +76,8 @@ export default class EventsPanel extends Component {
     let runningContainers = 0;
     let runningNodes = 0;
     let Apps = 0;
+    let uniqueEvents = [];
+    let uniqueContainers = [];
     let nodesNavId = name === 'all' ? "/nodes" : "/clusters/" + name + "/" + "nodes";
     let eventsCount = 0;
     if (name && events && name !== 'all') {
@@ -86,6 +88,15 @@ export default class EventsPanel extends Component {
     }
 
     if (clusters && cluster) {
+      if (events) {
+        _.forEach(events, (value) => {
+          if ($.inArray(value.container.id, uniqueContainers) < 0) {
+            uniqueContainers.push(value.container.id);
+            uniqueEvents.push(value);
+          }
+        });
+      }
+
       if (name === 'all') {
         _.forEach(clusters, (el)=> {
           Apps += _.size(el.applications);
@@ -135,7 +146,7 @@ export default class EventsPanel extends Component {
             </LinkContainer>
           </Nav>
           {this.props.events && (
-            <EventLog data={events}
+            <EventLog data={uniqueEvents}
                       loading={!this.props.events}
             />
           )}

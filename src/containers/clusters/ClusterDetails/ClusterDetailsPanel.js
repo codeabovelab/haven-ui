@@ -291,7 +291,7 @@ export default class ClusterDetailsPanel extends Component {
             <ProgressBar active now={100} />
           )}
 
-          {(rows && rows.length > 0) && (
+          {rows && (
             <div>
               <Nav bsStyle="tabs" className="dockTable-nav">
                 <LinkContainer to={"/clusters/" + name}>
