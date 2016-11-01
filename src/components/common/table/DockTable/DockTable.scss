@@ -37,6 +37,7 @@
 
   thead {
     th:global(.sortable) {
+      font-weight: 500;
       cursor: pointer;
 
       :global(.sorting) {
@@ -46,6 +47,9 @@
           color: rgba(50, 50, 50, .5);
         }
       }
+    }
+    th:global {
+      font-weight:500;
     }
   }
 
