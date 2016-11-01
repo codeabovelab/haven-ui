@@ -242,11 +242,25 @@ export default class ContainerDetailed extends Component {
   render() {
     const {containersByName, containersUI, params: {name}, params: {subname}, startContainer, stopContainer, loadDetailsByName} = this.props;
     const container = containersByName ? containersByName[subname] : null;
+    let environment = {};
     let loading = '';
     let events = this.props.events['bus.cluman.errors'];
     events = events ? events.filter((el)=>(el.container.name === subname && el.cluster === name)) : [];
     let containerHeaderBar = '';
     if (container) {
+      if (container.environment) {
+        let index = 0;
+        for (let prop in container.environment) {
+          if (!container.environment.hasOwnProperty(prop)) {
+            continue;
+          }
+          index++;
+          let key = container.environment[prop].match(/([^=]+)={1,2}/)[0];
+          key = key ? key : index;
+          let val = isInt(key) ? container.environment[prop] : container.environment[prop].substring(key.length);
+          _.assign(environment, {[key]: val});
+        }
+      }
       let containerStatus = container.run ? 'RUNNING' : 'EXITED';
       loading = (containersUI[container.id] && (containersUI[container.id].starting || containersUI[container.id].stopping));
       containerHeaderBar = (
@@ -321,7 +335,7 @@ export default class ContainerDetailed extends Component {
               {cpuPeriod: container.cpuPeriod}, {cpusetCpus: container.cpusetCpus}, {cpusetMems: container.cpusetMems},
               {memoryLimit: container.memoryLimit}, {memorySwap: container.memorySwap}, {memoryReservation: container.memoryReservation},
               {kernelMemory: container.kernelMemory})}/></Tab>
-            <Tab eventKey={5} title="Environment"><PropertyGrid data={container.environment}/></Tab>
+            <Tab eventKey={5} title="Environment"><PropertyGrid data={environment}/></Tab>
             <Tab eventKey={6} title="Volumes"><PropertyGrid data={_.assign({},
               {volumes: container.volumes}, {volumeBinds: container.volumeBinds}, {volumeDriver: container.volumeDriver},
               {volumesFrom: container.volumesFrom}, {links: container.links})}/></Tab>
@@ -359,5 +373,10 @@ export default class ContainerDetailed extends Component {
     );
   }
 
+}
+
+function isInt(value) {
+  return !isNaN(value) &&
+    parseInt(Number(value), 10) === value && !isNaN(parseInt(value, 10));
 }
 
