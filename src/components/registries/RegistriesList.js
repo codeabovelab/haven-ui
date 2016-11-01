@@ -21,7 +21,7 @@ export default class RegistriesList extends Component {
     },
     {
       name: 'username',
-      label: 'User name',
+      label: 'Username',
       sortable: true,
       render: this.formatUserName
     },
@@ -32,7 +32,7 @@ export default class RegistriesList extends Component {
     },
     {
       name: 'url',
-      label: 'Url',
+      label: 'URL',
       sortable: true
     },
     {
