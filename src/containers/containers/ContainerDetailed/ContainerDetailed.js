@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
-import {PropertyGrid, LoadingDialog, ActionMenu, ContainerStatistics} from '../../../components/index';
+import {PropertyGrid, LoadingDialog, ActionMenu, ContainerStatistics, EventLog} from '../../../components/index';
 import {ContainerScale, ContainerUpdate} from '../../../containers/index';
 import {Dropdown, SplitButton, Button, ButtonToolbar, Accordion, Panel, ProgressBar, Tabs, Tab} from 'react-bootstrap';
 import _ from 'lodash';
@@ -17,6 +17,7 @@ let stompClient = null;
   containers: state.containers,
   containersByName: state.containers.detailsByName,
   containersUI: state.containersUI,
+  events: state.events,
   token: state.auth.token
 }), {
   loadContainers: clusterActions.loadContainers,
@@ -31,6 +32,7 @@ export default class ContainerDetailed extends Component {
   static propTypes = {
     clusters: PropTypes.object.isRequired,
     containers: PropTypes.object,
+    events: PropTypes.object,
     containersByName: PropTypes.object,
     container: PropTypes.object,
     containersUI: PropTypes.object,
@@ -241,6 +243,8 @@ export default class ContainerDetailed extends Component {
     const {containersByName, containersUI, params: {name}, params: {subname}, startContainer, stopContainer, loadDetailsByName} = this.props;
     const container = containersByName ? containersByName[subname] : null;
     let loading = '';
+    let events = this.props.events['bus.cluman.errors'];
+    events = events ? events.filter((el)=>(el.container.name === subname && el.cluster === name)) : [];
     let containerHeaderBar = '';
     if (container) {
       let containerStatus = container.run ? 'RUNNING' : 'EXITED';
@@ -302,7 +306,11 @@ export default class ContainerDetailed extends Component {
         </Panel>
         <div className="panel panel-default">
           <Tabs defaultActiveKey={1} id="tabContainerProps">
-            <Tab eventKey={1} title="Events"><PropertyGrid data={container.labels}/></Tab>
+            <Tab eventKey={1} title="Events">
+              <EventLog data={events}
+                        loading={!this.props.events}
+              />
+            </Tab>
             <Tab eventKey={2} title="Labels"><PropertyGrid data={container.labels}/></Tab>
             <Tab eventKey={3} title="Network&Ports"><PropertyGrid data={_.assign({},
               {publishAllPorts: container.publishAllPorts}, {ports: container.ports}, {network: container.network},
