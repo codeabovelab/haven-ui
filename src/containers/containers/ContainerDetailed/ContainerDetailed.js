@@ -302,27 +302,28 @@ export default class ContainerDetailed extends Component {
         </Panel>
         <div className="panel panel-default">
           <Tabs defaultActiveKey={1} id="tabContainerProps">
-            <Tab eventKey={1} title="Labels"><PropertyGrid data={container.labels}/></Tab>
-            <Tab eventKey={2} title="Network&Ports"><PropertyGrid data={_.assign({},
+            <Tab eventKey={1} title="Events"><PropertyGrid data={container.labels}/></Tab>
+            <Tab eventKey={2} title="Labels"><PropertyGrid data={container.labels}/></Tab>
+            <Tab eventKey={3} title="Network&Ports"><PropertyGrid data={_.assign({},
               {publishAllPorts: container.publishAllPorts}, {ports: container.ports}, {network: container.network},
               {networks: container.networks}, {dns: container.dns}, {dnsSearch: container.dnsSearch},
               {extraHosts: container.extraHosts}, {domainname: container.domainname})}/></Tab>
-            <Tab eventKey={3} title="CPU & Memory"><PropertyGrid data={_.assign({},
+            <Tab eventKey={4} title="CPU & Memory"><PropertyGrid data={_.assign({},
               {cpuShares: container.cpuShares}, {cpuQuota: container.cpuQuota}, {blkioWeight: container.blkioWeight},
               {cpuPeriod: container.cpuPeriod}, {cpusetCpus: container.cpusetCpus}, {cpusetMems: container.cpusetMems},
               {memoryLimit: container.memoryLimit}, {memorySwap: container.memorySwap}, {memoryReservation: container.memoryReservation},
               {kernelMemory: container.kernelMemory})}/></Tab>
-            <Tab eventKey={4} title="Environment"><PropertyGrid data={container.environment}/></Tab>
-            <Tab eventKey={5} title="Volumes"><PropertyGrid data={_.assign({},
+            <Tab eventKey={5} title="Environment"><PropertyGrid data={container.environment}/></Tab>
+            <Tab eventKey={6} title="Volumes"><PropertyGrid data={_.assign({},
               {volumes: container.volumes}, {volumeBinds: container.volumeBinds}, {volumeDriver: container.volumeDriver},
               {volumesFrom: container.volumesFrom}, {links: container.links})}/></Tab>
-            <Tab eventKey={6} title="Security Opts & Args"><PropertyGrid data={_.assign({},
+            <Tab eventKey={7} title="Security Opts & Args"><PropertyGrid data={_.assign({},
               {securityOpt: container.securityOpt}, {args: container.args})}/></Tab>
-            <Tab eventKey={7} title="Time Stats"><PropertyGrid data={_.assign({},
+            <Tab eventKey={8} title="Time Stats"><PropertyGrid data={_.assign({},
               {created: container.created}, {started: container.started}, {finished: container.finished},
               {reschedule: container.reschedule}, {restartCount: container.restartCount}, {lock: container.lock},
               {lockCause: container.lockCause}, {command: container.command})}/></Tab>
-            <Tab eventKey={8} title="Logs" onEnter={this.refreshLogs.bind(this)}>
+            <Tab eventKey={9} title="Logs" onEnter={this.refreshLogs.bind(this)}>
               <div className="checkbox-button"><label>
                 <input type="checkbox"
                        id="logCheck"
