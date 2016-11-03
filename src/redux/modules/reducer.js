@@ -20,6 +20,7 @@ import events from './events/events';
 import application from './application/application';
 import jobs from './jobs/jobs';
 import settings from './settings/settings';
+import users from './users/users';
 import errors from './errors/errors';
 
 export default combineReducers({
@@ -37,6 +38,7 @@ export default combineReducers({
   events,
   jobs,
   settings,
+  users,
   //END models data
   application,
   imagesUI,
