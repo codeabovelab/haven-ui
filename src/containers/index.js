@@ -31,3 +31,5 @@ export JobsPanel from './jobs/JobsPanel/JobsPanel';
 export SettingsPanel from './settings/SettingsPanel/SettingsPanel';
 
 export EventsPanel from './events/EventsPanel/EventsPanel';
+
+export UsersPanel from './users/UsersPanel/UsersPanel';
