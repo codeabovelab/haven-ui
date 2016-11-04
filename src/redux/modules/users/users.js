@@ -83,7 +83,7 @@ export default function reducer(state = {}, action = {}) {
 export function getRoles() {
   return {
     types: [ACTIONS.GET_ROLES, ACTIONS.GET_ROLES_SUCCESS, ACTIONS.GET_ROLES_FAIL],
-    promise: (client) => client.get(`/ui/api/roles`)
+    promise: (client) => client.get(`/ui/api/roles/`)
   };
 }
 
@@ -97,7 +97,7 @@ export function getCurrentUser() {
 export function getUsers() {
   return {
     types: [ACTIONS.GET_USERS, ACTIONS.GET_USERS_SUCCESS, ACTIONS.GET_USERS_FAIL],
-    promise: (client) => client.get(`/ui/api/users`)
+    promise: (client) => client.get(`/ui/api/users/`)
   };
 }
 
