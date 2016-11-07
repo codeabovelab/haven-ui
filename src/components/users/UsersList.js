@@ -8,9 +8,11 @@ import _ from 'lodash';
 
 export default class UsersList extends Component {
   static propTypes = {
-    data: PropTypes.array,
+    data: PropTypes.object,
     loading: PropTypes.bool,
-    roles: PropTypes.object
+    roles: PropTypes.object,
+    onNewUser: PropTypes.func,
+    onActionInvoke: PropTypes.func.isRequired
   };
 
   COLUMNS = [
@@ -68,7 +70,7 @@ export default class UsersList extends Component {
                 <ButtonToolbar className="pulled-right">
                   <Button
                     bsStyle="primary"
-                    onClick={console.log('click!')}
+                    onClick={this.props.onNewUser}
                   >
                     <i className="fa fa-plus"/>&nbsp;
                     New User

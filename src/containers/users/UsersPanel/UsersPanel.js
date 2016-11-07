@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {DockTable, StatisticsPanel, UsersList} from '../../../components';
 import {Link} from 'react-router';
 import * as usersActions from 'redux/modules/users/users';
+import UserAdd from '../UserAdd/UserAdd';
 
 @connect(
   state => ({
@@ -69,6 +70,8 @@ export default class UsersPanel extends Component {
         <UsersList loading={typeof usersList === "undefined"}
                    data={usersList}
                    roles={roles}
+                   onNewUser={this.onActionInvoke.bind(this, "create")}
+                   onActionInvoke={this.onActionInvoke.bind(this)}
         />
         {(this.state && this.state.actionDialog) && (
           <div>
@@ -83,5 +86,22 @@ export default class UsersPanel extends Component {
     this.setState({
       actionDialog: undefined
     });
+  }
+
+  onActionInvoke(action) {
+    switch (action) {
+      case "create":
+        this.setState({
+          actionDialog: (
+            <UserAdd title="Create User"
+                     onHide={this.onHideDialog.bind(this)}
+                     okTitle="Create User"
+            />
+          )
+        });
+        return;
+      default:
+        return;
+    }
   }
 }
