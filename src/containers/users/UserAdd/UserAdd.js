@@ -3,27 +3,30 @@ import {connect} from 'react-redux';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
 import {load, create, loadNodes} from 'redux/modules/clusters/clusters';
 import {create as createNode} from 'redux/modules/nodes/nodes';
-import {createValidator, required} from 'utils/validation';
+import {createValidator, required, email} from 'utils/validation';
 import {Dialog} from 'components';
 import {FormGroup, FormControl, ControlLabel, HelpBlock, Alert} from 'react-bootstrap';
 import _ from 'lodash';
 
 @connect(state => ({
-  createError: state.clustersUI.createError
+  users: state.users,
+  createError: state.users.setUserError
 }), {create, load, createNode, loadNodes})
 @reduxForm({
   form: 'ClusterAdd',
   fields: [
-    'name',
-    'description',
-    'assignedNodes'
+    'email',
+    'username',
+    'role'
   ],
   validate: createValidator({
-    name: [required]
+    name: [required],
+    email: [email]
   })
 })
 export default class UserAdd extends Component {
   static propTypes = {
+    users: PropTypes.object.isRequired,
     title: PropTypes.string.isRequired,
     fields: PropTypes.object.isRequired,
     handleSubmit: PropTypes.func,
@@ -48,6 +51,7 @@ export default class UserAdd extends Component {
 
   render() {
     const { fields, okTitle } = this.props;
+    const {roles, usersList} = this.props.users;
     return (
       <Dialog show
               size="large"
@@ -66,28 +70,39 @@ export default class UserAdd extends Component {
         )}
 
         <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
-          <FormGroup title="required" required validationState={(fields.name.error && (!this.state.firstLoad || fields.name.touched)) ? "error" : ""}>
+          <FormGroup title="required" required validationState={(fields.username.error && (!this.state.firstLoad || fields.name.touched)) ? "error" : ""}>
             <ControlLabel>Name</ControlLabel>
             <FormControl type="text"
-                         {...fields.name}
-                         placeholder="Name (required)"
+                         {...fields.username}
+                         placeholder="User Name (required)"
                          disabled = {okTitle === 'Update Cluster'}
             />
           </FormGroup>
-
-          <FormGroup validationState={fields.description.error ? "error" : ""}>
-            <ControlLabel>Description</ControlLabel>
+          <FormGroup validationState={fields.email.error ? "error" : ""}>
+            <ControlLabel>Email</ControlLabel>
 
             <FormControl type="text"
-                         {...fields.description}
-                         placeholder="Description"
+                         {...fields.email}
+                         placeholder="Email"
             />
 
             <FormControl.Feedback />
 
-            {fields.description.error && (
-              <HelpBlock>{fields.description.error}</HelpBlock>
+            {fields.email.error && (
+              <HelpBlock>{fields.email.error}</HelpBlock>
             )}
+          </FormGroup>
+          <FormGroup>
+            <ControlLabel>Role</ControlLabel>
+            <FormControl componentClass="select" placeholder="select" {...fields.role}>
+              {
+                roles.map(function listNodes(role, i) {
+                  if (typeof(role) !== 'undefined' && role.name) {
+                    return <option key={i} value={role.name}>{role.name}</option>;
+                  }
+                })
+              }
+            </FormControl>
           </FormGroup>
         </form>
         <div ref="error" className="text-danger text-xs-center text-error">
