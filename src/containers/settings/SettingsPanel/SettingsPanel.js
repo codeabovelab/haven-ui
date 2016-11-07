@@ -54,7 +54,7 @@ export default class SettingsPanel extends Component {
         <ul className="breadcrumb">
           <li className="active">Settings</li>
         </ul>
-        <h4>Dockmaster</h4>
+        <h4><a href="https://github.com/codeabovelab/dockmaster-platform" target="_blank">Dockmaster</a></h4>
         <div className="settingsList">
           <p>Version: <span>{version.version}</span></p>
           <p>Build Time: <span>{TimeUtils.format(version.buildTime)}</span></p>
