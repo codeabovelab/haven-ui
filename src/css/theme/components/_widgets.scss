@@ -158,3 +158,23 @@
   float: right!important;
   margin: 10px 17px 0 0!important;
 }
+
+.buttongroup-label {
+  margin-top: 9px;
+}
+
+.middleButton {
+  margin: 0 20px 0 20px!important;
+}
+
+.pseudo-radio-group {
+  .active {
+    background-color: $primary!important;
+    color: white!important;
+  }
+  margin-bottom: 5px;
+}
+
+.pseudo-label {
+  margin-left: 15px;
+}
