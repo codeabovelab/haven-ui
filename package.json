@@ -173,5 +173,8 @@
   },
   "engines": {
     "node": "5.6.0"
+  },
+   "publishConfig" : {
+    "registry" : "http://ni1.codeabovelab.com:8081/repository/npm/"
   }
 }

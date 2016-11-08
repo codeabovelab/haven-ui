@@ -4,9 +4,12 @@ import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import { Link, browserHistory } from 'react-router';
 import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, Chain, LoadingDialog, StatisticsPanel, ActionMenu, ClusterUploadCompose, ClusterSetSource} from '../../../components/index';
+import { Link, browserHistory, Route, RouteHandler } from 'react-router';
+import { LinkContainer } from 'react-router-bootstrap';
+import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, Chain, LoadingDialog, StatisticsPanel, ActionMenu} from '../../../components/index';
 import {ContainerCreate, ContainerScale, ContainerUpdate} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
-import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar} from 'react-bootstrap';
+import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar, Nav, NavItem} from 'react-bootstrap';
 import _ from 'lodash';
 import {downloadFile} from '../../../utils/fileActions';
 
@@ -260,6 +263,7 @@ export default class ClusterDetailsPanel extends Component {
       runningNodes = cluster.nodes.on;
     }
 
+    const isAllPage = name === 'all';
     const containersHeaderBar = (
       <div className="clearfix">
         <h3></h3>
@@ -308,11 +312,12 @@ export default class ClusterDetailsPanel extends Component {
     const isContainersPage = name === 'all';
     let columns = this.COLUMNS;
     let groupBySelect = this.GROUP_BY_SELECT;
-    if (isContainersPage && columns[3].name !== 'cluster') {
+    let nodesNavId = isAllPage ? "/nodes" : "/clusters/" + name + "/" + "nodes";
+    if (isAllPage && columns[3].name !== 'cluster') {
       columns.splice(3, 0, {name: 'cluster', label: 'Cluster', render: this.renderTdCluster.bind(this)});
       groupBySelect.push('cluster');
     }
-    if (!isContainersPage) {
+    if (!isAllPage) {
       columns = columns.filter((object)=> object.name !== 'cluster');
       groupBySelect = groupBySelect.filter((object)=> object !== 'cluster');
     } else {
@@ -324,21 +329,56 @@ export default class ClusterDetailsPanel extends Component {
       <div key={name}>
         <ul className="breadcrumb">
           <li><Link to="/clusters">Clusters</Link></li>
-          <li className="active">{name}</li>
+          <li><Link to={"/clusters/" + name}>{name}</Link></li>
+          <li className="active">Containers</li>
         </ul>
         <StatisticsPanel metrics={this.statisticsMetrics}
-                         link
                          cluster={cluster}
                          values={[runningContainers, runningNodes, Apps, eventsCount]}
         />
 
-        <Panel header={containersHeaderBar}>
+        <div className="panel panel-default">
           {!rows && (
             <ProgressBar active now={100} />
           )}
 
-          {(rows && rows.length > 0) && (
+          {rows && (
             <div>
+              <Nav bsStyle="tabs" className="dockTable-nav">
+                <LinkContainer to={"/clusters/" + name}>
+                  <NavItem eventKey={1}>Containers</NavItem>
+                </LinkContainer>
+                <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
+                  <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
+                </LinkContainer>
+                <LinkContainer to={nodesNavId}>
+                  <NavItem eventKey={3}>Nodes</NavItem>
+                </LinkContainer>
+                <LinkContainer to={"/clusters/" + name + "/" + "events"}>
+                  <NavItem eventKey={4}>Events</NavItem>
+                </LinkContainer>
+              </Nav>
+
+              <ButtonToolbar className="pulled-right-toolbar">
+                <Button
+                  bsStyle="primary"
+                  className="pulled-right"
+                  onClick={this.onActionInvoke.bind(this, "create")}
+                >
+                  <i className="fa fa-plus"/>&nbsp;
+                  New Container
+                </Button>
+
+                {false && <Button
+                  bsStyle="danger"
+                  onClick={this.deleteCluster.bind(this)}
+                >
+                  <i className="fa fa-trash"/>&nbsp;
+                  Delete Cluster
+                </Button>
+                }
+              </ButtonToolbar>
+
               <div className="containers">
                 <DockTable columns={columns}
                            rows={rows}
@@ -356,7 +396,7 @@ export default class ClusterDetailsPanel extends Component {
               No containers yet
             </div>
           )}
-        </Panel>
+        </div>
 
 
         {(this.state && this.state.actionDialog) && (

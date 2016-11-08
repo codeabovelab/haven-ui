@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {DockTable} from 'components';
+import {Link} from 'react-router';
 import {ProgressBar} from 'react-bootstrap';
 import moment from 'moment';
 
@@ -31,7 +32,8 @@ export default class EventLog extends Component {
       name: 'cluster',
       label: 'Cluster',
       width: '15%',
-      sortable: true
+      sortable: true,
+      render: this.clusterRender
     },
     {
       name: 'container',
@@ -57,7 +59,15 @@ export default class EventLog extends Component {
   containerRender(row) {
     return (
       <td key="container">
-        {row.container ? row.container.name : ""}
+       <Link to={row.container ? "/clusters/" + row.cluster + "/containers/" + row.container.name : ""}>{row.container ? row.container.name : ""}</Link>
+      </td>
+    );
+  }
+
+  clusterRender(row) {
+    return (
+      <td key="cluster">
+        <Link to={row.cluster ? "/clusters/" + row.cluster : ""}>{row.cluster ? row.cluster : ""}</Link>
       </td>
     );
   }
@@ -75,6 +85,11 @@ export default class EventLog extends Component {
                      striped={false}
                      searchable={false}
           />
+        )}
+        {(this.props.data && this.props.data.length === 0) && (
+          <div className="alert alert-info">
+            No events yet
+          </div>
         )}
       </div>
     );

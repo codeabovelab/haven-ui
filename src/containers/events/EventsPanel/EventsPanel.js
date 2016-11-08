@@ -1,10 +1,11 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import { asyncConnect } from 'redux-async-connect';
-import { Link } from 'react-router';
+import { Link, RouteHandler } from 'react-router';
+import { LinkContainer } from 'react-router-bootstrap';
 import _ from 'lodash';
 import {DockTable, ClustersList, StatisticsPanel, Dialog, EventLog} from 'components';
-import {Panel} from 'react-bootstrap';
+import {Panel, Nav, NavItem} from 'react-bootstrap';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 
 @asyncConnect([{
@@ -72,10 +73,12 @@ export default class EventsPanel extends Component {
     const {clusters, containers, params: {name}} = this.props;
     const cluster = clusters[name];
     let events = this.props.events['bus.cluman.errors'];
-
     let runningContainers = 0;
     let runningNodes = 0;
     let Apps = 0;
+    let uniqueEvents = [];
+    let uniqueContainers = [];
+    let nodesNavId = name === 'all' ? "/nodes" : "/clusters/" + name + "/" + "nodes";
     let eventsCount = 0;
     if (name && events && name !== 'all') {
       events = events.filter((el)=>(el.cluster === name));
@@ -85,6 +88,15 @@ export default class EventsPanel extends Component {
     }
 
     if (clusters && cluster) {
+      if (events) {
+        _.forEach(events, (value) => {
+          if ($.inArray(value.container.id, uniqueContainers) < 0) {
+            uniqueContainers.push(value.container.id);
+            uniqueEvents.push(value);
+          }
+        });
+      }
+
       if (name === 'all') {
         _.forEach(clusters, (el)=> {
           Apps += _.size(el.applications);
@@ -105,32 +117,40 @@ export default class EventsPanel extends Component {
       });
     }
 
-    const eventsHeaderBar = (
-      <div className="clearfix">
-        <h3>Events</h3>
-      </div>
-    );
     return (
       <div>
         <ul className="breadcrumb">
-          <li><a href="/clusters">Clusters</a></li>
-          <li><a href={"/clusters/" + name}>{name}</a></li>
+          <li><Link to="/clusters">Clusters</Link></li>
+          <li><Link to={"/clusters/" + name}>{name}</Link></li>
           <li className="active">Events</li>
         </ul>
         {cluster && (
           <StatisticsPanel metrics={this.statisticsMetrics}
-                           link
                            cluster={cluster}
                            values={[runningContainers, runningNodes, Apps, eventsCount]}
           />
         )}
-        <Panel header={eventsHeaderBar}>
+        <div className="panel panel-default">
+          <Nav bsStyle="tabs" className="dockTable-nav">
+            <LinkContainer to={"/clusters/" + name}>
+              <NavItem eventKey={1}>Containers</NavItem>
+            </LinkContainer>
+            <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
+              <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
+            </LinkContainer>
+            <LinkContainer to={nodesNavId}>
+              <NavItem eventKey={2}>Nodes</NavItem>
+            </LinkContainer>
+            <LinkContainer to={"/clusters/" + name + "/" + "events"}>
+              <NavItem eventKey={2}>Events</NavItem>
+            </LinkContainer>
+          </Nav>
           {this.props.events && (
-            <EventLog data={events}
+            <EventLog data={uniqueEvents}
                       loading={!this.props.events}
             />
           )}
-        </Panel>
+        </div>
       </div>
     );
   }

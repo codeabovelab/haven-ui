@@ -81,15 +81,6 @@ export default class ClustersList extends Component {
       <div className="clearfix">
         <h3>Cluster List</h3>
 
-        <ButtonToolbar>
-          <Button
-            bsStyle="primary"
-            onClick={this.props.onNewCluster}
-          >
-            <i className="fa fa-plus" />&nbsp;
-            New Cluster
-          </Button>
-        </ButtonToolbar>
       </div>
     );
 
@@ -100,9 +91,20 @@ export default class ClustersList extends Component {
         )}
 
         {(this.props.data && !this.props.loading) && (
-          <DockTable columns={this.COLUMNS}
-                     rows={this.props.data}
-          />
+          <div>
+            <ButtonToolbar className="pulled-right">
+              <Button
+                bsStyle="primary"
+                onClick={this.props.onNewCluster}
+              >
+                <i className="fa fa-plus"/>&nbsp;
+                New Cluster
+              </Button>
+            </ButtonToolbar>
+            <DockTable columns={this.COLUMNS}
+                       rows={this.props.data}
+            />
+          </div>
         )}
       </Panel>
     );

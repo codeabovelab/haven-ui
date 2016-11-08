@@ -113,13 +113,6 @@ export default class DockTable extends Component {
             <h2>{title}</h2>
           )}
 
-          {searchable && (
-            <input className={"form-control input-search" + formControlSm}
-                   onChange={this.queryChange.bind(this)}
-                   placeholder="Search"
-            />
-          )}
-
           {groupBySelect && (
             <div className="select-container">
               <form className="form-inline">
@@ -135,6 +128,13 @@ export default class DockTable extends Component {
                 </div>
               </form>
             </div>
+          )}
+
+          {searchable && (
+            <input className={"form-control input-search" + formControlSm}
+                   onChange={this.queryChange.bind(this)}
+                   placeholder="Search"
+            />
           )}
         </div>
           <div className="table-responsive">

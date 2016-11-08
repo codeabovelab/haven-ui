@@ -21,7 +21,7 @@ export default class RegistriesList extends Component {
     },
     {
       name: 'username',
-      label: 'User name',
+      label: 'Username',
       sortable: true,
       render: this.formatUserName
     },
@@ -32,7 +32,7 @@ export default class RegistriesList extends Component {
     },
     {
       name: 'url',
-      label: 'Url',
+      label: 'URL',
       sortable: true
     },
     {
@@ -64,33 +64,27 @@ export default class RegistriesList extends Component {
   ];
 
   render() {
-    const panelHeader = (
-      <div className="clearfix">
-        <h3></h3>
-
-        <ButtonToolbar>
-          <Button
-            bsStyle="primary"
-            onClick={this.props.onNewEntry}
-          >
-            <i className="fa fa-plus"/>&nbsp;
-            New Registry
-          </Button>
-        </ButtonToolbar>
-      </div>
-    );
-
     return (
-      <Panel header={panelHeader}>
+      <Panel>
         {this.props.loading && (
           <ProgressBar active now={100}/>
         )}
 
-
         {(this.props.data && !this.props.loading) && (
-          <DockTable columns={this.COLUMNS}
-                     rows={this.props.data}
-          />
+          <div>
+            <ButtonToolbar className="pulled-right">
+              <Button
+                bsStyle="primary"
+                onClick={this.props.onNewEntry}
+              >
+                <i className="fa fa-plus"/>&nbsp;
+                New Registry
+              </Button>
+            </ButtonToolbar>
+            <DockTable columns={this.COLUMNS}
+                       rows={this.props.data}
+            />
+          </div>
         )}
 
         {this.props.data && this.props.data.length === 0 && (
