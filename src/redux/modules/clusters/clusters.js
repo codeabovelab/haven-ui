@@ -13,12 +13,12 @@ export default function reducer(state = {}, action = {}) {
       });
       return _.merge({}, state, _.keyBy(clusters, 'name'));
 
-    case ACTIONS.CONFIG_SUCCESS:
+    case ACTIONS.GET_SOURCE_SUCCESS:
       return {
         ...state,
         [action.id]: {
           ...state[action.id],
-          configuration: action.result
+          source: action.result
         }
       };
 
@@ -66,6 +66,28 @@ export default function reducer(state = {}, action = {}) {
         }
       };
 
+    case ACTIONS.UPLOAD_COMPOSE:
+      return {
+        ...state,
+        uploadComposeError: null
+      };
+    case ACTIONS.UPLOAD_COMPOSE_FAIL:
+      return {
+        ...state,
+        uploadComposeError: action.error.message
+      };
+
+    case ACTIONS.SET_SOURCE:
+      return {
+        ...state,
+        setSourceError: null
+      };
+    case ACTIONS.SET_SOURCE_FAIL:
+      return {
+        ...state,
+        setSourceError: action.error.message
+      };
+
     default:
       return state;
   }
@@ -97,11 +119,19 @@ export function deleteCluster(clusterId) {
   };
 }
 
-export function clusterConfig(clusterId) {
+export function getClusterSource(clusterId) {
   return {
-    types: [ACTIONS.CONFIG, ACTIONS.CONFIG_SUCCESS, ACTIONS.CONFIG_FAIL],
+    types: [ACTIONS.GET_SOURCE, ACTIONS.GET_SOURCE_SUCCESS, ACTIONS.GET_SOURCE_FAIL],
     id: clusterId,
-    promise: (client) => client.get(`/ui/api/clusters/${clusterId}/config`)
+    promise: (client) => client.get(`/ui/api/clusters/${clusterId}/source`)
+  };
+}
+
+export function setClusterSource(clusterId, file) {
+  return {
+    types: [ACTIONS.SET_SOURCE, ACTIONS.SET_SOURCE_SUCCESS, ACTIONS.SET_SOURCE_FAIL],
+    id: clusterId,
+    promise: (client) => client.post(`/ui/api/clusters/${clusterId}/source`, {data: file})
   };
 }
 
@@ -149,3 +179,13 @@ export function loadDefaultParams({clusterId, image, tag, registry}) {
     promise: (client) => client.get(`/ui/api/clusters/${clusterId}/defaultparams/${image}/${tag}/`, {params: {registry: registry }})
   };
 }
+
+export function uploadCompose(clusterId, file) {
+  let formData = new FormData();
+  formData.append( "data", file);
+  return {
+    types: [ACTIONS.UPLOAD_COMPOSE, ACTIONS.UPLOAD_COMPOSE_SUCCESS, ACTIONS.UPLOAD_COMPOSE_FAIL],
+    promise: (client) => client.post(`/ui/api/clusters/${clusterId}/compose`, {data: formData})
+  };
+}
+

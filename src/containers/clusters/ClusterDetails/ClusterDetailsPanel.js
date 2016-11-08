@@ -2,13 +2,14 @@ import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
+import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, Chain, LoadingDialog, StatisticsPanel, ActionMenu, ClusterUploadCompose, ClusterSetSource} from '../../../components/index';
 import { Link, browserHistory, Route, RouteHandler } from 'react-router';
 import { LinkContainer } from 'react-router-bootstrap';
-import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, Chain, LoadingDialog, StatisticsPanel, ActionMenu} from '../../../components/index';
 import {ContainerCreate, ContainerScale, ContainerUpdate} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
-import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar, Nav, NavItem} from 'react-bootstrap';
+import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar, Nav, NavItem, Image} from 'react-bootstrap';
 import _ from 'lodash';
+import {downloadFile} from '../../../utils/fileActions';
 
 function renderTdImage(row) {
   let resultValue = processTdVal(row.image);
@@ -65,7 +66,8 @@ function processTdVal(val) {
     startContainer: containerActions.start,
     stopContainer: containerActions.stop,
     restartContainer: containerActions.restart,
-    removeContainer: containerActions.remove
+    removeContainer: containerActions.remove,
+    getClusterSource: clusterActions.getClusterSource
   })
 export default class ClusterDetailsPanel extends Component {
   static propTypes = {
@@ -79,6 +81,7 @@ export default class ClusterDetailsPanel extends Component {
     stopContainer: PropTypes.func.isRequired,
     restartContainer: PropTypes.func.isRequired,
     removeContainer: PropTypes.func.isRequired,
+    getClusterSource: PropTypes.func.isRequired
   };
 
   statisticsMetrics = [
@@ -259,6 +262,51 @@ export default class ClusterDetailsPanel extends Component {
     }
 
     const isAllPage = name === 'all';
+    const containersHeaderBar = (
+      <div className="clearfix">
+        <h3></h3>
+        <ButtonToolbar>
+          <Button
+            bsStyle="default"
+            onClick={this.deployCompose.bind(this)}
+          >
+            <i className="fa fa-upload" />&nbsp;
+            Deploy Compose
+          </Button>
+          <Button
+            bsStyle="default"
+            onClick={this.setClusterSource.bind(this)}
+          >
+            <i className="fa fa-upload" />&nbsp;
+            Upload Source
+          </Button>
+          <Button
+            bsStyle="default"
+            onClick={this.getClusterSource.bind(this)}
+          >
+            <i className="fa fa-download" />&nbsp;
+            Download Source
+          </Button>
+          <Button
+            bsStyle="primary"
+            onClick={this.onActionInvoke.bind(this, "create")}
+          >
+            <i className="fa fa-plus" />&nbsp;
+            New Container
+          </Button>
+
+          {false && <Button
+            bsStyle="danger"
+            onClick={this.deleteCluster.bind(this)}
+          >
+            <i className="fa fa-trash" />&nbsp;
+            Delete Cluster
+          </Button>
+          }
+        </ButtonToolbar>
+      </div>
+    );
+
     let columns = this.COLUMNS;
     let groupBySelect = this.GROUP_BY_SELECT;
     let nodesNavId = isAllPage ? "/nodes" : "/clusters/" + name + "/" + "nodes";
@@ -307,27 +355,59 @@ export default class ClusterDetailsPanel extends Component {
                   <NavItem eventKey={4}>Events</NavItem>
                 </LinkContainer>
               </Nav>
+              {!isAllPage && (
+                <ButtonToolbar className="pulled-right-toolbar">
+                  <Button
+                    bsStyle="default"
+                    onClick={this.deployCompose.bind(this)}
+                  >
+                    <img src={require('../../../assets/img/octopus.png')}/>&nbsp;
+                    Deploy Compose
+                  </Button>
+                  <Button
+                    bsStyle="default"
+                    onClick={this.setClusterSource.bind(this)}
+                  >
+                    <i className="fa fa-upload"/>&nbsp;
+                    Upload Source
+                  </Button>
+                  <Button
+                    bsStyle="default"
+                    onClick={this.getClusterSource.bind(this)}
+                  >
+                    <i className="fa fa-download"/>&nbsp;
+                    Download Source
+                  </Button>
+                  <Button
+                    bsStyle="primary"
+                    className="pulled-right"
+                    onClick={this.onActionInvoke.bind(this, "create")}
+                  >
+                    <i className="fa fa-plus"/>&nbsp;
+                    New Container
+                  </Button>
 
-              <ButtonToolbar className="pulled-right-toolbar">
-                <Button
-                  bsStyle="primary"
-                  className="pulled-right"
-                  onClick={this.onActionInvoke.bind(this, "create")}
-                >
-                  <i className="fa fa-plus"/>&nbsp;
-                  New Container
-                </Button>
-
-                {false && <Button
-                  bsStyle="danger"
-                  onClick={this.deleteCluster.bind(this)}
-                >
-                  <i className="fa fa-trash"/>&nbsp;
-                  Delete Cluster
-                </Button>
-                }
-              </ButtonToolbar>
-
+                  {false && <Button
+                    bsStyle="danger"
+                    onClick={this.deleteCluster.bind(this)}
+                  >
+                    <i className="fa fa-trash"/>&nbsp;
+                    Delete Cluster
+                  </Button>
+                  }
+                </ButtonToolbar>
+              )}
+              {isAllPage && (
+                <ButtonToolbar className="pulled-right-toolbar">
+                  <Button
+                    bsStyle="primary"
+                    onClick={this.deployCompose.bind(this)}
+                  >
+                    <img src={require('../../../assets/img/white-octopus.png')}/>&nbsp;
+                    Deploy Compose
+                  </Button>
+                </ButtonToolbar>
+              )}
               <div className="containers">
                 <DockTable columns={columns}
                            rows={rows}
@@ -541,6 +621,36 @@ export default class ClusterDetailsPanel extends Component {
         deleteCluster(name)
           .then(() => browserHistory.push('/clusters'));
       }, () => null);
+  }
+
+  getClusterSource() {
+    const {getClusterSource, params: {name}} = this.props;
+    getClusterSource(name).then((response)=> {
+      let data = 'text/json;charset=utf-8,' + encodeURIComponent(response._res.text);
+      downloadFile(data, name + '.yaml');
+    }).catch(()=>null);
+  }
+
+  deployCompose() {
+    this.setState({
+      actionDialog: (
+        <ClusterUploadCompose title="Deploy Cluster From Compose File"
+                              onHide={this.onHideDialog.bind(this)}
+        />
+      )
+    });
+  }
+
+  setClusterSource() {
+    const {params: {name}} = this.props;
+    this.setState({
+      actionDialog: (
+        <ClusterSetSource title={"Set " + name + " Cluster Source"}
+                          cluster={name}
+                          onHide={this.onHideDialog.bind(this)}
+        />
+      )
+    });
   }
 
 }
