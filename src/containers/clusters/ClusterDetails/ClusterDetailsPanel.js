@@ -7,7 +7,7 @@ import { Link, browserHistory, Route, RouteHandler } from 'react-router';
 import { LinkContainer } from 'react-router-bootstrap';
 import {ContainerCreate, ContainerScale, ContainerUpdate} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
-import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar, Nav, NavItem} from 'react-bootstrap';
+import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar, Nav, NavItem, Image} from 'react-bootstrap';
 import _ from 'lodash';
 import {downloadFile} from '../../../utils/fileActions';
 
@@ -307,7 +307,6 @@ export default class ClusterDetailsPanel extends Component {
       </div>
     );
 
-    const isContainersPage = name === 'all';
     let columns = this.COLUMNS;
     let groupBySelect = this.GROUP_BY_SELECT;
     let nodesNavId = isAllPage ? "/nodes" : "/clusters/" + name + "/" + "nodes";
@@ -356,26 +355,48 @@ export default class ClusterDetailsPanel extends Component {
                   <NavItem eventKey={4}>Events</NavItem>
                 </LinkContainer>
               </Nav>
+              {!isAllPage && (
+                <ButtonToolbar className="pulled-right-toolbar">
+                  <Button
+                    bsStyle="default"
+                    onClick={this.deployCompose.bind(this)}
+                  >
+                    <img src={require('../../../assets/img/octopus.png')}/>&nbsp;
+                    Deploy Compose
+                  </Button>
+                  <Button
+                    bsStyle="default"
+                    onClick={this.setClusterSource.bind(this)}
+                  >
+                    <i className="fa fa-upload"/>&nbsp;
+                    Upload Source
+                  </Button>
+                  <Button
+                    bsStyle="default"
+                    onClick={this.getClusterSource.bind(this)}
+                  >
+                    <i className="fa fa-download"/>&nbsp;
+                    Download Source
+                  </Button>
+                  <Button
+                    bsStyle="primary"
+                    className="pulled-right"
+                    onClick={this.onActionInvoke.bind(this, "create")}
+                  >
+                    <i className="fa fa-plus"/>&nbsp;
+                    New Container
+                  </Button>
 
-              <ButtonToolbar className="pulled-right-toolbar">
-                <Button
-                  bsStyle="primary"
-                  className="pulled-right"
-                  onClick={this.onActionInvoke.bind(this, "create")}
-                >
-                  <i className="fa fa-plus"/>&nbsp;
-                  New Container
-                </Button>
-
-                {false && <Button
-                  bsStyle="danger"
-                  onClick={this.deleteCluster.bind(this)}
-                >
-                  <i className="fa fa-trash"/>&nbsp;
-                  Delete Cluster
-                </Button>
-                }
-              </ButtonToolbar>
+                  {false && <Button
+                    bsStyle="danger"
+                    onClick={this.deleteCluster.bind(this)}
+                  >
+                    <i className="fa fa-trash"/>&nbsp;
+                    Delete Cluster
+                  </Button>
+                  }
+                </ButtonToolbar>
+              )}
 
               <div className="containers">
                 <DockTable columns={columns}
@@ -596,7 +617,7 @@ export default class ClusterDetailsPanel extends Component {
     const {getClusterSource, params: {name}} = this.props;
     getClusterSource(name).then((response)=> {
       let data = 'text/json;charset=utf-8,' + encodeURIComponent(response._res.text);
-      downloadFile(data, name + '.json');
+      downloadFile(data, name + '.yaml');
     }).catch(()=>null);
   }
 

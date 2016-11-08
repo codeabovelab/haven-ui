@@ -55,7 +55,6 @@ export default class ClusterSetSource extends Component {
     let $logBlockArea = $('#creation-log');
     let $spinner = $logBlock.find('i');
     let file = fields.file.value[0];
-    let filePath = URL.createObjectURL(file);
 
     $logBlock.show();
     $logBlockArea.val('');
@@ -63,48 +62,16 @@ export default class ClusterSetSource extends Component {
       creationLogVisible: true
     });
     $spinner.show();
-    // return setClusterSource(cluster, file).then((response) => {
-    //   if (response._res.status === 200 && response._res.text === '') {
-    //     $logBlockArea.val('Successfully uploaded');
-    //   } else {
-    //     $logBlockArea.val(response._res.text);
-    //   }
-    //   $spinner.hide();
-    // }).catch((response) => {
-    //   $spinner.hide();
-    //   throw new SubmissionError(response.message);
-    // });
-    // let content = '';
-    // $.get(filePath, (data) => {
-    //   content = data;
-    //   console.log(content);
-    // });
-    $.getJSON(filePath, function setClusterSourceCallback(data) {
-      return setClusterSource(cluster, data).set({ 'API-Key': 'foobar', Accept: 'application/json' }).then((response) => {
-        if (response._res.status === 200 && response._res.text === '') {
-          $logBlockArea.val('Settings were successfully uploaded!');
-        } else {
-          $logBlockArea.val(response._res.text);
-        }
-        $spinner.hide();
-      }).catch((response) => {
-        $spinner.hide();
-        throw new SubmissionError(response.message);
-      });
-    }).fail((data)=> {
-      console.log(data);
-      console.log( "error getting JSON" );
-      return setClusterSource(cluster, data.responseText).then((response) => {
-        if (response._res.status === 200 && response._res.text === '') {
-          $logBlockArea.val('Settings were successfully uploaded!');
-        } else {
-          $logBlockArea.val(response._res.text);
-        }
-        $spinner.hide();
-      }).catch((response) => {
-        $spinner.hide();
-        throw new SubmissionError(response.message);
-      });
+    return setClusterSource(cluster, file).then((response) => {
+      if (response._res.status === 200 && response._res.text === '') {
+        $logBlockArea.val('Successfully uploaded');
+      } else {
+        $logBlockArea.val(response._res.text);
+      }
+      $spinner.hide();
+    }).catch((response) => {
+      $spinner.hide();
+      throw new SubmissionError(response.message);
     });
   }
 
