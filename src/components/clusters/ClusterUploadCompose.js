@@ -26,6 +26,7 @@ export default class ClusterUploadCompose extends Component {
     uploadCompose: PropTypes.func.isRequired,
     fields: PropTypes.object,
     handleSubmit: PropTypes.func,
+    cluster: PropTypes.string.isRequired,
     resetForm: PropTypes.func,
     submitting: PropTypes.bool,
     uploadComposeError: PropTypes.string,
@@ -43,6 +44,13 @@ export default class ClusterUploadCompose extends Component {
 
   showValidationErr() {
     this.setState({fileInputTouched: true});
+  }
+
+  componentDidMount() {
+    const {fields, cluster} = this.props;
+    if (cluster) {
+      fields.name.onChange(cluster);
+    }
   }
 
   onSubmit() {
@@ -77,7 +85,7 @@ export default class ClusterUploadCompose extends Component {
   }
 
   render() {
-    const {fields} = this.props;
+    const {fields, cluster} = this.props;
     const fileInputTouched = this.state.fileInputTouched;
     const creationLogVisible = this.state.creationLogVisible;
     const fileInputVal = $('#fileInput').val();
@@ -108,6 +116,8 @@ export default class ClusterUploadCompose extends Component {
                          {...fields.name}
                          name="name"
                          id="clusterName"
+                         disabled
+                         defaultValue = {cluster}
             />
             {fields.name.error && fields.name.touched && (
               <HelpBlock>{fields.name.error}</HelpBlock>
