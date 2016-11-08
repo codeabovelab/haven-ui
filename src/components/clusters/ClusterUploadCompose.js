@@ -37,7 +37,12 @@ export default class ClusterUploadCompose extends Component {
     super(...params);
     this.state = {
       creationLogVisible: '',
+      fileInputTouched: false
     };
+  }
+
+  showValidationErr() {
+    this.setState({fileInputTouched: true});
   }
 
   onSubmit() {
@@ -55,7 +60,7 @@ export default class ClusterUploadCompose extends Component {
       const status = response._res.status || response._res.code;
       switch (status) {
         case 200:
-          $logBlockArea.val('Successfully deployed');
+          $logBlockArea.val(response._res.text || 'Successfully deployed');
           break;
         case 304:
           $logBlockArea.val('Not modified');
@@ -73,6 +78,7 @@ export default class ClusterUploadCompose extends Component {
 
   render() {
     const {fields} = this.props;
+    const fileInputTouched = this.state.fileInputTouched;
     const creationLogVisible = this.state.creationLogVisible;
     const fileInputVal = $('#fileInput').val();
     const fileName = fileInputVal ? fileInputVal.match(/[^\\\/]+$/g) : '';
@@ -95,7 +101,7 @@ export default class ClusterUploadCompose extends Component {
         )}
 
         <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
-          <FormGroup validationState={fields.name.error ? "error" : ""}>
+          <FormGroup validationState={fields.name.error && fields.name.touched ? "error" : ""}>
             <ControlLabel>Cluster's Name</ControlLabel>
 
             <FormControl type="text"
@@ -103,12 +109,12 @@ export default class ClusterUploadCompose extends Component {
                          name="name"
                          id="clusterName"
             />
-            {fields.name.error && (
+            {fields.name.error && fields.name.touched && (
               <HelpBlock>{fields.name.error}</HelpBlock>
             )}
           </FormGroup>
 
-          <FormGroup validationState={fields.file.error ? "error" : ""}>
+          <FormGroup validationState={fields.file.error && fileInputTouched ? "error" : ""}>
             <ControlLabel className="btn btn-default btn-file">
               Choose Compose File
               <FormControl type="file"
@@ -116,10 +122,11 @@ export default class ClusterUploadCompose extends Component {
                            {...fields.file}
                            value={null}
                            id="fileInput"
+                           onClick={this.showValidationErr.bind(this)}
               />
             </ControlLabel>
             <span className="upload-file-name">{fields.file.value && fileName}</span>
-            {fields.file.error && (
+            {fields.file.error && fileInputTouched && (
               <HelpBlock>{fields.file.error}</HelpBlock>
             )}
           </FormGroup>

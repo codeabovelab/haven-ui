@@ -38,6 +38,7 @@ export default class ClusterSetSource extends Component {
     super(...params);
     this.state = {
       creationLogVisible: '',
+      fileInputTouched: false
     };
   }
 
@@ -75,8 +76,13 @@ export default class ClusterSetSource extends Component {
     });
   }
 
+  showValidationErr() {
+    this.setState({fileInputTouched: true});
+  }
+
   render() {
     const {fields, cluster} = this.props;
+    const fileInputTouched = this.state.fileInputTouched;
     const creationLogVisible = this.state.creationLogVisible;
     const fileInputVal = $('#fileInput').val();
     const fileName = fileInputVal ? fileInputVal.match(/[^\\\/]+$/g) : '';
@@ -114,7 +120,7 @@ export default class ClusterSetSource extends Component {
             )}
           </FormGroup>
 
-          <FormGroup validationState={fields.file.error ? "error" : ""}>
+          <FormGroup validationState={(fields.file.error && fileInputTouched) ? "error" : ""}>
             <ControlLabel className="btn btn-default btn-file">
               Choose Compose File
               <FormControl type="file"
@@ -122,10 +128,11 @@ export default class ClusterSetSource extends Component {
                            {...fields.file}
                            value={null}
                            id="fileInput"
+                           onClick={this.showValidationErr.bind(this)}
               />
             </ControlLabel>
             <span className="upload-file-name">{fields.file.value && fileName}</span>
-            {fields.file.error && (
+            {(fields.file.error && fileInputTouched) && (
               <HelpBlock>{fields.file.error}</HelpBlock>
             )}
           </FormGroup>

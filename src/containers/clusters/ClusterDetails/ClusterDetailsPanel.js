@@ -397,7 +397,17 @@ export default class ClusterDetailsPanel extends Component {
                   }
                 </ButtonToolbar>
               )}
-
+              {isAllPage && (
+                <ButtonToolbar className="pulled-right-toolbar">
+                  <Button
+                    bsStyle="primary"
+                    onClick={this.deployCompose.bind(this)}
+                  >
+                    <img src={require('../../../assets/img/white-octopus.png')}/>&nbsp;
+                    Deploy Compose
+                  </Button>
+                </ButtonToolbar>
+              )}
               <div className="containers">
                 <DockTable columns={columns}
                            rows={rows}
