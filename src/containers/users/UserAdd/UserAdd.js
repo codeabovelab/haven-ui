@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
 import {load, create, loadNodes} from 'redux/modules/clusters/clusters';
 import {create as createNode} from 'redux/modules/nodes/nodes';
+import {setUser, addUserRole} from 'redux/modules/users/users';
 import {createValidator, required, email} from 'utils/validation';
 import {Dialog} from 'components';
 import {FormGroup, FormControl, ControlLabel, HelpBlock, Alert, Button, ButtonGroup, Input, ButtonToolbar} from 'react-bootstrap';
@@ -12,7 +13,7 @@ import _ from 'lodash';
   users: state.users,
   clusters: state.clusters,
   createError: state.users.setUserError
-}), {create, load, createNode, loadNodes})
+}), {create, load, createNode, loadNodes, setUser, addUserRole})
 @reduxForm({
   form: 'ClusterAdd',
   fields: [
@@ -38,7 +39,9 @@ export default class UserAdd extends Component {
     valid: PropTypes.bool.isRequired,
     onHide: PropTypes.func.isRequired,
     okTitle: PropTypes.string,
-    load: PropTypes.func.isRequired
+    load: PropTypes.func.isRequired,
+    setUser: PropTypes.func.isRequired,
+    addUserRole: PropTypes.func.isRequired
   };
   constructor() {
     super();
@@ -47,14 +50,43 @@ export default class UserAdd extends Component {
     };
   }
   onSubmit() {
+    const {fields, setUser, addUserRole} = this.props;
     this.setState({
       firstLoad: false
     });
+    console.log(fields);
+    let userData = {
+      "accountNonExpired": true,
+      "accountNonLocked": true,
+      "credentialsNonExpired": true,
+      "email": fields.email.value || '',
+      "enabled": true,
+      "password": "string",
+      "permissions": [
+        {}
+      ],
+      "roles": [
+        {
+          "name": fields.role.value || '',
+          "tenant": "root"
+        }
+      ],
+    };
+    setUser(fields.username.value, userData);
+    addUserRole(fields.username.value, fields.role.value);
   }
 
   componentWillMount() {
     const {load} = this.props;
     load();
+  }
+
+  componentDidMount() {
+    const {fields} = this.props;
+    console.log($('#roleSelect').val());
+    if (this.state.firstLoad) {
+      fields.role.onChange($('#roleSelect').val());
+    }
   }
 
   render() {
@@ -102,7 +134,7 @@ export default class UserAdd extends Component {
           </FormGroup>
           <FormGroup>
             <ControlLabel>Role</ControlLabel>
-            <FormControl componentClass="select" placeholder="select" {...fields.role}>
+            <FormControl id="roleSelect" componentClass="select" placeholder="select" {...fields.role}>
               {
                 roles.map(function listNodes(role, i) {
                   if (typeof(role) !== 'undefined' && role.name) {

@@ -118,7 +118,7 @@ export function getUser(userName) {
 export function setUser(userName, userData) {
   return {
     types: [ACTIONS.SET_USER, ACTIONS.SET_USER_SUCCESS, ACTIONS.SET_USER_FAIL],
-    promise: (client) => client.post(`/ui/api/users/${userName}`, {user: userData})
+    promise: (client) => client.post(`/ui/api/users/${userName}`, {data: userData})
   };
 }
 
