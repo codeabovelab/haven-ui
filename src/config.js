@@ -9,17 +9,13 @@ const environment = {
   }
 }[process.env.NODE_ENV || 'development'];
 
-const portApi = 80;
-const hostApi = 'hb1.codeabovelab.com';
+const apiHost = process.env.API_HOST || typeof window !== "undefined" && window.location.host || null;
 
 module.exports = Object.assign({
   host: process.env.HOST || 'localhost',
   port: process.env.PORT,
-  //apiHost: '178.62.246.249',
-  //apiPort: 8762,
-  apiHost: hostApi,
-  apiPort: portApi,
-  eventServer: hostApi + ':' + portApi + '/ui/stomp',
+  apiHost: apiHost,
+  eventServer: apiHost + '/ui/stomp',
   mock: false,
   app: {
     title: 'Dockmaster',
