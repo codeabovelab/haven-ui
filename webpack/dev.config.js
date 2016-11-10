@@ -135,9 +135,9 @@ module.exports = {
       },
       __CLIENT__: true,
       __SERVER__: false,
+      __API_PROXY__: process.env.API_PROXY? true : false,
       __DEVELOPMENT__: true,
-      __DEVTOOLS__: true,  // <-------- DISABLE redux-devtools HERE
-      __DISABLE_SSR__: false
+      __DEVTOOLS__: true  // <-------- DISABLE redux-devtools HERE
     }),
     new CopyWebpackPlugin([{
         from: 'static',
