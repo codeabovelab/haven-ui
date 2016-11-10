@@ -29,7 +29,6 @@
         "NODE_PATH": "./src",
         "NODE_ENV": "development",
         "PORT": 3000,
-        "API_PROXY": true,
         "DEV_PORT": 3001
       }
     },
@@ -39,6 +38,7 @@
         "UV_THREADPOOL_SIZE": 100,
         "NODE_PATH": "./src",
         "PORT": 3000,
+        "API_PROXY": "true",
         "DEV_PORT": 3001
       }
     },
