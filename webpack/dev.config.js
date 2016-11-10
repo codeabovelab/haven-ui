@@ -1,10 +1,18 @@
 require('babel-polyfill');
+var helpers = require('./helpers');
 
 // Webpack config for development
+// we use it for build for local dev-server and for test server on 'hb.codeabvelab.com'
 var fs = require('fs');
 var path = require('path');
 var webpack = require('webpack');
-var assetsPath = path.resolve(__dirname, '../static/dist');
+var CleanPlugin = require('clean-webpack-plugin');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
+
+var projectRootPath = path.resolve(__dirname, '../');
+var distPath = path.resolve(projectRootPath, './dist');
+
 var host = (process.env.HOST || 'localhost');
 var port = (+process.env.PORT + 1) || 3001;
 
@@ -76,7 +84,7 @@ module.exports = {
     ]
   },
   output: {
-    path: assetsPath,
+    path: distPath,
     filename: '[name]-[hash].js',
     chunkFilename: '[name]-[chunkhash].js',
     publicPath: 'http://' + host + ':' + port + '/dist/'
@@ -111,6 +119,7 @@ module.exports = {
     new webpack.ProvidePlugin({
       "window.Tether": "tether"
     }),
+    new CleanPlugin([distPath], {root: projectRootPath}),
     // hot reload
     new webpack.HotModuleReplacementPlugin(),
     new webpack.IgnorePlugin(/webpack-stats\.json$/),
@@ -124,6 +133,15 @@ module.exports = {
       __DEVELOPMENT__: true,
       __DEVTOOLS__: true,  // <-------- DISABLE redux-devtools HERE
       __DISABLE_SSR__: false
+    }),
+    new CopyWebpackPlugin([{
+        from: 'static',
+        to: ''
+      }]
+    ),
+    new HtmlWebpackPlugin({
+      template: 'webpack/index.html',
+      chunksSortMode: helpers.packageSort(['tether', 'global', 'main'])
     }),
     webpackIsomorphicToolsPlugin.development()
   ]
