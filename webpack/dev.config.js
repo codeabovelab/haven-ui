@@ -13,8 +13,8 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var projectRootPath = path.resolve(__dirname, '../');
 var distPath = path.resolve(projectRootPath, './dist');
 
-var host = (process.env.HOST || 'localhost');
-var port = (+process.env.PORT + 1) || 3001;
+var hostPub = process.env.HOST || "localhost";
+var hostDev = process.env.DEV_PORT? (hostPub.replace(/:\d+$/,"") + ":" + process.env.DEV_PORT) : null ;
 
 // https://github.com/halt-hammerzeit/webpack-isomorphic-tools
 var WebpackIsomorphicToolsPlugin = require('webpack-isomorphic-tools/plugin');
@@ -76,18 +76,23 @@ module.exports = {
     "global":[
       './src/js/_global.js'
     ],
-    'main': [
-      'webpack-hot-middleware/client?path=http://' + host + ':' + port + '/__webpack_hmr',
-      'bootstrap-loader',
-      'font-awesome-webpack!./src/theme/font-awesome.config.js',
-      './src/client.js'
-    ]
+    'main': (() => {
+      var arr = [
+        'bootstrap-loader',
+        'font-awesome-webpack!./src/theme/font-awesome.config.js',
+        './src/client.js'
+      ];
+      if(hostDev) {
+        arr.unshift('webpack-hot-middleware/client?path=http://' + hostDev + '/__webpack_hmr');
+      }
+      return arr;
+    })()
   },
   output: {
     path: distPath,
     filename: '[name]-[hash].js',
     chunkFilename: '[name]-[chunkhash].js',
-    publicPath: 'http://' + host + ':' + port + '/dist/'
+    publicPath: hostDev? 'http://' + hostDev + '/dist/' : null
   },
   module: {
     loaders: [
