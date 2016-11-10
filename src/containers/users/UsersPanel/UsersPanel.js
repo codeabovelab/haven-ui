@@ -88,7 +88,7 @@ export default class UsersPanel extends Component {
     });
   }
 
-  onActionInvoke(action) {
+  onActionInvoke(action, userName) {
     switch (action) {
       case "create":
         this.setState({
@@ -99,6 +99,14 @@ export default class UsersPanel extends Component {
             />
           )
         });
+        return;
+      case "delete":
+        confirm('Are you sure you want to delete this user')
+          .then(() => {
+            this.props.deleteUser(userName).catch(() => null)
+              .then(() => this.props.getUsers());
+          })
+          .catch(() => null);
         return;
       default:
         return;

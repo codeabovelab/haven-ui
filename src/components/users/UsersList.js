@@ -39,7 +39,21 @@ export default class UsersList extends Component {
     {
       name: 'actions',
       label: 'Actions',
-      width: '20%'
+      width: '20%',
+      render: this.actionsRender.bind(this)
+    }
+  ];
+
+  ACTIONS = [
+    {
+      key: "edit",
+      title: "Edit",
+      default: true
+    },
+    null,
+    {
+      key: "delete",
+      title: "Delete"
     }
   ];
 
@@ -105,6 +119,7 @@ export default class UsersList extends Component {
   }
 
   emailRender(row) {
+    console.log(row);
     return (
       <td>
         {_.get(row, 'email', '')}
@@ -116,6 +131,17 @@ export default class UsersList extends Component {
     return (
       <td>
         {_.get(row, 'roles[0].name', '')}
+      </td>
+    );
+  }
+
+  actionsRender(row) {
+    return (
+      <td key="actions" className="td-actions">
+        <ActionMenu subject={row.user}
+                    actions={this.ACTIONS}
+                    actionHandler={this.props.onActionInvoke.bind(this)}
+        />
       </td>
     );
   }
