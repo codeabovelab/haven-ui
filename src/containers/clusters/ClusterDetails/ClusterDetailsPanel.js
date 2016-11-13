@@ -7,7 +7,7 @@ import { Link, browserHistory, Route, RouteHandler } from 'react-router';
 import { LinkContainer } from 'react-router-bootstrap';
 import {ContainerCreate, ContainerScale, ContainerUpdate} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
-import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar, Nav, NavItem, Image} from 'react-bootstrap';
+import {Dropdown, SplitButton, Button, ButtonGroup, DropdownButton, ButtonToolbar, MenuItem, Panel, ProgressBar, Nav, NavItem, Image} from 'react-bootstrap';
 import _ from 'lodash';
 import {downloadFile} from '../../../utils/fileActions';
 
@@ -144,7 +144,7 @@ export default class ClusterDetailsPanel extends Component {
 
   GROUP_BY_SELECT = ['node', 'image', 'status'];
 
-  ACTIONS = [
+  STOPPED_ACTIONS = [
     {
       key: "log",
       title: "Show Log",
@@ -153,7 +153,8 @@ export default class ClusterDetailsPanel extends Component {
     null,
     {
       key: "start",
-      title: "Start"
+      title: "Start",
+      disabled: true
     },
     {
       key: "stop",
@@ -179,6 +180,54 @@ export default class ClusterDetailsPanel extends Component {
     {
       key: "stats",
       title: "Stats"
+    },
+    null,
+    {
+      key: "delete",
+      title: "Delete",
+      disabled: true
+    }
+  ];
+
+  RUN_ACTIONS = [
+    {
+      key: "log",
+      title: "Show Log"
+    },
+    null,
+    {
+      key: "start",
+      title: "Start",
+      default: true
+    },
+    {
+      key: "stop",
+      title: "Stop",
+      disabled: true
+    },
+    {
+      key: "restart",
+      title: "Restart",
+      disabled: true
+    },
+    null,
+    {
+      key: "edit",
+      title: "Edit"
+    },
+    {
+      key: "scale",
+      title: "Scale",
+      disabled: true
+    },
+    {
+      key: "details",
+      title: "Details"
+    },
+    {
+      key: "stats",
+      title: "Stats",
+      disabled: true
     },
     null,
     {
@@ -262,50 +311,6 @@ export default class ClusterDetailsPanel extends Component {
     }
 
     const isAllPage = name === 'all';
-    const containersHeaderBar = (
-      <div className="clearfix">
-        <h3></h3>
-        <ButtonToolbar>
-          <Button
-            bsStyle="default"
-            onClick={this.deployCompose.bind(this)}
-          >
-            <i className="fa fa-upload" />&nbsp;
-            Deploy Compose
-          </Button>
-          <Button
-            bsStyle="default"
-            onClick={this.setClusterSource.bind(this)}
-          >
-            <i className="fa fa-upload" />&nbsp;
-            Upload Source
-          </Button>
-          <Button
-            bsStyle="default"
-            onClick={this.getClusterSource.bind(this)}
-          >
-            <i className="fa fa-download" />&nbsp;
-            Download Source
-          </Button>
-          <Button
-            bsStyle="primary"
-            onClick={this.onActionInvoke.bind(this, "create")}
-          >
-            <i className="fa fa-plus" />&nbsp;
-            New Container
-          </Button>
-
-          {false && <Button
-            bsStyle="danger"
-            onClick={this.deleteCluster.bind(this)}
-          >
-            <i className="fa fa-trash" />&nbsp;
-            Delete Cluster
-          </Button>
-          }
-        </ButtonToolbar>
-      </div>
-    );
 
     let columns = this.COLUMNS;
     let groupBySelect = this.GROUP_BY_SELECT;
@@ -329,6 +334,7 @@ export default class ClusterDetailsPanel extends Component {
           <li><Link to={"/clusters/" + name}>{name}</Link></li>
           <li className="active">Containers</li>
         </ul>
+        <h2>{isAllPage ? "All Containers" : "Cluster: " + name }</h2>
         <StatisticsPanel metrics={this.statisticsMetrics}
                          cluster={cluster}
                          values={[runningContainers, runningNodes, Apps, eventsCount]}
@@ -358,29 +364,7 @@ export default class ClusterDetailsPanel extends Component {
               {!isAllPage && (
                 <ButtonToolbar className="pulled-right-toolbar">
                   <Button
-                    bsStyle="default"
-                    onClick={this.deployCompose.bind(this)}
-                  >
-                    <img src={require('../../../assets/img/octopus.png')}/>&nbsp;
-                    Deploy Compose
-                  </Button>
-                  <Button
-                    bsStyle="default"
-                    onClick={this.setClusterSource.bind(this)}
-                  >
-                    <i className="fa fa-upload"/>&nbsp;
-                    Upload Source
-                  </Button>
-                  <Button
-                    bsStyle="default"
-                    onClick={this.getClusterSource.bind(this)}
-                  >
-                    <i className="fa fa-download"/>&nbsp;
-                    Download Source
-                  </Button>
-                  <Button
                     bsStyle="primary"
-                    className="pulled-right"
                     onClick={this.onActionInvoke.bind(this, "create")}
                   >
                     <i className="fa fa-plus"/>&nbsp;
@@ -395,6 +379,31 @@ export default class ClusterDetailsPanel extends Component {
                     Delete Cluster
                   </Button>
                   }
+                  <ButtonGroup>
+                    <DropdownButton bsStyle="primary" className="pulled-right" title="More Actions">
+                      <MenuItem eventKey="1"
+                                bsStyle="default"
+                                onClick={this.getClusterSource.bind(this)}
+                      >
+                        <i className="fa fa-download"/>&nbsp;
+                        Download Config File
+                      </MenuItem>
+                      <MenuItem eventKey="2"
+                                bsStyle="default"
+                                onClick={this.setClusterSource.bind(this)}
+                      >
+                        <i className="fa fa-upload"/>&nbsp;
+                        Upload Config File
+                      </MenuItem>
+                      <MenuItem eventKey="3"
+                        bsStyle="default"
+                        onClick={this.deployCompose.bind(this)}
+                      >
+                        <img src={require('../../../assets/img/octopus.png')}/>&nbsp;
+                        Deploy Compose File
+                      </MenuItem>
+                      </DropdownButton>
+                  </ButtonGroup>
                 </ButtonToolbar>
               )}
               <div className="containers">
@@ -439,10 +448,12 @@ export default class ClusterDetailsPanel extends Component {
   }
 
   tdActions(container) {
+    console.log("container run : " + container.run);
+    let actions = (container.run) ? this.STOPPED_ACTIONS : this.RUN_ACTIONS;
     return (
       <td className="td-actions" key="actions">
         <ActionMenu subject={container.id}
-                    actions={this.ACTIONS}
+                    actions={actions}
                     actionHandler={this.onActionInvoke.bind(this)}
         />
 

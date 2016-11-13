@@ -72,38 +72,6 @@ export default class NodesList extends Component {
     let nodesNavId = clusterName ? "/clusters/" + clusterName + "/" + "nodes" : "/nodes";
     let name = clusterName ? clusterName : "all";
 
-    const panelHeader = (
-      <div className="clearfix">
-        <Nav bsStyle="tabs" pullLeft>
-          <LinkContainer to={"/clusters/" + name}>
-            <NavItem eventKey={1}>Containers</NavItem>
-          </LinkContainer>
-          <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
-            <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
-          </LinkContainer>
-          <LinkContainer to={nodesNavId}>
-            <NavItem eventKey={2}>Nodes</NavItem>
-          </LinkContainer>
-          <LinkContainer to={"/clusters/" + name + "/" + "events"}>
-            <NavItem eventKey={2}>Events</NavItem>
-          </LinkContainer>
-        </Nav>
-
-        {this.props.clusterName && (
-        <ButtonToolbar>
-          <Button
-            bsStyle="primary"
-            className="pulled-right"
-            onClick={this.props.manageNodes}
-          >
-            <i className="fa fa-plus" />&nbsp;
-            Add/Remove Node
-          </Button>
-        </ButtonToolbar>
-        )}
-      </div>
-    );
-
     return (
       <div>
         <div className="panel panel-default">
@@ -135,7 +103,7 @@ export default class NodesList extends Component {
                     className="pulled-right"
                     onClick={this.props.manageNodes}
                   >
-                    <i className="fa fa-plus" />&nbsp;
+                    <i className="fa fa-pencil-square-o" />&nbsp;
                     Add/Remove Node
                   </Button>
                 </ButtonToolbar>

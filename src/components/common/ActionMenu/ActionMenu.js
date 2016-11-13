@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {ButtonToolbar, DropdownButton, SplitButton, MenuItem} from 'react-bootstrap';
+import {Button, ButtonToolbar, DropdownButton, SplitButton, MenuItem} from 'react-bootstrap';
 
 export default class ActionMenu extends Component {
   DEFAULT_STYLE = "info";
@@ -42,18 +42,30 @@ export default class ActionMenu extends Component {
         );
       }
       let defaultAction = this.getDefaultAction();
+      if (actions.length === 1) {
+        return (
+          <ButtonToolbar>
+            <Button bsStyle={this.DEFAULT_STYLE}
+                    disabled={defaultAction.disabled}
+                    onClick={this.handleClick.bind(this, defaultAction.key, this.props.subject)}
+            >
+              {defaultAction.title}
+            </Button>
+          </ButtonToolbar>
+        );
+      }
       return (
-        <ButtonToolbar>
-          <SplitButton bsStyle={this.DEFAULT_STYLE}
-                       title={defaultAction.title}
-                       disabled={defaultAction.disabled}
-                       onClick={this.handleClick.bind(this, defaultAction.key, this.props.subject)}
-                       pullRight
-          >
-            {this.renderItems()}
-          </SplitButton>
-        </ButtonToolbar>
-      );
+          <ButtonToolbar>
+            <SplitButton bsStyle={this.DEFAULT_STYLE}
+                         title={defaultAction.title}
+                         disabled={defaultAction.disabled}
+                         onClick={this.handleClick.bind(this, defaultAction.key, this.props.subject)}
+                         pullRight
+            >
+              {this.renderItems()}
+            </SplitButton>
+          </ButtonToolbar>
+        );
     }
 
     return (
