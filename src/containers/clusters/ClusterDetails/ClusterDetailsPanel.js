@@ -144,7 +144,7 @@ export default class ClusterDetailsPanel extends Component {
 
   GROUP_BY_SELECT = ['node', 'image', 'status'];
 
-  ACTIONS = [
+  STOPPED_ACTIONS = [
     {
       key: "log",
       title: "Show Log",
@@ -153,7 +153,8 @@ export default class ClusterDetailsPanel extends Component {
     null,
     {
       key: "start",
-      title: "Start"
+      title: "Start",
+      disabled: true
     },
     {
       key: "stop",
@@ -179,6 +180,54 @@ export default class ClusterDetailsPanel extends Component {
     {
       key: "stats",
       title: "Stats"
+    },
+    null,
+    {
+      key: "delete",
+      title: "Delete",
+      disabled: true
+    }
+  ];
+
+  RUN_ACTIONS = [
+    {
+      key: "log",
+      title: "Show Log"
+    },
+    null,
+    {
+      key: "start",
+      title: "Start",
+      default: true
+    },
+    {
+      key: "stop",
+      title: "Stop",
+      disabled: true
+    },
+    {
+      key: "restart",
+      title: "Restart",
+      disabled: true
+    },
+    null,
+    {
+      key: "edit",
+      title: "Edit"
+    },
+    {
+      key: "scale",
+      title: "Scale",
+      disabled: true
+    },
+    {
+      key: "details",
+      title: "Details"
+    },
+    {
+      key: "stats",
+      title: "Stats",
+      disabled: true
     },
     null,
     {
@@ -399,10 +448,12 @@ export default class ClusterDetailsPanel extends Component {
   }
 
   tdActions(container) {
+    console.log("container run : " + container.run);
+    let actions = (container.run) ? this.STOPPED_ACTIONS : this.RUN_ACTIONS;
     return (
       <td className="td-actions" key="actions">
         <ActionMenu subject={container.id}
-                    actions={this.ACTIONS}
+                    actions={actions}
                     actionHandler={this.onActionInvoke.bind(this)}
         />
 
