@@ -17,6 +17,14 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
+
+  <repositories>
+    <repository>
+      <id>codeabove-public</id>
+      <url>http://ni1.codeabovelab.com:8081/repository/maven-public/</url>
+    </repository>
+  </repositories>
+
   <distributionManagement>
     <repository>
       <id>codeabove-release</id>
@@ -80,7 +88,7 @@
             <id>dist-assembly</id>
             <phase>package</phase>
             <goals>
-              <goal>single</goal> <!-- that's all :) -->
+              <goal>single</goal>
             </goals>
           </execution>
         </executions>
