@@ -448,7 +448,6 @@ export default class ClusterDetailsPanel extends Component {
   }
 
   tdActions(container) {
-    console.log("container run : " + container.run);
     let actions = (container.run) ? this.STOPPED_ACTIONS : this.RUN_ACTIONS;
     return (
       <td className="td-actions" key="actions">
