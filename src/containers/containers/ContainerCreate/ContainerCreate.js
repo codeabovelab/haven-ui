@@ -117,7 +117,7 @@ export default class ContainerCreate extends Component {
       dnsSearchValue: [],
       publish: [{field1: '', field2: ''}],
       links: [{field1: '', field2: ''}],
-      environment: [{field1: '', field2: ''}],
+      environment: [],
       selectImageValue: {value: '', label: ''},
       checkboxes: {checkboxInitial: ''},
       creationLogVisible: '',
@@ -448,6 +448,9 @@ export default class ContainerCreate extends Component {
                   </div>
                 </div>
               </Panel>
+              <Panel header="Environment" eventKey="4">
+                {this.fieldEnvironment()}
+              </Panel>
             </Accordion>
             {this.fieldRestart()}
             <div className="form-group" id="creation-log-block">
@@ -550,7 +553,11 @@ export default class ContainerCreate extends Component {
         .then((defaultParams) => {
           _.forOwn(defaultParams, (value, key) => {
             if (['tag'].indexOf(key) > -1) return;
-
+            if (key === 'environment') {
+              this.setState({
+                environment: value
+              });
+            }
             if (fields[key] !== undefined && !fields[key].value) {
               fields[key].onChange(value);
             }
@@ -585,7 +592,7 @@ export default class ContainerCreate extends Component {
     let $logBlock = $('#creation-log-block');
     let $spinner = $logBlock.find('i');
     container.publish = this.getPublish();
-    container.environment = this.getEnvironment();
+    container.environment = this.state.environment;
     container.restart = this.getRestart();
     container.links = this.getLinks();
     $logBlock.show();
@@ -696,19 +703,15 @@ export default class ContainerCreate extends Component {
   fieldEnvironment() {
     let items = this.state.environment;
     return (
-      <div className="field-environment">
+      <div className="field-environment form-group">
         <div className="field-header">
           <label>Environment</label>
           <a onClick={this.addEnvironmentItem.bind(this)}><i className="fa fa-plus-circle"/></a>
         </div>
         <div className="field-body">
           {items.map((item, key) => <div className="row" key={key}>
-            <div className="col-sm-6">
-              <input type="text" onChange={handleChange.bind(this, key, 'field1')} className="form-control"
-                     placeholder=""/>
-            </div>
-            <div className="col-sm-6">
-              <input type="text" onChange={handleChange.bind(this, key, 'field2')} className="form-control"
+            <div className="col-sm-12">
+              <input type="text" onChange={handleChange.bind(this, key)} value={this.state.environment[key]} className="form-control"
                      placeholder=""/>
             </div>
           </div>)}
@@ -716,9 +719,9 @@ export default class ContainerCreate extends Component {
       </div>
     );
 
-    function handleChange(i, type, event) {
+    function handleChange(i, event) {
       let state = Object.assign({}, this.state);
-      state.environment[i][type] = event.target.value;
+      state.environment[i] = event.target.value;
       this.setState(state);
     }
   }
@@ -726,12 +729,8 @@ export default class ContainerCreate extends Component {
   addEnvironmentItem() {
     this.setState({
       ...this.state,
-      environment: [...this.state.environment, {field1: '', field2: ''}]
+      environment: [...this.state.environment, ""]
     });
-  }
-
-  getEnvironment() {
-    return this.getMapField('environment');
   }
 
   getMapField(field) {
