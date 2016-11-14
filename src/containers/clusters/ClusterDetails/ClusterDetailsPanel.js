@@ -62,6 +62,7 @@ function processTdVal(val) {
     events: state.events
   }), {
     loadContainers: clusterActions.loadContainers,
+    loadClusters: clusterActions.load,
     deleteCluster: clusterActions.deleteCluster,
     startContainer: containerActions.start,
     stopContainer: containerActions.stop,
@@ -81,33 +82,54 @@ export default class ClusterDetailsPanel extends Component {
     stopContainer: PropTypes.func.isRequired,
     restartContainer: PropTypes.func.isRequired,
     removeContainer: PropTypes.func.isRequired,
-    getClusterSource: PropTypes.func.isRequired
+    getClusterSource: PropTypes.func.isRequired,
+    loadClusters: PropTypes.func.isRequired
   };
 
-  statisticsMetrics = [
+  statisticsMetricsNodesUp = [
     {
       type: 'number',
       title: 'Container Running',
-      titles: 'Containers Running',
-      link: '/containers'
+      titles: 'Containers Running'
     },
     {
       type: 'number',
       title: 'Node Running',
-      titles: 'Nodes Running',
-      link: '/nodes'
+      titles: 'Nodes Running'
     },
     {
       type: 'number',
       title: 'Application',
-      titles: 'Applications',
-      link: '/applications'
+      titles: 'Applications'
     },
     {
       type: 'number',
       title: 'Event',
-      titles: 'Events',
-      link: '/events'
+      titles: 'Events'
+    }
+  ];
+
+  statisticsMetricsNodesDown = [
+    {
+      type: 'number',
+      title: 'Container Running',
+      titles: 'Containers Running'
+    },
+    {
+      type: 'number',
+      title: 'Node Down',
+      titles: 'Nodes Down',
+      highlight: true
+    },
+    {
+      type: 'number',
+      title: 'Application',
+      titles: 'Applications'
+    },
+    {
+      type: 'number',
+      title: 'Event',
+      titles: 'Events'
     }
   ];
 
@@ -246,10 +268,10 @@ export default class ClusterDetailsPanel extends Component {
   }
 
   componentDidMount() {
-    const {loadContainers, params: {name}} = this.props;
+    const {loadContainers, loadClusters, params: {name}} = this.props;
 
     this.state = {};
-
+    loadClusters();
     loadContainers(name);
 
     $('.input-search').focus();
@@ -267,7 +289,6 @@ export default class ClusterDetailsPanel extends Component {
   }
 
   render() {
-    let s = require('./ClusterDetailsPanel.scss');
     const {containers, clusters, params: {name}} = this.props;
     const cluster = clusters[name];
 
@@ -284,6 +305,7 @@ export default class ClusterDetailsPanel extends Component {
 
     let runningContainers = 0;
     let runningNodes = 0;
+    let downNodes = 0;
     let Apps = 0;
     let eventsCount = 0;
     let events = this.props.events['bus.cluman.errors'];
@@ -308,6 +330,10 @@ export default class ClusterDetailsPanel extends Component {
 
     if (typeof(cluster.nodes.on) !== 'undefined') {
       runningNodes = cluster.nodes.on;
+    }
+
+    if (typeof(cluster.nodes.off) !== 'undefined') {
+      downNodes = cluster.nodes.off;
     }
 
     const isAllPage = name === 'all';
@@ -335,11 +361,18 @@ export default class ClusterDetailsPanel extends Component {
           <li className="active">Containers</li>
         </ul>
         <h2>{isAllPage ? "All Containers" : "Cluster: " + name }</h2>
-        <StatisticsPanel metrics={this.statisticsMetrics}
-                         cluster={cluster}
-                         values={[runningContainers, runningNodes, Apps, eventsCount]}
-        />
-
+        {(runningNodes > 0 || runningNodes === downNodes) && (
+          <StatisticsPanel metrics={this.statisticsMetricsNodesUp}
+                           cluster={cluster}
+                           values={[runningContainers, runningNodes, Apps, eventsCount]}
+          />
+        )}
+        {(runningNodes === 0 && downNodes > 0) && (
+          <StatisticsPanel metrics={this.statisticsMetricsNodesDown}
+                           cluster={cluster}
+                           values={[runningContainers, downNodes, Apps, eventsCount]}
+          />
+        )}
         <div className="panel panel-default">
           {!rows && (
             <ProgressBar active now={100} />
