@@ -50,7 +50,7 @@ export default class UserAdd extends Component {
     };
   }
   onSubmit() {
-    const {fields, setUser, addUserRole} = this.props;
+    const {fields, setUser} = this.props;
     this.setState({
       firstLoad: false
     });
@@ -73,7 +73,6 @@ export default class UserAdd extends Component {
       ],
     };
     setUser(fields.username.value, userData);
-    addUserRole(fields.username.value, fields.role.value);
   }
 
   componentWillMount() {

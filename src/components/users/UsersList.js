@@ -19,27 +19,27 @@ export default class UsersList extends Component {
     {
       name: 'user',
       label: 'Username',
-      width: '30%',
+      width: '47%',
       sortable: true
     },
     {
       name: 'email',
       label: 'Email',
-      width: '20%',
+      width: '25%',
       sortable: true,
       render: this.emailRender.bind(this)
     },
     {
       name: 'role',
       label: 'Role',
-      width: '15%',
+      width: '25%',
       sortable: true,
       render: this.roleRender.bind(this)
     },
     {
       name: 'actions',
       label: 'Actions',
-      width: '20%',
+      width: '3%',
       render: this.actionsRender.bind(this)
     }
   ];
