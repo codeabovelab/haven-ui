@@ -54,7 +54,7 @@ export default class SettingsPanel extends Component {
         <ul className="breadcrumb">
           <li className="active">Settings</li>
         </ul>
-        <h4><a href="https://github.com/codeabovelab/dockmaster-platform" target="_blank">Dockmaster</a></h4>
+        <h4><a href="https://github.com/codeabovelab/dockmaster-platform" target="_blank">Dockcenter</a></h4>
         <div className="settingsList">
           <p>Version: <span>{version.version}</span></p>
           <p>Build Time: <span>{TimeUtils.format(version.buildTime)}</span></p>
@@ -80,7 +80,7 @@ export default class SettingsPanel extends Component {
       const settingsFile = this.props.settings.settingsFile;
       let wholeSettings = {version: settingsFile.version, date: settingsFile.date, data: settingsFile.data};
       let parsedData = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(wholeSettings));
-      downloadFile(parsedData, 'dockmaster-settings.json');
+      downloadFile(parsedData, 'dockcenter-settings.json');
     }).catch(()=>null);
   }
 

@@ -1,4 +1,4 @@
-# Dockmaster Web App
+# Dockcenter Web App
 
 ## Requirements
 
