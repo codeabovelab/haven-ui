@@ -399,7 +399,7 @@ export default class ClusterDetailsPanel extends Component {
                         bsStyle="default"
                         onClick={this.deployCompose.bind(this)}
                       >
-                        <img src={require('../../../assets/img/octopus.png')}/>&nbsp;
+                        <img src={require('../../../assets/img/black-octopus.png')}/>&nbsp;
                         Deploy Compose File
                       </MenuItem>
                       </DropdownButton>
