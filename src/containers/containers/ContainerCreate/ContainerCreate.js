@@ -117,7 +117,7 @@ export default class ContainerCreate extends Component {
       dnsSearchValue: [],
       publish: [{field1: '', field2: ''}],
       links: [{field1: '', field2: ''}],
-      environment: [],
+      environment: [""],
       selectImageValue: {value: '', label: ''},
       checkboxes: {checkboxInitial: ''},
       creationLogVisible: '',
