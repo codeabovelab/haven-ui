@@ -49,9 +49,15 @@ export default class EventLog extends Component {
   ];
 
   dateRender(row) {
+    let date = "";
+    if (row.date) {
+      date = row.date;
+    } else if (row.time) {
+      date = row.time;
+    }
     return (
       <td key="date">
-        {row.date.substring(11, 19) + ' ' + row.date.substring(0, 10)}
+        {date.substring(11, 19) + ' ' + date.substring(0, 10)}
       </td>
     );
   }
