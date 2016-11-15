@@ -107,7 +107,6 @@ export default class ContainerCreate extends Component {
 
     onHide: PropTypes.func.isRequired
   };
-  static focusSelector = '#image-select';
 
   constructor(...params) {
     super(...params);
@@ -117,7 +116,9 @@ export default class ContainerCreate extends Component {
       dnsSearchValue: [],
       publish: [{field1: '', field2: ''}],
       links: [{field1: '', field2: ''}],
-      environment: [""],
+      environment: [{field1: '', field2: ''}],
+      constraints: [""],
+      affinity: [""],
       selectImageValue: {value: '', label: ''},
       checkboxes: {checkboxInitial: ''},
       creationLogVisible: '',
@@ -450,6 +451,8 @@ export default class ContainerCreate extends Component {
               </Panel>
               <Panel header="Environment" eventKey="4">
                 {this.fieldEnvironment()}
+                {this.fieldConstraints()}
+                {this.fieldAffinity()}
               </Panel>
             </Accordion>
             {this.fieldRestart()}
@@ -554,9 +557,21 @@ export default class ContainerCreate extends Component {
           _.forOwn(defaultParams, (value, key) => {
             if (['tag'].indexOf(key) > -1) return;
             if (key === 'environment') {
-              this.setState({
-                environment: value
+              let envVars = {};
+              envVars.environment = [];
+              envVars.affinity = [];
+              envVars.constraints = [];
+              defaultParams.environment.map((item, key) => {
+                if (item.substring(0, 12) === 'constraints:') {
+                  envVars.constraints.push(item.substring(12));
+                } else if (item.substring(0, 9) === 'affinity:') {
+                  envVars.affinity.push(item.substring(9));
+                } else {
+                  let envParts = item.split("=");
+                  envVars.environment = [...envVars.environment, {field1: envParts[0], field2: envParts[1]}];
+                }
               });
+              this.setEnvironment(envVars);
             }
             if (fields[key] !== undefined && !fields[key].value) {
               fields[key].onChange(value);
@@ -564,6 +579,16 @@ export default class ContainerCreate extends Component {
           });
         });
     }
+  }
+
+  setEnvironment(defaultEnv) {
+    _.forOwn(defaultEnv, (value, key)=> {
+      if (!_.isEmpty(defaultEnv[key])) {
+        this.setState({
+          [key]: value
+        });
+      }
+    });
   }
 
   onSubmit() {
@@ -592,7 +617,7 @@ export default class ContainerCreate extends Component {
     let $logBlock = $('#creation-log-block');
     let $spinner = $logBlock.find('i');
     container.publish = this.getPublish();
-    container.environment = this.state.environment;
+    container.environment = this.getEnvironmentFields();
     container.restart = this.getRestart();
     container.links = this.getLinks();
     $logBlock.show();
@@ -710,8 +735,45 @@ export default class ContainerCreate extends Component {
         </div>
         <div className="field-body">
           {items.map((item, key) => <div className="row" key={key}>
+            <div className="col-sm-6">
+              <input type="string" onChange={handleChange.bind(this, key, 'field1')} className="form-control"
+                     placeholder="" value={this.state.environment[key].field1}/>
+            </div>
+            <div className="col-sm-6">
+              <input type="string" onChange={handleChange.bind(this, key, 'field2')} className="form-control"
+                     placeholder="" value={this.state.environment[key].field2}/>
+            </div>
+          </div>)}
+        </div>
+      </div>
+    );
+
+    function handleChange(i, type, event) {
+      let state = Object.assign({}, this.state);
+      state.environment[i][type] = event.target.value;
+      this.setState(state);
+    }
+  }
+
+  addEnvironmentItem() {
+    this.setState({
+      ...this.state,
+      publish: [...this.state.environment, {field1: '', field2: ''}]
+    });
+  }
+
+  fieldConstraints() {
+    let items = this.state.constraints;
+    return (
+      <div className="field-constraints form-group">
+        <div className="field-header">
+          <label>Constraints</label>
+          <a onClick={this.addConstraintsItem.bind(this)}><i className="fa fa-plus-circle"/></a>
+        </div>
+        <div className="field-body">
+          {items.map((item, key) => <div className="row" key={key}>
             <div className="col-sm-12">
-              <input type="text" onChange={handleChange.bind(this, key)} value={this.state.environment[key]} className="form-control"
+              <input type="text" onChange={handleChange.bind(this, key)} value={this.state.constraints[key]} className="form-control"
                      placeholder=""/>
             </div>
           </div>)}
@@ -721,16 +783,72 @@ export default class ContainerCreate extends Component {
 
     function handleChange(i, event) {
       let state = Object.assign({}, this.state);
-      state.environment[i] = event.target.value;
+      state.constraints[i] = event.target.value;
       this.setState(state);
     }
   }
 
-  addEnvironmentItem() {
+  addConstraintsItem() {
     this.setState({
       ...this.state,
-      environment: [...this.state.environment, ""]
+      constraints: [...this.state.constraints, ""]
     });
+  }
+
+  fieldAffinity() {
+    let items = this.state.affinity;
+    return (
+      <div className="field-environment form-group">
+        <div className="field-header">
+          <label>Affinity</label>
+          <a onClick={this.addAffinityItem.bind(this)}><i className="fa fa-plus-circle"/></a>
+        </div>
+        <div className="field-body">
+          {items.map((item, key) => <div className="row" key={key}>
+            <div className="col-sm-12">
+              <input type="text" onChange={handleChange.bind(this, key)} value={this.state.affinity[key]} className="form-control"
+                     placeholder=""/>
+            </div>
+          </div>)}
+        </div>
+      </div>
+    );
+
+    function handleChange(i, event) {
+      let state = Object.assign({}, this.state);
+      state.affinity[i] = event.target.value;
+      this.setState(state);
+    }
+  }
+
+  addAffinityItem() {
+    this.setState({
+      ...this.state,
+      affinity: [...this.state.affinity, ""]
+    });
+  }
+
+  getEnvironmentFields() {
+    let envVars = this.state.environment;
+    let constrVars = this.state.constraints;
+    let affVars = this.state.affinity;
+    let environment = [];
+    envVars.forEach(item => {
+      if (item.field1 && item.field2) {
+        environment.push(item.field1 + '=' + item.field2);
+      }
+    });
+    constrVars.forEach(item => {
+      if (item) {
+        environment.push('constraints:' + item);
+      }
+    });
+    affVars.forEach(item => {
+      if (item) {
+        environment.push('affinity:' + item);
+      }
+    });
+    return environment;
   }
 
   getMapField(field) {
