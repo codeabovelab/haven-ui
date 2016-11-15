@@ -107,7 +107,6 @@ export default class ContainerCreate extends Component {
 
     onHide: PropTypes.func.isRequired
   };
-  static focusSelector = '#image-select';
 
   constructor(...params) {
     super(...params);
@@ -117,7 +116,9 @@ export default class ContainerCreate extends Component {
       dnsSearchValue: [],
       publish: [{field1: '', field2: ''}],
       links: [{field1: '', field2: ''}],
-      environment: [""],
+      environment: [{field1: '', field2: ''}],
+      constraints: [""],
+      affinity: [""],
       selectImageValue: {value: '', label: ''},
       checkboxes: {checkboxInitial: ''},
       creationLogVisible: '',
@@ -554,9 +555,23 @@ export default class ContainerCreate extends Component {
           _.forOwn(defaultParams, (value, key) => {
             if (['tag'].indexOf(key) > -1) return;
             if (key === 'environment') {
-              this.setState({
-                environment: value
+              let envVars = {};
+              envVars.environment = [];
+              envVars.affinity = [];
+              envVars.constraints = [];
+              defaultParams.environment.map((item, key) => {
+                if (item.substring(0, 12) === 'constraints:') {
+                  envVars.constraints.push(item);
+                } else if (item.substring(0, 8) === 'affinity:') {
+                  envVars.affinity.push(item);
+                } else {
+                  console.log(item);
+                  let envParts = item.split("=");
+                  console.log(envParts);
+                  envVars.environment = [...envVars.environment, {field1: envParts[0], field2: envParts[1]}];
+                }
               });
+              this.setEnvironment(envVars);
             }
             if (fields[key] !== undefined && !fields[key].value) {
               fields[key].onChange(value);
@@ -564,6 +579,19 @@ export default class ContainerCreate extends Component {
           });
         });
     }
+  }
+
+  setEnvironment(defaultEnv) {
+    console.log(defaultEnv);
+    _.forOwn(defaultEnv, (value, key)=> {
+      console.log('key: ', key);
+      console.log('value: ', value);
+      if (defaultEnv[key]) {
+        this.setState({
+          [key]: value
+        });
+      }
+    });
   }
 
   onSubmit() {
@@ -710,18 +738,22 @@ export default class ContainerCreate extends Component {
         </div>
         <div className="field-body">
           {items.map((item, key) => <div className="row" key={key}>
-            <div className="col-sm-12">
-              <input type="text" onChange={handleChange.bind(this, key)} value={this.state.environment[key]} className="form-control"
-                     placeholder=""/>
+            <div className="col-sm-6">
+              <input type="string" onChange={handleChange.bind(this, key, 'field1')} className="form-control"
+                     placeholder="" value={this.state.environment[key].field1}/>
+            </div>
+            <div className="col-sm-6">
+              <input type="string" onChange={handleChange.bind(this, key, 'field2')} className="form-control"
+                     placeholder="" value={this.state.environment[key].field2}/>
             </div>
           </div>)}
         </div>
       </div>
     );
 
-    function handleChange(i, event) {
+    function handleChange(i, type, event) {
       let state = Object.assign({}, this.state);
-      state.environment[i] = event.target.value;
+      state.environment[i][type] = event.target.value;
       this.setState(state);
     }
   }
@@ -729,7 +761,7 @@ export default class ContainerCreate extends Component {
   addEnvironmentItem() {
     this.setState({
       ...this.state,
-      environment: [...this.state.environment, ""]
+      publish: [...this.state.environment, {field1: '', field2: ''}]
     });
   }
 
