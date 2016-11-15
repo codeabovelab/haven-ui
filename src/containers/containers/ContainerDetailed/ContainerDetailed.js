@@ -326,7 +326,7 @@ export default class ContainerDetailed extends Component {
               />
             </Tab>
             <Tab eventKey={2} title="Labels"><PropertyGrid data={container.labels}/></Tab>
-            <Tab eventKey={3} title="Network&Ports"><PropertyGrid data={_.assign({},
+            <Tab eventKey={3} title="Network & Ports"><PropertyGrid data={_.assign({},
               {publishAllPorts: container.publishAllPorts}, {ports: container.ports}, {network: container.network},
               {networks: container.networks}, {dns: container.dns}, {dnsSearch: container.dnsSearch},
               {extraHosts: container.extraHosts}, {domainname: container.domainname})}/></Tab>
