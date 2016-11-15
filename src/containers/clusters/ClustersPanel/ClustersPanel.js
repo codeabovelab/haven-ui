@@ -7,6 +7,7 @@ import {DockTable, ClustersList, StatisticsPanel, Dialog, EventLog} from 'compon
 import {ClusterAdd, ClusterConfig, ClusterInformation} from '../../index';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar} from 'react-bootstrap';
 import {count as countEvents} from 'redux/modules/events/events';
+import {deleteClusterImages} from 'redux/modules/images/images';
 
 @connect(
   state => ({
@@ -19,6 +20,7 @@ import {count as countEvents} from 'redux/modules/events/events';
     deleteCluster: clusterActions.deleteCluster,
     loadNodes: clusterActions.loadNodes,
     countEvents,
+    deleteClusterImages
   }
 )
 export default class ClustersPanel extends Component {
@@ -30,7 +32,8 @@ export default class ClustersPanel extends Component {
     loadNodes: PropTypes.func.isRequired,
     events: PropTypes.object,
     alerts: PropTypes.object,
-    countEvents: PropTypes.func.isRequired
+    countEvents: PropTypes.func.isRequired,
+    deleteClusterImages: PropTypes.func.isRequired
   };
 
   statisticsMetricsNodesUp = [
@@ -122,22 +125,6 @@ export default class ClustersPanel extends Component {
         runningContainers += cluster.containers.on || 0;
       });
     }
-
-    const clustersHeaderBar = (
-      <div className="clearfix">
-        <h3>Clusters</h3>
-
-        <ButtonToolbar>
-          <Button
-            bsStyle="primary"
-            onClick={this.onActionInvoke.bind(this, "create")}
-          >
-            <i className="fa fa-plus" />&nbsp;
-            New Cluster
-          </Button>
-        </ButtonToolbar>
-      </div>
-    );
 
     const eventsHeaderBar = (
       <div className="clearfix">
@@ -253,6 +240,14 @@ export default class ClustersPanel extends Component {
               .then(() => this.props.loadClusters(), this.props.loadNodes('orphans'));
           })
           .catch(() => null);// confirm cancel
+        return;
+
+      case "deleteImages":
+        confirm("Are you sure you want to delete unused images in cluster " + cluster + "?")
+          .then(() => {
+            this.props.deleteClusterImages(cluster).catch(() => null);
+          })
+          .catch(() => null);
         return;
 
       default:

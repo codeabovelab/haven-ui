@@ -111,7 +111,7 @@ export function deleteImages(arg) {
   let body = {
     type: "job.removeImageJob",
     parameters: {
-    //TODO after debug "dryRun":false,
+      //TODO after debug "dryRun":false,
       random: new Date().toUTCString(), //this line allow to create new job at each call
       dryRun: arg.dryRun,
       retainLast: arg.retainLast,
@@ -126,3 +126,18 @@ export function deleteImages(arg) {
     promise: (client) => client.post('/ui/api/jobs/', {data: body})
   };
 }
+
+export function deleteClusterImages(cluster) {
+  let body = {
+    type: "job.removeClusterImages",
+    title: "Delete images in cluster \"" + cluster + "\"",
+    parameters: {
+      clusterName: cluster
+    }
+  };
+  return {
+    types: [ACTIONS.DELETE_CLUSTER_IMAGES, ACTIONS.DELETE_CLUSTER_IMAGES_SUCCESS, ACTIONS.DELETE_CLUSTER_IMAGES_FAIL],
+    promise: (client) => client.post('/ui/api/jobs/', {data: body})
+  };
+}
+

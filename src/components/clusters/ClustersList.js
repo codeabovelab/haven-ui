@@ -73,7 +73,11 @@ export default class ClustersList extends Component {
     {
       key: "delete",
       title: "Delete"
-    }
+    },
+    {
+      key: "deleteImages",
+      title: "Delete Images"
+    },
   ];
 
   render() {
