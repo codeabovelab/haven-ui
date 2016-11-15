@@ -131,7 +131,7 @@ export function setClusterSource(clusterId, file) {
   return {
     types: [ACTIONS.SET_SOURCE, ACTIONS.SET_SOURCE_SUCCESS, ACTIONS.SET_SOURCE_FAIL],
     id: clusterId,
-    promise: (client) => client.post(`/ui/api/clusters/${clusterId}/source`, {data: file})
+    promise: (client) => client.post(`/ui/api/clusters/${clusterId}/source`, {data: file, contentType: "application/x-yaml"})
   };
 }
 

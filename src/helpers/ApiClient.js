@@ -19,7 +19,7 @@ function formatUrl(path) {
 export default class ApiClient {
   constructor(req) {
     methods.forEach((method) =>
-      this[method] = (path, { params, data } = {}) => new Promise((resolve, reject) => {
+      this[method] = (path, { params, data, contentType } = {}) => new Promise((resolve, reject) => {
         const request = superagent[method](formatUrl(path));
         this.setToken(request);
         if (params) {
@@ -27,6 +27,9 @@ export default class ApiClient {
         }
 
         if (data) {
+          if(contentType) {
+            request.set("Content-Type", contentType);
+          }
           request.send(data);
         }
 
