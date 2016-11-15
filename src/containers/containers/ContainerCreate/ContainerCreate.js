@@ -327,6 +327,7 @@ export default class ContainerCreate extends Component {
                             minimumInput={ 1 }
                             value={this.state.selectImageValue}
                             autoload
+                            cache={false}
                             placeholder = "Search..."
                             valueRenderer={this.renderSelectValue}
                             resetValue = ""
