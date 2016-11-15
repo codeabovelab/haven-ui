@@ -758,7 +758,7 @@ export default class ContainerCreate extends Component {
   addEnvironmentItem() {
     this.setState({
       ...this.state,
-      publish: [...this.state.environment, {field1: '', field2: ''}]
+      environment: [...this.state.environment, {field1: '', field2: ''}]
     });
   }
 
