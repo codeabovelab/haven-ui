@@ -27,7 +27,7 @@ export default class ApiClient {
         }
 
         if (data) {
-          if(contentType) {
+          if (contentType) {
             request.set("Content-Type", contentType);
           }
           request.send(data);
