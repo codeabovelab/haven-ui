@@ -87,12 +87,11 @@ export default class Login extends Component {
     return (
       <div className="loginPage">
         <div className="loginWrapper">
+          <h1 className="text-xs-center" >User Login</h1>
           <div className={"container loginContainer"}>
             <Helmet title="Login"/>
             {!user &&
             <div>
-
-              <h1 className="text-xs-center">User Login</h1>
               <form className="login-form" onSubmit={this.handleSubmit}>
                 <div className="form-group">
                   <input type="text" ref="username" placeholder="Enter a username"
