@@ -84,23 +84,26 @@ export default class UserAdd extends Component {
         default:
           break;
       }
-      aclData = {
-        ...aclData,
-        [id]: {
-          "entries": [
-            {
-              "id": fields.username.value + ":CLUSTER:" + key,
-              "sid": {
-                "type": "PRINCIPAL",
-                "principal": fields.username.value,
-                "tenant": "root"
-              },
-              "granting": true,
-              "permission": permissionVal
-            }
-          ]
-        }
-      };
+      if (permissionVal) {
+        console.log(permissionVal);
+        aclData = {
+          ...aclData,
+          [id]: {
+            "entries": [
+              {
+                "id": fields.username.value + ":CLUSTER:" + key,
+                "sid": {
+                  "type": "PRINCIPAL",
+                  "principal": fields.username.value,
+                  "tenant": "root"
+                },
+                "granting": true,
+                "permission": permissionVal
+              }
+            ]
+          }
+        };
+      }
     });
     console.log('ACLDATA', aclData);
 
@@ -112,6 +115,8 @@ export default class UserAdd extends Component {
     ];
     if (userName && usersList) {
       let previousRole = _.get(usersList, userName + '.roles.0.name', '');
+      console.log('prRole: ', previousRole);
+      console.log('role: ', fields.role.value);
       if (fields.role.value === previousRole) {
         roles = [];
       } else if (previousRole && previousRole !== fields.role.value) {
@@ -130,15 +135,12 @@ export default class UserAdd extends Component {
       "email": fields.email.value || '',
       "enabled": true,
       "password": "string",
-      "roles": [
-        {
-          "name": fields.role.value || '',
-          "tenant": "root"
-        }
-      ],
+      "roles": roles,
     };
     setUser(fields.username.value, userData).then(()=> {
-      setACL(aclData);
+      if (!_.isEmpty(aclData)) {
+        setACL(aclData);
+      }
     }).then(()=>onHide());
   }
 
