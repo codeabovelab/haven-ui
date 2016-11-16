@@ -92,9 +92,6 @@ export default class App extends Component {
         {this.props.user && (
           <MenuLeft />
         )}
-
-        <Navbar />
-
         <div className="al-main">
           <div className="al-content">
             {this.props.user && (

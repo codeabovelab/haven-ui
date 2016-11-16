@@ -1,17 +1,25 @@
 import React, {Component, PropTypes} from 'react';
 import { Link } from 'react-router';
 import {toggle} from 'redux/modules/menuLeft/menuLeft';
+import {logout} from 'redux/modules/auth/auth';
 import { connect } from 'react-redux';
 
 @connect(
-  state => ({toggled: state.menuLeft.toggled, user: state.auth.user}),
+  state => ({toggled: state.menuLeft.toggled, user: state.auth.user, logout}),
   {toggle}
 )
 export default class MenuLeft extends Component {
   static propTypes = {
     toggled: PropTypes.bool,
     toggle: PropTypes.func.isRequired,
-    user: PropTypes.object
+    user: PropTypes.object,
+    logout: PropTypes.func.isRequired
+  };
+
+  handleLogout = (event) => {
+    event.preventDefault();
+    this.props.logout();
+    window.location.href = '/login';
   };
 
   render() {
@@ -19,6 +27,9 @@ export default class MenuLeft extends Component {
 
     return (
       <aside className="al-sidebar">
+        <div className="product-name clearfix">
+          <a href="" className="al-logo clearfix"><span>Dock</span>center</a>
+        </div>
         <ul className="al-sidebar-list">
           <li className="al-sidebar-list-item" title="Dashboard">
             <Link to="/dashboard" className="al-sidebar-list-link">
@@ -73,6 +84,13 @@ export default class MenuLeft extends Component {
             <Link to="/settings" className="al-sidebar-list-link">
               <i className="fa fa-wrench fa-fw"/>
               <span>Settings</span>
+            </Link>
+          </li>
+
+          <li className="al-sidebar-list-item" title="Jobs">
+            <Link className="al-sidebar-list-link" onClick={this.handleLogout}>
+              <i className="fa fa-sign-out fa-fw"/>
+              <span>Sign out</span>
             </Link>
           </li>
 
