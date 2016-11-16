@@ -360,7 +360,6 @@ export default class ClusterDetailsPanel extends Component {
           <li><Link to={"/clusters/" + name}>{name}</Link></li>
           <li className="active">Containers</li>
         </ul>
-        <h2>{isAllPage ? "All Containers" : "Cluster: " + name }</h2>
         {(runningNodes > 0 || runningNodes === downNodes) && (
           <StatisticsPanel metrics={this.statisticsMetricsNodesUp}
                            cluster={cluster}

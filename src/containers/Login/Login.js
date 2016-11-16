@@ -92,7 +92,7 @@ export default class Login extends Component {
             {!user &&
             <div>
 
-              <h1 className="text-xs-center">Login</h1>
+              <h1 className="text-xs-center">User Login</h1>
               <form className="login-form" onSubmit={this.handleSubmit}>
                 <div className="form-group">
                   <input type="text" ref="username" placeholder="Enter a username"
@@ -102,7 +102,7 @@ export default class Login extends Component {
                   <input type="password" ref="password" placeholder="Enter a password"
                          className="form-control form-control-lg"/>
                 </div>
-                <button className="btn btn-primary btn-block btn-lg" onClick={this.handleSubmit}><i
+                <button className="btn btn-primary btn-lg" onClick={this.handleSubmit}><i
                   className="fa fa-sign-in"/>{' '}Log In
                 </button>
               </form>
