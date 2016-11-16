@@ -30,6 +30,11 @@ export default function reducer(state = {}, action = {}) {
           ...action.result
         }
       };
+    case ACTIONS.GET_APP_INFO_SUCCESS:
+      return {
+        ...state,
+        version: action.result
+      };
     default:
       return state;
   }
@@ -46,5 +51,12 @@ export function getSettings() {
   return {
     types: [ACTIONS.GET_SETTINGS, ACTIONS.GET_SETTINGS_SUCCESS, ACTIONS.GET_SETTINGS_FAIL],
     promise: (client) => client.get(`/ui/api/config`)
+  };
+}
+
+export function getAppInfo() {
+  return {
+    types: [ACTIONS.GET_APP_INFO, ACTIONS.GET_APP_INFO_SUCCESS, ACTIONS.GET_APP_INFO_FAIL],
+    promise: (client) => client.get(`/ui/api/version`)
   };
 }

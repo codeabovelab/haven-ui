@@ -35,4 +35,6 @@ export PropertyGrid from './common/PropertyGrid/PropertyGrid';
 
 export DashboardNodesList from './nodes/DashboardNodesList/DashboardNodesList';
 export DashboardClustersList from '../components/clusters/DashboardClustersList';
+export ClusterUploadCompose from './clusters/ClusterUploadCompose';
+export ClusterSetSource from './clusters/ClusterSetSource';
 

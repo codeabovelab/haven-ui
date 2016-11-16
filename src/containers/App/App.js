@@ -63,7 +63,7 @@ export default class App extends Component {
           title: 'Server connection problem',
           message: msg,
           level: 'error',
-          autoDismiss: 0,
+          autoDismiss: 1,
           position: 'tc',
           onRemove: this.removeNotification.bind(this)
         });
@@ -120,7 +120,7 @@ export default class App extends Component {
           <div className="al-footer-right"></div>
           <div className="al-footer-main clearfix">
             <div className="al-copy">
-              &copy; {(new Date()).getFullYear()} Dockmaster
+              &copy; {(new Date()).getFullYear()} Dockcenter
             </div>
           </div>
         </footer>

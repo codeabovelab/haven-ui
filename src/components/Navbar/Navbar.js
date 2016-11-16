@@ -28,7 +28,7 @@ export default class Navbar extends Component {
 
     return (
       <div className="page-top clearfix" scroll-position="scrolled" max-height="50">
-        <a href="" className="al-logo clearfix"><span>Dock</span>master</a>
+        <a href="" className="al-logo clearfix"><span>Dock</span>center</a>
         <a href className="collapse-menu-link" ba-sidebar-toggle-menu></a>
 
         {user && (

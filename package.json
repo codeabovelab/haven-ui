@@ -1,17 +1,17 @@
 {
-  "name": "dockmaster",
+  "name": "dockcenter",
   "version": "0.1.0",
   "main": "",
   "scripts": {
     "start": "concurrent --kill-others \"npm run start-prod\"",
     "start-prod": "better-npm-run start-prod",
     "build": "better-npm-run build",
+    "build-dev": "better-npm-run build-dev",
     "postinstall": "npm run build",
     "lint": "eslint -c .eslintrc src api",
     "start-dev": "better-npm-run start-dev",
     "watch-client": "better-npm-run watch-client",
     "dev": "concurrent --kill-others \"npm run watch-client\" \"npm run start-dev\"",
-    "s3upload": "npm run build && aws s3 cp ./dist/ s3://dm.klyukin.net --recursive --region us-east-1",
     "test": "karma start"
   },
   "betterScripts": {
@@ -20,8 +20,7 @@
       "env": {
         "NODE_PATH": "./src",
         "NODE_ENV": "production",
-        "PORT": 8080,
-        "APIPORT": 3030
+        "PORT": 8080
       }
     },
     "start-dev": {
@@ -30,7 +29,7 @@
         "NODE_PATH": "./src",
         "NODE_ENV": "development",
         "PORT": 3000,
-        "APIPORT": 3030
+        "DEV_PORT": 3001
       }
     },
     "watch-client": {
@@ -39,13 +38,20 @@
         "UV_THREADPOOL_SIZE": 100,
         "NODE_PATH": "./src",
         "PORT": 3000,
-        "APIPORT": 3030
+        "API_PROXY": "true",
+        "DEV_PORT": 3001
       }
     },
     "build": {
-      "command": "webpack --verbose --colors --display-error-details --config webpack/prod.config.js",
+      "command": "webpack --verbose --display-error-details --config webpack/prod.config.js",
       "env": {
         "NODE_ENV": "production"
+      }
+    },
+    "build-dev": {
+      "command": "webpack --verbose --display-error-details --config webpack/dev.config.js",
+      "env": {
+        "NODE_ENV": "development"
       }
     }
   },
@@ -173,5 +179,8 @@
   },
   "engines": {
     "node": "5.6.0"
+  },
+   "publishConfig" : {
+    "registry" : "http://ni1.codeabovelab.com:8081/repository/npm/"
   }
 }

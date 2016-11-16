@@ -2,13 +2,14 @@ import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
+import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, Chain, LoadingDialog, StatisticsPanel, ActionMenu, ClusterUploadCompose, ClusterSetSource} from '../../../components/index';
 import { Link, browserHistory, Route, RouteHandler } from 'react-router';
 import { LinkContainer } from 'react-router-bootstrap';
-import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, Chain, LoadingDialog, StatisticsPanel, ActionMenu} from '../../../components/index';
 import {ContainerCreate, ContainerScale, ContainerUpdate} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
-import {Dropdown, SplitButton, Button, ButtonToolbar, MenuItem, Panel, ProgressBar, Nav, NavItem} from 'react-bootstrap';
+import {Dropdown, SplitButton, Button, ButtonGroup, DropdownButton, ButtonToolbar, MenuItem, Panel, ProgressBar, Nav, NavItem, Image} from 'react-bootstrap';
 import _ from 'lodash';
+import {downloadFile} from '../../../utils/fileActions';
 
 function renderTdImage(row) {
   let resultValue = processTdVal(row.image);
@@ -61,11 +62,13 @@ function processTdVal(val) {
     events: state.events
   }), {
     loadContainers: clusterActions.loadContainers,
+    loadClusters: clusterActions.load,
     deleteCluster: clusterActions.deleteCluster,
     startContainer: containerActions.start,
     stopContainer: containerActions.stop,
     restartContainer: containerActions.restart,
-    removeContainer: containerActions.remove
+    removeContainer: containerActions.remove,
+    getClusterSource: clusterActions.getClusterSource
   })
 export default class ClusterDetailsPanel extends Component {
   static propTypes = {
@@ -79,32 +82,54 @@ export default class ClusterDetailsPanel extends Component {
     stopContainer: PropTypes.func.isRequired,
     restartContainer: PropTypes.func.isRequired,
     removeContainer: PropTypes.func.isRequired,
+    getClusterSource: PropTypes.func.isRequired,
+    loadClusters: PropTypes.func.isRequired
   };
 
-  statisticsMetrics = [
+  statisticsMetricsNodesUp = [
     {
       type: 'number',
       title: 'Container Running',
-      titles: 'Containers Running',
-      link: '/containers'
+      titles: 'Containers Running'
     },
     {
       type: 'number',
       title: 'Node Running',
-      titles: 'Nodes Running',
-      link: '/nodes'
+      titles: 'Nodes Running'
     },
     {
       type: 'number',
       title: 'Application',
-      titles: 'Applications',
-      link: '/applications'
+      titles: 'Applications'
     },
     {
       type: 'number',
       title: 'Event',
-      titles: 'Events',
-      link: '/events'
+      titles: 'Events'
+    }
+  ];
+
+  statisticsMetricsNodesDown = [
+    {
+      type: 'number',
+      title: 'Container Running',
+      titles: 'Containers Running'
+    },
+    {
+      type: 'number',
+      title: 'Node Down',
+      titles: 'Nodes Down',
+      highlight: true
+    },
+    {
+      type: 'number',
+      title: 'Application',
+      titles: 'Applications'
+    },
+    {
+      type: 'number',
+      title: 'Event',
+      titles: 'Events'
     }
   ];
 
@@ -141,7 +166,7 @@ export default class ClusterDetailsPanel extends Component {
 
   GROUP_BY_SELECT = ['node', 'image', 'status'];
 
-  ACTIONS = [
+  STOPPED_ACTIONS = [
     {
       key: "log",
       title: "Show Log",
@@ -150,7 +175,8 @@ export default class ClusterDetailsPanel extends Component {
     null,
     {
       key: "start",
-      title: "Start"
+      title: "Start",
+      disabled: true
     },
     {
       key: "stop",
@@ -180,6 +206,54 @@ export default class ClusterDetailsPanel extends Component {
     null,
     {
       key: "delete",
+      title: "Delete",
+      disabled: true
+    }
+  ];
+
+  RUN_ACTIONS = [
+    {
+      key: "log",
+      title: "Show Log"
+    },
+    null,
+    {
+      key: "start",
+      title: "Start",
+      default: true
+    },
+    {
+      key: "stop",
+      title: "Stop",
+      disabled: true
+    },
+    {
+      key: "restart",
+      title: "Restart",
+      disabled: true
+    },
+    null,
+    {
+      key: "edit",
+      title: "Edit"
+    },
+    {
+      key: "scale",
+      title: "Scale",
+      disabled: true
+    },
+    {
+      key: "details",
+      title: "Details"
+    },
+    {
+      key: "stats",
+      title: "Stats",
+      disabled: true
+    },
+    null,
+    {
+      key: "delete",
       title: "Delete"
     }
   ];
@@ -194,10 +268,10 @@ export default class ClusterDetailsPanel extends Component {
   }
 
   componentDidMount() {
-    const {loadContainers, params: {name}} = this.props;
+    const {loadContainers, loadClusters, params: {name}} = this.props;
 
     this.state = {};
-
+    loadClusters();
     loadContainers(name);
 
     $('.input-search').focus();
@@ -215,7 +289,6 @@ export default class ClusterDetailsPanel extends Component {
   }
 
   render() {
-    let s = require('./ClusterDetailsPanel.scss');
     const {containers, clusters, params: {name}} = this.props;
     const cluster = clusters[name];
 
@@ -232,6 +305,7 @@ export default class ClusterDetailsPanel extends Component {
 
     let runningContainers = 0;
     let runningNodes = 0;
+    let downNodes = 0;
     let Apps = 0;
     let eventsCount = 0;
     let events = this.props.events['bus.cluman.errors'];
@@ -258,7 +332,12 @@ export default class ClusterDetailsPanel extends Component {
       runningNodes = cluster.nodes.on;
     }
 
+    if (typeof(cluster.nodes.off) !== 'undefined') {
+      downNodes = cluster.nodes.off;
+    }
+
     const isAllPage = name === 'all';
+
     let columns = this.COLUMNS;
     let groupBySelect = this.GROUP_BY_SELECT;
     let nodesNavId = isAllPage ? "/nodes" : "/clusters/" + name + "/" + "nodes";
@@ -281,11 +360,18 @@ export default class ClusterDetailsPanel extends Component {
           <li><Link to={"/clusters/" + name}>{name}</Link></li>
           <li className="active">Containers</li>
         </ul>
-        <StatisticsPanel metrics={this.statisticsMetrics}
-                         cluster={cluster}
-                         values={[runningContainers, runningNodes, Apps, eventsCount]}
-        />
-
+        {(runningNodes > 0 || runningNodes === downNodes) && (
+          <StatisticsPanel metrics={this.statisticsMetricsNodesUp}
+                           cluster={cluster}
+                           values={[runningContainers, runningNodes, Apps, eventsCount]}
+          />
+        )}
+        {(runningNodes === 0 && downNodes > 0) && (
+          <StatisticsPanel metrics={this.statisticsMetricsNodesDown}
+                           cluster={cluster}
+                           values={[runningContainers, downNodes, Apps, eventsCount]}
+          />
+        )}
         <div className="panel panel-default">
           {!rows && (
             <ProgressBar active now={100} />
@@ -307,27 +393,51 @@ export default class ClusterDetailsPanel extends Component {
                   <NavItem eventKey={4}>Events</NavItem>
                 </LinkContainer>
               </Nav>
+              {!isAllPage && (
+                <ButtonToolbar className="pulled-right-toolbar">
+                  <Button
+                    bsStyle="primary"
+                    onClick={this.onActionInvoke.bind(this, "create")}
+                  >
+                    <i className="fa fa-plus"/>&nbsp;
+                    New Container
+                  </Button>
 
-              <ButtonToolbar className="pulled-right-toolbar">
-                <Button
-                  bsStyle="primary"
-                  className="pulled-right"
-                  onClick={this.onActionInvoke.bind(this, "create")}
-                >
-                  <i className="fa fa-plus"/>&nbsp;
-                  New Container
-                </Button>
-
-                {false && <Button
-                  bsStyle="danger"
-                  onClick={this.deleteCluster.bind(this)}
-                >
-                  <i className="fa fa-trash"/>&nbsp;
-                  Delete Cluster
-                </Button>
-                }
-              </ButtonToolbar>
-
+                  {false && <Button
+                    bsStyle="danger"
+                    onClick={this.deleteCluster.bind(this)}
+                  >
+                    <i className="fa fa-trash"/>&nbsp;
+                    Delete Cluster
+                  </Button>
+                  }
+                  <ButtonGroup>
+                    <DropdownButton bsStyle="primary" className="pulled-right" title="More Actions">
+                      <MenuItem eventKey="1"
+                                bsStyle="default"
+                                onClick={this.getClusterSource.bind(this)}
+                      >
+                        <i className="fa fa-download"/>&nbsp;
+                        Download Config File
+                      </MenuItem>
+                      <MenuItem eventKey="2"
+                                bsStyle="default"
+                                onClick={this.setClusterSource.bind(this)}
+                      >
+                        <i className="fa fa-upload"/>&nbsp;
+                        Upload Config File
+                      </MenuItem>
+                      <MenuItem eventKey="3"
+                        bsStyle="default"
+                        onClick={this.deployCompose.bind(this)}
+                      >
+                        <img src={require('../../../assets/img/black-octopus.png')}/>&nbsp;
+                        Deploy Compose File
+                      </MenuItem>
+                      </DropdownButton>
+                  </ButtonGroup>
+                </ButtonToolbar>
+              )}
               <div className="containers">
                 <DockTable columns={columns}
                            rows={rows}
@@ -370,10 +480,11 @@ export default class ClusterDetailsPanel extends Component {
   }
 
   tdActions(container) {
+    let actions = (container.run) ? this.STOPPED_ACTIONS : this.RUN_ACTIONS;
     return (
       <td className="td-actions" key="actions">
         <ActionMenu subject={container.id}
-                    actions={this.ACTIONS}
+                    actions={actions}
                     actionHandler={this.onActionInvoke.bind(this)}
         />
 
@@ -541,6 +652,38 @@ export default class ClusterDetailsPanel extends Component {
         deleteCluster(name)
           .then(() => browserHistory.push('/clusters'));
       }, () => null);
+  }
+
+  getClusterSource() {
+    const {getClusterSource, params: {name}} = this.props;
+    getClusterSource(name).then((response)=> {
+      let data = 'text/json;charset=utf-8,' + encodeURIComponent(response._res.text);
+      downloadFile(data, name + '.yaml');
+    }).catch(()=>null);
+  }
+
+  deployCompose() {
+    const {params: {name}} = this.props;
+    this.setState({
+      actionDialog: (
+        <ClusterUploadCompose title="Deploy Cluster From Compose File"
+                              onHide={this.onHideDialog.bind(this)}
+                              cluster={name}
+        />
+      )
+    });
+  }
+
+  setClusterSource() {
+    const {params: {name}} = this.props;
+    this.setState({
+      actionDialog: (
+        <ClusterSetSource title={"Set " + name + " Cluster Source"}
+                          cluster={name}
+                          onHide={this.onHideDialog.bind(this)}
+        />
+      )
+    });
   }
 
 }

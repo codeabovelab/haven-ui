@@ -7,6 +7,7 @@ import {DockTable, ClustersList, StatisticsPanel, Dialog, EventLog} from 'compon
 import {ClusterAdd, ClusterConfig, ClusterInformation} from '../../index';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar} from 'react-bootstrap';
 import {count as countEvents} from 'redux/modules/events/events';
+import {deleteClusterImages} from 'redux/modules/images/images';
 
 @connect(
   state => ({
@@ -19,6 +20,7 @@ import {count as countEvents} from 'redux/modules/events/events';
     deleteCluster: clusterActions.deleteCluster,
     loadNodes: clusterActions.loadNodes,
     countEvents,
+    deleteClusterImages
   }
 )
 export default class ClustersPanel extends Component {
@@ -30,10 +32,11 @@ export default class ClustersPanel extends Component {
     loadNodes: PropTypes.func.isRequired,
     events: PropTypes.object,
     alerts: PropTypes.object,
-    countEvents: PropTypes.func.isRequired
+    countEvents: PropTypes.func.isRequired,
+    deleteClusterImages: PropTypes.func.isRequired
   };
 
-  statisticsMetrics = [
+  statisticsMetricsNodesUp = [
     {
       type: 'number',
       title: 'Cluster Running',
@@ -43,6 +46,30 @@ export default class ClustersPanel extends Component {
       type: 'number',
       title: 'Node Running',
       titles: "Nodes Running"
+    },
+    {
+      type: 'number',
+      title: 'Running Container',
+      titles: 'Running Containers',
+    },
+    {
+      type: 'number',
+      title: 'Error in last 24 hours',
+      titles: 'Errors in last 24 hours'
+    }
+  ];
+
+  statisticsMetricsNodesDown = [
+    {
+      type: 'number',
+      title: 'Cluster Running',
+      titles: "Clusters Running"
+    },
+    {
+      type: 'number',
+      title: 'Node Down',
+      titles: "Nodes Down",
+      highlight: true
     },
     {
       type: 'number',
@@ -86,33 +113,18 @@ export default class ClustersPanel extends Component {
 
     let clusterCount = 0;
     let runningNodes = 0;
+    let downNodes = 0;
     let runningContainers = 0;
     let errorCount = 0;
 
     if (clustersList && clustersList.length > 0) {
       clusterCount = clustersList.length || 0;
-
       clustersAll.forEach((cluster) => {
         runningNodes += cluster.nodes.on || 0;
+        downNodes += cluster.nodes.off || 0;
         runningContainers += cluster.containers.on || 0;
       });
     }
-
-    const clustersHeaderBar = (
-      <div className="clearfix">
-        <h3>Clusters</h3>
-
-        <ButtonToolbar>
-          <Button
-            bsStyle="primary"
-            onClick={this.onActionInvoke.bind(this, "create")}
-          >
-            <i className="fa fa-plus" />&nbsp;
-            New Cluster
-          </Button>
-        </ButtonToolbar>
-      </div>
-    );
 
     const eventsHeaderBar = (
       <div className="clearfix">
@@ -125,10 +137,16 @@ export default class ClustersPanel extends Component {
         <ul className="breadcrumb">
           <li className="active">Clusters</li>
         </ul>
-        <StatisticsPanel metrics={this.statisticsMetrics}
-                         values={[clusterCount, runningNodes, runningContainers, errorCount]}
-        />
-
+        {(runningNodes > 0 || runningNodes === downNodes) && (
+          <StatisticsPanel metrics={this.statisticsMetricsNodesUp}
+                           values={[clusterCount, runningNodes, runningContainers, errorCount]}
+          />
+        )}
+        {(runningNodes === 0 && downNodes > 0) && (
+          <StatisticsPanel metrics={this.statisticsMetricsNodesDown}
+                           values={[clusterCount, downNodes, runningContainers, errorCount]}
+          />
+        )}
         <ClustersList loading={typeof clustersList === "undefined"}
                       data={clustersList}
                       onNewCluster={this.onActionInvoke.bind(this, "create")}
@@ -222,6 +240,14 @@ export default class ClustersPanel extends Component {
               .then(() => this.props.loadClusters(), this.props.loadNodes('orphans'));
           })
           .catch(() => null);// confirm cancel
+        return;
+
+      case "deleteImages":
+        confirm("Are you sure you want to delete unused images in cluster " + cluster + "?")
+          .then(() => {
+            this.props.deleteClusterImages(cluster).catch(() => null);
+          })
+          .catch(() => null);
         return;
 
       default:

@@ -8,9 +8,9 @@ const methods = ['get', 'post', 'put', 'patch', 'del'];
 
 function formatUrl(path) {
   const adjustedPath = path[0] !== '/' ? '/' + path : path;
-  if (__DISABLE_SSR__ || __SERVER__) {
+  if (!__API_PROXY__ || __SERVER__) {
     // Prepend host and port of the API server to the path.
-    return 'http://' + config.apiHost + ':' + config.apiPort + adjustedPath;
+    return 'http://' + config.apiHost + adjustedPath;
   }
   // Prepend `/api` to relative URL, to proxy to API server.
   return '/api' + adjustedPath;
@@ -19,7 +19,7 @@ function formatUrl(path) {
 export default class ApiClient {
   constructor(req) {
     methods.forEach((method) =>
-      this[method] = (path, { params, data } = {}) => new Promise((resolve, reject) => {
+      this[method] = (path, { params, data, contentType } = {}) => new Promise((resolve, reject) => {
         const request = superagent[method](formatUrl(path));
         this.setToken(request);
         if (params) {
@@ -27,6 +27,9 @@ export default class ApiClient {
         }
 
         if (data) {
+          if (contentType) {
+            request.set("Content-Type", contentType);
+          }
           request.send(data);
         }
 
@@ -77,7 +80,6 @@ export default class ApiClient {
   _store;
 
   setStore(store) {
-    console.debug(" *** SET STORE *** ", store);
     this._store = store;
   }
 

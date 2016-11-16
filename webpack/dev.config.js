@@ -1,12 +1,20 @@
 require('babel-polyfill');
+var helpers = require('./helpers');
 
 // Webpack config for development
+// we use it for build for local dev-server and for test server on 'hb.codeabvelab.com'
 var fs = require('fs');
 var path = require('path');
 var webpack = require('webpack');
-var assetsPath = path.resolve(__dirname, '../static/dist');
-var host = (process.env.HOST || 'localhost');
-var port = (+process.env.PORT + 1) || 3001;
+var CleanPlugin = require('clean-webpack-plugin');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
+
+var projectRootPath = path.resolve(__dirname, '../');
+var distPath = path.resolve(projectRootPath, './dist');
+
+var hostPub = process.env.HOST || "localhost";
+var hostDev = process.env.DEV_PORT? (hostPub.replace(/:\d+$/,"") + ":" + process.env.DEV_PORT) : null ;
 
 // https://github.com/halt-hammerzeit/webpack-isomorphic-tools
 var WebpackIsomorphicToolsPlugin = require('webpack-isomorphic-tools/plugin');
@@ -68,18 +76,23 @@ module.exports = {
     "global":[
       './src/js/_global.js'
     ],
-    'main': [
-      'webpack-hot-middleware/client?path=http://' + host + ':' + port + '/__webpack_hmr',
-      'bootstrap-loader',
-      'font-awesome-webpack!./src/theme/font-awesome.config.js',
-      './src/client.js'
-    ]
+    'main': (() => {
+      var arr = [
+        'bootstrap-loader',
+        'font-awesome-webpack!./src/theme/font-awesome.config.js',
+        './src/client.js'
+      ];
+      if(hostDev) {
+        arr.unshift('webpack-hot-middleware/client?path=http://' + hostDev + '/__webpack_hmr');
+      }
+      return arr;
+    })()
   },
   output: {
-    path: assetsPath,
+    path: distPath,
     filename: '[name]-[hash].js',
     chunkFilename: '[name]-[chunkhash].js',
-    publicPath: 'http://' + host + ':' + port + '/dist/'
+    publicPath: hostDev? 'http://' + hostDev + '/dist/' : null
   },
   module: {
     loaders: [
@@ -111,15 +124,29 @@ module.exports = {
     new webpack.ProvidePlugin({
       "window.Tether": "tether"
     }),
+    new CleanPlugin([distPath], {root: projectRootPath}),
     // hot reload
     new webpack.HotModuleReplacementPlugin(),
     new webpack.IgnorePlugin(/webpack-stats\.json$/),
     new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: '"development"',
+        API_HOST: JSON.stringify(process.env.API_HOST)
+      },
       __CLIENT__: true,
       __SERVER__: false,
+      __API_PROXY__: process.env.API_PROXY? true : false,
       __DEVELOPMENT__: true,
-      __DEVTOOLS__: true,  // <-------- DISABLE redux-devtools HERE
-      __DISABLE_SSR__: false
+      __DEVTOOLS__: true  // <-------- DISABLE redux-devtools HERE
+    }),
+    new CopyWebpackPlugin([{
+        from: 'static',
+        to: ''
+      }]
+    ),
+    new HtmlWebpackPlugin({
+      template: 'webpack/index.html',
+      chunksSortMode: helpers.packageSort(['tether', 'global', 'main'])
     }),
     webpackIsomorphicToolsPlugin.development()
   ]

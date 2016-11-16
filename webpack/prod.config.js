@@ -10,7 +10,6 @@ var strip = require('strip-loader');
 
 var projectRootPath = path.resolve(__dirname, '../');
 var distPath = path.resolve(projectRootPath, './dist');
-//var assetsPath = path.resolve(projectRootPath, './dist/assets');
 
 // https://github.com/halt-hammerzeit/webpack-isomorphic-tools
 var WebpackIsomorphicToolsPlugin = require('webpack-isomorphic-tools/plugin');
@@ -82,9 +81,9 @@ module.exports = {
 
       __CLIENT__: true,
       __SERVER__: false,
+      __API_PROXY__: false,
       __DEVELOPMENT__: false,
-      __DEVTOOLS__: false,
-      __DISABLE_SSR__: true
+      __DEVTOOLS__: false
     }),
 
     // ignore dev config

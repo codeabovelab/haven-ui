@@ -50,21 +50,23 @@ export default class LoadingDialog extends Component {
   }
 
   componentWillUpdate(nextProps, nextState) {
-    let message;
+    let message = '';
     let $actionResponse = $('#actionResponse');
     const {actionKey, container, application} = this.props;
     let entity = container ? container : application;
     let entityType = container ? 'Container ' : 'Application ';
     const status = nextState.longTermActionResponse.status || nextState.longTermActionResponse.code;
-    switch (status) {
-      case 200:
-        message = entityType + "\"" + entity.name + "\"" + ' successfully ' + actionKey;
-        break;
-      case 304:
-        message = entityType + "\"" + entity.name + "\"" + ' was not modified';
-        break;
-      default:
-        message = 'Error: ' + nextState.longTermActionResponse.message;
+    if (status) {
+      switch (status) {
+        case 200:
+          message = entityType + "\"" + entity.name + "\"" + ' successfully ' + actionKey;
+          break;
+        case 304:
+          message = entityType + "\"" + entity.name + "\"" + ' was not modified';
+          break;
+        default:
+          message = 'Error: ' + nextState.longTermActionResponse.message;
+      }
     }
     $actionResponse.find('div').text(message);
   }
