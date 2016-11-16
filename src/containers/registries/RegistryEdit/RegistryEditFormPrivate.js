@@ -43,9 +43,9 @@ export default class RegistryEditFormPrivate extends RegistryEditCommon {
     return (
       <form onSubmit={this.props.handleSubmit}>
         {this.renderLabel('Name', fields.name)}
-        {this.renderInput('text', 'User name', 'User Name (required)', fields.username, firstLoad)}
+        {this.renderInput('text', 'User name', 'Username (required)', fields.username, firstLoad)}
         {this.renderInput('password', 'Password', 'Password (required)', fields.password, firstLoad)}
-        {this.renderInput('text', 'Url', 'Url (required)', fields.url, firstLoad)}
+        {this.renderInput('text', 'URL', 'URL (required)', fields.url, firstLoad)}
         {this.renderTwoCheckboxes(fields)}
         <hr className="bottom-form-separator"/>
         {this.renderButtonSubmit(valid, okTitle)}
