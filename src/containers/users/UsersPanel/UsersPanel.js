@@ -83,6 +83,8 @@ export default class UsersPanel extends Component {
   }
 
   onHideDialog() {
+    const {getUsers} = this.props;
+    getUsers();
     this.setState({
       actionDialog: undefined
     });

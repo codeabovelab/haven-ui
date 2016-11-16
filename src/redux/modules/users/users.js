@@ -143,3 +143,17 @@ export function addUserRole(userName, role) {
     promise: (client) => client.post(`/ui/api/users/${userName}/roles/${role}`)
   };
 }
+
+export function setSingleACL(type, id, aclData) {
+  return {
+    types: [ACTIONS.SET_Single_ACL, ACTIONS.SET_Single_ACL_SUCCESS, ACTIONS.SET_Single_ACL_FAIL],
+    promise: (client) => client.post(`/ui/api/acl/${type}/${id}`, {data: aclData})
+  };
+}
+
+export function setACL(aclData) {
+  return {
+    types: [ACTIONS.SET_ACL, ACTIONS.SET_ACL_SUCCESS, ACTIONS.SET_ACL_FAIL],
+    promise: (client) => client.post(`/ui/api/acl/`, {data: aclData})
+  };
+}

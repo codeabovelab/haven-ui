@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
 import {load, create, loadNodes} from 'redux/modules/clusters/clusters';
 import {create as createNode} from 'redux/modules/nodes/nodes';
-import {setUser, addUserRole} from 'redux/modules/users/users';
+import {setUser, addUserRole, setACL, getUsers} from 'redux/modules/users/users';
 import {createValidator, required, email} from 'utils/validation';
 import {Dialog} from 'components';
 import {FormGroup, FormControl, ControlLabel, HelpBlock, Alert, Button, ButtonGroup, Input, ButtonToolbar} from 'react-bootstrap';
@@ -13,7 +13,7 @@ import _ from 'lodash';
   users: state.users,
   clusters: state.clusters,
   createError: state.users.setUserError
-}), {create, load, createNode, loadNodes, setUser, addUserRole})
+}), {create, load, createNode, loadNodes, setUser, addUserRole, setACL})
 @reduxForm({
   form: 'ClusterAdd',
   fields: [
@@ -41,16 +41,19 @@ export default class UserAdd extends Component {
     okTitle: PropTypes.string,
     load: PropTypes.func.isRequired,
     setUser: PropTypes.func.isRequired,
-    addUserRole: PropTypes.func.isRequired
+    addUserRole: PropTypes.func.isRequired,
+    setACL: PropTypes.func.isRequired,
+    getUsers: PropTypes.func.isRequired
   };
   constructor() {
     super();
     this.state = {
-      firstLoad: true
+      firstLoad: true,
+      clustersACL: {}
     };
   }
   onSubmit() {
-    const {fields, setUser} = this.props;
+    const {fields, setUser, setACL, getUsers, onHide} = this.props;
     this.setState({
       firstLoad: false
     });
@@ -62,9 +65,6 @@ export default class UserAdd extends Component {
       "email": fields.email.value || '',
       "enabled": true,
       "password": "string",
-      "permissions": [
-        {}
-      ],
       "roles": [
         {
           "name": fields.role.value || '',
@@ -72,12 +72,40 @@ export default class UserAdd extends Component {
         }
       ],
     };
-    setUser(fields.username.value, userData);
+    setUser(fields.username.value, userData).then(()=> {
+      let aclData = {
+        "CLUSTER:s:dev": {
+          "entries": [
+            {
+              "sid": {
+                "type": "PRINCIPAL",
+                "principal": fields.username.value,
+                "tenant": "root"
+              },
+              "granting": true,
+              "permission": "RU"
+            }
+          ]
+        }
+      };
+      setACL(aclData);
+    }).then(()=>onHide());
   }
 
   componentWillMount() {
     const {load} = this.props;
-    load();
+    load().then(()=> {
+      const {clusters} = this.props;
+      console.log(clusters);
+      _.each(clusters, (value, key)=> {
+        this.setState({
+          clustersACL: {
+            ...this.state.clustersACL,
+            [key]: "none"
+          }
+        });
+      });
+    });
   }
 
   componentDidMount() {
@@ -155,12 +183,12 @@ export default class UserAdd extends Component {
                     <div className="col-md-6">
                       <ButtonToolbar key={cluster.name} className="pseudo-radio-group pulled-right">
                         <Button bsStyle="default" onClick={this.onPermissionChange.bind(this, 'admin', cluster.name)} key={1}
-                                active={this.state[cluster.name] === 'admin'}>Admin</Button>
+                                active={this.state.clustersACL[cluster.name] === 'admin'}>Admin</Button>
                         <Button className="middleButton"
                                 onClick={this.onPermissionChange.bind(this, 'readOnly', cluster.name)} key={2}
-                                active={this.state[cluster.name] === 'readOnly'}>Read Only</Button>
+                                active={this.state.clustersACL[cluster.name] === 'readOnly'}>Read Only</Button>
                         <Button onClick={this.onPermissionChange.bind(this, 'none', cluster.name)} key={3}
-                                active={this.state[cluster.name] === 'none'}>None</Button>
+                                active={this.state.clustersACL[cluster.name] === 'none'}>None</Button>
                       </ButtonToolbar>
                     </div>
                   </FormGroup>
@@ -179,7 +207,10 @@ export default class UserAdd extends Component {
 
   onPermissionChange(newI, clusterName) {
     this.setState({
-      [clusterName]: newI
+      clustersACL: {
+        ...this.state.clustersACL,
+        [clusterName]: newI
+      }
     });
   }
 
