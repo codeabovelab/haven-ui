@@ -44,7 +44,8 @@ export default class UserAdd extends Component {
     addUserRole: PropTypes.func.isRequired,
     setACL: PropTypes.func.isRequired,
     getUsers: PropTypes.func.isRequired,
-    existingUsers: PropTypes.array
+    existingUsers: PropTypes.array,
+    userName: PropTypes.string
   };
   constructor() {
     super();
@@ -138,15 +139,18 @@ export default class UserAdd extends Component {
   }
 
   componentDidMount() {
-    const {fields} = this.props;
+    const {fields, userName} = this.props;
     console.log($('#roleSelect').val());
     if (this.state.firstLoad) {
       fields.role.onChange($('#roleSelect').val());
     }
+    if (userName) {
+      fields.username.onChange(userName);
+    }
   }
 
   render() {
-    const { fields, okTitle, clusters } = this.props;
+    const { fields, okTitle, clusters, userName } = this.props;
     const {roles, usersList} = this.props.users;
     return (
       <Dialog show
@@ -171,7 +175,8 @@ export default class UserAdd extends Component {
             <FormControl type="text"
                          {...fields.username}
                          placeholder="User Name (required)"
-                         disabled = {okTitle === 'Update Cluster'}
+                         disabled = {okTitle === 'Update User'}
+                         defaultValue = {userName === 'undefined' ? '' : userName}
             />
           </FormGroup>
           <div ref="usernameError" className="text-danger text-xs-center text-error field-error">

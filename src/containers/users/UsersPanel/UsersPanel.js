@@ -105,6 +105,18 @@ export default class UsersPanel extends Component {
           )
         });
         return;
+      case "edit":
+        this.setState({
+          actionDialog: (
+            <UserAdd title="Edit User"
+                     onHide={this.onHideDialog.bind(this)}
+                     okTitle="Update User"
+                     existingUsers={usersNames}
+                     userName={userName}
+            />
+          )
+        });
+        return;
       case "delete":
         confirm('Are you sure you want to delete this user')
           .then(() => {
