@@ -43,7 +43,8 @@ export default class UserAdd extends Component {
     setUser: PropTypes.func.isRequired,
     addUserRole: PropTypes.func.isRequired,
     setACL: PropTypes.func.isRequired,
-    getUsers: PropTypes.func.isRequired
+    getUsers: PropTypes.func.isRequired,
+    existingUsers: PropTypes.array
   };
   constructor() {
     super();
@@ -53,11 +54,15 @@ export default class UserAdd extends Component {
     };
   }
   onSubmit() {
-    const {fields, setUser, setACL, onHide} = this.props;
+    const {fields, setUser, setACL, onHide, existingUsers} = this.props;
     this.setState({
       firstLoad: false
     });
     console.log(fields);
+    if (_.includes(existingUsers, fields.username.value) && this.props.okTitle === 'Create User') {
+      this.refs.usernameError.textContent = 'User with name: "' + fields.username.value + '" already exists. Please use another name.';
+      return false;
+    }
     let clustersACL = this.state.clustersACL;
     let aclData = {};
     _.each(clustersACL, (value, key)=> {
@@ -169,6 +174,8 @@ export default class UserAdd extends Component {
                          disabled = {okTitle === 'Update Cluster'}
             />
           </FormGroup>
+          <div ref="usernameError" className="text-danger text-xs-center text-error field-error">
+          </div>
           <FormGroup validationState={fields.email.error ? "error" : ""}>
             <ControlLabel>Email</ControlLabel>
 

@@ -4,6 +4,7 @@ import {DockTable, StatisticsPanel, UsersList} from '../../../components';
 import {Link} from 'react-router';
 import * as usersActions from 'redux/modules/users/users';
 import UserAdd from '../UserAdd/UserAdd';
+import _ from 'lodash';
 
 @connect(
   state => ({
@@ -91,6 +92,7 @@ export default class UsersPanel extends Component {
   }
 
   onActionInvoke(action, userName) {
+    let usersNames = _.keys(this.props.users.usersList);
     switch (action) {
       case "create":
         this.setState({
@@ -98,6 +100,7 @@ export default class UsersPanel extends Component {
             <UserAdd title="Create User"
                      onHide={this.onHideDialog.bind(this)}
                      okTitle="Create User"
+                     existingUsers={usersNames}
             />
           )
         });
