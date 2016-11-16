@@ -53,11 +53,50 @@ export default class UserAdd extends Component {
     };
   }
   onSubmit() {
-    const {fields, setUser, setACL, getUsers, onHide} = this.props;
+    const {fields, setUser, setACL, onHide} = this.props;
     this.setState({
       firstLoad: false
     });
     console.log(fields);
+    let clustersACL = this.state.clustersACL;
+    let aclData = {};
+    _.each(clustersACL, (value, key)=> {
+      let id = "CLUSTER:s:" + key;
+      let permission = this.state.clustersACL[key];
+      let permissionVal = "";
+      switch (permission) {
+        case "readOnly":
+          permissionVal = "R";
+          break;
+        case "manager":
+          permissionVal = "RU";
+          break;
+        case "none":
+          permissionVal = "";
+          break;
+        default:
+          break;
+      }
+      aclData = {
+        ...aclData,
+        [id]: {
+          "entries": [
+            {
+              "id": fields.username.value + ":CLUSTER:" + key,
+              "sid": {
+                "type": "PRINCIPAL",
+                "principal": fields.username.value,
+                "tenant": "root"
+              },
+              "granting": true,
+              "permission": permissionVal
+            }
+          ]
+        }
+      };
+    });
+    console.log('ACLDATA', aclData);
+
     let userData = {
       "accountNonExpired": true,
       "accountNonLocked": true,
@@ -73,21 +112,6 @@ export default class UserAdd extends Component {
       ],
     };
     setUser(fields.username.value, userData).then(()=> {
-      let aclData = {
-        "CLUSTER:s:dev": {
-          "entries": [
-            {
-              "sid": {
-                "type": "PRINCIPAL",
-                "principal": fields.username.value,
-                "tenant": "root"
-              },
-              "granting": true,
-              "permission": "RU"
-            }
-          ]
-        }
-      };
       setACL(aclData);
     }).then(()=>onHide());
   }
@@ -179,11 +203,11 @@ export default class UserAdd extends Component {
                 return (
                   <div>
                   <FormGroup>
-                    <div className="col-md-6 buttongroup-label"><b>{cluster.name}</b></div>
-                    <div className="col-md-6">
+                    <div className="col-md-4 buttongroup-label"><b>{cluster.name}</b></div>
+                    <div className="col-md-8">
                       <ButtonToolbar key={cluster.name} className="pseudo-radio-group pulled-right">
-                        <Button bsStyle="default" onClick={this.onPermissionChange.bind(this, 'admin', cluster.name)} key={1}
-                                active={this.state.clustersACL[cluster.name] === 'admin'}>Admin</Button>
+                        <Button bsStyle="default" onClick={this.onPermissionChange.bind(this, 'manager', cluster.name)} key={1}
+                                active={this.state.clustersACL[cluster.name] === 'manager'}>Manager</Button>
                         <Button className="middleButton"
                                 onClick={this.onPermissionChange.bind(this, 'readOnly', cluster.name)} key={2}
                                 active={this.state.clustersACL[cluster.name] === 'readOnly'}>Read Only</Button>
