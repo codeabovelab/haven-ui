@@ -55,7 +55,8 @@ export default class UserAdd extends Component {
     };
   }
   onSubmit() {
-    const {fields, setUser, setACL, onHide, existingUsers} = this.props;
+    const {fields, setUser, setACL, onHide, existingUsers, userName} = this.props;
+    const {usersList} = this.props.users;
     this.setState({
       firstLoad: false
     });
@@ -103,6 +104,25 @@ export default class UserAdd extends Component {
     });
     console.log('ACLDATA', aclData);
 
+    let roles = [
+      {
+        "name": fields.role.value,
+        "tenant": "root"
+      }
+    ];
+    if (userName && usersList) {
+      let previousRole = _.get(usersList, userName + '.roles.0.name', '');
+      if (fields.role.value === previousRole) {
+        roles = [];
+      } else if (previousRole && previousRole !== fields.role.value) {
+        roles = [...roles, {
+          "delete": true,
+          "name": previousRole,
+          "tenant": "root"
+        }];
+      }
+    }
+
     let userData = {
       "accountNonExpired": true,
       "accountNonLocked": true,
@@ -140,12 +160,16 @@ export default class UserAdd extends Component {
 
   componentDidMount() {
     const {fields, userName} = this.props;
-    console.log($('#roleSelect').val());
+    const {usersList} = this.props.users;
+    let defaultRole = $('#roleSelect').val();
+    console.log(defaultRole);
     if (this.state.firstLoad) {
-      fields.role.onChange($('#roleSelect').val());
+      fields.role.onChange(defaultRole);
     }
     if (userName) {
       fields.username.onChange(userName);
+      let previousRole = _.get(usersList, userName + '.roles.0.name', defaultRole);
+      fields.role.onChange(previousRole);
     }
   }
 
