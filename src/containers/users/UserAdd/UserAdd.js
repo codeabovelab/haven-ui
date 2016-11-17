@@ -192,8 +192,8 @@ export default class UserAdd extends Component {
           fields.role.onChange(previousRole);
         }
         getUserAcl(userName).then(()=> {
-          const {existingAcl} = this.props.users.usersList[userName];
-          _.forEach(existingAcl, (value, key) => {
+          const {acl} = this.props.users.usersList[userName];
+          _.forEach(acl, (value, key) => {
             if (this.state.clustersACL[key] && value.permission) {
               let aclVal = "none";
               switch (value.permission) {
