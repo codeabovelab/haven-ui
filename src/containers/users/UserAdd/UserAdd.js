@@ -58,6 +58,10 @@ export default class UserAdd extends Component {
   onSubmit() {
     const {fields, setUser, setACL, onHide, existingUsers, userName} = this.props;
     const {usersList} = this.props.users;
+    let acl = {};
+    if (userName) {
+      acl = this.props.users.usersList[userName].acl;
+    }
     this.setState({
       firstLoad: false
     });
@@ -81,6 +85,20 @@ export default class UserAdd extends Component {
           break;
         case "none":
           permissionVal = "";
+          console.log('ACL ', acl);
+          if (acl && acl[key]) {
+            aclData = {
+              ...aclData,
+              [id]: {
+                "entries": [
+                  {
+                    "id": fields.username.value + ":CLUSTER:" + key,
+                    "delete": true
+                  }
+                ]
+              }
+            };
+          }
           break;
         default:
           break;
