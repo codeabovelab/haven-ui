@@ -75,6 +75,17 @@ export default function reducer(state = {}, action = {}) {
         ...state,
         deleteUserError: action.error.message
       };
+    case ACTIONS.GET_USER_ACL_SUCCESS:
+      return {
+        ...state,
+        usersList: {
+          ...state.usersList,
+          [action.id]: {
+            ...state.usersList[action.id],
+            acl: action.result
+          }
+        }
+      };
     default:
       return state;
   }
@@ -155,5 +166,13 @@ export function setACL(aclData) {
   return {
     types: [ACTIONS.SET_ACL, ACTIONS.SET_ACL_SUCCESS, ACTIONS.SET_ACL_FAIL],
     promise: (client) => client.post(`/ui/api/acl/`, {data: aclData})
+  };
+}
+
+export function getUserAcl(userName) {
+  return {
+    types: [ACTIONS.GET_USER_ACL, ACTIONS.GET_USER_ACL_SUCCESS, ACTIONS.GET_USER_ACL_FAIL],
+    id: userName,
+    promise: (client) => client.get(`/ui/api/users/${userName}/acls/`)
   };
 }
