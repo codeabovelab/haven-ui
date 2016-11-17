@@ -162,7 +162,7 @@ export default class UserAdd extends Component {
   }
 
   componentDidMount() {
-    const {fields, userName} = this.props;
+    const {fields, userName, getUserAcl} = this.props;
     const {usersList} = this.props.users;
     let defaultRole = $('#roleSelect').val();
     console.log(defaultRole);
@@ -173,6 +173,7 @@ export default class UserAdd extends Component {
       fields.username.onChange(userName);
       let previousRole = _.get(usersList, userName + '.roles.0.name', defaultRole);
       fields.role.onChange(previousRole);
+      getUserAcl(userName);
     }
   }
 
