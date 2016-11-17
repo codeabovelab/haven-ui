@@ -82,7 +82,8 @@ export default function reducer(state = {}, action = {}) {
         if (value.entries) {
           let entry = _.filter(value.entries, {"sid": {"principal": action.id}});
           console.log(entry);
-          let id = entry[0] ? entry[0].id.match(/:([^A-Z]+)/)[1] : null;
+          let match = entry[0] ? entry[0].id.match(/:([^A-Z]+)/) : [];
+          let id = match && match[1] ? match[1] : null;
           console.log(id);
           if (id) {
             entries = {...entries, [id]: entry[0]};
