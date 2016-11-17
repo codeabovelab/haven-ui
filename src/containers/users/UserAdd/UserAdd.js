@@ -227,10 +227,10 @@ export default class UserAdd extends Component {
   }
 
   componentDidMount() {
-    const {fields} = this.props;
+    const {fields, userName} = this.props;
     let defaultRole = $('#roleSelect').val();
     console.log(defaultRole);
-    if (this.state.firstLoad) {
+    if (this.state.firstLoad && !userName) {
       fields.role.onChange(defaultRole);
     }
   }
