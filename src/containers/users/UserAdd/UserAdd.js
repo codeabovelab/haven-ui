@@ -104,23 +104,37 @@ export default class UserAdd extends Component {
       }
       if (permissionVal) {
         console.log(permissionVal);
-        aclData = {
-          ...aclData,
-          [id]: {
-            "entries": [
-              {
-                "id": fields.username.value + ":CLUSTER:" + key,
-                "sid": {
-                  "type": "PRINCIPAL",
-                  "principal": fields.username.value,
-                  "tenant": "root"
-                },
-                "granting": true,
-                "permission": permissionVal
-              }
-            ]
-          }
-        };
+        if (fields.role.value === 'ROLE_ADMIN') {
+          aclData = {
+            ...aclData,
+            [id]: {
+              "entries": [
+                {
+                  "id": fields.username.value + ":CLUSTER:" + key,
+                  "delete": true
+                }
+              ]
+            }
+          };
+        } else {
+          aclData = {
+            ...aclData,
+            [id]: {
+              "entries": [
+                {
+                  "id": fields.username.value + ":CLUSTER:" + key,
+                  "sid": {
+                    "type": "PRINCIPAL",
+                    "principal": fields.username.value,
+                    "tenant": "root"
+                  },
+                  "granting": true,
+                  "permission": permissionVal
+                }
+              ]
+            }
+          };
+        }
       }
     });
     console.log('ACLDATA', aclData);
