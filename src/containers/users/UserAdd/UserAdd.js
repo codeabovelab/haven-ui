@@ -15,7 +15,7 @@ import _ from 'lodash';
   createError: state.users.setUserError
 }), {create, load, createNode, loadNodes, setUser, addUserRole, setACL, getUserAcl})
 @reduxForm({
-  form: 'ClusterAdd',
+  form: 'UserAdd',
   fields: [
     'email',
     'username',
@@ -55,7 +55,7 @@ export default class UserAdd extends Component {
     };
   }
   onSubmit() {
-    const {fields, setUser, setACL, onHide, existingUsers, userName} = this.props;
+    const {fields, setUser, setACL, onHide, existingUsers, userName, resetForm} = this.props;
     const {usersList} = this.props.users;
     let acl = {};
     if (userName) {
@@ -173,7 +173,10 @@ export default class UserAdd extends Component {
       if (!_.isEmpty(aclData)) {
         setACL(aclData);
       }
-    }).then(()=>onHide());
+    }).then(()=>{
+      resetForm();
+      onHide();
+    });
   }
 
   componentWillMount() {
@@ -328,16 +331,4 @@ export default class UserAdd extends Component {
       }
     });
   }
-
-  // addUser() {
-  //   const {create, load, fields, resetForm} = this.props;
-  //
-  //   return create({name: fields.name.value})
-  //     .then(() => {
-  //       resetForm();
-  //       load();
-  //       window.simpleModal.close();
-  //     })
-  //     .catch();
-  // }
 }

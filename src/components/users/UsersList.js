@@ -52,6 +52,10 @@ export default class UsersList extends Component {
     },
     null,
     {
+      key: "changePassword",
+      title: "Change Password"
+    },
+    {
       key: "delete",
       title: "Delete"
     }

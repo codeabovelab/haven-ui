@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {DockTable, StatisticsPanel, UsersList} from '../../../components';
 import {Link} from 'react-router';
 import * as usersActions from 'redux/modules/users/users';
-import UserAdd from '../UserAdd/UserAdd';
+import {UserAdd, UserPassChange} from '../../index';
 import _ from 'lodash';
 
 @connect(
@@ -141,6 +141,17 @@ export default class UsersPanel extends Component {
               .then(() => this.props.getUsers());
           })
           .catch(() => null);
+        return;
+      case "changePassword":
+        this.setState({
+          actionDialog: (
+            <UserPassChange title={"Change user " + userName + " password"}
+                            onHide={this.onHideDialog.bind(this)}
+                            okTitle="Change Password"
+                            userName={userName}
+            />
+          )
+        });
         return;
       default:
         return;
