@@ -63,7 +63,6 @@ export default class UsersList extends Component {
 
   render() {
     const {data, roles} = this.props;
-    console.log(data);
     const rows = [];
 
     if (data) {
@@ -74,7 +73,6 @@ export default class UsersList extends Component {
         rows.push(data[el]);
       }
     }
-    console.log(rows);
 
     return (
       <Panel>
@@ -123,7 +121,6 @@ export default class UsersList extends Component {
   }
 
   emailRender(row) {
-    console.log(row);
     return (
       <td>
         {_.get(row, 'email', '')}

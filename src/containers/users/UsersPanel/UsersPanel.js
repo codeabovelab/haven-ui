@@ -63,7 +63,6 @@ export default class UsersPanel extends Component {
         if (!usersList.hasOwnProperty(el)) {
           continue;
         }
-        console.log('EL: ', usersList[el]);
         let role = _.get(usersList[el], 'roles[0].name', '');
         switch (role) {
           case "ROLE_USER":

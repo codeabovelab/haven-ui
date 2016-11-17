@@ -63,14 +63,12 @@ export default class UserAdd extends Component {
     this.setState({
       firstLoad: false
     });
-    console.log(fields);
     if (_.includes(existingUsers, fields.username.value) && this.props.okTitle === 'Create User') {
       this.refs.usernameError.textContent = 'User with name: "' + fields.username.value + '" already exists. Please use another name.';
       return false;
     }
     let clustersACL = this.state.clustersACL;
     let aclData = this.fillAclData(fields, clustersACL, existingAcl);
-    console.log('ACLDATA', aclData);
 
     let roles = [
       {
@@ -80,8 +78,6 @@ export default class UserAdd extends Component {
     ];
     if (userName && usersList) {
       let previousRole = _.get(usersList, userName + '.roles.0.name', '');
-      console.log('prRole: ', previousRole);
-      console.log('role: ', fields.role.value);
       if (fields.role.value === previousRole) {
         roles = [];
       } else if (previousRole && previousRole !== fields.role.value) {
@@ -127,7 +123,6 @@ export default class UserAdd extends Component {
           break;
         case "none":
           permissionVal = "";
-          console.log('ACL ', existingAcl);
           if (existingAcl && existingAcl[key]) {
             aclData = {
               ...aclData,
@@ -146,7 +141,6 @@ export default class UserAdd extends Component {
           break;
       }
       if (permissionVal) {
-        console.log(permissionVal);
         if (fields.role.value === 'ROLE_ADMIN') {
           aclData = {
             ...aclData,
@@ -188,7 +182,6 @@ export default class UserAdd extends Component {
     const {usersList} = this.props.users;
     load().then(()=> {
       const {clusters} = this.props;
-      console.log(clusters);
       _.each(clusters, (value, key)=> {
         this.onPermissionChange("none", key);
       });
@@ -199,10 +192,8 @@ export default class UserAdd extends Component {
           fields.role.onChange(previousRole);
         }
         getUserAcl(userName).then(()=> {
-          const {acl} = this.props.users.usersList[userName];
-          console.log('acl: ', acl);
-          _.forEach(acl, (value, key) => {
-            console.log('value ', value);
+          const {existingAcl} = this.props.users.usersList[userName];
+          _.forEach(existingAcl, (value, key) => {
             if (this.state.clustersACL[key] && value.permission) {
               let aclVal = "none";
               switch (value.permission) {
@@ -226,7 +217,6 @@ export default class UserAdd extends Component {
   componentDidMount() {
     const {fields, userName} = this.props;
     let defaultRole = $('#roleSelect').val();
-    console.log(defaultRole);
     if (this.state.firstLoad && !userName) {
       fields.role.onChange(defaultRole);
     }

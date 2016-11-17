@@ -76,23 +76,17 @@ export default function reducer(state = {}, action = {}) {
         deleteUserError: action.error.message
       };
     case ACTIONS.GET_USER_ACL_SUCCESS:
-      console.log(action.result);
       let entries = {};
       _.forEach(action.result, (value)=> {
         if (value.entries) {
           let entry = _.filter(value.entries, {"sid": {"principal": action.id}});
-          console.log(entry);
           let match = entry[0] ? entry[0].id.match(/:([^A-Z]+)/) : [];
           let id = match && match[1] ? match[1] : null;
-          console.log(id);
           if (id) {
             entries = {...entries, [id]: entry[0]};
           }
-          console.log('entry ', entry);
-          console.log('entries ', entries);
         }
       });
-      console.log(entries);
       return {
         ...state,
         usersList: {
