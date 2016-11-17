@@ -39,6 +39,11 @@ export default class UsersPanel extends Component {
       type: 'number',
       title: 'User',
       titles: 'Users'
+    },
+    {
+      type: 'number',
+      title: 'Admin',
+      titles: 'Admins'
     }
   ];
   componentDidMount() {
@@ -52,12 +57,24 @@ export default class UsersPanel extends Component {
   render() {
     const {roles, usersList} = this.props.users;
     let usersCount = 0;
+    let adminsCount = 0;
     if (usersList) {
       for (let el in usersList) {
         if (!usersList.hasOwnProperty(el)) {
           continue;
         }
-        usersCount++;
+        console.log('EL: ', usersList[el]);
+        let role = _.get(usersList[el], 'roles[0].name', '');
+        switch (role) {
+          case "ROLE_USER":
+            usersCount++;
+            break;
+          case "ROLE_ADMIN":
+            adminsCount++;
+            break;
+          default:
+            break;
+        }
       }
     }
     return (
@@ -66,7 +83,7 @@ export default class UsersPanel extends Component {
           <li className="active">Users</li>
         </ul>
         <StatisticsPanel metrics={this.statisticsMetrics}
-                         values={[usersCount]}
+                         values={[usersCount, adminsCount]}
         />
         <UsersList loading={typeof usersList === "undefined"}
                    data={usersList}

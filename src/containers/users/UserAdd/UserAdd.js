@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
 import {load, create, loadNodes} from 'redux/modules/clusters/clusters';
 import {create as createNode} from 'redux/modules/nodes/nodes';
-import {setUser, addUserRole, setACL, getUsers, getUserAcl} from 'redux/modules/users/users';
+import {setUser, addUserRole, setACL, getUserAcl} from 'redux/modules/users/users';
 import {createValidator, required, email} from 'utils/validation';
 import {Dialog} from 'components';
 import {FormGroup, FormControl, ControlLabel, HelpBlock, Alert, Button, ButtonGroup, Input, ButtonToolbar} from 'react-bootstrap';
@@ -44,7 +44,6 @@ export default class UserAdd extends Component {
     addUserRole: PropTypes.func.isRequired,
     setACL: PropTypes.func.isRequired,
     getUserAcl: PropTypes.func.isRequired,
-    getUsers: PropTypes.func.isRequired,
     existingUsers: PropTypes.array,
     userName: PropTypes.string
   };
