@@ -1,19 +1,18 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
-import {load, create, loadNodes} from 'redux/modules/clusters/clusters';
-import {create as createNode} from 'redux/modules/nodes/nodes';
+import {load} from 'redux/modules/clusters/clusters';
 import {setUser, addUserRole, setACL, getUserAcl} from 'redux/modules/users/users';
 import {createValidator, required, email} from 'utils/validation';
 import {Dialog} from 'components';
-import {FormGroup, FormControl, ControlLabel, HelpBlock, Alert, Button, ButtonGroup, Input, ButtonToolbar} from 'react-bootstrap';
+import {FormGroup, FormControl, ControlLabel, HelpBlock, Alert, Button, ButtonToolbar} from 'react-bootstrap';
 import _ from 'lodash';
 
 @connect(state => ({
   users: state.users,
   clusters: state.clusters,
   createError: state.users.setUserError
-}), {create, load, createNode, loadNodes, setUser, addUserRole, setACL, getUserAcl})
+}), {load, setUser, addUserRole, setACL, getUserAcl})
 @reduxForm({
   form: 'UserAdd',
   fields: [
@@ -57,9 +56,9 @@ export default class UserAdd extends Component {
   onSubmit() {
     const {fields, setUser, setACL, onHide, existingUsers, userName, resetForm} = this.props;
     const {usersList} = this.props.users;
-    let acl = {};
+    let existingAcl = {};
     if (userName) {
-      acl = this.props.users.usersList[userName].acl;
+      existingAcl = this.props.users.usersList[userName].acl;
     }
     this.setState({
       firstLoad: false
@@ -70,6 +69,50 @@ export default class UserAdd extends Component {
       return false;
     }
     let clustersACL = this.state.clustersACL;
+    let aclData = this.fillAclData(fields, clustersACL, existingAcl);
+    console.log('ACLDATA', aclData);
+
+    let roles = [
+      {
+        "name": fields.role.value,
+        "tenant": "root"
+      }
+    ];
+    if (userName && usersList) {
+      let previousRole = _.get(usersList, userName + '.roles.0.name', '');
+      console.log('prRole: ', previousRole);
+      console.log('role: ', fields.role.value);
+      if (fields.role.value === previousRole) {
+        roles = [];
+      } else if (previousRole && previousRole !== fields.role.value) {
+        roles = [...roles, {
+          "delete": true,
+          "name": previousRole,
+          "tenant": "root"
+        }];
+      }
+    }
+
+    let userData = {
+      "accountNonExpired": true,
+      "accountNonLocked": true,
+      "credentialsNonExpired": true,
+      "email": fields.email.value || '',
+      "enabled": true,
+      "password": "string",
+      "roles": roles,
+    };
+    setUser(fields.username.value, userData).then(()=> {
+      if (!_.isEmpty(aclData)) {
+        setACL(aclData);
+      }
+    }).then(()=>{
+      resetForm();
+      onHide();
+    });
+  }
+
+  fillAclData(fields, clustersACL, existingAcl) {
     let aclData = {};
     _.each(clustersACL, (value, key)=> {
       let id = "CLUSTER:s:" + key;
@@ -84,8 +127,8 @@ export default class UserAdd extends Component {
           break;
         case "none":
           permissionVal = "";
-          console.log('ACL ', acl);
-          if (acl && acl[key]) {
+          console.log('ACL ', existingAcl);
+          if (existingAcl && existingAcl[key]) {
             aclData = {
               ...aclData,
               [id]: {
@@ -137,46 +180,7 @@ export default class UserAdd extends Component {
         }
       }
     });
-    console.log('ACLDATA', aclData);
-
-    let roles = [
-      {
-        "name": fields.role.value,
-        "tenant": "root"
-      }
-    ];
-    if (userName && usersList) {
-      let previousRole = _.get(usersList, userName + '.roles.0.name', '');
-      console.log('prRole: ', previousRole);
-      console.log('role: ', fields.role.value);
-      if (fields.role.value === previousRole) {
-        roles = [];
-      } else if (previousRole && previousRole !== fields.role.value) {
-        roles = [...roles, {
-          "delete": true,
-          "name": previousRole,
-          "tenant": "root"
-        }];
-      }
-    }
-
-    let userData = {
-      "accountNonExpired": true,
-      "accountNonLocked": true,
-      "credentialsNonExpired": true,
-      "email": fields.email.value || '',
-      "enabled": true,
-      "password": "string",
-      "roles": roles,
-    };
-    setUser(fields.username.value, userData).then(()=> {
-      if (!_.isEmpty(aclData)) {
-        setACL(aclData);
-      }
-    }).then(()=>{
-      resetForm();
-      onHide();
-    });
+    return aclData;
   }
 
   componentWillMount() {
