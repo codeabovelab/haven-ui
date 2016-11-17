@@ -183,12 +183,7 @@ export default class UserAdd extends Component {
       const {clusters} = this.props;
       console.log(clusters);
       _.each(clusters, (value, key)=> {
-        this.setState({
-          clustersACL: {
-            ...this.state.clustersACL,
-            [key]: "none"
-          }
-        });
+        this.onPermissionChange("none", key);
       });
       if (userName) {
         fields.username.onChange(userName);
@@ -213,12 +208,7 @@ export default class UserAdd extends Component {
                 default:
                   break;
               }
-              this.setState({
-                clustersACL: {
-                  ...this.state.clustersACL,
-                  [key]: aclVal
-                }
-              });
+              this.onPermissionChange(aclVal, key);
             }
           });
         });
@@ -330,11 +320,11 @@ export default class UserAdd extends Component {
     );
   }
 
-  onPermissionChange(newI, clusterName) {
+  onPermissionChange(aclVal, clusterName) {
     this.setState({
       clustersACL: {
         ...this.state.clustersACL,
-        [clusterName]: newI
+        [clusterName]: aclVal
       }
     });
   }
