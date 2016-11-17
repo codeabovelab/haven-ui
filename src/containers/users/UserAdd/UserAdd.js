@@ -164,7 +164,8 @@ export default class UserAdd extends Component {
   }
 
   componentWillMount() {
-    const {load} = this.props;
+    const {load, fields, userName, getUserAcl} = this.props;
+    const {usersList} = this.props.users;
     load().then(()=> {
       const {clusters} = this.props;
       console.log(clusters);
@@ -176,47 +177,48 @@ export default class UserAdd extends Component {
           }
         });
       });
+      if (userName) {
+        fields.username.onChange(userName);
+        let previousRole = _.get(usersList, userName + '.roles.0.name', '');
+        if (previousRole) {
+          fields.role.onChange(previousRole);
+        }
+        getUserAcl(userName).then(()=> {
+          const {acl} = this.props.users.usersList[userName];
+          console.log('acl: ', acl);
+          _.forEach(acl, (value, key) => {
+            console.log('value ', value);
+            if (this.state.clustersACL[key] && value.permission) {
+              let aclVal = "none";
+              switch (value.permission) {
+                case "R":
+                  aclVal = "readOnly";
+                  break;
+                case "RU":
+                  aclVal = "manager";
+                  break;
+                default:
+                  break;
+              }
+              this.setState({
+                clustersACL: {
+                  ...this.state.clustersACL,
+                  [key]: aclVal
+                }
+              });
+            }
+          });
+        });
+      }
     });
   }
 
   componentDidMount() {
-    const {fields, userName, getUserAcl} = this.props;
-    const {usersList} = this.props.users;
+    const {fields} = this.props;
     let defaultRole = $('#roleSelect').val();
     console.log(defaultRole);
     if (this.state.firstLoad) {
       fields.role.onChange(defaultRole);
-    }
-    if (userName) {
-      fields.username.onChange(userName);
-      let previousRole = _.get(usersList, userName + '.roles.0.name', defaultRole);
-      fields.role.onChange(previousRole);
-      getUserAcl(userName).then(()=> {
-        const {acl} = this.props.users.usersList[userName];
-        console.log('acl: ', acl);
-        _.forEach(acl, (value, key) => {
-          console.log('value ', value);
-          if (this.state.clustersACL[key] && value.permission) {
-            let aclVal = "none";
-            switch (value.permission) {
-              case "R":
-                aclVal = "readOnly";
-                break;
-              case "RU":
-                aclVal = "manager";
-                break;
-              default:
-                break;
-            }
-            this.setState({
-              clustersACL: {
-                ...this.state.clustersACL,
-                [key]: aclVal
-              }
-            });
-          }
-        });
-      });
     }
   }
 
