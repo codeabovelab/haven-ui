@@ -279,33 +279,36 @@ export default class UserAdd extends Component {
               }
             </FormControl>
           </FormGroup>
-          <div className="row">
-          <b className="pseudo-label">Clusters Permissions</b>
-          {
-            _.map(clusters, (cluster, i)=> {
-              if (typeof(cluster) !== 'undefined' && cluster.name !== 'all') {
-                return (
-                  <div>
-                  <FormGroup>
-                    <div className="col-md-4 buttongroup-label"><b>{cluster.name}</b></div>
-                    <div className="col-md-8">
-                      <ButtonToolbar key={cluster.name} className="pseudo-radio-group pulled-right">
-                        <Button bsStyle="default" onClick={this.onPermissionChange.bind(this, 'manager', cluster.name)} key={1}
-                                active={this.state.clustersACL[cluster.name] === 'manager'}>Manager</Button>
-                        <Button className="middleButton"
-                                onClick={this.onPermissionChange.bind(this, 'readOnly', cluster.name)} key={2}
-                                active={this.state.clustersACL[cluster.name] === 'readOnly'}>Read Only</Button>
-                        <Button onClick={this.onPermissionChange.bind(this, 'none', cluster.name)} key={3}
-                                active={this.state.clustersACL[cluster.name] === 'none'}>None</Button>
-                      </ButtonToolbar>
-                    </div>
-                  </FormGroup>
-                    </div>
-                );
+          {fields.role.value === 'ROLE_USER' && (
+            <div className="row">
+              <b className="pseudo-label">Clusters Permissions</b>
+              {
+                _.map(clusters, (cluster, i)=> {
+                  if (typeof(cluster) !== 'undefined' && cluster.name !== 'all') {
+                    return (
+                      <div>
+                        <FormGroup>
+                          <div className="col-md-4 buttongroup-label"><b>{cluster.name}</b></div>
+                          <div className="col-md-8">
+                            <ButtonToolbar key={cluster.name} className="pseudo-radio-group pulled-right">
+                              <Button bsStyle="default"
+                                      onClick={this.onPermissionChange.bind(this, 'manager', cluster.name)} key={1}
+                                      active={this.state.clustersACL[cluster.name] === 'manager'}>Manager</Button>
+                              <Button className="middleButton"
+                                      onClick={this.onPermissionChange.bind(this, 'readOnly', cluster.name)} key={2}
+                                      active={this.state.clustersACL[cluster.name] === 'readOnly'}>Read Only</Button>
+                              <Button onClick={this.onPermissionChange.bind(this, 'none', cluster.name)} key={3}
+                                      active={this.state.clustersACL[cluster.name] === 'none'}>None</Button>
+                            </ButtonToolbar>
+                          </div>
+                        </FormGroup>
+                      </div>
+                    );
+                  }
+                })
               }
-            })
-          }
-        </div>
+            </div>
+          )}
         </form>
         <div ref="error" className="text-danger text-xs-center text-error">
         </div>
