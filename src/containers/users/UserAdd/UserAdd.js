@@ -173,7 +173,32 @@ export default class UserAdd extends Component {
       fields.username.onChange(userName);
       let previousRole = _.get(usersList, userName + '.roles.0.name', defaultRole);
       fields.role.onChange(previousRole);
-      getUserAcl(userName);
+      getUserAcl(userName).then(()=> {
+        const {acl} = this.props.users.usersList[userName];
+        console.log('acl: ', acl);
+        _.forEach(acl, (value, key) => {
+          console.log('value ', value);
+          if (this.state.clustersACL[key] && value.permission) {
+            let aclVal = "none";
+            switch (value.permission) {
+              case "R":
+                aclVal = "readOnly";
+                break;
+              case "RU":
+                aclVal = "manager";
+                break;
+              default:
+                break;
+            }
+            this.setState({
+              clustersACL: {
+                ...this.state.clustersACL,
+                [key]: aclVal
+              }
+            });
+          }
+        });
+      });
     }
   }
 

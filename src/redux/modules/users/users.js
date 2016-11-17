@@ -79,7 +79,6 @@ export default function reducer(state = {}, action = {}) {
       console.log(action.result);
       let entries = {};
       _.forEach(action.result, (value)=> {
-        //entries.push(value.entries);
         if (value.entries) {
           let entry = _.filter(value.entries, {"sid": {"principal": action.id}});
           console.log(entry);
