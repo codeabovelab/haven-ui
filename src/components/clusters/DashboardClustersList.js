@@ -24,24 +24,18 @@ export default class DashboardClustersList extends Component {
       width: '30%'
     },
     {
-      name: 'features',
-      label: 'Type',
-      width: '20%',
-      render: this.featuresRender
-    },
-    {
       name: 'nodes',
-      label: 'No of Nodes',
+      label: 'Node Count',
       render: this.nodesRender
     },
     {
       name: 'containers',
-      label: '# of Containers',
+      label: 'Container Count ',
       render: this.containersRender
     },
     {
       name: 'alertsCount',
-      label: '# of Alerts',
+      label: 'Alert Count',
       render: this.alertsRender
     },
     {
@@ -85,18 +79,6 @@ export default class DashboardClustersList extends Component {
       <td key="title">
         <Link to={`/clusters/${cluster.name}`}>{cluster.title || cluster.name}</Link>
         <div>{cluster.description}</div>
-      </td>
-    );
-  }
-
-  featuresRender(cluster) {
-    return (
-      <td key="features">
-        {cluster.features.map((feature) => {
-          return (
-            <Label bsStyle="info">{feature}</Label>
-          );
-        })}
       </td>
     );
   }

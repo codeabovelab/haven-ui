@@ -10,15 +10,19 @@
   flex-direction: column;
   justify-content: center;
   height: 100%;
-}
-
-.loginContainer {
-  width: 30rem;
   text-align: center;
   h1 {
     font-size: 2rem;
     margin-bottom: 1rem;
   }
+}
+
+.loginContainer {
+  width: 30rem;
+  text-align: center;
+  border: 24px solid #ffffff;
+  border-bottom: 6px;
+  background: #ffffff;
   :global(.text-error) {
     margin-top: 1rem;
     font-size: 1.2rem;

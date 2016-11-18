@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import { Link } from 'react-router';
 import {toggle} from 'redux/modules/menuLeft/menuLeft';
+import {logout} from 'redux/modules/auth/auth';
 import { connect } from 'react-redux';
 import {getCurrentUser} from 'redux/modules/users/users';
 import _ from 'lodash';
@@ -11,7 +12,7 @@ import _ from 'lodash';
     user: state.auth.user,
     users: state.users
   }),
-  {toggle, getCurrentUser}
+  {toggle, getCurrentUser, logout}
 )
 export default class MenuLeft extends Component {
   static propTypes = {
@@ -19,8 +20,14 @@ export default class MenuLeft extends Component {
     toggle: PropTypes.func.isRequired,
     user: PropTypes.object,
     users: PropTypes.object,
-    getCurrentUser: PropTypes.func.isRequired
+    getCurrentUser: PropTypes.func.isRequired,
+    logout: PropTypes.func.isRequired
+  };
 
+  handleLogout = (event) => {
+    event.preventDefault();
+    this.props.logout();
+    window.location.href = '/login';
   };
 
   componentWillMount() {
@@ -34,6 +41,9 @@ export default class MenuLeft extends Component {
 
     return (
       <aside className="al-sidebar">
+        <div className="product-name clearfix">
+          <a href="" className="al-logo clearfix"><span>Dock</span>center</a>
+        </div>
         <ul className="al-sidebar-list">
           <li className="al-sidebar-list-item" title="Dashboard">
             <Link to="/dashboard" className="al-sidebar-list-link">
@@ -98,6 +108,13 @@ export default class MenuLeft extends Component {
               </Link>
             </li>
           )}
+
+          <li className="al-sidebar-list-item" title="Jobs">
+            <Link className="al-sidebar-list-link" onClick={this.handleLogout}>
+              <i className="fa fa-sign-out fa-fw"/>
+              <span>Sign out</span>
+            </Link>
+          </li>
 
           <li id="expandIcon" className="al-sidebar-list-item" title="Expand">
             <Link to="#" className="al-sidebar-list-link" onClick = {this.expand}>

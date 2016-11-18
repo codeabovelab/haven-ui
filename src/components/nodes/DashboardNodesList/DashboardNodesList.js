@@ -22,13 +22,13 @@ export default class DashboardNodesList extends Component {
     },
     {
       name: 'title',
-      label: 'Node Name',
+      label: 'Node',
       render: this.nodeRender,
       width: '40%'
     },
     {
       name: 'cluster',
-      label: 'Cluster Name',
+      label: 'Cluster',
       render: this.clusterRender,
       width: '25%'
     }

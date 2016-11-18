@@ -1,6 +1,10 @@
-$sidebar-width: 180px;
+$sidebar-width: 160px;
 $angle-left: "\f100";
 $angle-right: "\f101";
+
+.al-logo {
+  margin-left:15px;
+}
 
 .al-sidebar {
   width: $sidebar-width;
@@ -179,9 +183,15 @@ a.al-sidebar-list-link {
 .sidebar-expanded{
   width: ($sidebar-width !important);
   transition:width .3s, left .3s, right .3s;
+  .product-name {
+    visibility: visible;
+  }
 }
 
 @mixin sidebar-collapsed() {
+  .product-name {
+    visibility: hidden;
+  }
   .al-sidebar {
     width: 52px;
     transition: width .3s, left .3s, right .3s;

@@ -10,22 +10,18 @@ export default class OnOff extends Component {
   };
 
   render() {
+    let onColor = (this.props.on > 0) ? "up-status-count" : "default-status-count";
     return (
       <p>
-        <a className="on-off text-success" href={this.props.href}>
-          <Glyphicon glyph="chevron-up" className="text-success" />
-          &nbsp;
-          {this.props.on}
-        </a>
+      <a className="on-off text-success" href={this.props.href}>
+        <span className={onColor}>{this.props.on}</span>
+      </a>
 
-        &nbsp;&nbsp;&nbsp;
-        {(this.props.off > 0) && (
+      {(this.props.off > 0) && (
         <a className="on-off text-danger" href={this.props.href}>
-          <Glyphicon glyph="chevron-down" className="text-danger" />
-          &nbsp;
-          {this.props.off}
+          <span className="down-status-count">{this.props.off}</span>
         </a>
-        )}
+      )}
       </p>
     );
   }

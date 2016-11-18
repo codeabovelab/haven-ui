@@ -14,7 +14,7 @@ import Select from 'react-select';
 const CPU_FIELDS = {
   memoryLimit: {
     type: 'integer',
-    label: 'Memory limit',
+    label: 'Memory Limit',
     measurement: 'bytes',
     description: 'A positive integer (Mb).'
   },
@@ -57,14 +57,14 @@ const NETWORK_FIELDS = {
   },
   hostname: {
     type: 'string',
-    label: 'Host Name'
+    label: 'Hostname'
   }
 };
 const VOLUME_FIELDS = {
   volumeDriver: {
     type: 'string',
     label: 'Volume Driver',
-    description: 'Driver that this container uses to mount volumes.'
+    description: 'The driver that this container uses to mount volumes'
   }
 };
 const CPU_FIELDS_KEYS = Object.keys(CPU_FIELDS);
@@ -387,7 +387,12 @@ export default class ContainerCreate extends Component {
               <input type="text" {...fields.name} className="form-control"/>
             </div>
             <Accordion className="accordion-create-container">
-              <Panel header="CPU Settings" eventKey="1">
+              <Panel header="Environment Variables" eventKey="1">
+                {this.fieldEnvironment()}
+                {this.fieldConstraints()}
+                {this.fieldAffinity()}
+              </Panel>
+              <Panel header="CPU Settings" eventKey="2">
                 <div className="row">
                   {CPU_FIELDS_KEYS.map(key =>
                     <div className="col-md-6" key={key}>
@@ -396,7 +401,7 @@ export default class ContainerCreate extends Component {
                   )}
                 </div>
               </Panel>
-              <Panel header="Volume Settings" eventKey="2">
+              <Panel header="Volume Settings" eventKey="3">
                 {this.fieldLinks(containersNames)}
                 <div className="row">
                   {VOLUME_FIELDS_KEYS.map(key =>
@@ -417,7 +422,7 @@ export default class ContainerCreate extends Component {
                   </div>
                 </div>
               </Panel>
-              <Panel header="Network Settings" eventKey="3">
+              <Panel header="Network Settings" eventKey="4">
                 {this.fieldPublish()}
                 <div className="row">
                   {NETWORK_FIELDS_KEYS.map(key =>
@@ -430,7 +435,7 @@ export default class ContainerCreate extends Component {
                     <Select.Creatable
                       multi
                       noResultsText=""
-                      placeholder="Enter DNS to add it"
+                      placeholder="Enter DNS address"
                       onChange={this.dnsOnChange.bind(this)}
                       value={dnsValue}
                       promptTextCreator={this.getDnsLabel}
@@ -441,7 +446,7 @@ export default class ContainerCreate extends Component {
                     <Select.Creatable
                       multi
                       noResultsText=""
-                      placeholder="Enter domain name to add it"
+                      placeholder="Enter domain name"
                       onChange={this.dnsSearchOnChange.bind(this)}
                       value={dnsSearchValue}
                       promptTextCreator={this.getDnsLabel}
@@ -450,11 +455,7 @@ export default class ContainerCreate extends Component {
                   </div>
                 </div>
               </Panel>
-              <Panel header="Environment" eventKey="4">
-                {this.fieldEnvironment()}
-                {this.fieldConstraints()}
-                {this.fieldAffinity()}
-              </Panel>
+
             </Accordion>
             {this.fieldRestart()}
             <div className="form-group" id="creation-log-block">
