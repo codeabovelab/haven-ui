@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
 import {load} from 'redux/modules/clusters/clusters';
 import {setUser, addUserRole, setACL, getUserAcl} from 'redux/modules/users/users';
-import {createValidator, required, email} from 'utils/validation';
+import {createValidator, required, email, match} from 'utils/validation';
 import {Dialog} from 'components';
 import {FormGroup, FormControl, ControlLabel, HelpBlock, Alert, Button, ButtonToolbar} from 'react-bootstrap';
 import _ from 'lodash';
@@ -19,12 +19,13 @@ import _ from 'lodash';
     'email',
     'username',
     'role',
-    'password'
+    'password',
+    'confirmPassword'
   ],
   validate: createValidator({
     username: [required],
     email: [email],
-    password: [required]
+    password: [required, match('confirmPassword', 'Passwords do not match')]
   })
 })
 export default class UserAdd extends Component {
@@ -234,6 +235,7 @@ export default class UserAdd extends Component {
   render() {
     const { fields, okTitle, clusters, userName } = this.props;
     const {roles, usersList} = this.props.users;
+
     return (
       <Dialog show
               size="default"
@@ -254,7 +256,8 @@ export default class UserAdd extends Component {
         <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
           {/* it prevents browser from filling every user'a password and email fields with the same cached data*/}
           <input type="password" className="dummyInput"/>
-          <FormGroup title="required" required validationState={(fields.username.error && (!this.state.firstLoad || fields.username.touched)) ? "error" : ""}>
+
+          <FormGroup title="required" required validationState={fields.username.error && fields.username.touched ? "error" : ""}>
             <ControlLabel>Name</ControlLabel>
             <FormControl type="text"
                          {...fields.username}
@@ -262,38 +265,49 @@ export default class UserAdd extends Component {
                          disabled = {okTitle === 'Update User'}
                          defaultValue = {userName === 'undefined' ? '' : userName}
             />
+            {fields.username.error && fields.username.touched && (
+              <HelpBlock>{fields.username.error}</HelpBlock>
+            )}
           </FormGroup>
           <div ref="usernameError" className="text-danger text-xs-center text-error field-error">
           </div>
+
           <FormGroup validationState={fields.email.error ? "error" : ""}>
             <ControlLabel>Email</ControlLabel>
-
             <FormControl type="text"
                          {...fields.email}
                          placeholder="Email"
             />
-
-            <FormControl.Feedback />
-
             {fields.email.error && (
               <HelpBlock>{fields.email.error}</HelpBlock>
             )}
           </FormGroup>
+
           {!userName && (
-            <FormGroup validationState={fields.password.error && fields.password.touched ? "error" : ""}>
-              <ControlLabel>Password</ControlLabel>
+            <div>
+              <FormGroup validationState={fields.password.error && fields.password.touched ? "error" : ""}>
+                <ControlLabel>Password</ControlLabel>
 
-              <FormControl type="password"
-                           {...fields.password}
-                           placeholder="Password"
-              />
+                <FormControl type="password"
+                             {...fields.password}
+                             placeholder="Password"
+                />
+                {(fields.password.error && fields.password.touched) && (
+                  <HelpBlock>{fields.password.error}</HelpBlock>
+                )}
+              </FormGroup>
 
-              <FormControl.Feedback />
-              {fields.password.error && (
-                <HelpBlock>{fields.password.error}</HelpBlock>
-              )}
-            </FormGroup>
+              <FormGroup validationState={fields.password.error === "Passwords do not match" && fields.password.touched ? "error" : ""}>
+                <ControlLabel>Confirm Password</ControlLabel>
+
+                <FormControl type="password"
+                             {...fields.confirmPassword}
+                             placeholder="Confirm Password"
+                />
+              </FormGroup>
+            </div>
           )}
+
           <FormGroup>
             <ControlLabel>Role</ControlLabel>
             <FormControl id="roleSelect" componentClass="select" placeholder="select" {...fields.role}>
@@ -306,6 +320,7 @@ export default class UserAdd extends Component {
               }
             </FormControl>
           </FormGroup>
+
           {fields.role.value === 'ROLE_USER' && (
             <div className="row">
               <b className="pseudo-label">Clusters Permissions</b>
