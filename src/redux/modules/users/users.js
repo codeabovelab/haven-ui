@@ -9,10 +9,13 @@ export default function reducer(state = {}, action = {}) {
         roles: action.result
       };
     case ACTIONS.GET_CURRENT_USER_SUCCESS:
-      let user = _.keyBy(action.result, 'user');
+      let user = _.get(action.result, 'user', 'undefined');
+      let role = _.get(action.result, 'roles[0].name', '');
       return {
         ...state,
-        currentUser: user
+        currentUser: {
+          [user]: role
+        }
       };
     case ACTIONS.GET_USERS_SUCCESS:
       return {
