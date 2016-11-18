@@ -14,7 +14,8 @@ export default function reducer(state = {}, action = {}) {
       return {
         ...state,
         currentUser: {
-          [user]: role
+          name: user,
+          role: role
         }
       };
     case ACTIONS.GET_USERS_SUCCESS:

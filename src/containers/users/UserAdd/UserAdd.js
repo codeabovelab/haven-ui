@@ -292,13 +292,13 @@ export default class UserAdd extends Component {
                           <div className="col-md-4 buttongroup-label"><b>{cluster.name}</b></div>
                           <div className="col-md-8">
                             <ButtonToolbar key={cluster.name} className="pseudo-radio-group pulled-right">
-                              <Button bsStyle="default"
+                              <Button bsStyle="default" className="aclButton"
                                       onClick={this.onPermissionChange.bind(this, 'manager', cluster.name)} key={1}
                                       active={this.state.clustersACL[cluster.name] === 'manager'}>Manager</Button>
-                              <Button className="middleButton"
+                              <Button className="middleButton aclButton"
                                       onClick={this.onPermissionChange.bind(this, 'readOnly', cluster.name)} key={2}
                                       active={this.state.clustersACL[cluster.name] === 'readOnly'}>Read Only</Button>
-                              <Button onClick={this.onPermissionChange.bind(this, 'none', cluster.name)} key={3}
+                              <Button className="aclButton" onClick={this.onPermissionChange.bind(this, 'none', cluster.name)} key={3}
                                       active={this.state.clustersACL[cluster.name] === 'none'}>None</Button>
                             </ButtonToolbar>
                           </div>

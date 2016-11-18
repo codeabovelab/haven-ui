@@ -10,7 +10,7 @@ export default class UsersList extends Component {
   static propTypes = {
     data: PropTypes.object,
     loading: PropTypes.bool,
-    roles: PropTypes.object,
+    roles: PropTypes.array,
     onNewUser: PropTypes.func,
     onActionInvoke: PropTypes.func.isRequired
   };

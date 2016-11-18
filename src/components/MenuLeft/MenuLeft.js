@@ -2,20 +2,35 @@ import React, {Component, PropTypes} from 'react';
 import { Link } from 'react-router';
 import {toggle} from 'redux/modules/menuLeft/menuLeft';
 import { connect } from 'react-redux';
+import {getCurrentUser} from 'redux/modules/users/users';
+import _ from 'lodash';
 
 @connect(
-  state => ({toggled: state.menuLeft.toggled, user: state.auth.user}),
-  {toggle}
+  state => ({
+    toggled: state.menuLeft.toggled,
+    user: state.auth.user,
+    users: state.users
+  }),
+  {toggle, getCurrentUser}
 )
 export default class MenuLeft extends Component {
   static propTypes = {
     toggled: PropTypes.bool,
     toggle: PropTypes.func.isRequired,
-    user: PropTypes.object
+    user: PropTypes.object,
+    users: PropTypes.object,
+    getCurrentUser: PropTypes.func.isRequired
+
   };
 
+  componentWillMount() {
+    const {getCurrentUser} = this.props;
+    getCurrentUser();
+  }
+
   render() {
-    const {toggled, toggle} = this.props;
+    const {toggled, toggle, users} = this.props;
+    let role = _.get(this.props, 'users.currentUser.role', '');
 
     return (
       <aside className="al-sidebar">
@@ -69,19 +84,20 @@ export default class MenuLeft extends Component {
             </Link>
           </li>
 
-          <li className="al-sidebar-list-item" title="Jobs">
+          <li className="al-sidebar-list-item" title="Settings">
             <Link to="/settings" className="al-sidebar-list-link">
               <i className="fa fa-wrench fa-fw"/>
               <span>Settings</span>
             </Link>
           </li>
-
-          <li className="al-sidebar-list-item" title="Users">
-            <Link to="/users" className="al-sidebar-list-link">
-              <i className="fa fa-users fa-fw"/>
-              <span>Users</span>
-            </Link>
-          </li>
+          {role === 'ROLE_ADMIN' && (
+            <li className="al-sidebar-list-item" title="Users">
+              <Link to="/users" className="al-sidebar-list-link">
+                <i className="fa fa-users fa-fw"/>
+                <span>Users</span>
+              </Link>
+            </li>
+          )}
 
           <li id="expandIcon" className="al-sidebar-list-item" title="Expand">
             <Link to="#" className="al-sidebar-list-link" onClick = {this.expand}>
