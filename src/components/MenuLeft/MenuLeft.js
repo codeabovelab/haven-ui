@@ -109,7 +109,7 @@ export default class MenuLeft extends Component {
             </li>
           )}
 
-          <li className="al-sidebar-list-item" title="Jobs">
+          <li className="al-sidebar-list-item" title="Sign Out">
             <Link className="al-sidebar-list-link" onClick={this.handleLogout}>
               <i className="fa fa-sign-out fa-fw"/>
               <span>Sign out</span>
