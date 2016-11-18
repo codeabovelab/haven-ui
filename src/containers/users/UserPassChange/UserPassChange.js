@@ -2,9 +2,9 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
 import {setUser} from 'redux/modules/users/users';
-import {createValidator, required} from 'utils/validation';
+import {createValidator, required, match} from 'utils/validation';
 import {Dialog} from 'components';
-import {FormGroup, FormControl, ControlLabel, Alert} from 'react-bootstrap';
+import {FormGroup, FormControl, ControlLabel, Alert, HelpBlock} from 'react-bootstrap';
 
 @connect(state => ({
   createError: state.users.setUserError
@@ -12,10 +12,11 @@ import {FormGroup, FormControl, ControlLabel, Alert} from 'react-bootstrap';
 @reduxForm({
   form: 'UserPassChange',
   fields: [
-    'password'
+    'password',
+    'confirmPassword'
   ],
   validate: createValidator({
-    password: [required]
+    password: [required, match('confirmPassword', 'Passwords do not match')]
   })
 })
 export default class UserAdd extends Component {
@@ -67,6 +68,18 @@ export default class UserAdd extends Component {
             <FormControl type="password"
                          {...fields.password}
                          placeholder="New Password (required)"
+            />
+            {(fields.password.error && fields.password.touched) && (
+              <HelpBlock>{fields.password.error}</HelpBlock>
+            )}
+          </FormGroup>
+
+          <FormGroup validationState={fields.password.error === "Passwords do not match" && fields.password.touched ? "error" : ""}>
+            <ControlLabel>Confirm Password</ControlLabel>
+
+            <FormControl type="password"
+                         {...fields.confirmPassword}
+                         placeholder="Confirm Password"
             />
           </FormGroup>
         </form>
