@@ -252,6 +252,8 @@ export default class UserAdd extends Component {
         )}
 
         <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
+          {/* it prevents browser from filling every user'a password and email fields with the same cached data*/}
+          <input type="password" className="dummyInput"/>
           <FormGroup title="required" required validationState={(fields.username.error && (!this.state.firstLoad || fields.username.touched)) ? "error" : ""}>
             <ControlLabel>Name</ControlLabel>
             <FormControl type="text"

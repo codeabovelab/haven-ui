@@ -190,3 +190,12 @@
 .field-error {
   margin: -10px 0 10px 0;
 }
+
+.dummyInput {
+  width: 0;
+  height: 0;
+  visibility: hidden;
+  position:absolute;
+  left:0;
+  top:0;
+}
