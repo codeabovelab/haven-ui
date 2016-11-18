@@ -86,6 +86,7 @@ export default class UserAdd extends Component {
       "enabled": true,
       "password": fields.password.value || '',
       "roles": roles,
+      "tenant": "root",
     };
     if (userName) {
       delete userData.password;
@@ -285,7 +286,7 @@ export default class UserAdd extends Component {
 
           {!userName && (
             <div>
-              <FormGroup validationState={fields.password.error && fields.password.touched ? "error" : ""}>
+              <FormGroup title="required" required validationState={fields.password.error && fields.password.touched ? "error" : ""}>
                 <ControlLabel>Password</ControlLabel>
 
                 <FormControl type="password"

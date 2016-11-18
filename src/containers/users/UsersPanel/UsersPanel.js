@@ -108,7 +108,9 @@ export default class UsersPanel extends Component {
   }
 
   onActionInvoke(action, userName) {
+    const {users} = this.props;
     let usersNames = _.keys(this.props.users.usersList);
+    let currentUserName = _.get(users, 'currentUser.name', '');
     switch (action) {
       case "create":
         this.setState({
@@ -134,12 +136,16 @@ export default class UsersPanel extends Component {
         });
         return;
       case "delete":
-        confirm('Are you sure you want to delete this user')
-          .then(() => {
-            this.props.deleteUser(userName).catch(() => null)
-              .then(() => this.props.getUsers());
-          })
-          .catch(() => null);
+        if (userName === currentUserName) {
+          confirm('You are logged in as ' + userName + ', so this user can not be removed.');
+        } else {
+          confirm('Are you sure you want to delete this user')
+            .then(() => {
+              this.props.deleteUser(userName).catch(() => null)
+                .then(() => this.props.getUsers());
+            })
+            .catch(() => null);
+        }
         return;
       case "changePassword":
         this.setState({
