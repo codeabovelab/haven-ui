@@ -281,7 +281,7 @@ export default class UserAdd extends Component {
             <FormGroup validationState={fields.password.error && fields.password.touched ? "error" : ""}>
               <ControlLabel>Password</ControlLabel>
 
-              <FormControl type="text"
+              <FormControl type="password"
                            {...fields.password}
                            placeholder="Password"
               />
