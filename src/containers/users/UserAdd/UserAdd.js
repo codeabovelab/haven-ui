@@ -18,11 +18,13 @@ import _ from 'lodash';
   fields: [
     'email',
     'username',
-    'role'
+    'role',
+    'password'
   ],
   validate: createValidator({
     username: [required],
-    email: [email]
+    email: [email],
+    password: [required]
   })
 })
 export default class UserAdd extends Component {
@@ -69,35 +71,36 @@ export default class UserAdd extends Component {
     }
     let clustersACL = this.state.clustersACL;
     let aclData = this.fillAclData(fields, clustersACL, existingAcl);
-
     let roles = [
       {
         "name": fields.role.value,
         "tenant": "root"
       }
     ];
-    if (userName && usersList) {
-      let previousRole = _.get(usersList, userName + '.roles.0.name', '');
-      if (fields.role.value === previousRole) {
-        roles = [];
-      } else if (previousRole && previousRole !== fields.role.value) {
-        roles = [...roles, {
-          "delete": true,
-          "name": previousRole,
-          "tenant": "root"
-        }];
-      }
-    }
-
     let userData = {
       "accountNonExpired": true,
       "accountNonLocked": true,
       "credentialsNonExpired": true,
       "email": fields.email.value || '',
       "enabled": true,
-      "password": "string",
+      "password": fields.password.value || '',
       "roles": roles,
     };
+    if (userName) {
+      delete userData.password;
+      if (usersList) {
+        let previousRole = _.get(usersList, userName + '.roles.0.name', '');
+        if (fields.role.value === previousRole) {
+          userData.roles = [];
+        } else if (previousRole && previousRole !== fields.role.value) {
+          userData.roles = [...roles, {
+            "delete": true,
+            "name": previousRole,
+            "tenant": "root"
+          }];
+        }
+      }
+    }
     setUser(fields.username.value, userData).then(()=> {
       if (!_.isEmpty(aclData)) {
         setACL(aclData);
@@ -186,10 +189,16 @@ export default class UserAdd extends Component {
         this.onPermissionChange("none", key);
       });
       if (userName) {
+        //hack to pass validation, "password" property ll be deleted on submit. Password can be changed in a UserPassChange form
+        fields.password.onChange('dummy');
         fields.username.onChange(userName);
+        let previousEmail = _.get(usersList, userName + '.email', '');
         let previousRole = _.get(usersList, userName + '.roles.0.name', '');
         if (previousRole) {
           fields.role.onChange(previousRole);
+        }
+        if (previousEmail) {
+          fields.email.onChange(previousEmail);
         }
         getUserAcl(userName).then(()=> {
           const {acl} = this.props.users.usersList[userName];
@@ -268,6 +277,21 @@ export default class UserAdd extends Component {
               <HelpBlock>{fields.email.error}</HelpBlock>
             )}
           </FormGroup>
+          {!userName && (
+            <FormGroup validationState={fields.password.error && fields.password.touched ? "error" : ""}>
+              <ControlLabel>Password</ControlLabel>
+
+              <FormControl type="text"
+                           {...fields.password}
+                           placeholder="Password"
+              />
+
+              <FormControl.Feedback />
+              {fields.password.error && (
+                <HelpBlock>{fields.password.error}</HelpBlock>
+              )}
+            </FormGroup>
+          )}
           <FormGroup>
             <ControlLabel>Role</ControlLabel>
             <FormControl id="roleSelect" componentClass="select" placeholder="select" {...fields.role}>
