@@ -80,7 +80,7 @@ export default function reducer(state = {}, action = {}) {
       _.forEach(action.result, (value)=> {
         if (value.entries) {
           let entry = _.filter(value.entries, {"sid": {"principal": action.id}});
-          let match = entry[0] ? entry[0].id.match(/:([^A-Z]+)/) : [];
+          let match = entry[0] ? entry[0].id.match(/:CLUSTER:(.+)/) : [];
           let id = match && match[1] ? match[1] : null;
           if (id) {
             entries = {...entries, [id]: entry[0]};
