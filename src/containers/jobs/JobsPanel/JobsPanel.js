@@ -45,6 +45,7 @@ export default class JobsPanel extends Component {
   }
 
   render() {
+    require('./JobsPanel.scss');
     let data = this.props.data.jobs;
     let running = 0;
     let failed = 0;
@@ -146,19 +147,21 @@ export default class JobsPanel extends Component {
                 onSubmit={this.hideDialog.bind(this)}
           >
             {data && (
-              <table className="table">
+              <div className="jobs-table-container">
+              <table width="100%" className="table jobs-table">
                 <thead>
                   <tr>
-                    <th>#</th>
-                    <th>time</th>
-                    <th>status</th>
-                    <th>message</th>
+                    <th className="jobs-number-column">#</th>
+                    <th className="jobs-time-column">time</th>
+                    <th className="jobs-status-column">status</th>
+                    <th className="jobs-text-column">message</th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.map(entryRender)}
                 </tbody>
               </table>
+              </div>
             ) || (
               <ProgressBar active now={100} />
             )}
