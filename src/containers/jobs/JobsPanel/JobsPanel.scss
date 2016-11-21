@@ -1,0 +1,17 @@
+:global(.jobs-table) {
+  table-layout:fixed;
+  width: 100%;
+  word-wrap:break-word;
+}
+:global(.jobs-number-column) {
+  width: 4%;
+}
+:global(.jobs-status-column) {
+  width: 12%;
+}
+:global(.jobs-time-column) {
+  width: 20%;
+}
+:global(.jobs-text-column) {
+  width: 64%;
+}
