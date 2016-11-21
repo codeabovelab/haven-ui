@@ -331,7 +331,7 @@ export default class UserAdd extends Component {
               <div className="row acl-buttons-block">
                 {
                   _.map(clusters, (cluster, i)=> {
-                    if (typeof(cluster) !== 'undefined' && cluster.name !== 'all') {
+                    if (typeof(cluster) !== 'undefined' && cluster.name !== 'all' && cluster.name !== 'orphans') {
                       return (
                         <div key={i}>
                           <FormGroup>
