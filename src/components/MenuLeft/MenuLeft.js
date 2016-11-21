@@ -152,7 +152,7 @@ export default class MenuLeft extends Component {
           <li className="al-sidebar-list-item" title="Change password">
             <Link className="al-sidebar-list-link" onClick={()=>{this.showPasswordChange("Change Password");}}>
               <i className="fa fa-id-badge fa-fw"/>
-              <span>Change Password</span>
+              <span>My Account</span>
             </Link>
           </li>
           <li className="al-sidebar-list-item" title="Sign Out">
