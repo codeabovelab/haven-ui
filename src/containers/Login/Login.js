@@ -87,7 +87,8 @@ export default class Login extends Component {
     return (
       <div className="loginPage">
         <div className="loginWrapper">
-          <h1 className="text-xs-center" >User Login</h1>
+          <h2 className="text-lg-center">Haven</h2>
+          <h4 className="text-xs-center">Manage your Docker containers and images</h4>
           <div className={"container loginContainer"}>
             <Helmet title="Login"/>
             {!user &&

@@ -18,9 +18,9 @@ module.exports = Object.assign({
   eventServer: apiHost + '/ui/stomp',
   mock: false,
   app: {
-    title: 'Dockcenter',
+    title: 'Haven',
     head: {
-      titleTemplate: 'Dockcenter: %s',
+      titleTemplate: 'Haven: %s',
       meta: [
         {charset: 'utf-8'}
       ]

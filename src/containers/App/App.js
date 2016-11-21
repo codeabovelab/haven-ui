@@ -117,7 +117,7 @@ export default class App extends Component {
           <div className="al-footer-right"></div>
           <div className="al-footer-main clearfix">
             <div className="al-copy">
-              &copy; {(new Date()).getFullYear()} Dockcenter
+              &copy; {(new Date()).getFullYear()} Code Above Lab Haven
             </div>
           </div>
         </footer>

@@ -82,7 +82,7 @@ export default class MenuLeft extends Component {
     return (
       <aside className="al-sidebar">
         <div className="product-name clearfix">
-          <a href="" className="al-logo clearfix"><span>Dock</span>center</a>
+          <a href="" className="al-logo clearfix"><span>Haven</span></a>
         </div>
         <ul className="al-sidebar-list">
           <li className="al-sidebar-list-item" title="Dashboard">
