@@ -36,7 +36,7 @@ export default class MenuLeft extends Component {
     getCurrentUser().then(()=> {
       const {users} = this.props;
       if (!users.currentUser.credentialsNonExpired) {
-        this.showPasswordChange("You need to change password, to continue work");
+        this.showPasswordChange("You need to change the preset password to continue.");
       }
     });
   }
@@ -49,7 +49,7 @@ export default class MenuLeft extends Component {
         this.setState({
           actionDialog: undefined
         });
-        this.showPasswordChange("You need to change password, to continue work");
+        this.showPasswordChange("You need to change the preset password to continue.");
       } else {
         this.setState({
           actionDialog: undefined
@@ -149,14 +149,12 @@ export default class MenuLeft extends Component {
               </Link>
             </li>
           )}
-          {role === 'ROLE_USER' && (
-            <li className="al-sidebar-list-item" title="Change password">
-              <Link className="al-sidebar-list-link" onClick={()=>{this.showPasswordChange("Change Password");}}>
-                <i className="fa fa-id-card fa-fw"/>
-                <span>Change Password</span>
-              </Link>
-            </li>
-          )}
+          <li className="al-sidebar-list-item" title="Change password">
+            <Link className="al-sidebar-list-link" onClick={()=>{this.showPasswordChange("Change Password");}}>
+              <i className="fa fa-id-badge fa-fw"/>
+              <span>Change Password</span>
+            </Link>
+          </li>
           <li className="al-sidebar-list-item" title="Sign Out">
             <Link className="al-sidebar-list-link" onClick={this.handleLogout}>
               <i className="fa fa-sign-out fa-fw"/>
