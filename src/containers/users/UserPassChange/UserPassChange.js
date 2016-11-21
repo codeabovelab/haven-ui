@@ -38,7 +38,8 @@ export default class UserAdd extends Component {
     const {fields, setUser, userName, onHide} = this.props;
 
     let userData = {
-      "password": fields.password.value
+      "password": fields.password.value,
+      "credentialsNonExpired": true
     };
     setUser(userName, userData).then(()=>onHide());
   }

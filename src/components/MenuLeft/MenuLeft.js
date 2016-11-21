@@ -5,6 +5,7 @@ import {logout} from 'redux/modules/auth/auth';
 import { connect } from 'react-redux';
 import {getCurrentUser} from 'redux/modules/users/users';
 import _ from 'lodash';
+import {UserPassChange} from '../../containers/index';
 
 @connect(
   state => ({
@@ -32,7 +33,50 @@ export default class MenuLeft extends Component {
 
   componentWillMount() {
     const {getCurrentUser} = this.props;
-    getCurrentUser();
+    getCurrentUser().then(()=> {
+      const {users} = this.props;
+      if (!users.currentUser.credentialsNonExpired) {
+        console.log('FAILED');
+        this.setState({
+          actionDialog: (
+            <UserPassChange title={"You need to change password, to continue work"}
+                            onHide={this.onHideDialog.bind(this)}
+                            okTitle="Change Password"
+                            userName={users.currentUser.name}
+            />
+          )
+        });
+      }
+    });
+  }
+
+  onHideDialog() {
+    const {getCurrentUser} = this.props;
+    getCurrentUser().then(()=> {
+      const {users} = this.props;
+      if (!users.currentUser.credentialsNonExpired) {
+        this.setState({
+          actionDialog: undefined
+        });
+        this.setState({
+          actionDialog: (
+            <UserPassChange title={"You need to change password, to continue work"}
+                            onHide={this.onHideDialog.bind(this)}
+                            okTitle="Change Password"
+                            userName={users.currentUser.name}
+            />
+          )
+        });
+      } else {
+        this.setState({
+          actionDialog: undefined
+        });
+      }
+    });
+
+    this.setState({
+      actionDialog: undefined
+    });
   }
 
   render() {
@@ -122,6 +166,11 @@ export default class MenuLeft extends Component {
             </Link>
           </li>
         </ul>
+        {(this.state && this.state.actionDialog) && (
+          <div>
+            {this.state.actionDialog}
+          </div>
+        )}
       </aside>
     );
   }

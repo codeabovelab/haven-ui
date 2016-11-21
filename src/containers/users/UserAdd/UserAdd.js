@@ -81,7 +81,7 @@ export default class UserAdd extends Component {
     let userData = {
       "accountNonExpired": true,
       "accountNonLocked": true,
-      "credentialsNonExpired": true,
+      "credentialsNonExpired": false,
       "email": fields.email.value || '',
       "enabled": true,
       "password": fields.password.value || '',
@@ -89,6 +89,7 @@ export default class UserAdd extends Component {
       "tenant": "root",
     };
     if (userName) {
+      userData.credentialsNonExpired = true;
       delete userData.password;
       if (usersList) {
         let previousRole = _.get(usersList, userName + '.roles.0.name', '');

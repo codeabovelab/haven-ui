@@ -11,11 +11,13 @@ export default function reducer(state = {}, action = {}) {
     case ACTIONS.GET_CURRENT_USER_SUCCESS:
       let user = _.get(action.result, 'user', 'undefined');
       let role = _.get(action.result, 'roles[0].name', '');
+      let credentialsState = _.get(action.result, 'credentialsNonExpired', true);
       return {
         ...state,
         currentUser: {
           name: user,
-          role: role
+          role: role,
+          credentialsNonExpired: credentialsState
         }
       };
     case ACTIONS.GET_USERS_SUCCESS:
