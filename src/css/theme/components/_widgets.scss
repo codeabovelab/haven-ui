@@ -162,3 +162,40 @@
 .fa-plus-circle {
   cursor: pointer;
 }
+
+.buttongroup-label {
+  margin-top: 9px;
+}
+
+.middleButton {
+  margin: 0 15px 0 20px!important;
+}
+
+.aclButton {
+  width: 90px!important;
+}
+
+.pseudo-radio-group {
+  .active {
+    background-color: $primary!important;
+    color: white!important;
+  }
+  margin-bottom: 5px;
+}
+
+.pseudo-label {
+  margin-left: 15px;
+}
+
+.field-error {
+  margin: -10px 0 10px 0;
+}
+
+.dummyInput {
+  width: 0;
+  height: 0;
+  visibility: hidden;
+  position:absolute;
+  left:0;
+  top:0;
+}

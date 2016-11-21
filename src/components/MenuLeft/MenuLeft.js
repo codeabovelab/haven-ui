@@ -3,16 +3,25 @@ import { Link } from 'react-router';
 import {toggle} from 'redux/modules/menuLeft/menuLeft';
 import {logout} from 'redux/modules/auth/auth';
 import { connect } from 'react-redux';
+import {getCurrentUser} from 'redux/modules/users/users';
+import _ from 'lodash';
+import {UserPassChange} from '../../containers/index';
 
 @connect(
-  state => ({toggled: state.menuLeft.toggled, user: state.auth.user, logout}),
-  {toggle}
+  state => ({
+    toggled: state.menuLeft.toggled,
+    user: state.auth.user,
+    users: state.users
+  }),
+  {toggle, getCurrentUser, logout}
 )
 export default class MenuLeft extends Component {
   static propTypes = {
     toggled: PropTypes.bool,
     toggle: PropTypes.func.isRequired,
     user: PropTypes.object,
+    users: PropTypes.object,
+    getCurrentUser: PropTypes.func.isRequired,
     logout: PropTypes.func.isRequired
   };
 
@@ -22,8 +31,53 @@ export default class MenuLeft extends Component {
     window.location.href = '/login';
   };
 
+  componentWillMount() {
+    const {getCurrentUser} = this.props;
+    getCurrentUser().then(()=> {
+      const {users} = this.props;
+      if (!users.currentUser.credentialsNonExpired) {
+        this.showPasswordChange("You need to change password, to continue work");
+      }
+    });
+  }
+
+  onHideDialog() {
+    const {getCurrentUser} = this.props;
+    getCurrentUser().then(()=> {
+      const {users} = this.props;
+      if (!users.currentUser.credentialsNonExpired) {
+        this.setState({
+          actionDialog: undefined
+        });
+        this.showPasswordChange("You need to change password, to continue work");
+      } else {
+        this.setState({
+          actionDialog: undefined
+        });
+      }
+    });
+
+    this.setState({
+      actionDialog: undefined
+    });
+  }
+
+  showPasswordChange(title) {
+    const {users} = this.props;
+    this.setState({
+      actionDialog: (
+        <UserPassChange title={title}
+                        onHide={this.onHideDialog.bind(this)}
+                        okTitle="Change Password"
+                        userName={users.currentUser.name}
+        />
+      )
+    });
+  }
+
   render() {
-    const {toggled, toggle} = this.props;
+    const {toggled, toggle, users} = this.props;
+    let role = _.get(this.props, 'users.currentUser.role', '');
 
     return (
       <aside className="al-sidebar">
@@ -80,14 +134,29 @@ export default class MenuLeft extends Component {
             </Link>
           </li>
 
-          <li className="al-sidebar-list-item" title="Jobs">
+          <li className="al-sidebar-list-item" title="Settings">
             <Link to="/settings" className="al-sidebar-list-link">
               <i className="fa fa-wrench fa-fw"/>
               <span>Settings</span>
             </Link>
           </li>
-
-          <li className="al-sidebar-list-item" title="Sign out">
+          {role === 'ROLE_ADMIN' && (
+            <li className="al-sidebar-list-item" title="Users">
+              <Link to="/users" className="al-sidebar-list-link">
+                <i className="fa fa-users fa-fw"/>
+                <span>Users</span>
+              </Link>
+            </li>
+          )}
+          {role === 'ROLE_USER' && (
+            <li className="al-sidebar-list-item" title="Change password">
+              <Link className="al-sidebar-list-link" onClick={()=>{this.showPasswordChange("Change Password");}}>
+                <i className="fa fa-id-card fa-fw"/>
+                <span>Security</span>
+              </Link>
+            </li>
+          )}
+          <li className="al-sidebar-list-item" title="Sign Out">
             <Link className="al-sidebar-list-link" onClick={this.handleLogout}>
               <i className="fa fa-sign-out fa-fw"/>
               <span>Sign out</span>
@@ -100,6 +169,11 @@ export default class MenuLeft extends Component {
             </Link>
           </li>
         </ul>
+        {(this.state && this.state.actionDialog) && (
+          <div>
+            {this.state.actionDialog}
+          </div>
+        )}
       </aside>
     );
   }

@@ -31,3 +31,7 @@ export JobsPanel from './jobs/JobsPanel/JobsPanel';
 export SettingsPanel from './settings/SettingsPanel/SettingsPanel';
 
 export EventsPanel from './events/EventsPanel/EventsPanel';
+
+export UsersPanel from './users/UsersPanel/UsersPanel';
+export UserAdd from './users/UserAdd/UserAdd';
+export UserPassChange from './users/UserPassChange/UserPassChange';

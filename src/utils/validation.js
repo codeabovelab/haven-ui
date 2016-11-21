@@ -44,11 +44,11 @@ export function oneOf(enumeration) {
   };
 }
 
-export function match(field) {
+export function match(field, errorText) {
   return (value, data) => {
     if (data) {
       if (value !== data[field]) {
-        return 'Do not match';
+        return errorText || 'Do not match';
       }
     }
   };

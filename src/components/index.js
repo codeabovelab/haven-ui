@@ -28,6 +28,7 @@ export LoadingDialog from './common/LoadingDialog/LoadingDialog';
 export UploadSettings from './settings/UploadSettings';
 export NodeInfo from './nodes/NodeInfo';
 export JobsList from '../components/jobs/JobsList';
+export UsersList from './users/UsersList';
 
 export EventLog from './common/EventLog/EventLog';
 export PropertyGrid from './common/PropertyGrid/PropertyGrid';
