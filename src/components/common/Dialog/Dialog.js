@@ -34,6 +34,7 @@ export default class Dialog extends Component {
     hideOk: PropTypes.bool,
     hideCancel: PropTypes.bool,
     hideFooter: PropTypes.bool,
+    dialogClassName: PropTypes.string,
 
     okTitle: PropTypes.string,
     cancelTitle: PropTypes.string,
@@ -56,6 +57,7 @@ export default class Dialog extends Component {
              onHide={this.props.onHide}
              keyboard={this.props.keyboard}
              id = {this.props.modalId || ''}
+             dialogClassName = {this.props.dialogClassName || ''}
       >
 
         <Modal.Header closeButton>
