@@ -194,6 +194,7 @@ export default class UserAdd extends Component {
       if (userName) {
         //hack to pass validation, "password" property ll be deleted on submit. Password can be changed in a UserPassChange form
         fields.password.onChange('dummy');
+        fields.confirmPassword.onChange('dummy');
         fields.username.onChange(userName);
         let previousEmail = _.get(usersList, userName + '.email', '');
         let previousRole = _.get(usersList, userName + '.roles.0.name', '');
