@@ -83,9 +83,7 @@ export function login(username, password) {
   return {
     types: [ACTIONS.LOGIN, ACTIONS.LOGIN_SUCCESS, ACTIONS.LOGIN_FAIL],
     promise: (client) => {
-      return client.post('/ui/token/login', {
-        params: {username, password}
-      });
+      return client.post('/ui/token/login', {data: {username: username, password: password}});
     }
   };
 }
