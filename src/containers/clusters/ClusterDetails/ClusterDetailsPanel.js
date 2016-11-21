@@ -19,9 +19,8 @@ function renderTdImage(row) {
 }
 
 function renderTdContainerName(row) {
-  let resultValue = processTdVal(row.name);
   return (
-    <td key="name" title={resultValue.title}><Link to={"/clusters/" + row.cluster + "/containers/" + resultValue.val}>{resultValue.val}</Link></td>
+    <td key="name" title={row.name}><Link to={"/clusters/" + row.cluster + "/containers/" + row.name}>{row.name}</Link></td>
   );
 }
 
@@ -39,9 +38,20 @@ function renderTdApplication(row) {
 }
 
 function processTdVal(val) {
+  const MAX_LENGTH = 18;
   let result = [];
-  result.val = val ? val : '';
-  result.title = "";
+  if (val) {
+    result.title = val;
+    let length = val.length;
+    if (length >= MAX_LENGTH) {
+      result.val = val.substring(0, MAX_LENGTH) + '...';
+    } else {
+      result.val = val;
+    }
+  } else {
+    result.val = '';
+    result.title = '';
+  }
   return result;
 }
 
@@ -136,31 +146,31 @@ export default class ClusterDetailsPanel extends Component {
   COLUMNS = [
     {
       name: 'name',
-      render: renderTdContainerName
+      render: renderTdContainerName,
     },
 
     {
       name: 'image',
-      render: renderTdImage
+      render: renderTdImage,
+      width: '5%'
     },
 
     {
-      name: 'node'
+      name: 'node',
     },
 
     {
       name: 'application',
-      render: renderTdApplication
+      render: renderTdApplication,
     },
 
     {
       name: 'status',
-      width: '15%'
     },
 
     {
       name: 'actions',
-      width: '50px'
+      width: '5%'
     }
   ];
 
@@ -169,8 +179,7 @@ export default class ClusterDetailsPanel extends Component {
   STOPPED_ACTIONS = [
     {
       key: "log",
-      title: "Show Log",
-      default: true
+      title: "Show Log"
     },
     null,
     {
@@ -180,7 +189,8 @@ export default class ClusterDetailsPanel extends Component {
     },
     {
       key: "stop",
-      title: "Stop"
+      title: "Stop",
+      default: true
     },
     {
       key: "restart",
