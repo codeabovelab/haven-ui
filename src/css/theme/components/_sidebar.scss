@@ -6,6 +6,16 @@ $angle-right: "\f101";
 //  margin-left:15px;
 }
 
+.al-logo img {
+  height: 25px;
+  margin-left:10px;
+}
+
+a.al-logo span {
+  color: #209e91;
+  margin-left: 10px;
+}
+
 .al-sidebar {
   width: $sidebar-width;
   top: $top-height;
