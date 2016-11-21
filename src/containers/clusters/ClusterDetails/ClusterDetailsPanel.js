@@ -454,7 +454,6 @@ export default class ClusterDetailsPanel extends Component {
                            key={name}
                            groupBy="node"
                            groupBySelect={groupBySelect}
-                           size={DockTable.SIZES.SM}
                 />
               </div>
             </div>
