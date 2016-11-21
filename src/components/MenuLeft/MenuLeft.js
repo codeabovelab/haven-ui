@@ -36,16 +36,7 @@ export default class MenuLeft extends Component {
     getCurrentUser().then(()=> {
       const {users} = this.props;
       if (!users.currentUser.credentialsNonExpired) {
-        console.log('FAILED');
-        this.setState({
-          actionDialog: (
-            <UserPassChange title={"You need to change password, to continue work"}
-                            onHide={this.onHideDialog.bind(this)}
-                            okTitle="Change Password"
-                            userName={users.currentUser.name}
-            />
-          )
-        });
+        this.showPasswordChange("You need to change password, to continue work");
       }
     });
   }
@@ -58,15 +49,7 @@ export default class MenuLeft extends Component {
         this.setState({
           actionDialog: undefined
         });
-        this.setState({
-          actionDialog: (
-            <UserPassChange title={"You need to change password, to continue work"}
-                            onHide={this.onHideDialog.bind(this)}
-                            okTitle="Change Password"
-                            userName={users.currentUser.name}
-            />
-          )
-        });
+        this.showPasswordChange("You need to change password, to continue work");
       } else {
         this.setState({
           actionDialog: undefined
@@ -76,6 +59,19 @@ export default class MenuLeft extends Component {
 
     this.setState({
       actionDialog: undefined
+    });
+  }
+
+  showPasswordChange(title) {
+    const {users} = this.props;
+    this.setState({
+      actionDialog: (
+        <UserPassChange title={title}
+                        onHide={this.onHideDialog.bind(this)}
+                        okTitle="Change Password"
+                        userName={users.currentUser.name}
+        />
+      )
     });
   }
 
@@ -152,7 +148,14 @@ export default class MenuLeft extends Component {
               </Link>
             </li>
           )}
-
+          {role === 'ROLE_USER' && (
+            <li className="al-sidebar-list-item" title="Change password">
+              <Link className="al-sidebar-list-link" onClick={()=>{this.showPasswordChange("Change Password");}}>
+                <i className="fa fa-id-card fa-fw"/>
+                <span>Security</span>
+              </Link>
+            </li>
+          )}
           <li className="al-sidebar-list-item" title="Sign Out">
             <Link className="al-sidebar-list-link" onClick={this.handleLogout}>
               <i className="fa fa-sign-out fa-fw"/>
