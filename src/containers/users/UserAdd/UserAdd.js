@@ -236,12 +236,13 @@ export default class UserAdd extends Component {
   }
 
   render() {
+    require('./UserAdd.scss');
     const { fields, okTitle, clusters, userName } = this.props;
     const {roles, usersList} = this.props.users;
 
     return (
       <Dialog show
-              size="default"
+              dialogClassName="medium-size-dialog"
               title={this.props.title}
               submitting={this.props.submitting}
               allowSubmit={this.props.valid}
@@ -325,33 +326,36 @@ export default class UserAdd extends Component {
           </FormGroup>
 
           {fields.role.value === 'ROLE_USER' && (
-            <div className="row">
-              <b className="pseudo-label">Clusters Permissions</b>
-              {
-                _.map(clusters, (cluster, i)=> {
-                  if (typeof(cluster) !== 'undefined' && cluster.name !== 'all') {
-                    return (
-                      <div>
-                        <FormGroup>
-                          <div className="col-md-4 buttongroup-label"><b>{cluster.name}</b></div>
-                          <div className="col-md-8">
-                            <ButtonToolbar key={cluster.name} className="pseudo-radio-group pulled-right">
-                              <Button bsStyle="default" className="aclButton"
-                                      onClick={this.onPermissionChange.bind(this, 'manager', cluster.name)} key={1}
-                                      active={this.state.clustersACL[cluster.name] === 'manager'}>Manager</Button>
-                              <Button className="middleButton aclButton"
-                                      onClick={this.onPermissionChange.bind(this, 'readOnly', cluster.name)} key={2}
-                                      active={this.state.clustersACL[cluster.name] === 'readOnly'}>Read Only</Button>
-                              <Button className="aclButton" onClick={this.onPermissionChange.bind(this, 'none', cluster.name)} key={3}
-                                      active={this.state.clustersACL[cluster.name] === 'none'}>None</Button>
-                            </ButtonToolbar>
-                          </div>
-                        </FormGroup>
-                      </div>
-                    );
-                  }
-                })
-              }
+            <div>
+              <b>Clusters Permissions</b>
+              <div className="row acl-buttons-block">
+                {
+                  _.map(clusters, (cluster, i)=> {
+                    if (typeof(cluster) !== 'undefined' && cluster.name !== 'all') {
+                      return (
+                        <div key={i}>
+                          <FormGroup>
+                            <div className="col-md-4 buttongroup-label"><b>{cluster.name}</b></div>
+                            <div className="col-md-8">
+                              <ButtonToolbar key={cluster.name} className="pseudo-radio-group pulled-right">
+                                <Button bsStyle="default" className="aclButton"
+                                        onClick={this.onPermissionChange.bind(this, 'manager', cluster.name)} key={1}
+                                        active={this.state.clustersACL[cluster.name] === 'manager'}>Manager</Button>
+                                <Button className="middleButton aclButton"
+                                        onClick={this.onPermissionChange.bind(this, 'readOnly', cluster.name)} key={2}
+                                        active={this.state.clustersACL[cluster.name] === 'readOnly'}>Read Only</Button>
+                                <Button className="aclButton"
+                                        onClick={this.onPermissionChange.bind(this, 'none', cluster.name)} key={3}
+                                        active={this.state.clustersACL[cluster.name] === 'none'}>None</Button>
+                              </ButtonToolbar>
+                            </div>
+                          </FormGroup>
+                        </div>
+                      );
+                    }
+                  })
+                }
+              </div>
             </div>
           )}
         </form>
