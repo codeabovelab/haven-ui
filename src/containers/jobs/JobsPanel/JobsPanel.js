@@ -3,18 +3,19 @@ import {connect} from 'react-redux';
 import TimeUtils from 'utils/TimeUtils';
 import {Dialog, StatisticsPanel, JobsList, PropertyGrid} from 'components';
 import {Label, Badge, ButtonToolbar, ProgressBar, SplitButton, MenuItem} from 'react-bootstrap';
-import {loadList, loadInfo, loadLog} from 'redux/modules/jobs/jobs';
+import {loadList, loadInfo, loadLog, deleteJob} from 'redux/modules/jobs/jobs';
 
 @connect(
   state => ({
     data: state.jobs
-  }), {loadList, loadInfo, loadLog})
+  }), {loadList, loadInfo, loadLog, deleteJob})
 export default class JobsPanel extends Component {
   static propTypes = {
     data: PropTypes.object.isRequired,
     loadList: PropTypes.func.isRequired,
     loadInfo: PropTypes.func.isRequired,
-    loadLog: PropTypes.func.isRequired
+    loadLog: PropTypes.func.isRequired,
+    deleteJob: PropTypes.func.isRequired
   };
 
   statisticsMetrics = [
@@ -70,7 +71,8 @@ export default class JobsPanel extends Component {
     let actions = {
       list: [
         {key: "info", title: "Info"},
-        {key: "log", title: "Log"}
+        {key: "log", title: "Log"},
+        {key: "delete", title: "Delete"}
       ],
       handler: this.onActionInvoke.bind(this)
     };
@@ -94,9 +96,15 @@ export default class JobsPanel extends Component {
 
   onActionInvoke(type, job) {
     switch (type) {
-      case "info": this.showInfo(job);
+      case "info":
+        this.showInfo(job);
         break;
-      case "log": this.showLog(job);
+      case "log":
+        this.showLog(job);
+        break;
+      case "delete":
+        confirm('Are you sure you want to delete this job?')
+          .then(() =>this.props.deleteJob(job.id)).then(()=>this.props.loadList());
         break;
       default:
     }
