@@ -7,6 +7,7 @@ import { Link, browserHistory, Route, RouteHandler } from 'react-router';
 import { LinkContainer } from 'react-router-bootstrap';
 import {ContainerCreate, ContainerScale, ContainerUpdate} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
+import {deleteClusterImages} from 'redux/modules/images/images';
 import {Dropdown, SplitButton, Button, ButtonGroup, DropdownButton, ButtonToolbar, MenuItem, Panel, ProgressBar, Nav, NavItem, Image} from 'react-bootstrap';
 import _ from 'lodash';
 import {downloadFile} from '../../../utils/fileActions';
@@ -78,7 +79,8 @@ function processTdVal(val) {
     stopContainer: containerActions.stop,
     restartContainer: containerActions.restart,
     removeContainer: containerActions.remove,
-    getClusterSource: clusterActions.getClusterSource
+    getClusterSource: clusterActions.getClusterSource,
+    deleteClusterImages
   })
 export default class ClusterDetailsPanel extends Component {
   static propTypes = {
@@ -93,7 +95,8 @@ export default class ClusterDetailsPanel extends Component {
     restartContainer: PropTypes.func.isRequired,
     removeContainer: PropTypes.func.isRequired,
     getClusterSource: PropTypes.func.isRequired,
-    loadClusters: PropTypes.func.isRequired
+    loadClusters: PropTypes.func.isRequired,
+    deleteClusterImages: PropTypes.func.isRequired
   };
 
   statisticsMetricsNodesUp = [
@@ -422,7 +425,7 @@ export default class ClusterDetailsPanel extends Component {
                   </Button>
                   }
                   <ButtonGroup>
-                    <DropdownButton bsStyle="primary" className="pulled-right" title="More Actions">
+                    <DropdownButton bsStyle="primary" pullRight className="pulled-right" title="More Actions">
                       <MenuItem eventKey="1"
                                 bsStyle="default"
                                 onClick={this.getClusterSource.bind(this)}
@@ -443,6 +446,13 @@ export default class ClusterDetailsPanel extends Component {
                       >
                         <img src={require('../../../assets/img/black-octopus.png')}/>&nbsp;
                         Deploy Compose File
+                      </MenuItem>
+                      <MenuItem eventKey="4"
+                                bsStyle="default"
+                                onClick={this.onActionInvoke.bind(this, "deleteImages")}
+                      >
+                        <i className="fa fa-bomb"/>&nbsp;
+                        Delete Images
                       </MenuItem>
                       </DropdownButton>
                   </ButtonGroup>
@@ -603,6 +613,14 @@ export default class ClusterDetailsPanel extends Component {
               )
             });
           });
+        return;
+
+      case "deleteImages":
+        confirm("Are you sure you want to delete unused images in cluster " + name + "?")
+          .then(() => {
+            this.props.deleteClusterImages(name).catch(() => null);
+          })
+          .catch(() => null);
         return;
 
       case "restart":
