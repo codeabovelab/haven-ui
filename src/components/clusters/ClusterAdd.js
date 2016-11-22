@@ -1,17 +1,20 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
-import {load, create, loadNodes} from 'redux/modules/clusters/clusters';
+import {load, create, loadNodes, loadClusterRegistries} from 'redux/modules/clusters/clusters';
 import {create as createNode} from 'redux/modules/nodes/nodes';
 import {createValidator, required} from 'utils/validation';
 import {Dialog} from 'components';
 import {load as loadRegistries} from 'redux/modules/registries/registries';
+import Select from 'react-select';
 import {FormGroup, FormControl, ControlLabel, HelpBlock, Alert} from 'react-bootstrap';
 import _ from 'lodash';
 
 @connect(state => ({
-  createError: state.clustersUI.createError
-}), {create, load, createNode, loadNodes, loadRegistries})
+  createError: state.clustersUI.createError,
+  registries: state.registries,
+  clusters: state.clusters
+}), {create, load, createNode, loadNodes, loadRegistries, loadClusterRegistries})
 @reduxForm({
   form: 'ClusterAdd',
   fields: [
@@ -42,7 +45,10 @@ export default class ClusterAdd extends Component {
     onHide: PropTypes.func.isRequired,
     okTitle: PropTypes.string,
     existingClusters: PropTypes.array,
-    loadRegistries: PropTypes.func.isRequired
+    loadRegistries: PropTypes.func.isRequired,
+    loadClusterRegistries: PropTypes.func.isRequired,
+    registries: PropTypes.array.isRequired,
+    clusters: PropTypes.array.isRequired
   };
   constructor() {
     super();
@@ -54,13 +60,17 @@ export default class ClusterAdd extends Component {
     this.setState({
       firstLoad: false
     });
+    let registries = this.state.assignedRegistries.map((registry)=> {
+      return registry.name;
+    });
+    console.log('subRegistries ', registries);
     this.refs.error.textContent = '';
     const {fields, existingClusters} = this.props;
     if (_.includes(existingClusters, fields.name.value) && this.props.okTitle === 'Create Cluster') {
       this.refs.error.textContent = 'Cluster with name: "' + fields.name.value + '" already exists. Please use another name.';
       return false;
     }
-    return this.props.create(fields.name.value, {"description": fields.description.value}).then(() => {
+    return this.props.create(fields.name.value, {"description": fields.description.value, "registries": registries}).then(() => {
       if (typeof(fields.assignedNodes.value) !== 'undefined' && fields.assignedNodes.value.length > 0) {
         fields.assignedNodes.value.map(function createNode(node) {
           if (typeof(node) !== 'undefined') {
@@ -88,11 +98,47 @@ export default class ClusterAdd extends Component {
   }
 
   componentWillMount() {
-    const {loadRegistries} = this.props;
-    loadRegistries();
+    const {loadRegistries, cluster, loadClusterRegistries, clusters} = this.props;
+    loadRegistries().then(()=> {
+      if (!cluster) {
+        let registries = this.props.registries;
+        registries = registries.map((registry)=> {
+          delete registry.disabled;
+          return registry;
+        });
+        this.setState({
+          assignedRegistries: registries
+        });
+        console.log(this.state.assignedRegistries);
+      }
+    });
+    if (cluster) {
+      loadClusterRegistries(cluster).then(()=> {
+        this.setState({
+          assignedRegistries: clusters[cluster].registries
+        });
+      });
+    }
+  }
+
+  getAvailableRegistries() {
+    let registries = this.props.registries;
+    registries = registries.map((registry)=> {
+      delete registry.disabled;
+      return registry;
+    });
+    return registries;
+  }
+
+  handleSelectChange(value) {
+    this.setState({
+      assignedRegistries: value
+    });
+    console.log(this.state.assignedRegistries);
   }
 
   render() {
+    require('react-select/dist/react-select.css');
     const { fields, okTitle } = this.props;
     let { cluster, description } = this.props;
     const orphanNodes = this.props.orphanNodes;
@@ -123,7 +169,22 @@ export default class ClusterAdd extends Component {
                          defaultValue = {cluster === 'undefined' ? '' : cluster}
             />
           </FormGroup>
-
+          <FormGroup>
+            <ControlLabel>Registries</ControlLabel>
+            <Select ref="registriesSelect"
+                    className="nodeSelect"
+                    placeholder = "Type to filter for registry"
+                    autoFocus
+                    multi
+                    clearable
+                    onChange={this.handleSelectChange.bind(this)}
+                    name="assignedRegistries"
+                    value={this.state.assignedRegistries}
+                    labelKey="name"
+                    valueKey="name"
+                    options={this.getAvailableRegistries()}
+                    searchable />
+          </FormGroup>
           <FormGroup validationState={fields.description.error ? "error" : ""}>
             <ControlLabel>Description</ControlLabel>
 

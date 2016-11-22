@@ -87,7 +87,14 @@ export default function reducer(state = {}, action = {}) {
         ...state,
         setSourceError: action.error.message
       };
-
+    case ACTIONS.LOAD_CLUSTER_REGISTRIES_SUCCESS:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          registries: action.result
+        }
+      };
     default:
       return state;
   }
@@ -186,6 +193,14 @@ export function uploadCompose(clusterId, file) {
   return {
     types: [ACTIONS.UPLOAD_COMPOSE, ACTIONS.UPLOAD_COMPOSE_SUCCESS, ACTIONS.UPLOAD_COMPOSE_FAIL],
     promise: (client) => client.post(`/ui/api/clusters/${clusterId}/compose`, {data: formData})
+  };
+}
+
+export function loadClusterRegistries(clusterId) {
+  return {
+    id: clusterId,
+    types: [ACTIONS.LOAD_CLUSTER_REGISTRIES, ACTIONS.LOAD_CLUSTER_REGISTRIES_SUCCESS, ACTIONS.LOAD_CLUSTER_REGISTRIES_FAIL],
+    promise: (client) => client.get(`/ui/api/clusters/${clusterId}/registries`)
   };
 }
 
