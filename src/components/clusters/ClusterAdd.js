@@ -5,12 +5,13 @@ import {load, create, loadNodes} from 'redux/modules/clusters/clusters';
 import {create as createNode} from 'redux/modules/nodes/nodes';
 import {createValidator, required} from 'utils/validation';
 import {Dialog} from 'components';
+import {load as loadRegistries} from 'redux/modules/registries/registries';
 import {FormGroup, FormControl, ControlLabel, HelpBlock, Alert} from 'react-bootstrap';
 import _ from 'lodash';
 
 @connect(state => ({
   createError: state.clustersUI.createError
-}), {create, load, createNode, loadNodes})
+}), {create, load, createNode, loadNodes, loadRegistries})
 @reduxForm({
   form: 'ClusterAdd',
   fields: [
@@ -40,7 +41,8 @@ export default class ClusterAdd extends Component {
     description: PropTypes.any,
     onHide: PropTypes.func.isRequired,
     okTitle: PropTypes.string,
-    existingClusters: PropTypes.array
+    existingClusters: PropTypes.array,
+    loadRegistries: PropTypes.func.isRequired
   };
   constructor() {
     super();
@@ -83,6 +85,11 @@ export default class ClusterAdd extends Component {
     if (cluster) {
       fields.name.onChange(cluster);
     }
+  }
+
+  componentWillMount() {
+    const {loadRegistries} = this.props;
+    loadRegistries();
   }
 
   render() {
