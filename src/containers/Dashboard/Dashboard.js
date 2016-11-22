@@ -170,7 +170,7 @@ export default class Dashboard extends Component {
         />
 
         <Row>
-          <Col sm={4}>
+          <Col md={4}>
             <DashboardNodesList title="Top Memory Usage"
                                 count={5}
                                 metric="sysMemUsed"
@@ -179,7 +179,7 @@ export default class Dashboard extends Component {
             />
           </Col>
 
-          <Col sm={4}>
+          <Col md={4}>
             <DashboardNodesList title="Top CPU Usage"
                                 count={5}
                                 metric="sysCpuLoad"
@@ -188,7 +188,7 @@ export default class Dashboard extends Component {
             />
           </Col>
 
-          <Col sm={4}>
+          <Col md={4}>
             <DashboardNodesList title="Top Network Usage"
                                 count={5}
                                 metric="networkIO"
