@@ -51,3 +51,11 @@ export function loadLog(jobId) {
     promise: (client) => client.get(`/ui/api/jobs/${jobId}/log`)
   };
 }
+
+export function deleteJob(jobId) {
+  return {
+    types: [ACTIONS.DELETE_JOB, ACTIONS.DELETE_JOB_SUCCESS, ACTIONS.DELETE_JOB_FAIL],
+    id: jobId,
+    promise: (client) => client.del(`/ui/api/jobs/${jobId}/`)
+  };
+}
