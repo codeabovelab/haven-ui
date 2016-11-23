@@ -12,8 +12,7 @@ import _ from 'lodash';
 
 @connect(state => ({
   createError: state.clustersUI.createError,
-  registries: state.registries,
-  clusters: state.clusters
+  registries: state.registries
 }), {create, load, createNode, loadNodes, loadRegistries, loadClusterRegistries})
 @reduxForm({
   form: 'ClusterAdd',
@@ -42,13 +41,13 @@ export default class ClusterAdd extends Component {
     valid: PropTypes.bool.isRequired,
     cluster: PropTypes.any,
     description: PropTypes.any,
+    ownRegistries: PropTypes.any,
     onHide: PropTypes.func.isRequired,
     okTitle: PropTypes.string,
     existingClusters: PropTypes.array,
     loadRegistries: PropTypes.func.isRequired,
     loadClusterRegistries: PropTypes.func.isRequired,
-    registries: PropTypes.array.isRequired,
-    clusters: PropTypes.array.isRequired
+    registries: PropTypes.array.isRequired
   };
   constructor() {
     super();
@@ -61,16 +60,15 @@ export default class ClusterAdd extends Component {
       firstLoad: false
     });
     let registries = this.state.assignedRegistries.map((registry)=> {
-      return registry.name;
+      return registry.name ? registry.name : registry;
     });
-    console.log('subRegistries ', registries);
     this.refs.error.textContent = '';
     const {fields, existingClusters} = this.props;
     if (_.includes(existingClusters, fields.name.value) && this.props.okTitle === 'Create Cluster') {
       this.refs.error.textContent = 'Cluster with name: "' + fields.name.value + '" already exists. Please use another name.';
       return false;
     }
-    return this.props.create(fields.name.value, {"description": fields.description.value, "registries": registries}).then(() => {
+    return this.props.create(fields.name.value, {"config": {"registries": registries}, "description": fields.description.value}).then(() => {
       if (typeof(fields.assignedNodes.value) !== 'undefined' && fields.assignedNodes.value.length > 0) {
         fields.assignedNodes.value.map(function createNode(node) {
           if (typeof(node) !== 'undefined') {
@@ -91,42 +89,43 @@ export default class ClusterAdd extends Component {
   }
 
   componentDidMount() {
-    const {fields, cluster} = this.props;
+    const {fields, cluster, description} = this.props;
     if (cluster) {
       fields.name.onChange(cluster);
+    }
+    if (description) {
+      fields.description.onChange(description);
     }
   }
 
   componentWillMount() {
-    const {loadRegistries, cluster, loadClusterRegistries, clusters} = this.props;
+    const {loadRegistries, cluster, ownRegistries} = this.props;
     loadRegistries().then(()=> {
       if (!cluster) {
         let registries = this.props.registries;
-        registries = registries.map((registry)=> {
-          delete registry.disabled;
-          return registry;
-        });
+        registries = this.removeDisabledProp(registries);
         this.setState({
           assignedRegistries: registries
         });
-        console.log(this.state.assignedRegistries);
       }
     });
     if (cluster) {
-      loadClusterRegistries(cluster).then(()=> {
-        this.setState({
-          assignedRegistries: clusters[cluster].registries
-        });
+      this.setState({
+        assignedRegistries: ownRegistries
       });
     }
   }
 
-  getAvailableRegistries() {
-    let registries = this.props.registries;
-    registries = registries.map((registry)=> {
+  removeDisabledProp(registries) {
+    return registries.map((registry)=> {
       delete registry.disabled;
       return registry;
     });
+  }
+
+  getAvailableRegistries() {
+    let registries = this.props.registries;
+    registries = this.removeDisabledProp(registries);
     return registries;
   }
 
@@ -134,13 +133,11 @@ export default class ClusterAdd extends Component {
     this.setState({
       assignedRegistries: value
     });
-    console.log(this.state.assignedRegistries);
   }
 
   render() {
     require('react-select/dist/react-select.css');
     const { fields, okTitle } = this.props;
-    let { cluster, description } = this.props;
     const orphanNodes = this.props.orphanNodes;
     return (
       <Dialog show
@@ -166,7 +163,6 @@ export default class ClusterAdd extends Component {
                          {...fields.name}
                          placeholder="Name (required)"
                          disabled = {okTitle === 'Update Cluster'}
-                         defaultValue = {cluster === 'undefined' ? '' : cluster}
             />
           </FormGroup>
           <FormGroup>
@@ -191,7 +187,6 @@ export default class ClusterAdd extends Component {
             <FormControl type="text"
                          {...fields.description}
                          placeholder="Description"
-                         defaultValue = {description === 'undefined' ? '' : description}
             />
 
             <FormControl.Feedback />

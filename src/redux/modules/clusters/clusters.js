@@ -95,6 +95,11 @@ export default function reducer(state = {}, action = {}) {
           registries: action.result
         }
       };
+    case ACTIONS.GET_CLUSTER_SUCCESS:
+      return {
+        ...state,
+        [action.id]: action.result
+      };
     default:
       return state;
   }
@@ -200,6 +205,14 @@ export function loadClusterRegistries(clusterId) {
   return {
     id: clusterId,
     types: [ACTIONS.LOAD_CLUSTER_REGISTRIES, ACTIONS.LOAD_CLUSTER_REGISTRIES_SUCCESS, ACTIONS.LOAD_CLUSTER_REGISTRIES_FAIL],
+    promise: (client) => client.get(`/ui/api/clusters/${clusterId}/registries`)
+  };
+}
+
+export function getCluster(clusterId) {
+  return {
+    id: clusterId,
+    types: [ACTIONS.GET_CLUSTER, ACTIONS.GET_CLUSTER_SUCCESS, ACTIONS.GET_CLUSTER_FAIL],
     promise: (client) => client.get(`/ui/api/clusters/${clusterId}/registries`)
   };
 }
