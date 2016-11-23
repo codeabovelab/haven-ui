@@ -65,6 +65,13 @@ export default class RegistriesList extends Component {
     }
   ];
 
+  CLUSTER_REGISTRIES_ACTIONS = [
+    {
+      key: "deleteFromCluster",
+      title: "Delete"
+    }
+  ];
+
   render() {
     const {name} = this.props;
     return (
@@ -121,10 +128,11 @@ export default class RegistriesList extends Component {
   }
 
   actionsRender(registry) {
+    const {name} = this.props;
     return (
       <td key="actions" className="td-actions">
         <ActionMenu subject={registry.name}
-                    actions={this.ACTIONS}
+                    actions={ name ? this.CLUSTER_REGISTRIES_ACTIONS : this.ACTIONS}
                     actionHandler={this.props.onActionInvoke.bind(this)}
         />
       </td>

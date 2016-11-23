@@ -1,6 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {load as loadRegistries} from 'redux/modules/registries/registries';
+import {loadClusterRegistries} from 'redux/modules/clusters/clusters';
+import {create, load} from 'redux/modules/clusters/clusters';
 import {DockTable, RegistriesList, StatisticsPanel} from '../../../components/index';
 //import {RegistryEdit} from '../../index';
 import {RegistryEditForms} from '../../index';
@@ -11,8 +13,9 @@ import {ButtonToolbar, SplitButton, Button, MenuItem} from 'react-bootstrap';
 @connect(
   state => ({
     registries: state.registries,
-    registriesUI: state.registriesUI
-  }), {loadRegistries, removeRegistry})
+    registriesUI: state.registriesUI,
+    clusters: state.clusters
+  }), {loadRegistries, removeRegistry, loadClusterRegistries, create, load})
 
 export default class RegistriesPanel extends Component {
   static propTypes = {
@@ -20,7 +23,11 @@ export default class RegistriesPanel extends Component {
     registriesUI: PropTypes.object.isRequired,
     loadRegistries: PropTypes.func.isRequired,
     removeRegistry: PropTypes.func.isRequired,
-    params: PropTypes.object
+    params: PropTypes.object,
+    loadClusterRegistries: PropTypes.func.isRequired,
+    clusters: PropTypes.object,
+    load: PropTypes.func.isRequired,
+    create: PropTypes.func.isRequired
   };
 
   statisticsMetrics = [
@@ -32,22 +39,32 @@ export default class RegistriesPanel extends Component {
   ];
 
   componentDidMount() {
-    const {loadRegistries} = this.props;
-
+    const {load, loadRegistries, params: {name}, loadClusterRegistries} = this.props;
     this.state = {};
     loadRegistries();
+
+    if (name) {
+      load().then(()=>loadClusterRegistries(name));
+    }
 
     $('.input-search').focus();
   }
 
   render() {
     const {loading, loadingError} = this.props.registriesUI;
-    const {registries, registriesUI, params: {name}} = this.props;
+    const {registries, registriesUI, params: {name}, clusters} = this.props;
 
     let rows = [...registries];
-    let showLoading = false;
-    let showError = false;
-    let showData = false;
+    if (name) {
+      if (clusters[name]) {
+        let clusterRegistries = _.get(clusters[name], 'config.registries', []);
+        console.log('CR ', clusterRegistries);
+        rows = rows.filter((el)=>(clusterRegistries.indexOf(el.name) > -1));
+      } else {
+        rows = [];
+      }
+    }
+
     let connectedRegistries = rows.length;
 
     return (
@@ -90,9 +107,10 @@ export default class RegistriesPanel extends Component {
 
   onActionInvoke(action, registryId, event) {
     let registry;
+    const {params: {name}, registries} = this.props;
 
     if (registryId) {
-      registry = _.find(this.props.registries, (o) => o.name === registryId);
+      registry = _.find(registries, (o) => o.name === registryId);
     }
 
     switch (action) {
@@ -134,8 +152,31 @@ export default class RegistriesPanel extends Component {
 
         return;
 
+      case "deleteFromCluster":
+        this.setState({
+          actionDialog: undefined
+        });
+
+        confirm('Are you sure you want to remove registry "' + registryId + '" from cluster "' + name + '"?')
+          .then(() => {
+            this.changeClusterRegistries(name, registryId).catch(() => null);
+          })
+          .catch(() => null);
+        return;
+
       default:
         return;
+    }
+  }
+
+  changeClusterRegistries(name, registryId) {
+    const {create, clusters, loadClusterRegistries} = this.props;
+    console.log('name: ', name);
+    console.log('registry:', registryId);
+    if (clusters[name]) {
+      let registries = _.without(clusters[name].config.registries, registryId);
+      create(name, {"config": {"registries": registries}, "description": clusters[name].description})
+        .then(() => loadClusterRegistries(name));
     }
   }
 }

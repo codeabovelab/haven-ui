@@ -92,7 +92,10 @@ export default function reducer(state = {}, action = {}) {
         ...state,
         [action.id]: {
           ...state[action.id],
-          registries: action.result
+          config: {
+            ...state[action.id].config,
+            registries: action.result
+          }
         }
       };
     case ACTIONS.GET_CLUSTER_SUCCESS:
