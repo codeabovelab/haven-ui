@@ -41,6 +41,7 @@ export default class ClusterRegistriesDialog extends Component {
   removeDisabledProp(registries) {
     return registries.map((registry)=> {
       delete registry.disabled;
+      registry.className = "Select-value-success";
       return registry;
     });
   }
