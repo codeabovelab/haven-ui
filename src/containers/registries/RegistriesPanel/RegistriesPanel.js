@@ -7,8 +7,8 @@ import {DockTable, RegistriesList, StatisticsPanel, ClusterRegistriesDialog} fro
 //import {RegistryEdit} from '../../index';
 import {RegistryEditForms} from '../../index';
 import _ from 'lodash';
+import { Link } from 'react-router';
 import {removeRegistry} from 'redux/modules/registries/registries';
-import {ButtonToolbar, SplitButton, Button, MenuItem} from 'react-bootstrap';
 
 @connect(
   state => ({
@@ -69,9 +69,18 @@ export default class RegistriesPanel extends Component {
 
     return (
       <div>
-        <ul className="breadcrumb">
-          <li className="active">Registries</li>
-        </ul>
+        {name && (
+          <ul className="breadcrumb">
+            <li><Link to="/clusters">Clusters</Link></li>
+            <li><Link to={"/clusters/" + name}>{name}</Link></li>
+            <li className="active">Registries</li>
+          </ul>
+        ) || (
+          <ul className="breadcrumb">
+            <li className="active">Registries</li>
+          </ul>
+        )}
+
         <StatisticsPanel metrics={this.statisticsMetrics} values={[connectedRegistries]}/>
 
         <RegistriesList loading={typeof RegistriesList === "undefined"}
