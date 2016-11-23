@@ -21,7 +21,6 @@ export default class ClusterRegistriesDialog extends Component {
 
   onSubmit() {
     const {create, clusters, loadClusterRegistries, clusterName} = this.props;
-    console.log('name: ', clusterName);
     let registries = this.state.assignedRegistries.map((registry)=> {
       return registry.name ? registry.name : registry;
     });

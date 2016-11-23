@@ -58,7 +58,6 @@ export default class RegistriesPanel extends Component {
     if (name) {
       if (clusters[name]) {
         let clusterRegistries = _.get(clusters[name], 'config.registries', []);
-        console.log('CR ', clusterRegistries);
         rows = rows.filter((el)=>(clusterRegistries.indexOf(el.name) > -1));
       } else {
         rows = [];
@@ -198,8 +197,6 @@ export default class RegistriesPanel extends Component {
 
   changeClusterRegistries(name, registryId) {
     const {create, clusters, loadClusterRegistries} = this.props;
-    console.log('name: ', name);
-    console.log('registry:', registryId);
     if (clusters[name]) {
       let registries = _.without(clusters[name].config.registries, registryId);
       create(name, {"config": {"registries": registries}, "description": clusters[name].description})
