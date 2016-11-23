@@ -139,10 +139,13 @@ export default class EventsPanel extends Component {
               <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
             </LinkContainer>
             <LinkContainer to={nodesNavId}>
-              <NavItem eventKey={2}>Nodes</NavItem>
+              <NavItem eventKey={3}>Nodes</NavItem>
             </LinkContainer>
             <LinkContainer to={"/clusters/" + name + "/" + "events"}>
-              <NavItem eventKey={2}>Events</NavItem>
+              <NavItem eventKey={4}>Events</NavItem>
+            </LinkContainer>
+            <LinkContainer to={"/clusters/" + name + "/" + "registries"}>
+              <NavItem eventKey={5} disabled={name === "all"}>Registries</NavItem>
             </LinkContainer>
           </Nav>
           {this.props.events && (

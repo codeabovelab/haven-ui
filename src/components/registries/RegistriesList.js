@@ -2,14 +2,17 @@ import React, {Component, PropTypes} from 'react';
 import {Link} from 'react-router';
 import {DockTable, OnOff, ActionMenu} from '../index';
 import {RegistryEdit} from '../../containers/index';
-import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Glyphicon} from 'react-bootstrap';
+import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Glyphicon, Nav, NavItem, Image} from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 
 export default class RegistriesList extends Component {
   static propTypes = {
     data: PropTypes.array,
     onNewEntry: PropTypes.func,
+    manageRegistries: PropTypes.func,
     onActionInvoke: PropTypes.func.isRequired,
     loading: PropTypes.bool,
+    name: PropTypes.string
   };
 
   COLUMNS = [
@@ -63,23 +66,63 @@ export default class RegistriesList extends Component {
     }
   ];
 
+  CLUSTER_REGISTRIES_ACTIONS = [
+    {
+      key: "deleteFromCluster",
+      title: "Delete"
+    }
+  ];
+
   render() {
+    const {name} = this.props;
+    let panelClassName = name ? "panel panel-default" : "panel panel-default no-header-panel";
+    let buttonBarClassName = name ? "pulled-right-toolbar" : "pulled-right-toolbar-noheader";
     return (
-      <Panel>
+      <div className={panelClassName}>
         {this.props.loading && (
           <ProgressBar active now={100}/>
         )}
-
         {(this.props.data && !this.props.loading) && (
           <div>
-            <ButtonToolbar className="pulled-right">
-              <Button
-                bsStyle="primary"
-                onClick={this.props.onNewEntry}
-              >
-                <i className="fa fa-plus"/>&nbsp;
-                New Registry
-              </Button>
+            {name && (
+              <Nav bsStyle="tabs" className="dockTable-nav">
+                <LinkContainer to={"/clusters/" + name}>
+                  <NavItem eventKey={1}>Containers</NavItem>
+                </LinkContainer>
+                <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
+                  <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
+                </LinkContainer>
+                <LinkContainer to={"/clusters/" + name + "/" + "nodes"}>
+                  <NavItem eventKey={3}>Nodes</NavItem>
+                </LinkContainer>
+                <LinkContainer to={"/clusters/" + name + "/" + "events"}>
+                  <NavItem eventKey={4}>Events</NavItem>
+                </LinkContainer>
+                <LinkContainer to={"/clusters/" + name + "/" + "registries"}>
+                  <NavItem eventKey={5} disabled={name === "all"}>Registries</NavItem>
+                </LinkContainer>
+              </Nav>
+            )}
+            <ButtonToolbar className={buttonBarClassName}>
+              {!name && (
+                <Button
+                  bsStyle="primary"
+                  className="pulled-right"
+                  onClick={this.props.onNewEntry}
+                >
+                  <i className="fa fa-plus"/>&nbsp;
+                  New Registry
+                </Button>
+              ) || (
+                <Button
+                  bsStyle="primary"
+                  className="pulled-right"
+                  onClick={this.props.manageRegistries}
+                >
+                  <i className="fa fa-pencil-square-o"/>&nbsp;
+                  Add/Remove Registry
+                </Button>
+              )}
             </ButtonToolbar>
             <DockTable columns={this.COLUMNS}
                        rows={this.props.data}
@@ -92,15 +135,16 @@ export default class RegistriesList extends Component {
             No Registries yet
           </div>
         )}
-      </Panel>
+      </div>
     );
   }
 
   actionsRender(registry) {
+    const {name} = this.props;
     return (
       <td key="actions" className="td-actions">
         <ActionMenu subject={registry.name}
-                    actions={this.ACTIONS}
+                    actions={ name ? this.CLUSTER_REGISTRIES_ACTIONS : this.ACTIONS}
                     actionHandler={this.props.onActionInvoke.bind(this)}
         />
       </td>

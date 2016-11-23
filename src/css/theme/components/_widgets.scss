@@ -159,6 +159,11 @@
   margin: 10px 17px 0 0!important;
 }
 
+.pulled-right-toolbar-noheader {
+  float: right!important;
+  margin: 0 17px 0 0!important;
+}
+
 .fa-plus-circle {
   cursor: pointer;
 }
@@ -202,4 +207,8 @@
 
 .medium-size-dialog {
   width: 600px!important;
+}
+
+.no-header-panel {
+  padding-top: 10px;
 }

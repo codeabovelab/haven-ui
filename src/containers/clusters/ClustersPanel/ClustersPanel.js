@@ -197,6 +197,7 @@ export default class ClustersPanel extends Component {
 
       case "edit":
         let description = this.props.clusters[cluster].description;
+        let registries = this.props.clusters[cluster].config.registries;
         this.setState({
           actionDialog: (
             <ClusterAdd title="Edit Cluster"
@@ -205,6 +206,7 @@ export default class ClustersPanel extends Component {
                         orphanNodes = {orphanNodes}
                         onHide={this.onHideDialog.bind(this)}
                         okTitle="Update Cluster"
+                        ownRegistries = {registries}
                         existingClusters={clustersNames}
             />
           )
