@@ -2,7 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import {Link} from 'react-router';
 import {DockTable, OnOff, ActionMenu} from '../index';
 import {RegistryEdit} from '../../containers/index';
-import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Glyphicon} from 'react-bootstrap';
+import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Glyphicon, Nav, NavItem, Image} from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 
 export default class RegistriesList extends Component {
   static propTypes = {
@@ -10,6 +11,7 @@ export default class RegistriesList extends Component {
     onNewEntry: PropTypes.func,
     onActionInvoke: PropTypes.func.isRequired,
     loading: PropTypes.bool,
+    name: PropTypes.string
   };
 
   COLUMNS = [
@@ -64,35 +66,57 @@ export default class RegistriesList extends Component {
   ];
 
   render() {
+    const {name} = this.props;
     return (
-      <Panel>
-        {this.props.loading && (
-          <ProgressBar active now={100}/>
-        )}
+      <div>
+        <div className="panel panel-default">
+          {this.props.loading && (
+            <ProgressBar active now={100}/>
+          )}
+          {(this.props.data && !this.props.loading) && (
+            <div>
+              {name && (
+                <Nav bsStyle="tabs" className="dockTable-nav">
+                  <LinkContainer to={"/clusters/" + name}>
+                    <NavItem eventKey={1}>Containers</NavItem>
+                  </LinkContainer>
+                  <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
+                    <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
+                  </LinkContainer>
+                  <LinkContainer to={"/clusters/" + name + "/" + "nodes"}>
+                    <NavItem eventKey={3}>Nodes</NavItem>
+                  </LinkContainer>
+                  <LinkContainer to={"/clusters/" + name + "/" + "events"}>
+                    <NavItem eventKey={4}>Events</NavItem>
+                  </LinkContainer>
+                  <LinkContainer to={"/clusters/" + name + "/" + "registries"}>
+                    <NavItem eventKey={5}>Registries</NavItem>
+                  </LinkContainer>
+                </Nav>
+              )}
+              <ButtonToolbar className="pulled-right-toolbar">
+                <Button
+                  bsStyle="primary"
+                  className="pulled-right"
+                  onClick={this.props.onNewEntry}
+                >
+                  <i className="fa fa-plus"/>&nbsp;
+                  New Registry
+                </Button>
+              </ButtonToolbar>
+              <DockTable columns={this.COLUMNS}
+                         rows={this.props.data}
+              />
+            </div>
+          )}
 
-        {(this.props.data && !this.props.loading) && (
-          <div>
-            <ButtonToolbar className="pulled-right">
-              <Button
-                bsStyle="primary"
-                onClick={this.props.onNewEntry}
-              >
-                <i className="fa fa-plus"/>&nbsp;
-                New Registry
-              </Button>
-            </ButtonToolbar>
-            <DockTable columns={this.COLUMNS}
-                       rows={this.props.data}
-            />
-          </div>
-        )}
-
-        {this.props.data && this.props.data.length === 0 && (
-          <div className="alert alert-info">
-            No Registries yet
-          </div>
-        )}
-      </Panel>
+          {this.props.data && this.props.data.length === 0 && (
+            <div className="alert alert-info">
+              No Registries yet
+            </div>
+          )}
+        </div>
+      </div>
     );
   }
 

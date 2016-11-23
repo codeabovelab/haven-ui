@@ -405,6 +405,9 @@ export default class ClusterDetailsPanel extends Component {
                 <LinkContainer to={"/clusters/" + name + "/" + "events"}>
                   <NavItem eventKey={4}>Events</NavItem>
                 </LinkContainer>
+                <LinkContainer to={"/clusters/" + name + "/" + "registries"}>
+                  <NavItem eventKey={5}>Registries</NavItem>
+                </LinkContainer>
               </Nav>
               {!isAllPage && (
                 <ButtonToolbar className="pulled-right-toolbar">

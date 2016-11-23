@@ -19,7 +19,8 @@ export default class RegistriesPanel extends Component {
     registries: PropTypes.array.isRequired,
     registriesUI: PropTypes.object.isRequired,
     loadRegistries: PropTypes.func.isRequired,
-    removeRegistry: PropTypes.func.isRequired
+    removeRegistry: PropTypes.func.isRequired,
+    params: PropTypes.object
   };
 
   statisticsMetrics = [
@@ -41,7 +42,7 @@ export default class RegistriesPanel extends Component {
 
   render() {
     const {loading, loadingError} = this.props.registriesUI;
-    const {registries, registriesUI} = this.props;
+    const {registries, registriesUI, params: {name}} = this.props;
 
     let rows = [...registries];
     let showLoading = false;
@@ -58,6 +59,7 @@ export default class RegistriesPanel extends Component {
 
         <RegistriesList loading={typeof RegistriesList === "undefined"}
                         data={rows}
+                        name={name}
                         onNewEntry={this.onActionInvoke.bind(this, "create")}
                         onActionInvoke={this.onActionInvoke.bind(this)}
         />
