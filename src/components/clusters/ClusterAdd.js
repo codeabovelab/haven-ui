@@ -7,7 +7,7 @@ import {createValidator, required} from 'utils/validation';
 import {Dialog} from 'components';
 import {load as loadRegistries} from 'redux/modules/registries/registries';
 import Select from 'react-select';
-import {FormGroup, FormControl, ControlLabel, HelpBlock, Alert} from 'react-bootstrap';
+import {FormGroup, FormControl, ControlLabel, HelpBlock, Alert, Label} from 'react-bootstrap';
 import _ from 'lodash';
 
 @connect(state => ({
@@ -116,6 +116,10 @@ export default class ClusterAdd extends Component {
     }
   }
 
+  renderSelectValue(option) {
+    return <Label className="Select-value-success">{option.name}</Label>;
+  }
+
   removeDisabledProp(registries) {
     return registries.map((registry)=> {
       delete registry.disabled;
@@ -175,6 +179,7 @@ export default class ClusterAdd extends Component {
                     autoFocus
                     multi
                     clearable
+                    valueRenderer={this.renderSelectValue}
                     onChange={this.handleSelectChange.bind(this)}
                     name="assignedRegistries"
                     value={this.state.assignedRegistries}

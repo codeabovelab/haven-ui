@@ -4,7 +4,7 @@ import {load, create, loadNodes, loadClusterRegistries} from 'redux/modules/clus
 import {createValidator, required} from 'utils/validation';
 import {Dialog} from 'components';
 import Select from 'react-select';
-import {FormGroup, ControlLabel} from 'react-bootstrap';
+import {FormGroup, ControlLabel, Label} from 'react-bootstrap';
 
 export default class ClusterRegistriesDialog extends Component {
   static propTypes = {
@@ -36,6 +36,10 @@ export default class ClusterRegistriesDialog extends Component {
     this.setState({
       assignedRegistries: ownRegistries
     });
+  }
+
+  renderSelectValue(option) {
+    return <Label className="Select-value-success">{option.name}</Label>;
   }
 
   removeDisabledProp(registries) {
@@ -76,6 +80,7 @@ export default class ClusterRegistriesDialog extends Component {
                     placeholder="Type to filter for registry"
                     autoFocus
                     multi
+                    valueRenderer={this.renderSelectValue}
                     clearable
                     onChange={this.handleSelectChange.bind(this)}
                     name="assignedRegistries"
