@@ -406,7 +406,7 @@ export default class ClusterDetailsPanel extends Component {
                   <NavItem eventKey={4}>Events</NavItem>
                 </LinkContainer>
                 <LinkContainer to={"/clusters/" + name + "/" + "registries"}>
-                  <NavItem eventKey={5}>Registries</NavItem>
+                  <NavItem eventKey={5} disabled={name === "all"}>Registries</NavItem>
                 </LinkContainer>
               </Nav>
               {!isAllPage && (
