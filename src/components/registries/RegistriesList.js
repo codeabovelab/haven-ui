@@ -9,6 +9,7 @@ export default class RegistriesList extends Component {
   static propTypes = {
     data: PropTypes.array,
     onNewEntry: PropTypes.func,
+    manageRegistries: PropTypes.func,
     onActionInvoke: PropTypes.func.isRequired,
     loading: PropTypes.bool,
     name: PropTypes.string
@@ -102,14 +103,25 @@ export default class RegistriesList extends Component {
                 </Nav>
               )}
               <ButtonToolbar className="pulled-right-toolbar">
-                <Button
-                  bsStyle="primary"
-                  className="pulled-right"
-                  onClick={this.props.onNewEntry}
-                >
-                  <i className="fa fa-plus"/>&nbsp;
-                  New Registry
-                </Button>
+                {!name && (
+                  <Button
+                    bsStyle="primary"
+                    className="pulled-right"
+                    onClick={this.props.onNewEntry}
+                  >
+                    <i className="fa fa-plus"/>&nbsp;
+                    New Registry
+                  </Button>
+                ) || (
+                  <Button
+                    bsStyle="primary"
+                    className="pulled-right"
+                    onClick={this.props.manageRegistries}
+                  >
+                    <i className="fa fa-pencil-square-o" />&nbsp;
+                    Add/Remove Registry
+                  </Button>
+                )}
               </ButtonToolbar>
               <DockTable columns={this.COLUMNS}
                          rows={this.props.data}

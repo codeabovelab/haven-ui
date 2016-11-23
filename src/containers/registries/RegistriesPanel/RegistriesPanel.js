@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {load as loadRegistries} from 'redux/modules/registries/registries';
 import {loadClusterRegistries} from 'redux/modules/clusters/clusters';
 import {create, load} from 'redux/modules/clusters/clusters';
-import {DockTable, RegistriesList, StatisticsPanel} from '../../../components/index';
+import {DockTable, RegistriesList, StatisticsPanel, ClusterRegistriesDialog} from '../../../components/index';
 //import {RegistryEdit} from '../../index';
 import {RegistryEditForms} from '../../index';
 import _ from 'lodash';
@@ -77,6 +77,7 @@ export default class RegistriesPanel extends Component {
         <RegistriesList loading={typeof RegistriesList === "undefined"}
                         data={rows}
                         name={name}
+                        manageRegistries={this.onActionInvoke.bind(this, "manageRegistries")}
                         onNewEntry={this.onActionInvoke.bind(this, "create")}
                         onActionInvoke={this.onActionInvoke.bind(this)}
         />
@@ -162,6 +163,23 @@ export default class RegistriesPanel extends Component {
             this.changeClusterRegistries(name, registryId).catch(() => null);
           })
           .catch(() => null);
+        return;
+
+      case "manageRegistries":
+        this.setState({
+          actionDialog: (
+            <ClusterRegistriesDialog title="Manage Cluster Registries"
+                                     clusterName={this.props.params.name}
+                                     ownRegistries={this.props.clusters[name].config.registries}
+                                     onHide={this.onHideDialog.bind(this)}
+                                     registries={this.props.registries}
+                                     clusters={this.props.clusters}
+                                     create={this.props.create}
+                                     loadRegistries={this.props.loadRegistries}
+                                     loadClusterRegistries={this.props.loadClusterRegistries}
+            />
+          )
+        });
         return;
 
       default:

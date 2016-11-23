@@ -168,7 +168,7 @@ export default class ClusterAdd extends Component {
           <FormGroup>
             <ControlLabel>Registries</ControlLabel>
             <Select ref="registriesSelect"
-                    className="nodeSelect"
+                    className="regSelect"
                     placeholder = "Type to filter for registry"
                     autoFocus
                     multi
