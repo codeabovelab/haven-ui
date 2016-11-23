@@ -137,6 +137,7 @@ export default class ClusterAdd extends Component {
 
   render() {
     require('react-select/dist/react-select.css');
+    require('css/theme/component-overrides/react-select.scss');
     const { fields, okTitle } = this.props;
     const orphanNodes = this.props.orphanNodes;
     return (

@@ -59,6 +59,7 @@ export default class ClusterRegistriesDialog extends Component {
 
   render() {
     require('react-select/dist/react-select.css');
+    require('css/theme/component-overrides/react-select.scss');
     return (
       <Dialog show
               size="large"
