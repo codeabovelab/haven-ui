@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
 import {load, create, loadNodes, loadClusterRegistries} from 'redux/modules/clusters/clusters';
 import {create as createNode} from 'redux/modules/nodes/nodes';
-import {createValidator, required} from 'utils/validation';
+import {createValidator, required, alphanumeric} from 'utils/validation';
 import {Dialog} from 'components';
 import {load as loadRegistries} from 'redux/modules/registries/registries';
 import Select from 'react-select';
@@ -22,7 +22,7 @@ import _ from 'lodash';
     'assignedNodes'
   ],
   validate: createValidator({
-    name: [required]
+    name: [required, alphanumeric]
   })
 })
 export default class ClusterAdd extends Component {
@@ -163,13 +163,18 @@ export default class ClusterAdd extends Component {
         )}
 
         <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
-          <FormGroup title="required" required validationState={(fields.name.error && (!this.state.firstLoad || fields.name.touched)) ? "error" : ""}>
+          <FormGroup title="required" required validationState={
+            (fields.name.error && (!this.state.firstLoad || fields.name.touched || fields.name.error !== 'Required')) ? "error" : ""}
+          >
             <ControlLabel>Name</ControlLabel>
             <FormControl type="text"
                          {...fields.name}
                          placeholder="Name (required)"
                          disabled = {okTitle === 'Update Cluster'}
             />
+            {fields.name.error && (fields.name.touched || fields.name.error !== 'Required') && (
+              <HelpBlock>{fields.name.error}</HelpBlock>
+            )}
           </FormGroup>
           <FormGroup>
             <ControlLabel>Registries</ControlLabel>
