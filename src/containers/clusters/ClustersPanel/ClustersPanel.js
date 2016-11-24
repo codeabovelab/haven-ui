@@ -14,7 +14,8 @@ import {deleteClusterImages} from 'redux/modules/images/images';
     clusters: state.clusters,
     clustersIds: state.clustersUI.list,
     events: state.events,
-    alerts: state.events.alerts
+    alerts: state.events.alerts,
+    users: state.users
   }), {
     loadClusters: clusterActions.load,
     deleteCluster: clusterActions.deleteCluster,
@@ -33,7 +34,8 @@ export default class ClustersPanel extends Component {
     events: PropTypes.object,
     alerts: PropTypes.object,
     countEvents: PropTypes.func.isRequired,
-    deleteClusterImages: PropTypes.func.isRequired
+    deleteClusterImages: PropTypes.func.isRequired,
+    users: PropTypes.object
   };
 
   statisticsMetricsNodesUp = [
@@ -151,6 +153,7 @@ export default class ClustersPanel extends Component {
                       data={clustersList}
                       onNewCluster={this.onActionInvoke.bind(this, "create")}
                       onActionInvoke={this.onActionInvoke.bind(this)}
+                      currentUserRole={this.props.users.currentUser.role}
         />
 
         <Panel header={eventsHeaderBar}>
