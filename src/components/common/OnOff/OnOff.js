@@ -13,14 +13,14 @@ export default class OnOff extends Component {
     let onColor = (this.props.on > 0) ? "up-status-count" : "default-status-count";
     return (
       <p>
-      <a className="on-off text-success" href={this.props.href}>
+      <Link className="on-off text-success" to={this.props.href}>
         <span className={onColor}>{this.props.on}</span>
-      </a>
+      </Link>
 
       {(this.props.off > 0) && (
-        <a className="on-off text-danger" href={this.props.href}>
+        <Link className="on-off text-danger" to={this.props.href}>
           <span className="down-status-count">{this.props.off}</span>
-        </a>
+        </Link>
       )}
       </p>
     );

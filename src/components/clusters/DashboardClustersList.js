@@ -98,7 +98,7 @@ export default class DashboardClustersList extends Component {
       <td key="nodes">
         <OnOff on={cluster.nodes.on}
                off={cluster.nodes.off}
-               href="/nodes"/>
+               href={"/clusters/" + cluster.name + "/nodes"}/>
       </td>
     );
   }
