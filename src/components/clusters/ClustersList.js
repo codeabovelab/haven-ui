@@ -8,7 +8,8 @@ export default class ClustersList extends Component {
     data: PropTypes.array,
     loading: PropTypes.bool,
     onNewCluster: PropTypes.func,
-    onActionInvoke: PropTypes.func.isRequired
+    onActionInvoke: PropTypes.func.isRequired,
+    currentUserRole: PropTypes.string
   };
 
   COLUMNS = [
@@ -96,15 +97,17 @@ export default class ClustersList extends Component {
 
         {(this.props.data && !this.props.loading) && (
           <div>
-            <ButtonToolbar className="pulled-right">
-              <Button
-                bsStyle="primary"
-                onClick={this.props.onNewCluster}
-              >
-                <i className="fa fa-plus"/>&nbsp;
-                New Cluster
-              </Button>
-            </ButtonToolbar>
+            {this.props.currentUserRole !== "ROLE_USER" && (
+              <ButtonToolbar className="pulled-right">
+                <Button
+                  bsStyle="primary"
+                  onClick={this.props.onNewCluster}
+                >
+                  <i className="fa fa-plus"/>&nbsp;
+                  New Cluster
+                </Button>
+              </ButtonToolbar>
+            )}
             <DockTable columns={this.COLUMNS}
                        rows={this.props.data}
             />
