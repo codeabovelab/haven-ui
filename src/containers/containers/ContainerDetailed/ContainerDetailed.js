@@ -18,7 +18,8 @@ let stompClient = null;
   containersByName: state.containers.detailsByName,
   containersUI: state.containersUI,
   events: state.events,
-  token: state.auth.token
+  token: state.auth.token,
+  users: state.users
 }), {
   loadContainers: clusterActions.loadContainers,
   loadStatistics: containerActions.loadStatistics,
@@ -45,13 +46,15 @@ export default class ContainerDetailed extends Component {
     loadLogs: PropTypes.func.isRequired,
     restartContainer: PropTypes.func.isRequired,
     removeContainer: PropTypes.func.isRequired,
-    loadStatistics: PropTypes.func.isRequired
+    loadStatistics: PropTypes.func.isRequired,
+    users: PropTypes.object
   };
 
   ACTIONS = [
     {
       key: "delete",
-      title: "Delete"
+      title: "Delete",
+      disabled: _.get(this.props.users, 'currentUser.role', '') === "ROLE_USER"
     },
     null,
     {
@@ -65,7 +68,8 @@ export default class ContainerDetailed extends Component {
     },
     {
       key: "edit",
-      title: "Edit"
+      title: "Edit",
+      default: true
     },
     {
       key: "stats",
