@@ -54,6 +54,12 @@ export function match(field, errorText) {
   };
 }
 
+export function alphanumeric(value) {
+  if (!isEmpty(value) && !/^[A-Za-z0-9-]+$/.test(value)) {
+    return 'Name should match ^[A-Za-z0-9-]+$ pattern';
+  }
+}
+
 export function createValidator(rules) {
   return (data = {}) => {
     const errors = {};
