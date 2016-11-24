@@ -153,7 +153,7 @@ export default class ClustersPanel extends Component {
                       data={clustersList}
                       onNewCluster={this.onActionInvoke.bind(this, "create")}
                       onActionInvoke={this.onActionInvoke.bind(this)}
-                      currentUserRole={this.props.users.currentUser.role}
+                      currentUserRole={_.get(this.props.users, 'currentUser.role', '')}
         />
 
         <Panel header={eventsHeaderBar}>
