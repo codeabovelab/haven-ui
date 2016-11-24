@@ -73,7 +73,8 @@ export default class ClustersList extends Component {
     null,
     {
       key: "delete",
-      title: "Delete"
+      title: "Delete",
+      disabled: this.props.currentUserRole === "ROLE_USER"
     },
     {
       key: "deleteImages",
