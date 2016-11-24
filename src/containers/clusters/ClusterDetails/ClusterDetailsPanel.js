@@ -70,7 +70,8 @@ function processTdVal(val) {
   state => ({
     clusters: state.clusters,
     containers: state.containers,
-    events: state.events
+    events: state.events,
+    users: state.users
   }), {
     loadContainers: clusterActions.loadContainers,
     loadClusters: clusterActions.load,
@@ -96,7 +97,8 @@ export default class ClusterDetailsPanel extends Component {
     removeContainer: PropTypes.func.isRequired,
     getClusterSource: PropTypes.func.isRequired,
     loadClusters: PropTypes.func.isRequired,
-    deleteClusterImages: PropTypes.func.isRequired
+    deleteClusterImages: PropTypes.func.isRequired,
+    users: PropTypes.object
   };
 
   statisticsMetricsNodesUp = [
@@ -267,7 +269,8 @@ export default class ClusterDetailsPanel extends Component {
     null,
     {
       key: "delete",
-      title: "Delete"
+      title: "Delete",
+      disabled: _.get(this.props.users, 'currentUser.role', '') === "ROLE_USER"
     }
   ];
 
