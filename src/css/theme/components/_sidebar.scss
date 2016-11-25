@@ -208,13 +208,22 @@ a.al-sidebar-list-link {
     .fa-angle-down, .fa-angle-up {
       opacity: 0;
     }
-
+    .sidebar-hover-elem, .sidebar-select-elem {
+      left: 48px;
+    }
+  }
+  .sidebar-collapsed {
+    width: 52px;
+    transition: width .3s, left .3s, right .3s;
+    .fa-angle-down, .fa-angle-up {
+      opacity: 0;
+    }
     .al-sidebar-sublist {
       position: absolute;
       top: -1px;
       left: 52px;
       @include bg-translucent-dark(0.8);
-      display: block;
+      display: none;
       overflow: hidden;
       transition: width 0.5s ease;
       &.slide-right {
@@ -235,7 +244,6 @@ a.al-sidebar-list-link {
         }
       }
     }
-
     .sidebar-hover-elem, .sidebar-select-elem {
       left: 48px;
     }

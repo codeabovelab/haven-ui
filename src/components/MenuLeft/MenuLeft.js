@@ -41,6 +41,10 @@ export default class MenuLeft extends Component {
     });
   }
 
+  componentDidMount() {
+    this.checkSideBarCollapsed();
+  }
+
   onHideDialog() {
     const {getCurrentUser} = this.props;
     getCurrentUser().then(()=> {
@@ -80,7 +84,7 @@ export default class MenuLeft extends Component {
     let role = _.get(this.props, 'users.currentUser.role', '');
 
     return (
-      <aside className="al-sidebar">
+      <aside id="menu-left" className="al-sidebar">
         <div className="clearfix">
           <a href="" className="al-logo clearfix"><img src="/logo-white.png" title="Haven" />
             <span className="product-name">Haven</span></a>
@@ -190,6 +194,7 @@ export default class MenuLeft extends Component {
   }
 
   showSubBlock(id) {
+    this.checkSideBarCollapsed();
     let $subBlock = $("#" + id);
     let $angle = $('#' + id + 'Angle');
     if ($angle.hasClass('fa-angle-down')) {
@@ -198,6 +203,13 @@ export default class MenuLeft extends Component {
       $angle.removeClass('fa-angle-up').addClass('fa-angle-down');
     }
     $subBlock.slideToggle(300);
+  }
+
+  checkSideBarCollapsed() {
+    let $sidebar = $('#menu-left');
+    if ($sidebar.width() < 160) {
+      $sidebar.addClass('sidebar-collapsed');
+    }
   }
 
   expand(e) {
@@ -210,14 +222,14 @@ export default class MenuLeft extends Component {
     let $sidebar = $(".al-sidebar");
 
     if (arrowDirection === 'right') {
-      $sidebar.addClass("sidebar-expanded");
+      $sidebar.addClass("sidebar-expanded").removeClass("sidebar-collapsed");
       $icon.removeClass("fa-chevron-right").addClass("fa-chevron-left");
       $mainContent.addClass("extra-margin-content");
       $footer.addClass('extra-margin-footer');
       $iconLi.attr("title", "Collapse");
       $icon.attr("data-direction", "left");
     } else {
-      $sidebar.removeClass("sidebar-expanded");
+      $sidebar.removeClass("sidebar-expanded").addClass("sidebar-collapsed");
       $icon.removeClass("fa-chevron-left").addClass("fa-chevron-right");
       $mainContent.removeClass("extra-margin-content");
       $footer.removeClass('extra-margin-footer');
