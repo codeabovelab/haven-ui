@@ -53,7 +53,7 @@ export default class ApiClient {
         });
       }));
   }
-  
+
   _store;
 
   setStore(store) {

@@ -18,6 +18,7 @@ import {
   ContainerDetailed,
   UsersPanel
 } from 'containers';
+import {AgentPanel} from 'components';
 
 export default (store) => {
   const requireLogin = (nextState, replace, cb) => {
@@ -58,6 +59,7 @@ export default (store) => {
         <Route name="Events" path="clusters/:name/events" component={EventsPanel}/>
         <Route name="Container Detailed View" path="clusters/:name/containers/:subname" component={ContainerDetailed}/>
         <Route name="Users" path="users" component={UsersPanel}/>
+        <Route name="Agent" path="agent" component={AgentPanel}/>
       </Route>
 
       { /* Public Routes */ }

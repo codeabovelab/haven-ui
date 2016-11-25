@@ -142,11 +142,11 @@ export default class MenuLeft extends Component {
             </Link>
           </li>
           {role === 'ROLE_ADMIN' && (
-            <li className="al-sidebar-list-item with-sub-menu" title="Admin's Panel">
+            <li className="al-sidebar-list-item with-sub-menu" title="Admin">
               <Link className="al-sidebar-list-link" onClick={()=>this.showSubBlock('adminSublist')}>
                 <i className="fa fa-briefcase fa-fw"/>
-                <span>Admin's Panel</span>
-                <b className="fa fa-angle-down"/>
+                <span>Admin</span>
+                <b id="adminSublistAngle" className="fa fa-angle-down"/>
               </Link>
               <ul className="al-sidebar-sublist shown-sublist hidden-sublist" id="adminSublist">
                 <li className="ba-sidebar-sublist-item" title="Users">
@@ -159,10 +159,10 @@ export default class MenuLeft extends Component {
                     <span>Settings</span>
                   </Link>
                 </li>
-                <li className="al-sidebar-list-item" title="Get Haven Agent">
-                  <a href="http://hb1.codeabovelab.com/res/agent/dockmaster-agent.py" className="al-sidebar-list-link">
-                    <span>Get Agent</span>
-                  </a>
+                <li className="al-sidebar-list-item" title="Add Node">
+                  <Link to="/agent" className="al-sidebar-list-link">
+                    <span>Add Node</span>
+                  </Link>
                 </li>
               </ul>
             </li>
@@ -191,6 +191,12 @@ export default class MenuLeft extends Component {
 
   showSubBlock(id) {
     let $subBlock = $("#" + id);
+    let $angle = $('#' + id + 'Angle');
+    if ($angle.hasClass('fa-angle-down')) {
+      $angle.removeClass('fa-angle-down').addClass('fa-angle-up');
+    } else {
+      $angle.removeClass('fa-angle-up').addClass('fa-angle-down');
+    }
     $subBlock.slideToggle(300);
   }
 
