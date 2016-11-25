@@ -135,26 +135,38 @@ export default class MenuLeft extends Component {
             </Link>
           </li>
 
-          <li className="al-sidebar-list-item" title="Settings">
-            <Link to="/settings" className="al-sidebar-list-link">
-              <i className="fa fa-wrench fa-fw"/>
-              <span>Settings</span>
-            </Link>
-          </li>
-          {role === 'ROLE_ADMIN' && (
-            <li className="al-sidebar-list-item" title="Users">
-              <Link to="/users" className="al-sidebar-list-link">
-                <i className="fa fa-users fa-fw"/>
-                <span>Users</span>
-              </Link>
-            </li>
-          )}
           <li className="al-sidebar-list-item" title="Change password">
             <Link className="al-sidebar-list-link" onClick={()=>{this.showPasswordChange("Change Password");}}>
               <i className="fa fa-id-badge fa-fw"/>
               <span>My Account</span>
             </Link>
           </li>
+          {role === 'ROLE_ADMIN' && (
+            <li className="al-sidebar-list-item with-sub-menu" title="Admin's Panel">
+              <Link className="al-sidebar-list-link" onClick={()=>this.showSubBlock('adminSublist')}>
+                <i className="fa fa-briefcase fa-fw"/>
+                <span>Admin's Panel</span>
+                <b className="fa fa-angle-down"/>
+              </Link>
+              <ul className="al-sidebar-sublist shown-sublist hidden-sublist" id="adminSublist">
+                <li className="ba-sidebar-sublist-item" title="Users">
+                  <Link to="/users" className="al-sidebar-list-link">
+                    <span>Users</span>
+                  </Link>
+                </li>
+                <li className="al-sidebar-list-item" title="Settings">
+                  <Link to="/settings" className="al-sidebar-list-link">
+                    <span>Settings</span>
+                  </Link>
+                </li>
+                <li className="al-sidebar-list-item" title="Get Haven Agent">
+                  <a href="http://hb1.codeabovelab.com/res/agent/dockmaster-agent.py" className="al-sidebar-list-link">
+                    <span>Get Agent</span>
+                  </a>
+                </li>
+              </ul>
+            </li>
+          )}
           <li className="al-sidebar-list-item" title="Sign Out">
             <Link className="al-sidebar-list-link" onClick={this.handleLogout}>
               <i className="fa fa-sign-out fa-fw"/>
@@ -175,6 +187,11 @@ export default class MenuLeft extends Component {
         )}
       </aside>
     );
+  }
+
+  showSubBlock(id) {
+    let $subBlock = $("#" + id);
+    $subBlock.slideToggle(300);
   }
 
   expand(e) {
