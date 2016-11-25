@@ -36,14 +36,9 @@ export default class Login extends Component {
   }
 
   componentDidMount() {
-    const {user, location} = this.props;
+    const {user} = this.props;
     if (!user) {
       this.fillCredentialsFields();
-    } else {
-      // Redirect if back parameter supplied in route search parameters
-      if (location && location.query && location.query.back) {
-        browserHistory.push(location.query.back);
-      }
     }
   }
 
