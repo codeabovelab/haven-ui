@@ -99,11 +99,11 @@ export function loadImageTagInfo(imageName) {
 }
 
 
-export function searchImages(query, page, size, registry) {
+export function searchImages(query, page, size, registry, cluster) {
   return {
     types: [ACTIONS.SEARCH_IMAGES, ACTIONS.SEARCH_IMAGES_SUCCESS, ACTIONS.SEARCH_IMAGES_FAIL],
     id: 'search',
-    promise: (client) => client.get('/ui/api/images/search', {params: {registry: registry, query: query, page: page, size: size}})
+    promise: (client) => client.get('/ui/api/images/search', {params: {registry: registry, query: query, page: page, size: size, cluster: cluster}})
   };
 }
 

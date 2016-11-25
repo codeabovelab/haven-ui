@@ -150,6 +150,7 @@ export default class ContainerCreate extends Component {
   }
 
   getImageOptions(input, callback) {
+    const {cluster} = this.props;
     let options = [];
     let registriesArr = this.props.registries.map(function listRegistries(element) {
       let checkBoxState = this.state.checkboxes[element.name];
@@ -161,7 +162,7 @@ export default class ContainerCreate extends Component {
     });
     let registries = registriesArr.join(', ');
     if (input.length > 0) {
-      this.props.dispatch(searchImages(input, 10, 100, registries)).then(() => {
+      this.props.dispatch(searchImages(input, 10, 100, registries, cluster.name)).then(() => {
         let results = this.props.images.search.results;
         for (let i = 0; i < results.length; i++) {
           let imageName = results[i].name;
@@ -281,6 +282,8 @@ export default class ContainerCreate extends Component {
     let s = require('./ContainerCreate.scss');
     require('react-select/dist/react-select.css');
     const {clusters, cluster, fields, containersUI, registries, containers} = this.props;
+    let clusterRegistries = _.get(cluster, 'config.registries', []);
+    console.log('registries ', clusterRegistries);
     let containersNames = [];
     _.forEach(containers, (container) => {
       containersNames.push(container.name);
