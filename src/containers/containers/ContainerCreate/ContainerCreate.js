@@ -332,7 +332,7 @@ export default class ContainerCreate extends Component {
                             searchable={this.state.searchable} />
             </div>
             <div className="button-wrapper">
-            <button className = "btn btn-default btn-sm react-select-button" type="button" onClick={this.displayRegistries.bind(this)}>Select From Custom Registry</button>
+            <button className = "btn btn-default btn-sm react-select-button" disabled={clusterRegistries.length === 0} type="button" onClick={this.displayRegistries.bind(this)}>Select From Custom Registry</button>
             </div>
             <div className="checkbox-list checkbox-list-image">
               {
