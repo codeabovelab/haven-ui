@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
 import {load, create, loadNodes, loadClusterRegistries} from 'redux/modules/clusters/clusters';
 import {create as createNode} from 'redux/modules/nodes/nodes';
-import {createValidator, required, alphanumeric} from 'utils/validation';
+import {createValidator, required, alphanumeric, maxLength} from 'utils/validation';
 import {Dialog} from 'components';
 import {load as loadRegistries} from 'redux/modules/registries/registries';
 import Select from 'react-select';
@@ -22,7 +22,8 @@ import _ from 'lodash';
     'assignedNodes'
   ],
   validate: createValidator({
-    name: [required, alphanumeric]
+    name: [required, alphanumeric],
+    description: [maxLength(128)]
   })
 })
 export default class ClusterAdd extends Component {
@@ -200,9 +201,6 @@ export default class ClusterAdd extends Component {
                          {...fields.description}
                          placeholder="Description"
             />
-
-            <FormControl.Feedback />
-
             {fields.description.error && (
               <HelpBlock>{fields.description.error}</HelpBlock>
             )}
