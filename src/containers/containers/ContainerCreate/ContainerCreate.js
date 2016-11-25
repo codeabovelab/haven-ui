@@ -5,7 +5,6 @@ import {reduxForm, SubmissionError} from 'redux-form';
 import {create} from 'redux/modules/containers/containers';
 import {loadNodes, loadContainers, loadDefaultParams} from 'redux/modules/clusters/clusters';
 import {loadImages, loadImageTags, searchImages} from 'redux/modules/images/images';
-import {load as loadRegistries} from 'redux/modules/registries/registries';
 import {Alert, Accordion, Panel, Label} from 'react-bootstrap';
 import _ from 'lodash';
 import Select from 'react-select';
@@ -75,9 +74,8 @@ const VOLUME_FIELDS_KEYS = Object.keys(VOLUME_FIELDS);
   clusters: state.clusters,
   containers: state.containers,
   containersUI: state.containersUI,
-  images: state.images,
-  registries: state.registries
-}), {create, loadNodes, loadImages, loadImageTags, searchImages, loadContainers, loadDefaultParams, loadRegistries})
+  images: state.images
+}), {create, loadNodes, loadImages, loadImageTags, searchImages, loadContainers, loadDefaultParams})
 @reduxForm({
   form: 'newContainer',
   fields: ['image', 'tag', 'name', 'node', 'registry', 'restart', 'restartRetries', 'volumesFrom', 'dns', 'dnsSearch']
@@ -87,7 +85,6 @@ export default class ContainerCreate extends Component {
   static propTypes = {
     clusters: PropTypes.object.isRequired,
     containers: PropTypes.object.isRequired,
-    registries: PropTypes.array.isRequired,
     containersUI: PropTypes.object.isRequired,
     images: PropTypes.object.isRequired,
     cluster: PropTypes.object.isRequired,
@@ -101,7 +98,6 @@ export default class ContainerCreate extends Component {
     handleSubmit: PropTypes.func,
     resetForm: PropTypes.func.isRequired,
     loadContainers: PropTypes.func.isRequired,
-    loadRegistries: PropTypes.func.isRequired,
     loadDefaultParams: PropTypes.func.isRequired,
     dispatch: PropTypes.func.isRequired,
 
@@ -127,10 +123,9 @@ export default class ContainerCreate extends Component {
   }
 
   componentWillMount() {
-    const {loadNodes, loadImages, cluster, fields, loadRegistries} = this.props;
+    const {loadNodes, loadImages, cluster, fields} = this.props;
     loadNodes(cluster.name);
     loadImages();
-    loadRegistries();
     fields.restart.value = 'no';
     fields.publishAllPorts.value = 'false';
     _.each(fields, function loopFields(value, key) {
@@ -150,18 +145,19 @@ export default class ContainerCreate extends Component {
   }
 
   getImageOptions(input, callback) {
+    const {cluster} = this.props;
     let options = [];
-    let registriesArr = this.props.registries.map(function listRegistries(element) {
-      let checkBoxState = this.state.checkboxes[element.name];
+    let registriesArr = _.get(cluster, 'config.registries', []).map(function listRegistries(element) {
+      let checkBoxState = this.state.checkboxes[element];
       if (checkBoxState && checkBoxState.checked === true) {
-        return element.name;
+        return element;
       }
-    }.bind(this)).filter((element)=>{
+    }.bind(this)).filter((element)=> {
       return typeof(element) !== 'undefined';
     });
     let registries = registriesArr.join(', ');
     if (input.length > 0) {
-      this.props.dispatch(searchImages(input, 10, 100, registries)).then(() => {
+      this.props.dispatch(searchImages(input, 10, 100, registries, cluster.name)).then(() => {
         let results = this.props.images.search.results;
         for (let i = 0; i < results.length; i++) {
           let imageName = results[i].name;
@@ -280,7 +276,8 @@ export default class ContainerCreate extends Component {
   render() {
     let s = require('./ContainerCreate.scss');
     require('react-select/dist/react-select.css');
-    const {clusters, cluster, fields, containersUI, registries, containers} = this.props;
+    const {clusters, cluster, fields, containersUI, containers} = this.props;
+    let clusterRegistries = _.get(cluster, 'config.registries', []);
     let containersNames = [];
     _.forEach(containers, (container) => {
       containersNames.push(container.name);
@@ -339,17 +336,17 @@ export default class ContainerCreate extends Component {
             </div>
             <div className="checkbox-list checkbox-list-image">
               {
-                registries.map(function list(registry, i) {
+                clusterRegistries.map(function list(registry, i) {
                   if (typeof(registry) !== 'undefined') {
                     return (<div className="checkbox-button" key={i}><label>
                                <input type="checkbox"
                                       className="checkbox-control registry-checkbox"
-                                      value={registry.name}
+                                      value={registry}
                                       defaultChecked={false}
                                       onChange={this.toggleCheckbox.bind(this)}
-                                      name={registry.name}
+                                      name={registry}
                                      />
-                               <span className="checkbox-label">{registry.name}</span>
+                               <span className="checkbox-label">{registry}</span>
                             </label></div>);
                   }
                 }.bind(this))
