@@ -53,34 +53,7 @@ export default class ApiClient {
         });
       }));
   }
-
-  _handleAuth(response) {
-    if (!(this._store && response && (response.status === 401 || (typeof response.status === "undefined" && typeof response.statusCode === "undefined")))) {
-      return false;
-    }
-    let backLocation;
-    let state = this._store.getState();
-    let stateLocation = state.routing.locationBeforeTransitions;
-
-    if (stateLocation && stateLocation.pathname) {
-      backLocation = stateLocation.pathname;
-    }
-
-    this._store.dispatch(logout);
-
-    if (backLocation && backLocation !== "") {
-      this._store.dispatch(
-        replace({
-          pathname: '/login',
-          search: `?back=${backLocation}`,
-          state: null
-        })
-      );
-      return true;
-    }
-    return false;
-  }
-
+  
   _store;
 
   setStore(store) {
