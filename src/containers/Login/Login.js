@@ -67,7 +67,7 @@ export default class Login extends Component {
           iPassword.value = '';
 
           if (this.state.outdatedToken) {
-            browserHistory.go(-2);
+            browserHistory.go(-1);
           }
         }
       });
