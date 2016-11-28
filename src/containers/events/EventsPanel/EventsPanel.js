@@ -70,19 +70,18 @@ export default class EventsPanel extends Component {
   }
 
   render() {
-    const {clusters, containers, params: {name}} = this.props;
+    const {clusters, containers, params: {name}, params: {subname}} = this.props;
     const cluster = clusters[name];
     console.log(this.props.events);
-    let events = this.props.events['bus.cluman.errors'];
+    let events = this.props.events['bus.cluman.errors-stats'];
     let runningContainers = 0;
     let runningNodes = 0;
     let Apps = 0;
     let uniqueEvents = [];
-    let uniqueContainers = [];
     let nodesNavId = name === 'all' ? "/nodes" : "/clusters/" + name + "/" + "nodes";
     let eventsCount = 0;
     if (name && events && name !== 'all') {
-      events = events.filter((el)=>(el.cluster === name));
+      events = events.filter((el)=>(el.lastEvent.cluster === name));
     }
     if (events) {
       eventsCount = _.size(events);
@@ -90,12 +89,8 @@ export default class EventsPanel extends Component {
 
     if (clusters && cluster) {
       if (events) {
-        _.forEach(events, (value) => {
-          let containerId = _.get(value, 'container.id', '');
-          if (containerId && $.inArray(containerId, uniqueContainers) < 0) {
-            uniqueContainers.push(value.container.id);
-            uniqueEvents.push(value);
-          }
+        _.forEach(events, (value, key) => {
+          uniqueEvents[key] = {...value.lastEvent, count: value.count};
         });
       }
 
