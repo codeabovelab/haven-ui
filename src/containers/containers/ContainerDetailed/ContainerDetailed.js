@@ -87,7 +87,12 @@ export default class ContainerDetailed extends Component {
 
   componentDidMount() {
     const {token} = this.props;
-    stompClient = connectToStomp(stompClient, token);
+    connectToStomp(stompClient, token).then((stompClient)=> {
+      console.log(stompClient);
+      stompClient.subscribe('/topic/**', (message) => {
+        console.log('MSG: ', message);
+      });
+    });
   }
 
   componentWillUnmount() {
