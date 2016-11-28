@@ -45,16 +45,6 @@ export function connectWebsocketEventsListener(store) {
       console.log('Available channels: ', message.body);
     });
 
-    stompClient.subscribe('/topic/**', (message) => {
-      if (message.headers && message.body) {
-        store.dispatch({
-          type: ACTIONS.NEW,
-          topic: message.headers.destination.replace('/topic/', ''),
-          event: JSON.parse(message.body)
-        });
-      }
-    });
-
     stompClient.subscribe('/user/queue/*', (message) => {
       if (message.headers && message.body) {
         store.dispatch({
