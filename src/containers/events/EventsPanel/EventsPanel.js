@@ -72,6 +72,7 @@ export default class EventsPanel extends Component {
   render() {
     const {clusters, containers, params: {name}} = this.props;
     const cluster = clusters[name];
+    console.log(this.props.events);
     let events = this.props.events['bus.cluman.errors'];
     let runningContainers = 0;
     let runningNodes = 0;
@@ -90,7 +91,8 @@ export default class EventsPanel extends Component {
     if (clusters && cluster) {
       if (events) {
         _.forEach(events, (value) => {
-          if ($.inArray(value.container.id, uniqueContainers) < 0) {
+          let containerId = _.get(value, 'container.id', '');
+          if (containerId && $.inArray(containerId, uniqueContainers) < 0) {
             uniqueContainers.push(value.container.id);
             uniqueEvents.push(value);
           }

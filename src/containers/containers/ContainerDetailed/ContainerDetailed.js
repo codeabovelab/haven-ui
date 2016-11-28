@@ -249,7 +249,7 @@ export default class ContainerDetailed extends Component {
     let environment = {};
     let loading = '';
     let events = this.props.events['bus.cluman.errors'];
-    events = events ? events.filter((el)=>(el.container.name === subname && el.cluster === name)) : [];
+    events = events ? events.filter((el)=>(_.get(el, 'container.name', '') === subname && el.cluster === name)) : [];
     let containerHeaderBar = '';
     if (container) {
       if (container.environment) {
