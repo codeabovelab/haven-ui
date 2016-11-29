@@ -4,6 +4,7 @@ import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import {PropertyGrid, LoadingDialog, ActionMenu, ContainerStatistics, EventLog} from '../../../components/index';
 import {ContainerScale, ContainerUpdate} from '../../../containers/index';
+import {Link} from 'react-router';
 import {Dropdown, SplitButton, Button, ButtonToolbar, Accordion, Panel, ProgressBar, Tabs, Tab} from 'react-bootstrap';
 import _ from 'lodash';
 import {browserHistory} from 'react-router';
@@ -11,6 +12,7 @@ import { Stomp } from 'stompjs/lib/stomp.min.js';
 import {connectToStomp} from '../../../utils/stompUtils';
 
 let stompClient = null;
+let containerErrors = [];
 
 @connect(state => ({
   clusters: state.clusters,
@@ -86,12 +88,21 @@ export default class ContainerDetailed extends Component {
   }
 
   componentDidMount() {
-    const {token} = this.props;
-    stompClient = connectToStomp(stompClient, token);
+    const {token, params: {subname}} = this.props;
+    connectToStomp(stompClient, token).then((connectedClient)=> {
+      stompClient = connectedClient;
+      stompClient.subscribe('/topic/**', (message) => {
+        let entry = JSON.parse(message.body);
+        if (_.get(entry, 'container.name', '') === subname) {
+          containerErrors.push(JSON.parse(message.body));
+        }
+      });
+    });
   }
 
   componentWillUnmount() {
     stompClient.disconnect();
+    containerErrors = [];
   }
 
   updateContainer() {
@@ -248,8 +259,6 @@ export default class ContainerDetailed extends Component {
     const container = containersByName ? containersByName[subname] : null;
     let environment = {};
     let loading = '';
-    let events = this.props.events['bus.cluman.errors'];
-    events = events ? events.filter((el)=>(el.container.name === subname && el.cluster === name)) : [];
     let containerHeaderBar = '';
     if (container) {
       if (container.environment) {
@@ -313,8 +322,8 @@ export default class ContainerDetailed extends Component {
     return (
       <div>
         <ul className="breadcrumb">
-          <li><a href="/clusters">Clusters</a></li>
-          <li><a href={"/clusters" + "/" + name}>{name}</a></li>
+          <li><Link to="/clusters">Clusters</Link></li>
+          <li><Link to={"/clusters" + "/" + name}>{name}</Link></li>
           <li className="active">{subname}</li>
         </ul>
         <Panel header={containerHeaderBar}>
@@ -325,7 +334,7 @@ export default class ContainerDetailed extends Component {
         <div className="panel panel-default">
           <Tabs defaultActiveKey={1} id="tabContainerProps">
             <Tab eventKey={1} title="Events">
-              <EventLog data={events}
+              <EventLog data={containerErrors}
                         loading={!this.props.events}
               />
             </Tab>

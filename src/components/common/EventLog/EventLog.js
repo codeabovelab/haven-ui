@@ -2,12 +2,12 @@ import React, {Component, PropTypes} from 'react';
 import {DockTable} from 'components';
 import {Link} from 'react-router';
 import {ProgressBar} from 'react-bootstrap';
-import moment from 'moment';
 
 export default class EventLog extends Component {
   static propTypes = {
     loading: PropTypes.bool,
-    data: PropTypes.array
+    data: PropTypes.array,
+    statistics: PropTypes.bool
   };
 
   COLUMNS = [
@@ -19,8 +19,15 @@ export default class EventLog extends Component {
       render: this.dateRender
     },
     {
+      name: 'count',
+      label: 'Count',
+      sortable: true,
+      width: '10%'
+    },
+    {
       name: 'severity',
       label: 'Severity',
+      sortable: true,
       width: '10%'
     },
     {
@@ -43,6 +50,7 @@ export default class EventLog extends Component {
     },
     {
       name: 'node',
+      sortable: true,
       label: 'Node',
       width: '15%'
     }
@@ -79,10 +87,13 @@ export default class EventLog extends Component {
   }
 
   render() {
+    if (!this.props.statistics) {
+      this.COLUMNS = this.COLUMNS.filter((object)=> object.name !== 'count');
+    }
     return (
       <div>
         {this.props.loading && (
-          <ProgressBar active now={100} />
+          <ProgressBar active now={100}/>
         )}
 
         {(this.props.data && !this.props.loading) && (

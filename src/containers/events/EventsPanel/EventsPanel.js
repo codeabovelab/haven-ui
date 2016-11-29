@@ -23,7 +23,8 @@ import * as clusterActions from 'redux/modules/clusters/clusters';
     clusters: state.clusters,
     containers: state.containers,
     events: state.events,
-    alerts: state.events.alerts
+    alerts: state.events.alerts,
+    token: state.auth.token
   }), {
     loadContainers: clusterActions.loadContainers
   }
@@ -34,7 +35,8 @@ export default class EventsPanel extends Component {
     containers: PropTypes.object,
     params: PropTypes.object,
     events: PropTypes.object,
-    loadContainers: PropTypes.func
+    loadContainers: PropTypes.func,
+    token: PropTypes.object,
   };
 
   statisticsMetrics = [
@@ -65,35 +67,29 @@ export default class EventsPanel extends Component {
   ];
 
   componentDidMount() {
-    const {loadContainers, params: {name}} = this.props;
+    const {loadContainers, params: {name}, token, params: {subname}} = this.props;
     loadContainers(name);
   }
 
   render() {
-    const {clusters, containers, params: {name}} = this.props;
+    const {clusters, containers, params: {name}, params: {subname}} = this.props;
     const cluster = clusters[name];
-    let events = this.props.events['bus.cluman.errors'];
+    let events = this.props.events['bus.cluman.errors-stats'];
     let runningContainers = 0;
     let runningNodes = 0;
     let Apps = 0;
     let uniqueEvents = [];
-    let uniqueContainers = [];
     let nodesNavId = name === 'all' ? "/nodes" : "/clusters/" + name + "/" + "nodes";
     let eventsCount = 0;
     if (name && events && name !== 'all') {
-      events = events.filter((el)=>(el.cluster === name));
-    }
-    if (events) {
-      eventsCount = _.size(events);
+      events = _.filter(events, (el)=>(el.lastEvent.cluster === name));
     }
 
     if (clusters && cluster) {
       if (events) {
-        _.forEach(events, (value) => {
-          if ($.inArray(value.container.id, uniqueContainers) < 0) {
-            uniqueContainers.push(value.container.id);
-            uniqueEvents.push(value);
-          }
+        _.forEach(events, (value, key) => {
+          uniqueEvents[key] = {...value.lastEvent, count: value.count};
+          eventsCount += value.count;
         });
       }
 
@@ -151,6 +147,7 @@ export default class EventsPanel extends Component {
           {this.props.events && (
             <EventLog data={uniqueEvents}
                       loading={!this.props.events}
+                      statistics
             />
           )}
         </div>

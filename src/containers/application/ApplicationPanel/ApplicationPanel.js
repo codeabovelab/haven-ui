@@ -199,10 +199,15 @@ export default class ApplicationPanel extends Component {
     let runningNodes = 0;
     let Apps = 0;
     let eventsCount = 0;
-    let events = this.props.events['bus.cluman.errors'];
+    let events = this.props.events['bus.cluman.errors-stats'];
 
     if (events) {
-      eventsCount = name === 'all' ? _.size(events) : _.size(events.filter((el)=>(el.cluster === name)));
+      if (name && name !== 'all') {
+        events = _.filter(events, (el)=>(el.lastEvent.cluster === name));
+      }
+      _.forEach(events, (value, key) => {
+        eventsCount += value.count;
+      });
     }
     if (rows) {
       Apps = rows.length;

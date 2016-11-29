@@ -19,10 +19,10 @@ export default class StatisticsPanel extends React.Component {
             <Col sm={3} key={index}>
               <Panel bsStyle={metric.highlight ? "danger" : ""}>
                 <div className="metric-row">
-                  <div className="metric-value">
+                  <div className={this.props.values[index] > 999 ? "metric-value-large" : "metric-value"}>
                     {this.props.values[index]}
                   </div>
-                  {!this.props.link && (<div className="metric-label">
+                  {!this.props.link && (<div className={this.props.values[index] > 999 ? "metric-label-large" : "metric-label"}>
                     {this.props.values[index] > 1 ? metric.titles : metric.title}
                   </div>)}
                   {this.props.link && (this.renderLink(metric, index))}

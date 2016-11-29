@@ -45,25 +45,22 @@ export function connectWebsocketEventsListener(store) {
       console.log('Available channels: ', message.body);
     });
 
-    stompClient.subscribe('/topic/**', (message) => {
-      if (message.headers && message.body) {
-        store.dispatch({
-          type: ACTIONS.NEW,
-          topic: message.headers.destination.replace('/topic/', ''),
-          event: JSON.parse(message.body)
-        });
-      }
-    });
-
     stompClient.subscribe('/user/queue/*', (message) => {
       if (message.headers && message.body) {
         store.dispatch({
-          type: ACTIONS.NEW,
-          topic: message.headers.destination.replace('/topic/', ''),
+          type: ACTIONS.NEW_STAT_EVENT,
+          topic: message.headers.destination.replace('/user/queue/', ''),
           event: JSON.parse(message.body)
         });
       }
     });
+    let yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    stompClient.send('/app/subscriptions/add', {}, JSON.stringify([{
+      source: 'bus.cluman.errors-stats',
+      historyCount: 7,
+      historySince: yesterday
+    }]));
   }, (error) => {
   });
 }

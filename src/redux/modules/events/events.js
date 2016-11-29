@@ -1,7 +1,7 @@
-import { ACTIONS } from './actions';
+import {ACTIONS} from './actions';
 import _ from 'lodash';
 
-const MAX_LAST_EVENTS = 20;
+const MAX_LAST_EVENTS = 50;
 
 export default function reducer(state = {}, action = {}) {
   switch (action.type) {
@@ -20,6 +20,16 @@ export default function reducer(state = {}, action = {}) {
       return {
         ...state,
         [action.topic]: last
+      };
+
+    case ACTIONS.NEW_STAT_EVENT:
+
+      return {
+        ...state,
+        [action.topic]: {
+          ...state[action.topic],
+          [action.event.key]: action.event
+        }
       };
 
     case ACTIONS.COUNT_SUCCESS:
