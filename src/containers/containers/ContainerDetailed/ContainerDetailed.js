@@ -11,6 +11,7 @@ import { Stomp } from 'stompjs/lib/stomp.min.js';
 import {connectToStomp} from '../../../utils/stompUtils';
 
 let stompClient = null;
+let containerErrors = [];
 
 @connect(state => ({
   clusters: state.clusters,
@@ -86,17 +87,21 @@ export default class ContainerDetailed extends Component {
   }
 
   componentDidMount() {
-    const {token} = this.props;
-    connectToStomp(stompClient, token).then((stompClient)=> {
-      console.log(stompClient);
+    const {token, params: {subname}} = this.props;
+    connectToStomp(stompClient, token).then((connectedClient)=> {
+      stompClient = connectedClient;
       stompClient.subscribe('/topic/**', (message) => {
-        console.log('MSG: ', message);
+        let entry = JSON.parse(message.body);
+        if (_.get(entry, 'container.name', '') === subname) {
+          containerErrors.push(JSON.parse(message.body));
+        }
       });
     });
   }
 
   componentWillUnmount() {
     stompClient.disconnect();
+    containerErrors = [];
   }
 
   updateContainer() {
@@ -253,8 +258,6 @@ export default class ContainerDetailed extends Component {
     const container = containersByName ? containersByName[subname] : null;
     let environment = {};
     let loading = '';
-    let events = this.props.events['bus.cluman.errors'];
-    events = events ? events.filter((el)=>(_.get(el, 'container.name', '') === subname && el.cluster === name)) : [];
     let containerHeaderBar = '';
     if (container) {
       if (container.environment) {
@@ -330,7 +333,7 @@ export default class ContainerDetailed extends Component {
         <div className="panel panel-default">
           <Tabs defaultActiveKey={1} id="tabContainerProps">
             <Tab eventKey={1} title="Events">
-              <EventLog data={events}
+              <EventLog data={containerErrors}
                         loading={!this.props.events}
               />
             </Tab>

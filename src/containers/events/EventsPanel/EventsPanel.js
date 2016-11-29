@@ -7,11 +7,6 @@ import _ from 'lodash';
 import {DockTable, ClustersList, StatisticsPanel, Dialog, EventLog} from 'components';
 import {Panel, Nav, NavItem} from 'react-bootstrap';
 import * as clusterActions from 'redux/modules/clusters/clusters';
-import { Stomp } from 'stompjs/lib/stomp.min.js';
-import {connectToStomp} from '../../../utils/stompUtils';
-
-let stompClient = null;
-let eventsRows = [];
 
 @asyncConnect([{
   promise: ({store: {dispatch, getState}}) => {
@@ -74,21 +69,6 @@ export default class EventsPanel extends Component {
   componentDidMount() {
     const {loadContainers, params: {name}, token, params: {subname}} = this.props;
     loadContainers(name);
-    if (subname) {
-      stompClient = connectToStomp(stompClient, token);
-      stompClient.subscribe('/topic/**', (message) => {
-        console.log('MSG: ', message);
-        if (message.headers && message.body) {
-          eventsRows.push(JSON.parse(message.body));
-        }
-      });
-    }
-  }
-
-  componentWillUnmount() {
-    if (stompClient) {
-      stompClient.disconnect();
-    }
   }
 
   render() {
@@ -169,6 +149,7 @@ export default class EventsPanel extends Component {
           {this.props.events && (
             <EventLog data={uniqueEvents}
                       loading={!this.props.events}
+                      statistics
             />
           )}
         </div>

@@ -6,7 +6,8 @@ import {ProgressBar} from 'react-bootstrap';
 export default class EventLog extends Component {
   static propTypes = {
     loading: PropTypes.bool,
-    data: PropTypes.array
+    data: PropTypes.array,
+    statistics: PropTypes.bool
   };
 
   COLUMNS = [
@@ -86,10 +87,13 @@ export default class EventLog extends Component {
   }
 
   render() {
+    if (!this.props.statistics) {
+      this.COLUMNS = this.COLUMNS.filter((object)=> object.name !== 'count');
+    }
     return (
       <div>
         {this.props.loading && (
-          <ProgressBar active now={100} />
+          <ProgressBar active now={100}/>
         )}
 
         {(this.props.data && !this.props.loading) && (
