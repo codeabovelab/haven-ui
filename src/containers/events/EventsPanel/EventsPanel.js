@@ -75,7 +75,6 @@ export default class EventsPanel extends Component {
     const {clusters, containers, params: {name}, params: {subname}} = this.props;
     const cluster = clusters[name];
     let events = this.props.events['bus.cluman.errors-stats'];
-    console.log('Events: ', events);
     let runningContainers = 0;
     let runningNodes = 0;
     let Apps = 0;
@@ -83,7 +82,7 @@ export default class EventsPanel extends Component {
     let nodesNavId = name === 'all' ? "/nodes" : "/clusters/" + name + "/" + "nodes";
     let eventsCount = 0;
     if (name && events && name !== 'all') {
-      events = events.filter((el)=>(el.lastEvent.cluster === name));
+      events = _.filter(events, (el)=>(el.lastEvent.cluster === name));
     }
 
     if (clusters && cluster) {

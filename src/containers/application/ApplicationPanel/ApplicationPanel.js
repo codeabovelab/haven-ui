@@ -203,7 +203,7 @@ export default class ApplicationPanel extends Component {
 
     if (events) {
       if (name && name !== 'all') {
-        events = events.filter((el)=>(el.lastEvent.cluster === name));
+        events = _.filter(events, (el)=>(el.lastEvent.cluster === name));
       }
       _.forEach(events, (value, key) => {
         eventsCount += value.count;

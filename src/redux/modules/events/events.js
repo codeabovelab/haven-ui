@@ -1,4 +1,4 @@
-import { ACTIONS } from './actions';
+import {ACTIONS} from './actions';
 import _ from 'lodash';
 
 const MAX_LAST_EVENTS = 50;
@@ -6,30 +6,31 @@ const MAX_LAST_EVENTS = 50;
 export default function reducer(state = {}, action = {}) {
   switch (action.type) {
     case ACTIONS.NEW:
-      let result;
-      console.log(action.event);
-      if (action.topic === 'bus.cluman.errors-stats') {
-        result = {
-          ...state,
-          [action.topic]: {
-            ...state[action.topic],
-            [action.event.key]: action.event
-          }
-        };
-      } else {
-        let lastOld = _.get(state, action.topic, []);
-        let last = [...lastOld];
-        let data = action.event;
-        last.unshift(data);
-        if (last.length > MAX_LAST_EVENTS) {
-          last.pop();
-        }
-        result = {
-          ...state,
-          [action.topic]: last
-        };
+      let lastOld = _.get(state, action.topic, []);
+
+      let last = [...lastOld];
+      let data = action.event;
+
+      last.unshift(data);
+
+      if (last.length > MAX_LAST_EVENTS) {
+        last.pop();
       }
-      return result;
+
+      return {
+        ...state,
+        [action.topic]: last
+      };
+
+    case ACTIONS.NEW_STAT_EVENT:
+
+      return {
+        ...state,
+        [action.topic]: {
+          ...state[action.topic],
+          [action.event.key]: action.event
+        }
+      };
 
     case ACTIONS.COUNT_SUCCESS:
       let resultFiltered = action.result.filtered;

@@ -328,7 +328,7 @@ export default class ClusterDetailsPanel extends Component {
     let events = this.props.events['bus.cluman.errors-stats'];
     if (events) {
       if (name && name !== 'all') {
-        events = events.filter((el)=>(el.lastEvent.cluster === name));
+        events = _.filter(events, (el)=>(el.lastEvent.cluster === name));
       }
       _.forEach(events, (value, key) => {
         eventsCount += value.count;

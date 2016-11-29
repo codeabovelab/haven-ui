@@ -48,7 +48,7 @@ export function connectWebsocketEventsListener(store) {
     stompClient.subscribe('/user/queue/*', (message) => {
       if (message.headers && message.body) {
         store.dispatch({
-          type: ACTIONS.NEW,
+          type: ACTIONS.NEW_STAT_EVENT,
           topic: message.headers.destination.replace('/user/queue/', ''),
           event: JSON.parse(message.body)
         });
