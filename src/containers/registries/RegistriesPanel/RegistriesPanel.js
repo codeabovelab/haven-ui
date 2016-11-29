@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {load as loadRegistries} from 'redux/modules/registries/registries';
 import {loadClusterRegistries} from 'redux/modules/clusters/clusters';
-import {create, load} from 'redux/modules/clusters/clusters';
+import {update, load} from 'redux/modules/clusters/clusters';
 import {DockTable, RegistriesList, StatisticsPanel, ClusterRegistriesDialog} from '../../../components/index';
 //import {RegistryEdit} from '../../index';
 import {RegistryEditForms} from '../../index';
@@ -15,7 +15,7 @@ import {removeRegistry} from 'redux/modules/registries/registries';
     registries: state.registries,
     registriesUI: state.registriesUI,
     clusters: state.clusters
-  }), {loadRegistries, removeRegistry, loadClusterRegistries, create, load})
+  }), {loadRegistries, removeRegistry, loadClusterRegistries, update, load})
 
 export default class RegistriesPanel extends Component {
   static propTypes = {
@@ -27,7 +27,7 @@ export default class RegistriesPanel extends Component {
     loadClusterRegistries: PropTypes.func.isRequired,
     clusters: PropTypes.object,
     load: PropTypes.func.isRequired,
-    create: PropTypes.func.isRequired
+    update: PropTypes.func.isRequired
   };
 
   statisticsMetrics = [
@@ -182,7 +182,7 @@ export default class RegistriesPanel extends Component {
                                      onHide={this.onHideDialog.bind(this)}
                                      registries={this.props.registries}
                                      clusters={this.props.clusters}
-                                     create={this.props.create}
+                                     update={this.props.update}
                                      loadRegistries={this.props.loadRegistries}
                                      loadClusterRegistries={this.props.loadClusterRegistries}
             />
@@ -196,10 +196,10 @@ export default class RegistriesPanel extends Component {
   }
 
   changeClusterRegistries(name, registryId) {
-    const {create, clusters, loadClusterRegistries} = this.props;
+    const {update, clusters, loadClusterRegistries} = this.props;
     if (clusters[name]) {
       let registries = _.without(clusters[name].config.registries, registryId);
-      create(name, {"config": {"registries": registries}, "description": clusters[name].description})
+      update(name, {"config": {"registries": registries}})
         .then(() => loadClusterRegistries(name));
     }
   }
