@@ -324,6 +324,7 @@ export default class ClusterDetailsPanel extends Component {
     let downNodes = 0;
     let Apps = 0;
     let eventsCount = 0;
+    console.log(this.props.events);
     let events = this.props.events['bus.cluman.errors-stats'];
     if (events) {
       if (name && name !== 'all') {
