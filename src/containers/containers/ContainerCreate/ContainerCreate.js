@@ -551,7 +551,7 @@ export default class ContainerCreate extends Component {
     let registry = fields.registry.value;
     let tag = value;
     if (tag && image) {
-      loadDefaultParams({clusterId: cluster.name, image, tag, registry})
+      loadDefaultParams({clusterId: cluster.name, image, tag})
         .then((defaultParams) => {
           _.forOwn(defaultParams, (value, key) => {
             if (['tag'].indexOf(key) > -1) return;
