@@ -4,6 +4,7 @@ import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import {PropertyGrid, LoadingDialog, ActionMenu, ContainerStatistics, EventLog} from '../../../components/index';
 import {ContainerScale, ContainerUpdate} from '../../../containers/index';
+import {Link} from 'react-router';
 import {Dropdown, SplitButton, Button, ButtonToolbar, Accordion, Panel, ProgressBar, Tabs, Tab} from 'react-bootstrap';
 import _ from 'lodash';
 import {browserHistory} from 'react-router';
@@ -321,8 +322,8 @@ export default class ContainerDetailed extends Component {
     return (
       <div>
         <ul className="breadcrumb">
-          <li><a href="/clusters">Clusters</a></li>
-          <li><a href={"/clusters" + "/" + name}>{name}</a></li>
+          <li><Link to="/clusters">Clusters</Link></li>
+          <li><Link to={"/clusters" + "/" + name}>{name}</Link></li>
           <li className="active">{subname}</li>
         </ul>
         <Panel header={containerHeaderBar}>
