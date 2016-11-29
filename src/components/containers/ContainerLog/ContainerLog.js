@@ -40,8 +40,10 @@ export default class ContainerLog extends Component {
 
   componentDidMount() {
     const {token} = this.props;
-    $("#container-log-modal").draggable({ handle: ".modal-header" });
-    stompClient = connectToStomp(stompClient, token);
+    $("#container-log-modal").draggable({handle: ".modal-header"});
+    connectToStomp(stompClient, token).then((connectedClient)=> {
+      stompClient = connectedClient;
+    });
   }
 
   componentWillUpdate(nextProps) {
