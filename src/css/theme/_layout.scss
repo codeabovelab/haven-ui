@@ -261,6 +261,21 @@ a {
     width: 70%;
     vertical-align: middle;
   }
+
+  & > .metric-value-large {
+    display: table-cell;
+    width: 45%;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 2.5em;
+  }
+
+  & > .metric-label-large {
+    display: table-cell;
+    height: 4em;
+    width: 55%;
+    vertical-align: middle;
+  }
 }
 
 a.on-off {
