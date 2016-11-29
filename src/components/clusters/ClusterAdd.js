@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
-import {load, create, loadNodes, loadClusterRegistries} from 'redux/modules/clusters/clusters';
+import {load, create, loadNodes, loadClusterRegistries, update} from 'redux/modules/clusters/clusters';
 import {create as createNode} from 'redux/modules/nodes/nodes';
 import {createValidator, required, alphanumeric, maxLength} from 'utils/validation';
 import {Dialog} from 'components';
@@ -13,7 +13,7 @@ import _ from 'lodash';
 @connect(state => ({
   createError: state.clustersUI.createError,
   registries: state.registries
-}), {create, load, createNode, loadNodes, loadRegistries, loadClusterRegistries})
+}), {create, load, createNode, loadNodes, loadRegistries, loadClusterRegistries, update})
 @reduxForm({
   form: 'ClusterAdd',
   fields: [
@@ -48,7 +48,8 @@ export default class ClusterAdd extends Component {
     existingClusters: PropTypes.array,
     loadRegistries: PropTypes.func.isRequired,
     loadClusterRegistries: PropTypes.func.isRequired,
-    registries: PropTypes.array.isRequired
+    registries: PropTypes.array.isRequired,
+    update: PropTypes.func.isRequired
   };
   constructor() {
     super();
@@ -57,9 +58,11 @@ export default class ClusterAdd extends Component {
     };
   }
   onSubmit() {
+    const { create, update, cluster, resetForm } = this.props;
     this.setState({
       firstLoad: false
     });
+    let submitAction = cluster ? update : create;
     let registries = this.state.assignedRegistries.map((registry)=> {
       return registry.name ? registry.name : registry;
     });
@@ -69,7 +72,7 @@ export default class ClusterAdd extends Component {
       this.refs.error.textContent = 'Cluster with name: "' + fields.name.value + '" already exists. Please use another name.';
       return false;
     }
-    return this.props.create(fields.name.value, {"config": {"registries": registries}, "description": fields.description.value}).then(() => {
+    return submitAction(fields.name.value, {"config": {"registries": registries}, "description": fields.description.value}).then(() => {
       if (typeof(fields.assignedNodes.value) !== 'undefined' && fields.assignedNodes.value.length > 0) {
         fields.assignedNodes.value.map(function createNode(node) {
           if (typeof(node) !== 'undefined') {
@@ -82,6 +85,7 @@ export default class ClusterAdd extends Component {
       window.setTimeout(function loadClusters() {this.props.load();}.bind(this), 2000);
       this.props.loadNodes('orphans');
     }).then(() =>{
+      resetForm();
       this.props.onHide();
     })
     .catch((response) => {

@@ -20,6 +20,16 @@ export default function reducer(state = initState, action = {}) {
         ...state,
         createError: action.error.message
       };
+    case ACTIONS.UPDATE:
+      return {
+        ...state,
+        createError: null
+      };
+    case ACTIONS.UPDATE_FAIL:
+      return {
+        ...state,
+        createError: action.error.message
+      };
     default:
       return state;
   }

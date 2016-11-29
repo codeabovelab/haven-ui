@@ -1,6 +1,5 @@
 import React, {Component, PropTypes} from 'react';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
-import {load, create, loadNodes, loadClusterRegistries} from 'redux/modules/clusters/clusters';
 import {createValidator, required} from 'utils/validation';
 import {Dialog} from 'components';
 import Select from 'react-select';
@@ -10,7 +9,7 @@ export default class ClusterRegistriesDialog extends Component {
   static propTypes = {
     title: PropTypes.string.isRequired,
     clusters: PropTypes.object,
-    create: PropTypes.func.isRequired,
+    update: PropTypes.func.isRequired,
     ownRegistries: PropTypes.any,
     onHide: PropTypes.func.isRequired,
     okTitle: PropTypes.string,
@@ -20,11 +19,11 @@ export default class ClusterRegistriesDialog extends Component {
   };
 
   onSubmit() {
-    const {create, clusters, loadClusterRegistries, clusterName} = this.props;
+    const {update, clusters, loadClusterRegistries, clusterName} = this.props;
     let registries = this.state.assignedRegistries.map((registry)=> {
       return registry.name ? registry.name : registry;
     });
-    create(clusterName, {"config": {"registries": registries}, "description": clusters[clusterName].description})
+    update(clusterName, {"config": {"registries": registries}, "description": clusters[clusterName].description})
       .then(() => loadClusterRegistries(clusterName))
       .then(() => {
         this.props.onHide();
