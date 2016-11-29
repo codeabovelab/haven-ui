@@ -126,6 +126,13 @@ export function create(name, data) {
   };
 }
 
+export function update(name, data) {
+  return {
+    types: [ACTIONS.UPDATE, ACTIONS.UPDATE_SUCCESS, ACTIONS.UPDATE_FAIL],
+    promise: (client) => client.patch(`/ui/api/clusters/${name}`, {data: data})
+  };
+}
+
 export function deleteCluster(clusterId) {
   return {
     types: [ACTIONS.DELETE, ACTIONS.DELETE_SUCCESS, ACTIONS.DELETE_FAIL],
