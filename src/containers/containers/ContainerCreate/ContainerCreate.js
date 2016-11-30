@@ -346,7 +346,7 @@ export default class ContainerCreate extends Component {
                                       onChange={this.toggleCheckbox.bind(this)}
                                       name={registry}
                                      />
-                               <span className="checkbox-label">{registry}</span>
+                               <span className="checkbox-label">{registry || "Docker Hub"}</span>
                             </label></div>);
                   }
                 }.bind(this))
