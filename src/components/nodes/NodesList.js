@@ -260,7 +260,7 @@ export default class NodesList extends Component {
   }
 
   healthStatRender(node) {
-    let data = []; /*this.buildGraphData()*/
+    let data = [] /*this.buildGraphData()*/;
     return (
       <td key="stat">
         <Sparklines data={data} style={{ background: "#ffffff", border: "1px solid rgba(50, 50, 50, 0.5)" }} height={35} limit={30}>
