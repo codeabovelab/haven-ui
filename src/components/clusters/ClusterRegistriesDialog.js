@@ -14,16 +14,18 @@ export default class ClusterRegistriesDialog extends Component {
     onHide: PropTypes.func.isRequired,
     okTitle: PropTypes.string,
     loadClusterRegistries: PropTypes.func.isRequired,
-    registries: PropTypes.array.isRequired,
+    availableRegistries: PropTypes.array.isRequired,
     clusterName: PropTypes.string.isRequired
   };
 
   onSubmit() {
     const {update, clusters, loadClusterRegistries, clusterName} = this.props;
     let registries = this.state.assignedRegistries.map((registry)=> {
-      return registry.name ? registry.name : registry;
+      let el = registry.name ? registry.name : registry;
+      el = el === 'Docker Hub' ? '' : el;
+      return el;
     });
-    update(clusterName, {"config": {"registries": registries}, "description": clusters[clusterName].description})
+    update(clusterName, {"config": {"registries": registries}})
       .then(() => loadClusterRegistries(clusterName))
       .then(() => {
         this.props.onHide();
@@ -32,8 +34,11 @@ export default class ClusterRegistriesDialog extends Component {
 
   componentWillMount() {
     const {ownRegistries} = this.props;
+    let registriesFiltered = ownRegistries.map((el)=> {
+      return el.length === 0 ? 'Docker Hub' : el;
+    });
     this.setState({
-      assignedRegistries: ownRegistries
+      assignedRegistries: registriesFiltered
     });
   }
 
@@ -41,24 +46,27 @@ export default class ClusterRegistriesDialog extends Component {
     return <Label className="Select-value-success">{option.name}</Label>;
   }
 
-  removeDisabledProp(registries) {
+  handleSelectChange(value) {
+    this.setState({
+      assignedRegistries: value
+    });
+  }
+
+  editProps(registries) {
     return registries.map((registry)=> {
       delete registry.disabled;
+      if (registry.name.trim().length === 0) {
+        registry.name = registry.title;
+      }
       registry.className = "Select-value-success";
       return registry;
     });
   }
 
   getAvailableRegistries() {
-    let registries = this.props.registries;
-    registries = this.removeDisabledProp(registries);
+    let registries = this.props.availableRegistries;
+    registries = this.editProps(registries);
     return registries;
-  }
-
-  handleSelectChange(value) {
-    this.setState({
-      assignedRegistries: value
-    });
   }
 
   render() {
