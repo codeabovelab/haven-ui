@@ -34,33 +34,71 @@ export function connectWebsocketEventsListener(store) {
 
   stompClient.debug = false;
 
-  stompClient.connect(stompHeaders, (connectFrame) => {
-    stompClient.send('/app/subscriptions/available');
-
+  stompClient.connect({}, (connectFrame) => {
     stompClient.subscribe('/user/queue/subscriptions/get', (message) => {
       console.log('Current subscription: ', message.body);
     });
 
     stompClient.subscribe('/user/queue/subscriptions/available', (message) => {
-      console.log('Available channels: ', message.body);
+      console.log('Available channels: ', JSON.parse(message.body));
+
+      let yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      let defaultChannels = [
+        {
+          source: 'bus.cluman.errors',
+          historyCount: 7,
+          historySince: yesterday
+        },
+        {
+          source: 'bus.cluman.node',
+          historyCount: 7,
+          historySince: yesterday
+        },
+        {
+          source: 'bus.cluman.errors-stats',
+          historyCount: 7,
+          historySince: yesterday
+        }
+      ];
+
+      stompClient.send('/app/subscriptions/add', {}, JSON.stringify(defaultChannels));
     });
 
-    stompClient.subscribe('/user/queue/*', (message) => {
+    stompClient.send('/app/subscriptions/available');
+
+    stompClient.subscribe('/topic/**', (message) => {
       if (message.headers && message.body) {
+        let destination = message.headers.destination || '';
+
         store.dispatch({
-          type: ACTIONS.NEW_STAT_EVENT,
-          topic: message.headers.destination.replace('/user/queue/', ''),
+          type: ACTIONS.NEW,
+          topic: destination.replace('/topic/', ''),
           event: JSON.parse(message.body)
         });
       }
     });
-    let yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    stompClient.send('/app/subscriptions/add', {}, JSON.stringify([{
-      source: 'bus.cluman.errors-stats',
-      historyCount: 7,
-      historySince: yesterday
-    }]));
+
+    stompClient.subscribe('/user/queue/*', (message) => {
+      if (message.headers && message.body) {
+        let destination = message.headers.destination || '';
+
+        store.dispatch({
+          type: ACTIONS.NEW,
+          topic: destination.replace('/user/queue/', ''),
+          event: JSON.parse(message.body)
+        });
+      }
+    });
   }, (error) => {
+    if (ws) {
+      ws.close();
+      ws = null;
+    }
+
+    // TODO: Restart connection with some delay
+
+    console.log('Stomp Error: ', error);
   });
 }
