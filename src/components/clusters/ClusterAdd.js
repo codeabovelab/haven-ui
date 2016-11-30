@@ -64,7 +64,9 @@ export default class ClusterAdd extends Component {
     });
     let submitAction = cluster ? update : create;
     let registries = this.state.assignedRegistries.map((registry)=> {
-      return registry.name ? registry.name : registry;
+      let el = registry.name ? registry.name : registry;
+      el = el === 'Docker Hub' ? '' : el;
+      return el;
     });
     this.refs.error.textContent = '';
     const {fields, existingClusters} = this.props;
@@ -108,15 +110,18 @@ export default class ClusterAdd extends Component {
     loadRegistries().then(()=> {
       if (!cluster) {
         let registries = this.props.registries;
-        registries = this.removeDisabledProp(registries);
+        registries = this.editProps(registries);
         this.setState({
           assignedRegistries: registries
         });
       }
     });
     if (cluster) {
+      let registriesFiltered = ownRegistries.map((el)=> {
+        return el.length === 0 ? 'Docker Hub' : el;
+      });
       this.setState({
-        assignedRegistries: ownRegistries
+        assignedRegistries: registriesFiltered
       });
     }
   }
@@ -125,9 +130,10 @@ export default class ClusterAdd extends Component {
     return <Label className="Select-value-success">{option.name}</Label>;
   }
 
-  removeDisabledProp(registries) {
+  editProps(registries) {
     return registries.map((registry)=> {
       delete registry.disabled;
+      registry.name = registry.name ? registry.name : registry.title;
       registry.className = "Select-value-success";
       return registry;
     });
@@ -135,7 +141,7 @@ export default class ClusterAdd extends Component {
 
   getAvailableRegistries() {
     let registries = this.props.registries;
-    registries = this.removeDisabledProp(registries);
+    registries = this.editProps(registries);
     return registries;
   }
 
