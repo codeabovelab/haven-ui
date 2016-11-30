@@ -4,7 +4,6 @@ import { LinkContainer } from 'react-router-bootstrap';
 import {DockTable, ActionMenu} from '../index';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Nav, NavItem} from 'react-bootstrap';
 import {Dialog, PropertyGrid} from 'components';
-import { Sparklines, SparklinesBars, SparklinesLine, SparklinesCurve, SparklinesNormalBand, SparklinesReferenceLine, SparklinesSpots } from 'react-sparklines';
 import _ from 'lodash';
 
 export default class NodesList extends Component {
@@ -19,19 +18,19 @@ export default class NodesList extends Component {
     {
       name: 'name',
       label: 'Node Name',
-      width: '20%',
+      width: '30%',
       sortable: true
     },
     {
       name: 'address',
       label: 'IP Address',
-      width: '15%',
+      width: '20%',
       sortable: true
     },
     {
       name: 'cluster',
       label: 'Cluster',
-      width: '10%',
+      width: '15%',
       sortable: true,
       render: this.clusterRender
     },
@@ -50,19 +49,13 @@ export default class NodesList extends Component {
     {
       name: 'time',
       label: 'Healthy Since',
-      width: '15%',
-      render: this.timeFormat
-    },
-    {
-      name: 'health_stat',
-      label: 'Health',
       width: '30%',
-      render: this.healthStatRender
+      render: this.timeFotmat
     },
     {
       name: 'actions',
       label: 'Actions',
-      width: '0'
+      width: '20%'
     }
   ];
 
@@ -210,7 +203,7 @@ export default class NodesList extends Component {
       labelStyle = "default";
     }
     return (
-      <td key="docker">
+      <td>
         {(registry.health.healthy) && (
           <Label bsStyle={labelStyle ? labelStyle : "success"}>Healthy</Label>
         )}
@@ -223,7 +216,7 @@ export default class NodesList extends Component {
 
   agentHealthRender(registry) {
     return (
-      <td key="agent">
+      <td>
         {(registry.on) && (
           <Label bsStyle="success">On</Label>
         )}
@@ -236,7 +229,7 @@ export default class NodesList extends Component {
 
   clusterRender(registry) {
     return (
-      <td key="cluster">
+      <td>
         {(registry.cluster != null) && (
           <Link to={`/clusters/${registry.cluster}`}>{registry.cluster}</Link>
         )}
@@ -247,56 +240,15 @@ export default class NodesList extends Component {
     );
   }
 
-  timeFormat(registry) {
+  timeFotmat(registry) {
     let time = 'none';
     if (registry.time) {
       time = registry.time.substring(11, 19) + ' ' + registry.time.substring(0, 10);
     }
     return (
-      <td key="since">
+      <td>
         {time}
       </td>
     );
-  }
-
-  healthStatRender(node) {
-    let data = [] /*this.buildGraphData()*/;
-    return (
-      <td key="stat">
-        <Sparklines data={data} style={{ background: "#ffffff", border: "1px solid rgba(50, 50, 50, 0.5)" }} height={35} limit={30}>
-          <SparklinesLine />
-          <SparklinesSpots />
-          <SparklinesNormalBand />
-          <SparklinesReferenceLine type="median" />
-        </Sparklines>
-      </td>
-    );
-  }
-
-  buildGraphData(n = 30) {
-    return Array.apply(0, Array(n)).map(() => {
-      let phase = false;
-      let x1;
-      let x2;
-      let w;
-      let x;
-      let z;
-
-      let ph = (phase = !phase);
-      if (ph) {
-        do {
-          x1 = 2.0 * Math.random() - 1.0;
-          x2 = 2.0 * Math.random() - 1.0;
-          w = x1 * x1 + x2 * x2;
-        } while (w >= 1.0);
-
-        w = Math.sqrt((-2.0 * Math.log(w)) / w);
-        x = x1;
-      } else {
-        x = x2;
-      }
-
-      return x * w;
-    });
   }
 }
