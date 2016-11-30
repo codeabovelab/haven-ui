@@ -4,7 +4,6 @@ import {load as loadRegistries} from 'redux/modules/registries/registries';
 import {loadClusterRegistries} from 'redux/modules/clusters/clusters';
 import {update, load} from 'redux/modules/clusters/clusters';
 import {DockTable, RegistriesList, StatisticsPanel, ClusterRegistriesDialog} from '../../../components/index';
-//import {RegistryEdit} from '../../index';
 import {RegistryEditForms} from '../../index';
 import _ from 'lodash';
 import { Link } from 'react-router';
@@ -51,10 +50,12 @@ export default class RegistriesPanel extends Component {
   }
 
   render() {
-    const {loading, loadingError} = this.props.registriesUI;
-    const {registries, registriesUI, params: {name}, clusters} = this.props;
-
-    let rows = [...registries];
+    const {registries, params: {name}, clusters} = this.props;
+    //hack to prevent rewriting redux store.events with wrong data (className and etc) on displaying of ClusterRegistriesDialog
+    let rows = registries.map((el)=>{
+      el.name = el.name === 'Docker Hub' ? '' : el.name;
+      return el;
+    });
     if (name) {
       if (clusters[name]) {
         let clusterRegistries = _.get(clusters[name], 'config.registries', []);
@@ -97,15 +98,6 @@ export default class RegistriesPanel extends Component {
         )}
       </div>
     );
-  }
-
-  additionalData(rows) {
-    if (rows) {
-      rows.forEach(row => {
-        row.__attributes = {'data-name': row.name};
-      //  row.actions = this.tdActions.bind(this);
-      });
-    }
   }
 
   onHideDialog() {
@@ -180,7 +172,7 @@ export default class RegistriesPanel extends Component {
                                      clusterName={this.props.params.name}
                                      ownRegistries={this.props.clusters[name].config.registries}
                                      onHide={this.onHideDialog.bind(this)}
-                                     registries={this.props.registries}
+                                     availableRegistries={registries}
                                      clusters={this.props.clusters}
                                      update={this.props.update}
                                      loadRegistries={this.props.loadRegistries}
@@ -197,9 +189,7 @@ export default class RegistriesPanel extends Component {
 
   changeClusterRegistries(name, registryId) {
     const {update, clusters, loadClusterRegistries} = this.props;
-    console.log('ID: ', registryId);
     if (clusters[name]) {
-      console.log('ID: ', registryId);
       let registries = _.without(clusters[name].config.registries, registryId);
       update(name, {"config": {"registries": registries}})
         .then(() => loadClusterRegistries(name));
