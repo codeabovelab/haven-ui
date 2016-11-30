@@ -165,8 +165,8 @@ export default class RegistriesPanel extends Component {
         this.setState({
           actionDialog: undefined
         });
-
-        confirm('Are you sure you want to remove registry "' + registryId + '" from cluster "' + name + '"?')
+        let registryName = registryId === '' ? 'Docker Hub' : registryId;
+        confirm('Are you sure you want to remove registry "' + registryName + '" from cluster "' + name + '"?')
           .then(() => {
             this.changeClusterRegistries(name, registryId).catch(() => null);
           })
@@ -197,7 +197,9 @@ export default class RegistriesPanel extends Component {
 
   changeClusterRegistries(name, registryId) {
     const {update, clusters, loadClusterRegistries} = this.props;
+    console.log('ID: ', registryId);
     if (clusters[name]) {
+      console.log('ID: ', registryId);
       let registries = _.without(clusters[name].config.registries, registryId);
       update(name, {"config": {"registries": registries}})
         .then(() => loadClusterRegistries(name));

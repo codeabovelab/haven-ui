@@ -20,7 +20,8 @@ export default class RegistriesList extends Component {
       name: 'name',
       label: 'Name',
       width: '20%',
-      sortable: true
+      sortable: true,
+      render: this.renderName
     },
     {
       name: 'username',
@@ -169,6 +170,13 @@ export default class RegistriesList extends Component {
     const username = registry.registryType === 'AWS' ? ('accessKey: ' + registry.accessKey) : registry.username;
     return (
       <td>{username}</td>
+    );
+  }
+
+  renderName(registry) {
+    const name = registry.name === '' ? 'Docker Hub' : registry.name;
+    return (
+      <td>{name}</td>
     );
   }
 }
