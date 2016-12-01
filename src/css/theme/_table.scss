@@ -349,12 +349,12 @@ th {
   margin-top: 10px;
 }
 
-@media (max-width: 835px) {
+@media (max-width: 960px) {
   .table-responsive .dropdown-menu {
     position: static !important;
   }
 }
-@media (min-width: 835px) {
+@media (min-width: 960px) {
   .table-responsive {
     overflow: visible;
   }

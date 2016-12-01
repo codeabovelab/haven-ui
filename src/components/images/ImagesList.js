@@ -15,25 +15,45 @@ export default class ImagesList extends Component {
     {
       name: 'registry',
       label: 'Registry Address',
-      width: '0%',
+      width: '5%',
       sortable: true,
       render: (img) => {
         let registry = img.registry;
-        if (registry == null) return "[no registry]";
-        if (registry === "") return "[docker hub]";
-        return registry;
+        if (registry == null) registry = "no registry";
+        if (registry === "") registry = "docker hub";
+        return (
+          <td key="registry">
+            <span>{registry}</span>
+          </td>
+        );
       }
     },
     {
       name: 'name',
       label: 'Image Name',
-      width: '50%',
-      sortable: true
+      width: '7%',
+      sortable: true,
+      render: (img) => {
+        let name = img.name;
+        let title = '';
+        const MAX_LENGTH = 25;
+        if (name) {
+          title = name;
+          if (name.length >= MAX_LENGTH) {
+            name = name.substring(0, MAX_LENGTH) + '...';
+          }
+        }
+        return (
+          <td key="name">
+            <span title={title}>{name}</span>
+          </td>
+        );
+      }
     },
     {
       name: 'tags',
       label: 'Downloaded Tags',
-      width: '20%',
+      width: '25%',
       render: (image) => {
         let popoverRender = (img) => (
           <Popover id="image-info-popover">
@@ -55,7 +75,7 @@ export default class ImagesList extends Component {
     {
       name: 'nodes',
       label: 'Nodes',
-      width: '20%',
+      width: '25%',
       render: (image) => {
         let data = image.nodes;
         return (<td key="nodes">
@@ -68,7 +88,7 @@ export default class ImagesList extends Component {
     },
     {
       name: 'Actions',
-      width: '10%',
+      width: '5%',
       render: (image) => {
         let actions = this.props.actions;
         return (<td key="actions" className="td-actions">
