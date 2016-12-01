@@ -1,5 +1,4 @@
 import {ACTIONS} from './actions';
-
 const LS_KEY = 'auth';
 import _ from 'lodash';
 
@@ -45,11 +44,13 @@ export default function reducer(state = {}, action = {}) {
         loginError: error
       };
     case ACTIONS.LOGOUT_SUCCESS:
-      return {
+      let logoutState = {
         ...state,
         token: null,
         user: null
       };
+      saveToLS(logoutState);
+      return logoutState;
     default:
       return state;
   }
