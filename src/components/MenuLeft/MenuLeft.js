@@ -28,7 +28,7 @@ export default class MenuLeft extends Component {
   handleLogout = (event) => {
     event.preventDefault();
     this.props.logout();
-    window.location.href = '/login';
+    window.location.assign('/login');
   };
 
   componentWillMount() {
