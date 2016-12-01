@@ -39,7 +39,7 @@ function renderTdApplication(row) {
 }
 
 function processTdVal(val) {
-  const MAX_LENGTH = 18;
+  const MAX_LENGTH = 25;
   let result = [];
   if (val) {
     result.title = val;
