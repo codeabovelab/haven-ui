@@ -8,6 +8,10 @@ import {ClusterAdd, ClusterConfig, ClusterInformation} from '../../index';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar} from 'react-bootstrap';
 import {count as countEvents} from 'redux/modules/events/events';
 import {deleteClusterImages} from 'redux/modules/images/images';
+import { Stomp } from 'stompjs/lib/stomp.min.js';
+import {connectToStomp} from '../../../utils/stompUtils';
+
+let stompClient = null;
 
 @connect(
   state => ({
@@ -15,6 +19,7 @@ import {deleteClusterImages} from 'redux/modules/images/images';
     clustersIds: state.clustersUI.list,
     events: state.events,
     alerts: state.events.alerts,
+    token: state.auth.token,
     users: state.users
   }), {
     loadClusters: clusterActions.load,
@@ -35,7 +40,8 @@ export default class ClustersPanel extends Component {
     alerts: PropTypes.object,
     countEvents: PropTypes.func.isRequired,
     deleteClusterImages: PropTypes.func.isRequired,
-    users: PropTypes.object
+    users: PropTypes.object,
+    token: PropTypes.object
   };
 
   statisticsMetricsNodesUp = [
@@ -85,9 +91,14 @@ export default class ClustersPanel extends Component {
     }
   ];
 
+  componentWillMount() {
+    this.state = {
+      clumanErrors: []
+    };
+  }
+
   componentDidMount() {
-    const {loadClusters, loadNodes, countEvents} = this.props;
-    this.state = {};
+    const {loadClusters, loadNodes, countEvents, token} = this.props;
     let clusterNames = [];
     loadClusters().then(() => {
       for (let key in this.props.clusters) {
@@ -98,8 +109,22 @@ export default class ClustersPanel extends Component {
       countEvents('bus.cluman.errors', clusterNames);
     });
     loadNodes('orphans');
+    connectToStomp(stompClient, token).then((connectedClient)=> {
+      stompClient = connectedClient;
+      stompClient.subscribe('/topic/**', (message) => {
+        let newError = JSON.parse(message.body);
+        this.setState({
+          clumanErrors: [...this.state.clumanErrors, newError]
+        });
+      });
+    });
 
     $('.input-search').focus();
+  }
+
+  componentWillUnmount() {
+    stompClient.disconnect();
+    this.state.clumanErrors = [];
   }
 
   render() {
@@ -158,7 +183,7 @@ export default class ClustersPanel extends Component {
 
         <Panel header={eventsHeaderBar}>
           {this.props.events && (
-            <EventLog data={this.props.events['bus.cluman.errors']}
+            <EventLog data={this.state.clumanErrors}
                       loading={!this.props.events}
             />
           )}
