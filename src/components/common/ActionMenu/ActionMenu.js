@@ -8,7 +8,8 @@ export default class ActionMenu extends Component {
     subject: PropTypes.any,
     actions: PropTypes.array,
     title: PropTypes.string,
-    actionHandler: PropTypes.func
+    actionHandler: PropTypes.func,
+    disabled: PropTypes.bool
   };
 
   getDefaultAction() {
@@ -58,7 +59,7 @@ export default class ActionMenu extends Component {
           <ButtonToolbar>
             <SplitButton bsStyle={this.DEFAULT_STYLE}
                          title={defaultAction.title}
-                         disabled={defaultAction.disabled}
+                         disabled={defaultAction.disabled || this.props.disabled}
                          onClick={this.handleClick.bind(this, defaultAction.key, this.props.subject)}
                          pullRight
             >

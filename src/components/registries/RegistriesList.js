@@ -147,6 +147,7 @@ export default class RegistriesList extends Component {
         <ActionMenu subject={registry.name}
                     actions={ name ? this.CLUSTER_REGISTRIES_ACTIONS : this.ACTIONS}
                     actionHandler={this.props.onActionInvoke.bind(this)}
+                    disabled = {!registry.editable}
         />
       </td>
     );
