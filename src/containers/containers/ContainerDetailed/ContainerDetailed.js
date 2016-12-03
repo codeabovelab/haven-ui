@@ -12,7 +12,6 @@ import { Stomp } from 'stompjs/lib/stomp.min.js';
 import {connectToStomp} from '../../../utils/stompUtils';
 
 let stompClient = null;
-let containerErrors = [];
 
 @connect(state => ({
   clusters: state.clusters,
@@ -81,6 +80,9 @@ export default class ContainerDetailed extends Component {
 
   componentWillMount() {
     require('./ContainerDetailed.scss');
+    this.state = {
+      containerErrors: []
+    };
     const {loadDetailsByName, params: {name}, params: {subname}} = this.props;
     loadDetailsByName(name, subname).then(()=> {
       this.refreshLogs();
@@ -92,9 +94,11 @@ export default class ContainerDetailed extends Component {
     connectToStomp(stompClient, token).then((connectedClient)=> {
       stompClient = connectedClient;
       stompClient.subscribe('/topic/**', (message) => {
-        let entry = JSON.parse(message.body);
-        if (_.get(entry, 'container.name', '') === subname) {
-          containerErrors.push(JSON.parse(message.body));
+        let newError = JSON.parse(message.body);
+        if (_.get(newError, 'container.name', '') === subname) {
+          this.setState({
+            containerErrors: [...this.state.containerErrors, newError]
+          });
         }
       });
     });
@@ -102,7 +106,7 @@ export default class ContainerDetailed extends Component {
 
   componentWillUnmount() {
     stompClient.disconnect();
-    containerErrors = [];
+    this.state.containerErrors = [];
   }
 
   updateContainer() {
@@ -334,7 +338,7 @@ export default class ContainerDetailed extends Component {
         <div className="panel panel-default">
           <Tabs defaultActiveKey={1} id="tabContainerProps">
             <Tab eventKey={1} title="Events">
-              <EventLog data={containerErrors}
+              <EventLog data={this.state.containerErrors}
                         loading={!this.props.events}
               />
             </Tab>
