@@ -3,12 +3,14 @@ import {connect} from 'react-redux';
 import Helmet from 'react-helmet';
 import {login, logout} from 'redux/modules/auth/auth';
 import {browserHistory} from 'react-router';
-const LS_KEY = 'auth';
 import _ from 'lodash';
+import {replace} from 'react-router-redux';
+
+const LS_KEY = 'auth';
 
 @connect(
   state => ({user: state.auth.user, auth: state.auth, loginError: state.auth.loginError}),
-  {login, logout})
+  {login, logout, replace})
 export default class Login extends Component {
   static propTypes = {
     user: PropTypes.object,
@@ -16,22 +18,13 @@ export default class Login extends Component {
     location: PropTypes.object,
     loginError: PropTypes.string,
     login: PropTypes.func.isRequired,
+    replace: PropTypes.func.isRequired,
     logout: PropTypes.func.isRequired
   };
-
-  constructor(...params) {
-    super(...params);
-    this.state = {
-      outdatedToken: "",
-    };
-  }
 
   componentWillMount() {
     const {user, logout} = this.props;
     if (!window.ls[LS_KEY] && user) {
-      this.setState({
-        outdatedToken: true
-      });
       logout();
     }
   }
@@ -41,25 +34,25 @@ export default class Login extends Component {
   }
 
   handleSubmit = (event) => {
+    const {location, replace} = this.props;
     event.preventDefault();
     const iUsername = this.refs.username;
     const username = iUsername.value;
     const iPassword = this.refs.password;
     const password = iPassword.value;
-    if (username.trim() === '' || password.trim() === '' ) {
+    if (username.trim() === '' || password.trim() === '') {
       this.refs.error.textContent = 'Please, fill username and password';
       return;
     }
     this.props.login(username, password)
       .then(() => {
         const {auth} = this.props;
-
         if (auth && auth.token) {
           iUsername.value = '';
           iPassword.value = '';
-
-          if (this.state.outdatedToken) {
-            browserHistory.go(-2);
+          if (location && location.query && location.query.back) {
+            replace(location.query.back);
+            return true;
           }
         }
       });
