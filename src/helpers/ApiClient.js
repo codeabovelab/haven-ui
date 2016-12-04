@@ -37,11 +37,7 @@ export default class ApiClient {
           let {body} = response;
 
           if (err) {
-            if (response && (response.status === 401 || (typeof response.status === "undefined" && typeof response.statusCode === "undefined"))) {
-              this._store.dispatch(logout);
-              this._store.dispatch(replace('/login'));
-            }
-
+            this._handleAuth(response);
             reject(body || err);
           } else {
             let res = body ? body : {};
@@ -52,6 +48,27 @@ export default class ApiClient {
           }
         });
       }));
+  }
+
+  _handleAuth(response) {
+    if (!(this._store && response && (response.status === 401 || (typeof response.status === "undefined" && typeof response.statusCode === "undefined")))) {
+      return false;
+    }
+    let backLocation;
+    let state = this._store.getState();
+    let stateLocation = state.routing.locationBeforeTransitions;
+    if (stateLocation && stateLocation.pathname) {
+      backLocation = stateLocation.pathname;
+    }
+
+    this._store.dispatch(logout);
+
+    if (backLocation && backLocation !== "") {
+      window.location.assign('/login' + '?back=' + backLocation);
+      return true;
+    }
+    this._store.dispatch(replace('/login'));
+    return false;
   }
 
   _store;
