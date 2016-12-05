@@ -44,6 +44,14 @@ export default function reducer(state = initialState, action = {}) {
           }
         }
       };
+    case ACTIONS.GET_DEPLOYED_IMAGES_SUCCESS:
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          [action.clusterName]: action.result
+        }
+      };
     default:
       return state;
   }
@@ -138,6 +146,15 @@ export function deleteClusterImages(cluster) {
   return {
     types: [ACTIONS.DELETE_CLUSTER_IMAGES, ACTIONS.DELETE_CLUSTER_IMAGES_SUCCESS, ACTIONS.DELETE_CLUSTER_IMAGES_FAIL],
     promise: (client) => client.post('/ui/api/jobs/', {data: body})
+  };
+}
+
+export function getDeployedImages(cluster) {
+  return {
+    types: [ACTIONS.GET_DEPLOYED_IMAGES, ACTIONS.GET_DEPLOYED_IMAGES_SUCCESS, ACTIONS.GET_DEPLOYED_IMAGES_FAIL],
+    clusterName: cluster,
+    id: "deployedImages",
+    promise: (client) => client.get(`/ui/api/images/clusters/${cluster}/deployed-list`)
   };
 }
 
