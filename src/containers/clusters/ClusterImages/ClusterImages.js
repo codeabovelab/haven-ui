@@ -1,33 +1,23 @@
 import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
-import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, Chain, LoadingDialog, StatisticsPanel, ActionMenu, ClusterUploadCompose, ClusterSetSource} from '../../../components/index';
 import { Link, browserHistory, Route, RouteHandler } from 'react-router';
 import { LinkContainer } from 'react-router-bootstrap';
-import {ContainerCreate, ContainerScale, ContainerUpdate} from '../../../containers/index';
-import { asyncConnect } from 'redux-async-connect';
 import {getDeployedImages} from 'redux/modules/images/images';
 import {Dropdown, SplitButton, Button, ButtonGroup, DropdownButton, ButtonToolbar, MenuItem, Panel, ProgressBar, Nav, NavItem, Image, Popover} from 'react-bootstrap';
 import _ from 'lodash';
-import {downloadFile} from '../../../utils/fileActions';
+import Select from 'react-select';
 
 @connect(
   state => ({
     clusters: state.clusters,
     containers: state.containers,
     events: state.events,
-    users: state.users,
     images: state.images
   }), {
     loadContainers: clusterActions.loadContainers,
     loadClusters: clusterActions.load,
-    deleteCluster: clusterActions.deleteCluster,
-    startContainer: containerActions.start,
-    stopContainer: containerActions.stop,
-    restartContainer: containerActions.restart,
-    removeContainer: containerActions.remove,
-    getClusterSource: clusterActions.getClusterSource,
     getDeployedImages
   })
 export default class ClusterImages extends Component {
@@ -37,42 +27,54 @@ export default class ClusterImages extends Component {
     events: PropTypes.object,
     images: PropTypes.object,
     params: PropTypes.object,
-    loadContainers: PropTypes.func.isRequired,
-    deleteCluster: PropTypes.func.isRequired,
-    startContainer: PropTypes.func.isRequired,
-    stopContainer: PropTypes.func.isRequired,
-    restartContainer: PropTypes.func.isRequired,
     getDeployedImages: PropTypes.func.isRequired,
-    removeContainer: PropTypes.func.isRequired,
-    getClusterSource: PropTypes.func.isRequired,
-    loadClusters: PropTypes.func.isRequired,
-    deleteClusterImages: PropTypes.func.isRequired,
-    users: PropTypes.object
+    loadClusters: PropTypes.func.isRequired
   };
 
   COLUMNS = [
     {
       name: 'name',
+      width: '10%'
     },
 
     {
       name: 'id',
-    },
-
-    {
-      name: 'currentTag',
+      width: '20%'
     },
 
     {
       name: 'containersArr',
-      render: this.containersRender
-    }
+      render: this.containersRender,
+      width: '20%'
+    },
+
+    {
+      name: 'tags',
+      render: this.tagsRender.bind(this),
+      width: '10%'
+    },
+
   ];
 
   componentWillMount() {
     const {getDeployedImages, params: {name}} = this.props;
-
-    getDeployedImages(name);
+    this.state = {
+      tagsSelected: {}
+    };
+    getDeployedImages(name).then(() => {
+      const {deployedImages} = this.props.images;
+      const clustersImages = _.get(deployedImages, name, []);
+      clustersImages.map(el => {
+        if (el.id) {
+          this.setState({
+            tagsSelected: {
+              ...this.state.tagsSelected,
+              [el.id]: _.get(el, 'currentTag', '')
+            }
+          });
+        }
+      });
+    });
   }
 
   containersRender(row) {
@@ -96,11 +98,39 @@ export default class ClusterImages extends Component {
     );
   }
 
+  tagsRender(row) {
+    let tagsOptions;
+    const imageId = row.id;
+    let currentTag = row.currentTag ? row.currentTag : '';
+    tagsOptions = row.tags && row.tags.map(tag => {
+      return {value: tag, label: tag};
+    });
+    tagsOptions.push({value: currentTag, label: currentTag});
+    return (
+      <td key="tags">
+        <Select value={this.state.tagsSelected[imageId]}
+                options={tagsOptions}
+                placeholder = ""
+                clearable={false}
+                onChange={handleChange.bind(this, imageId)}
+        />
+      </td>
+    );
+    function handleChange(id, event) {
+      let value = event.target ? event.target.value : event.value;
+      this.setState({
+        tagsSelected: {
+          ...this.state.tagsSelected,
+          [id]: value
+        }
+      });
+    }
+  }
+
   render() {
-    console.log(this.props.images);
+    require('react-select/dist/react-select.css');
     const {params: {name}} = this.props;
     let rows = _.get(this.props.images, `deployedImages.${name}`, []);
-    console.log('rows: ', rows);
     return (
       <div key={name}>
         <ul className="breadcrumb">
