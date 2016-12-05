@@ -8,7 +8,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import {ContainerCreate, ContainerScale, ContainerUpdate} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
 import {getDeployedImages} from 'redux/modules/images/images';
-import {Dropdown, SplitButton, Button, ButtonGroup, DropdownButton, ButtonToolbar, MenuItem, Panel, ProgressBar, Nav, NavItem, Image} from 'react-bootstrap';
+import {Dropdown, SplitButton, Button, ButtonGroup, DropdownButton, ButtonToolbar, MenuItem, Panel, ProgressBar, Nav, NavItem, Image, Popover} from 'react-bootstrap';
 import _ from 'lodash';
 import {downloadFile} from '../../../utils/fileActions';
 
@@ -61,6 +61,11 @@ export default class ClusterImages extends Component {
 
     {
       name: 'currentTag',
+    },
+
+    {
+      name: 'containersArr',
+      render: this.containersRender
     }
   ];
 
@@ -70,11 +75,32 @@ export default class ClusterImages extends Component {
     getDeployedImages(name);
   }
 
+  containersRender(row) {
+    let chainContainers = row.containers;
+    let popoverRender = (el) => (
+      <Popover>
+        <span>Node: {shortenName(el.node) || ''}</span>
+        <br></br>
+        <span>Id: {shortenName(el.id) || ''}</span>
+      </Popover>
+    );
+
+    return (
+      <td key="containers">
+        <Chain data={chainContainers}
+               popoverPlacement="top"
+               popoverRender={popoverRender}
+               render={(container) => (<span title={String(container.name) || ""}>{String(container.name) || ""}</span>)}
+        />
+      </td>
+    );
+  }
+
   render() {
     console.log(this.props.images);
     const {params: {name}} = this.props;
-    const rows = _.get(this.props.images, `deployedImages.${name}`, []);
-    console.log(rows);
+    let rows = _.get(this.props.images, `deployedImages.${name}`, []);
+    console.log('rows: ', rows);
     return (
       <div key={name}>
         <ul className="breadcrumb">
@@ -132,4 +158,13 @@ export default class ClusterImages extends Component {
       </div>
     );
   }
+}
+
+function shortenName(name) {
+  let result = String(name);
+  const MAX_LENGTH = 25;
+  if (name.length > MAX_LENGTH) {
+    result = name.substr(0, MAX_LENGTH) + '...';
+  }
+  return result;
 }
