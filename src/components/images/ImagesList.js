@@ -31,16 +31,17 @@ export default class ImagesList extends Component {
     {
       name: 'name',
       label: 'Image Name',
-      width: '7%',
+      width: '15%',
       sortable: true,
       render: (img) => {
         let name = img.name;
-        let title = '';
+        let title = name ? name : '';
+        let match = name.match(/[^\/.+]+$/);
+        name = match && match[0] ? match[0] : name;
         const MAX_LENGTH = 25;
         if (name) {
-          title = name;
           if (name.length >= MAX_LENGTH) {
-            name = name.substring(0, MAX_LENGTH) + '...';
+            name = '...' + name.substring(name.length - MAX_LENGTH, name.length);
           }
         }
         return (
@@ -75,7 +76,7 @@ export default class ImagesList extends Component {
     {
       name: 'nodes',
       label: 'Nodes',
-      width: '25%',
+      width: '16%',
       render: (image) => {
         let data = image.nodes;
         return (<td key="nodes">
