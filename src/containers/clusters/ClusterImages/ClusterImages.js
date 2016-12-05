@@ -168,6 +168,7 @@ export default class ClusterImages extends Component {
                 <DockTable columns={this.COLUMNS}
                            rows={rows}
                            key={name}
+                           searchable={false}
                 />
               </div>
             </div>
