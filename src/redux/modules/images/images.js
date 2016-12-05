@@ -4,7 +4,8 @@ import _ from 'lodash';
 const initialState = {
   byRegistry: {},
   all: null /* it mean that images not yet loaded */,
-  tagInfo: {}
+  tagInfo: {},
+  loadingDeployed: false
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -44,13 +45,26 @@ export default function reducer(state = initialState, action = {}) {
           }
         }
       };
+    case ACTIONS.GET_DEPLOYED_IMAGES:
+      return {
+        ...state,
+        loadingDeployed: true,
+        loadingDeployedError: null
+      };
     case ACTIONS.GET_DEPLOYED_IMAGES_SUCCESS:
       return {
         ...state,
+        loadingDeployed: false,
         [action.id]: {
           ...state[action.id],
           [action.clusterName]: action.result
         }
+      };
+    case ACTIONS.GET_DEPLOYED_IMAGES_FAIL:
+      return {
+        ...state,
+        loadingDeployed: false,
+        loadingDeployedError: "Cannot load deployed images"
       };
     default:
       return state;
@@ -78,7 +92,10 @@ function getNodes(image) {
     data = data.map(img => img.nodes)
       .reduce((a, b) => a.concat(b))
       .sort()
-      .reduce((a, b) => {if (a[a.length - 1] !== b) a.push(b); return a;}, []);
+      .reduce((a, b) => {
+        if (a[a.length - 1] !== b) a.push(b);
+        return a;
+      }, []);
   }
   return data;
 }
@@ -94,7 +111,7 @@ export function loadImageTags(imageId) {
   return {
     types: [ACTIONS.LOAD_IMAGE_TAGS, ACTIONS.LOAD_IMAGE_TAGS_SUCCESS, ACTIONS.LOAD_IMAGE_TAGS_FAIL],
     image: imageId,
-    promise: (client) => client.get('/ui/api/images/tags', {params: {imageName: imageId }})
+    promise: (client) => client.get('/ui/api/images/tags', {params: {imageName: imageId}})
   };
 }
 
@@ -102,7 +119,7 @@ export function loadImageTagInfo(imageName) {
   return {
     types: [ACTIONS.LOAD_IMAGE_TAG_INFO, ACTIONS.LOAD_IMAGE_TAG_INFO_SUCCESS, ACTIONS.LOAD_IMAGE_TAG_INFO_FAIL],
     image: imageName,
-    promise: (client) => client.get('/ui/api/images/image', {params: {fullImageName: imageName }})
+    promise: (client) => client.get('/ui/api/images/image', {params: {fullImageName: imageName}})
   };
 }
 
@@ -111,7 +128,15 @@ export function searchImages(query, page, size, registry, cluster) {
   return {
     types: [ACTIONS.SEARCH_IMAGES, ACTIONS.SEARCH_IMAGES_SUCCESS, ACTIONS.SEARCH_IMAGES_FAIL],
     id: 'search',
-    promise: (client) => client.get('/ui/api/images/search', {params: {registry: registry, query: query, page: page, size: size, cluster: cluster}})
+    promise: (client) => client.get('/ui/api/images/search', {
+      params: {
+        registry: registry,
+        query: query,
+        page: page,
+        size: size,
+        cluster: cluster
+      }
+    })
   };
 }
 

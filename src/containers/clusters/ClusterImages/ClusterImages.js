@@ -129,7 +129,8 @@ export default class ClusterImages extends Component {
 
   render() {
     require('react-select/dist/react-select.css');
-    const {params: {name}} = this.props;
+    const {params: {name}, images} = this.props;
+
     let rows = _.get(this.props.images, `deployedImages.${name}`, []);
     return (
       <div key={name}>
@@ -139,11 +140,9 @@ export default class ClusterImages extends Component {
           <li className="active">Containers</li>
         </ul>
         <div className="panel panel-default">
-          {!rows && (
+          {(images.loadingDeployed && rows.length === 0) && (
             <ProgressBar active now={100}/>
-          )}
-
-          {rows && (
+          ) || (
             <div>
               <Nav bsStyle="tabs" className="dockTable-nav">
                 <LinkContainer to={"/clusters/" + name}>
@@ -174,7 +173,7 @@ export default class ClusterImages extends Component {
             </div>
           )}
 
-          {(rows && rows.length === 0) && (
+          {(rows.length === 0 && !images.loadingDeployed) && (
             <div className="alert alert-info">
               No images yet
             </div>
