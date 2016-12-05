@@ -12,13 +12,6 @@ import {Dropdown, SplitButton, Button, ButtonGroup, DropdownButton, ButtonToolba
 import _ from 'lodash';
 import {downloadFile} from '../../../utils/fileActions';
 
-function renderTdImage(row) {
-  let resultValue = processTdVal(row.image);
-  return (
-    <td key="image" title={resultValue.title}>{resultValue.val}</td>
-  );
-}
-
 function renderTdContainerName(row) {
   return (
     <td key="name" title={row.name}><Link to={"/clusters/" + row.cluster + "/containers/" + row.name}>{row.name}</Link></td>
@@ -54,6 +47,24 @@ function processTdVal(val) {
     result.title = '';
   }
   return result;
+}
+
+function renderTdImage(row) {
+  let name = row.image || '';
+  let title = name ? name : '';
+  let match = name.match(/[^/]+$/);
+  name = match && match[0] ? match[0] : name;
+  const MAX_LENGTH = 25;
+  if (name) {
+    if (name.length >= MAX_LENGTH) {
+      name = '...' + name.substring(name.length - MAX_LENGTH, name.length);
+    }
+  }
+  return (
+    <td key="image">
+      <span title={title}>{name}</span>
+    </td>
+  );
 }
 
 @asyncConnect([{

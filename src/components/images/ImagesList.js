@@ -34,9 +34,9 @@ export default class ImagesList extends Component {
       width: '15%',
       sortable: true,
       render: (img) => {
-        let name = img.name;
+        let name = img.name || '';
         let title = name ? name : '';
-        let match = name.match(/[^\/.+]+$/);
+        let match = name.match(/[^/]+$/);
         name = match && match[0] ? match[0] : name;
         const MAX_LENGTH = 25;
         if (name) {
