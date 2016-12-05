@@ -1,12 +1,10 @@
 import React, {Component, PropTypes} from 'react';
+import config from '../../config';
 
 export default class AgentPanel extends Component {
 
   render() {
-    let agentURL = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '') + "/res/agent/dockmaster-agent.py";
-    if (location.hostname === 'localhost') {
-      agentURL = "http://hb1.codeabovelab.com/res/agent/dockmaster-agent.py";
-    }
+    let agentURL = location.protocol + '//' + config.apiHost + "/discovery/agent/haven-agent.py";
     return (
       <div>
         <ul className="breadcrumb">
