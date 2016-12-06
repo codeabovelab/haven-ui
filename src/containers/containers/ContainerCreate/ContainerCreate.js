@@ -59,16 +59,9 @@ const NETWORK_FIELDS = {
     label: 'Hostname'
   }
 };
-const VOLUME_FIELDS = {
-  volumeDriver: {
-    type: 'string',
-    label: 'Volume Driver',
-    description: 'The driver that this container uses to mount volumes'
-  }
-};
+
 const CPU_FIELDS_KEYS = Object.keys(CPU_FIELDS);
 const NETWORK_FIELDS_KEYS = Object.keys(NETWORK_FIELDS);
-const VOLUME_FIELDS_KEYS = Object.keys(VOLUME_FIELDS);
 
 @connect(state => ({
   clusters: state.clusters,
@@ -78,8 +71,8 @@ const VOLUME_FIELDS_KEYS = Object.keys(VOLUME_FIELDS);
 }), {create, loadNodes, loadImages, loadImageTags, searchImages, loadContainers, loadDefaultParams})
 @reduxForm({
   form: 'newContainer',
-  fields: ['image', 'tag', 'name', 'node', 'registry', 'restart', 'restartRetries', 'volumesFrom', 'dns', 'dnsSearch']
-    .concat(CPU_FIELDS_KEYS, NETWORK_FIELDS_KEYS, VOLUME_FIELDS_KEYS)
+  fields: ['image', 'tag', 'name', 'node', 'registry', 'restart', 'restartRetries', 'dns', 'dnsSearch']
+    .concat(CPU_FIELDS_KEYS, NETWORK_FIELDS_KEYS)
 })
 export default class ContainerCreate extends Component {
   static propTypes = {
@@ -107,11 +100,12 @@ export default class ContainerCreate extends Component {
   constructor(...params) {
     super(...params);
     this.state = {
-      volumesFromValue: [],
       dnsValue: [],
       dnsSearchValue: [],
       publish: [{field1: '', field2: ''}],
       links: [{field1: '', field2: ''}],
+      volumeBinds: [{value: ''}],
+      volumesFrom: [{value: ''}],
       environment: [{field1: '', field2: ''}],
       constraints: [""],
       affinity: [""],
@@ -230,25 +224,6 @@ export default class ContainerCreate extends Component {
     }.bind(this), 500);
   }
 
-  volumesFromOnChange(value) {
-    let volumes = [];
-    const fields = this.props.fields;
-    this.setState({volumesFromValue: value});
-    value.map(function loop(volume) {
-      volumes.push(volume.value);
-    });
-    fields.volumesFrom.onChange(volumes);
-  }
-
-  getVolumesOptions(containersNames) {
-    let options = [];
-    for (let i = 0; i < containersNames.length; i++) {
-      let containerName = containersNames[i];
-      options.push({value: containerName, label: containerName});
-    }
-    return options;
-  }
-
   dnsOnChange(value) {
     let vals = [];
     const fields = this.props.fields;
@@ -282,7 +257,6 @@ export default class ContainerCreate extends Component {
     _.forEach(containers, (container) => {
       containersNames.push(container.name);
     });
-    const volumesFromValue = this.state.volumesFromValue;
     const dnsValue = this.state.dnsValue;
     const dnsSearchValue = this.state.dnsSearchValue;
     const creationLogVisible = this.state.creationLogVisible;
@@ -399,25 +373,7 @@ export default class ContainerCreate extends Component {
                 </div>
               </Panel>
               <Panel header="Volume Settings" eventKey="3">
-                {this.fieldLinks(containersNames)}
-                <div className="row">
-                  {VOLUME_FIELDS_KEYS.map(key =>
-                    <div className="col-md-6" key={key}>
-                      {fieldComponent(key)}
-                    </div>
-                  )}
-                  <div className="col-md-6" key="Volumes From">
-                    <label>Volumes From:</label>
-                    <Select
-                      multi
-                      options={this.getVolumesOptions(containersNames)}
-                      noResultsText="No volumes available"
-                      placeholder="Choose volumes"
-                      onChange={this.volumesFromOnChange.bind(this)}
-                      value={volumesFromValue}
-                    />
-                  </div>
-                </div>
+                {this.fieldVolumes()}
               </Panel>
               <Panel header="Network Settings" eventKey="4">
                 {this.fieldPublish()}
@@ -469,7 +425,7 @@ export default class ContainerCreate extends Component {
 
 
     function fieldComponent(name) {
-      let property = CPU_FIELDS[name] || NETWORK_FIELDS[name] || VOLUME_FIELDS[name];
+      let property = CPU_FIELDS[name] || NETWORK_FIELDS[name];
       let field = fields[name];
       return (
         <div className="form-group">
@@ -584,6 +540,17 @@ export default class ContainerCreate extends Component {
                 });
               }
             }
+            if (key === 'volumeBinds' || key === 'volumesFrom') {
+              let volumes = [];
+              _.map(defaultParams[key], (item, key) => {
+                volumes = [...volumes, {value: item}];
+              });
+              if (volumes.length > 0) {
+                this.setState({
+                  [key]: volumes
+                });
+              }
+            }
             if (fields[key] !== undefined && !fields[key].value) {
               fields[key].onChange(value);
             }
@@ -611,8 +578,7 @@ export default class ContainerCreate extends Component {
     let container = {
       cluster: cluster.name
     };
-
-    let fieldNames = ['node', 'volumesFrom', 'name', 'dns', 'dnsSearch'].concat(CPU_FIELDS_KEYS, NETWORK_FIELDS_KEYS, VOLUME_FIELDS_KEYS);
+    let fieldNames = ['node', 'name', 'dns', 'dnsSearch'].concat(CPU_FIELDS_KEYS, NETWORK_FIELDS_KEYS);
     fieldNames.forEach(key => {
       let value = fields[key].value;
       if (value) {
@@ -630,7 +596,8 @@ export default class ContainerCreate extends Component {
     container.publish = this.getPublish();
     container.environment = this.getEnvironmentFields();
     container.restart = this.getRestart();
-    container.links = this.getLinks();
+    container.volumesFrom = this.getVolumes('volumesFrom');
+    container.volumeBinds = this.getVolumes('volumeBinds');
     $logBlock.show();
     this.setState({
       creationLogVisible: true
@@ -648,51 +615,72 @@ export default class ContainerCreate extends Component {
       });
   }
 
-  fieldLinks(containersNames) {
-    let items = this.state.links;
+  fieldVolumes() {
+    let itemsBinds = this.state.volumeBinds;
+    let itemsFrom = this.state.volumesFrom;
     return (
-      <div className="field-links form-group">
-        <div className="field-header">
-          <label>Link</label>
-          <a onClick={this.addLinkItem.bind(this)}><i className="fa fa-plus-circle"/></a>
+      <div>
+        <div className="field-volumeBinds form-group">
+          <div className="field-header">
+            <label>Volume Binds</label>
+            <a onClick={this.addVBItem.bind(this)}><i className="fa fa-plus-circle"/></a>
+          </div>
+          <div className="field-body">
+            {itemsBinds.map((item, key) => <div className="row" key={key}>
+              <div className="col-sm-12">
+                <input type="string" onChange={handleChange.bind(this, key, 'volumeBinds')} className="form-control"
+                       placeholder="host-src:container-dest[:<options>]" value={this.state.volumeBinds[key].value}/>
+              </div>
+            </div>)}
+          </div>
         </div>
-        <div className="field-body">
-          {items.map((item, key) => <div className="row" key={key}>
-            <div className="col-sm-6">
-              <input type="string" onChange={handleChange.bind(this, key, 'field1')} className="form-control"
-                     placeholder="Link"/>
-            </div>
-            <div className="col-sm-6">
-              <Select
-                onChange={handleChange.bind(this, key, 'field2')}
-                options={this.getVolumesOptions(containersNames)}
-                noResultsText="No volumes available"
-                placeholder="Volume"
-                value={items[key].field2}
-                clearable={false}
-              />
-            </div>
-          </div>)}
+        <div className="field-volumesFrom form-group">
+          <div className="field-header">
+            <label>Volumes From</label>
+            <a onClick={this.addVFItem.bind(this)}><i className="fa fa-plus-circle"/></a>
+          </div>
+          <div className="field-body">
+            {itemsFrom.map((item, key) => <div className="row" key={key}>
+              <div className="col-sm-12">
+                <input type="string" onChange={handleChange.bind(this, key, 'volumesFrom')} className="form-control"
+                       placeholder="container:['rw'|'ro']" value={this.state.volumesFrom[key].value}/>
+              </div>
+            </div>)}
+          </div>
         </div>
       </div>
     );
 
     function handleChange(i, type, event) {
       let state = Object.assign({}, this.state);
-      state.links[i][type] = event.target ? event.target.value : event.value;
+      state[type][i].value = event.target ? event.target.value : event.value;
       this.setState(state);
     }
   }
 
-  addLinkItem() {
+  addVBItem() {
     this.setState({
       ...this.state,
-      links: [...this.state.links, {field1: '', field2: ''}]
+      volumeBinds: [...this.state.volumeBinds, {value: ''}]
     });
   }
 
-  getLinks() {
-    return this.getMapField('links');
+  addVFItem() {
+    this.setState({
+      ...this.state,
+      volumesFrom: [...this.state.volumesFrom, {value: ''}]
+    });
+  }
+
+  getVolumes(key) {
+    let list = this.state[key];
+    let map = [];
+    list.forEach(item => {
+      if (item.value) {
+        map.push(item.value);
+      }
+    });
+    return map;
   }
 
   fieldPublish() {
