@@ -33,6 +33,12 @@ export default class ClusterImages extends Component {
 
   COLUMNS = [
     {
+      name: 'check',
+      width: '1%',
+      render: this.checkRender
+    },
+
+    {
       name: 'name',
       width: '10%'
     },
@@ -125,6 +131,20 @@ export default class ClusterImages extends Component {
         }
       });
     }
+  }
+
+  checkRender(row) {
+    return (
+      <td key="check">
+        <div className="checkbox-button"><label>
+          <input type="checkbox"
+                 className="checkbox-control"
+                 defaultChecked={false}
+          />
+          <span className="checkbox-label"><i className="fa fa-check-square fa-2x"></i></span>
+        </label></div>
+      </td>
+    );
   }
 
   render() {
