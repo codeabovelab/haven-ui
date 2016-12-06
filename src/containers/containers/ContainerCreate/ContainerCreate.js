@@ -362,7 +362,7 @@ export default class ContainerCreate extends Component {
                 {this.fieldConstraints()}
                 {this.fieldAffinity()}
               </Panel>
-              <Panel header="CPU Settings" eventKey="2">
+              <Panel header="Runtime Constraints" eventKey="2">
                 <div className="row">
                   {CPU_FIELDS_KEYS.map(key =>
                     <div className="col-md-6" key={key}>
