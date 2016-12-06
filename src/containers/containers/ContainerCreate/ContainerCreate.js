@@ -12,10 +12,9 @@ import Select from 'react-select';
 
 const CPU_FIELDS = {
   memoryLimit: {
-    type: 'integer',
+    type: 'string',
     label: 'Memory Limit',
-    measurement: 'bytes',
-    description: 'A positive integer (Mb).'
+    description: 'A positive integer followed by k, m, g or t.'
   },
   cpusetCpus: {
     type: 'string',
@@ -552,7 +551,12 @@ export default class ContainerCreate extends Component {
               }
             }
             if (fields[key] !== undefined && !fields[key].value) {
-              fields[key].onChange(value);
+              if (key === 'memoryLimit') {
+                let result = value.replace(/TiB|GiB|MiB|KiB/gi, match=> {return match[0].toLowerCase();});
+                fields[key].onChange(result);
+              } else {
+                fields[key].onChange(value);
+              }
             }
           });
         });
@@ -582,9 +586,6 @@ export default class ContainerCreate extends Component {
     fieldNames.forEach(key => {
       let value = fields[key].value;
       if (value) {
-        if (CPU_FIELDS[key] && CPU_FIELDS[key].measurement === 'bytes') {
-          value = mbToBytes(value);
-        }
         container[key] = value;
       }
     });
@@ -904,6 +905,3 @@ function bytesToMb(value) {
   return value / 1048576;
 }
 
-function mbToBytes(value) {
-  return value * 1048576;
-}
