@@ -573,6 +573,17 @@ export default class ContainerCreate extends Component {
               });
               this.setEnvironment(envVars);
             }
+            if (key === 'ports') {
+              let ports = [];
+              _.map(defaultParams.ports, (item, key) => {
+                ports = [...ports, {field1: parseInt(key, 10), field2: parseInt(item, 10)}];
+              });
+              if (ports.length > 0) {
+                this.setState({
+                  publish: ports
+                });
+              }
+            }
             if (fields[key] !== undefined && !fields[key].value) {
               fields[key].onChange(value);
             }
@@ -696,11 +707,11 @@ export default class ContainerCreate extends Component {
           {items.map((item, key) => <div className="row" key={key}>
             <div className="col-sm-6">
               <input type="number" onChange={handleChange.bind(this, key, 'field1')} className="form-control"
-                     placeholder="Port"/>
+                     value={this.state.publish[key].field1} placeholder="Port"/>
             </div>
             <div className="col-sm-6">
               <input type="number" onChange={handleChange.bind(this, key, 'field2')} className="form-control"
-                     placeholder="Port"/>
+                     value={this.state.publish[key].field2} placeholder="Port"/>
             </div>
           </div>)}
         </div>
