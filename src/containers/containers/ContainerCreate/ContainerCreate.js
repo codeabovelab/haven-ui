@@ -551,7 +551,7 @@ export default class ContainerCreate extends Component {
               }
             }
             if (fields[key] !== undefined && !fields[key].value) {
-              if (key === 'memoryLimit') {
+              if (key === 'memoryLimit' && value) {
                 let result = value.replace(/TiB|GiB|MiB|KiB/gi, match=> {return match[0].toLowerCase();});
                 fields[key].onChange(result);
               } else {
