@@ -35,7 +35,7 @@ export default class ClusterImages extends Component {
     {
       name: 'check',
       width: '1%',
-      render: this.checkRender
+      render: this.checkRender.bind(this)
     },
 
     {
@@ -65,17 +65,18 @@ export default class ClusterImages extends Component {
   componentWillMount() {
     const {getDeployedImages, params: {name}} = this.props;
     this.state = {
-      tagsSelected: {}
+      tagsSelected: {},
+      imagesToUpdate: {}
     };
     getDeployedImages(name).then(() => {
       const {deployedImages} = this.props.images;
       const clustersImages = _.get(deployedImages, name, []);
       clustersImages.map(el => {
-        if (el.id) {
+        if (el.name) {
           this.setState({
             tagsSelected: {
               ...this.state.tagsSelected,
-              [el.id]: _.get(el, 'currentTag', '')
+              [el.name]: _.get(el, 'currentTag', '')
             }
           });
         }
@@ -106,7 +107,7 @@ export default class ClusterImages extends Component {
 
   tagsRender(row) {
     let tagsOptions;
-    const imageId = row.id;
+    const imageName = row.name;
     let currentTag = row.currentTag ? row.currentTag : '';
     tagsOptions = row.tags && row.tags.map(tag => {
       return {value: tag, label: tag};
@@ -114,11 +115,11 @@ export default class ClusterImages extends Component {
     tagsOptions.push({value: currentTag, label: currentTag});
     return (
       <td key="tags">
-        <Select value={this.state.tagsSelected[imageId]}
+        <Select value={this.state.tagsSelected[imageName]}
                 options={tagsOptions}
                 placeholder = ""
                 clearable={false}
-                onChange={handleChange.bind(this, imageId)}
+                onChange={handleChange.bind(this, imageName)}
         />
       </td>
     );
@@ -134,17 +135,31 @@ export default class ClusterImages extends Component {
   }
 
   checkRender(row) {
+    console.log(row);
     return (
       <td key="check">
         <div className="checkbox-button"><label>
           <input type="checkbox"
                  className="checkbox-control"
                  defaultChecked={false}
+                 disabled={!row.name}
+                 name={row.name}
+                 onChange={this.toggleCheckbox.bind(this)}
           />
-          <span className="checkbox-label"><i className="fa fa-check-square fa-2x"></i></span>
+          <span title={row.name ? "" : "Can't be updated, image name is not available"} className="checkbox-label">
+            <i className="fa fa-check-square fa-2x"></i></span>
         </label></div>
       </td>
     );
+  }
+
+  toggleCheckbox(e) {
+    let checked = e.target.checked;
+    let name = e.target.name;
+    this.setState({
+      imagesToUpdate: $.extend(this.state.imagesToUpdate, {[name]: {checked: checked}})
+    });
+    console.log('STATE: ', this.state);
   }
 
   render() {
