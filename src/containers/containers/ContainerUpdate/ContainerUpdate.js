@@ -10,7 +10,6 @@ const MAIN_FIELDS = {
     type: 'integer',
     label: 'CPU shares',
     min: 2,
-    defaultValue: "1024",
     description: "Default is 1024"
   },
   cpusetCpus: {
@@ -38,7 +37,6 @@ const MAIN_FIELDS = {
     label: 'Blkio Weight',
     min: 2,
     max: 1000,
-    defaultValue: "500",
     description: "Default is 500"
   },
   memoryLimit: {
