@@ -45,7 +45,7 @@ export default class ClusterImages extends Component {
 
     {
       name: 'id',
-      width: '20%'
+      width: '15%'
     },
 
     {
