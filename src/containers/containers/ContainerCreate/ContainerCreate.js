@@ -531,7 +531,7 @@ export default class ContainerCreate extends Component {
             if (key === 'ports') {
               let ports = [];
               _.map(defaultParams.ports, (item, key) => {
-                ports = [...ports, {field1: parseInt(key, 10), field2: parseInt(item, 10)}];
+                ports = [...ports, {field1: key, field2: item}];
               });
               if (ports.length > 0) {
                 this.setState({
@@ -695,11 +695,11 @@ export default class ContainerCreate extends Component {
         <div className="field-body">
           {items.map((item, key) => <div className="row" key={key}>
             <div className="col-sm-6">
-              <input type="number" onChange={handleChange.bind(this, key, 'field1')} className="form-control"
+              <input type="string" onChange={handleChange.bind(this, key, 'field1')} className="form-control"
                      value={this.state.publish[key].field1} placeholder="Port"/>
             </div>
             <div className="col-sm-6">
-              <input type="number" onChange={handleChange.bind(this, key, 'field2')} className="form-control"
+              <input type="string" onChange={handleChange.bind(this, key, 'field2')} className="form-control"
                      value={this.state.publish[key].field2} placeholder="Port"/>
             </div>
           </div>)}
