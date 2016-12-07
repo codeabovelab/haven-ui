@@ -143,3 +143,18 @@ export function updateContainer(container, data) {
     promise: (client) => client.put(`${url}/update`, {data})
   };
 }
+
+export function updateContainers(cluster, type, percentage, images) {
+  let body = {
+    type: type,
+    parameters: {
+      cluster: cluster,
+      images: images,
+      "LoadContainersOfImage.percentage": percentage
+    }
+  };
+  return {
+    types: [ACTIONS.UPDATE_CONTAINERS, ACTIONS.UPDATE_CONTAINERS_SUCCESS, ACTIONS.UPDATE_CONTAINERS_FAIL],
+    promise: (client) => client.post('/ui/api/jobs/', {data: body})
+  };
+}

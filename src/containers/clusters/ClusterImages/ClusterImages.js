@@ -1,10 +1,10 @@
 import React, {Component, PropTypes} from 'react';
-import * as clusterActions from 'redux/modules/clusters/clusters';
 import {connect} from 'react-redux';
 import {DockTable, Chain, LoadingDialog, StatisticsPanel} from '../../../components/index';
 import {Link, RouteHandler} from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
 import {getDeployedImages} from 'redux/modules/images/images';
+import {updateContainers} from 'redux/modules/containers/containers';
 import {FormGroup, InputGroup, FormControl, ControlLabel, Button, ProgressBar, Nav, NavItem, Popover} from 'react-bootstrap';
 import _ from 'lodash';
 import Select from 'react-select';
@@ -15,11 +15,7 @@ import Select from 'react-select';
     containers: state.containers,
     events: state.events,
     images: state.images
-  }), {
-    loadContainers: clusterActions.loadContainers,
-    loadClusters: clusterActions.load,
-    getDeployedImages
-  })
+  }), {getDeployedImages, updateContainers})
 export default class ClusterImages extends Component {
   static propTypes = {
     clusters: PropTypes.object,
@@ -28,7 +24,7 @@ export default class ClusterImages extends Component {
     images: PropTypes.object,
     params: PropTypes.object,
     getDeployedImages: PropTypes.func.isRequired,
-    loadClusters: PropTypes.func.isRequired
+    updateContainers: PropTypes.func.isRequired
   };
 
   COLUMNS = [
@@ -61,7 +57,7 @@ export default class ClusterImages extends Component {
     },
 
   ];
-
+  imagesToUpdate
   UPDATE_STRATEGIES = ['ui.updateContainers.stopThenStartEach', 'ui.updateContainers.startThenStopEach', 'ui.updateContainers.stopThenStartAll'];
 
   componentWillMount() {
@@ -162,7 +158,7 @@ export default class ClusterImages extends Component {
     let checked = e.target.checked;
     let name = e.target.name;
     this.setState({
-      imagesToUpdate: $.extend(this.state.imagesToUpdate, {[name]: {checked: checked}})
+      imagesToUpdate: $.extend(this.state.imagesToUpdate, {[name]: checked})
     });
   }
 
@@ -179,6 +175,27 @@ export default class ClusterImages extends Component {
     this.setState({
       [id]: value
     });
+  }
+
+  onSubmit() {
+    const {params: {name}, updateContainers} = this.props;
+    let images = [];
+    let imagesToUpdate = this.state.imagesToUpdate;
+    let tags = this.state.tagsSelected;
+    _.map(imagesToUpdate, (el, key) => {
+      let updateTo = tags[key];
+      console.log('el: ', el);
+      console.log('key: ', key);
+      console.log('to: ', updateTo);
+      if (key && el && updateTo) {
+        console.log('push');
+        images.push({name: key, to: updateTo});
+      }
+    });
+    if (images.length > 0) {
+      updateContainers(name, this.state.updateStrategy, this.state.updatePercents, images);
+    }
+    console.log('IMAGES: ', images);
   }
 
   render() {
@@ -243,7 +260,7 @@ export default class ClusterImages extends Component {
                       </InputGroup>
                     </FormGroup>
                     <FormGroup>
-                      <Button bsStyle="primary" className="pulled-right">
+                      <Button bsStyle="primary" className="pulled-right" onClick={this.onSubmit.bind(this)}>
                         <i className="fa fa-arrow-up"/>&nbsp;Update Selected Containers
                       </Button>
                     </FormGroup>
