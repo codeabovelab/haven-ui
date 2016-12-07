@@ -45,7 +45,7 @@ export default class ClusterImages extends Component {
     },
 
     {
-      name: 'containersArr',
+      name: 'containers',
       render: this.containersRender,
       width: '20%'
     },
