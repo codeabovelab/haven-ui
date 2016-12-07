@@ -99,7 +99,7 @@ export default class NodesList extends Component {
                   <NavItem eventKey={5} disabled={name === "all"}>Registries</NavItem>
                 </LinkContainer>
                 <LinkContainer to={"/clusters/" + name + "/" + "images"}>
-                  <NavItem eventKey={5} disabled={name === "all"}>Deployed Images</NavItem>
+                  <NavItem eventKey={5} disabled={name === "all"}>Running Images</NavItem>
                 </LinkContainer>
               </Nav>
               {this.props.clusterName && (
