@@ -29,26 +29,26 @@ export default class ClusterImages extends Component {
 
   COLUMNS = [
     {
-      name: 'check',
+      name: 'select',
       width: '1%',
       render: this.checkRender.bind(this)
     },
 
     {
       name: 'name',
-      width: '10%'
+      width: '29%'
     },
 
     {
       name: 'containers',
       render: this.containersRender,
-      width: '20%'
+      width: '40%'
     },
 
     {
       name: 'tags',
       render: this.tagsRender.bind(this),
-      width: '10%'
+      width: '30%'
     },
 
   ];
@@ -150,7 +150,7 @@ export default class ClusterImages extends Component {
   checkRender(row) {
     let iClassname = row.name ? "fa fa-check-square fa-2x" : "fa fa-exclamation-triangle fa-2x";
     return (
-      <td key="check">
+      <td key="select" className="checkbox-td">
         <div className="checkbox-button"><label>
           <input type="checkbox"
                  className="checkbox-control"
