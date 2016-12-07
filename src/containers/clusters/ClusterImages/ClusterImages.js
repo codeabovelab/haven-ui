@@ -62,11 +62,15 @@ export default class ClusterImages extends Component {
 
   ];
 
+  UPDATE_STRATEGIES = ['ui.updateContainers.stopThenStartEach', 'ui.updateContainers.startThenStopEach', 'ui.updateContainers.stopThenStartAll'];
+
   componentWillMount() {
     const {getDeployedImages, params: {name}} = this.props;
     this.state = {
       tagsSelected: {},
-      imagesToUpdate: {}
+      imagesToUpdate: {},
+      updateStrategy: this.UPDATE_STRATEGIES[0],
+      updatePercents: 100
     };
     getDeployedImages(name).then(() => {
       const {deployedImages} = this.props.images;
@@ -160,13 +164,27 @@ export default class ClusterImages extends Component {
     this.setState({
       imagesToUpdate: $.extend(this.state.imagesToUpdate, {[name]: {checked: checked}})
     });
-    console.log('STATE: ', this.state);
+  }
+
+  handleSelectChange(id, event) {
+    let value = event.target ? event.target.value : event.value;
+    if (id === 'updatePercents') {
+      if (value > 100) {
+        value = 100;
+      }
+      if (value < 0) {
+        value = 10;
+      }
+    }
+    this.setState({
+      [id]: value
+    });
   }
 
   render() {
     require('react-select/dist/react-select.css');
     const {params: {name}, images} = this.props;
-
+    console.log('STATE: ', this.state);
     let rows = _.get(this.props.images, `deployedImages.${name}`, []);
     return (
       <div key={name}>
@@ -205,10 +223,13 @@ export default class ClusterImages extends Component {
                   <div className="col-md-6">
                     <FormGroup>
                       <ControlLabel>Select Update Strategy</ControlLabel>
-                      <FormControl componentClass="select">
-                        <option value="ui.updateContainers.stopThenStartEach">ui.updateContainers.stopThenStartEach</option>
-                        <option value="ui.updateContainers.startThenStopEach">ui.updateContainers.startThenStopEach</option>
-                        <option value="ui.updateContainers.stopThenStartAll">ui.updateContainers.stopThenStartAll</option>
+                      <FormControl componentClass="select" id="updateStrategy" value={this.state.updateStrategy}
+                                   onChange={this.handleSelectChange.bind(this, 'updateStrategy')}>
+                        {
+                          this.UPDATE_STRATEGIES.map((el, i) => {
+                            return <option key={i} value={el}>{el}</option>;
+                          })
+                        }
                       </FormControl>
                     </FormGroup>
                   </div>
@@ -216,7 +237,8 @@ export default class ClusterImages extends Component {
                     <FormGroup>
                       <label>Percentage of affected containers:</label>
                       <InputGroup>
-                        <FormControl type="number" step="10" max="100" min="10"/>
+                        <FormControl type="number" step="10" max="100" min="10" id="updatePercents" value={this.state.updatePercents}
+                                     onChange={this.handleSelectChange.bind(this, 'updatePercents')}/>
                         <InputGroup.Addon>%</InputGroup.Addon>
                       </InputGroup>
                     </FormGroup>
