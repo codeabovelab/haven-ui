@@ -7,6 +7,7 @@ export NotFound from './NotFound/NotFound';
 export ClustersPanel from './clusters/ClustersPanel/ClustersPanel';
 export ClusterDetailsPanel from './clusters/ClusterDetails/ClusterDetailsPanel';
 export ClusterNodesDialog from './clusters/ClusterNodesDialog/ClusterNodesDialog';
+export ClusterImages from './clusters/ClusterImages/ClusterImages';
 
 export ClusterAdd from '../components/clusters/ClusterAdd';
 export ClusterConfig from '../components/clusters/ClusterConfig';

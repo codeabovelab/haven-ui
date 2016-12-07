@@ -260,6 +260,9 @@ export default class ApplicationPanel extends Component {
                 <LinkContainer to={"/clusters/" + name + "/" + "registries"}>
                   <NavItem eventKey={5} disabled={name === "all"}>Registries</NavItem>
                 </LinkContainer>
+                <LinkContainer to={"/clusters/" + name + "/" + "images"}>
+                  <NavItem eventKey={5} disabled={name === "all"}>Deployed Images</NavItem>
+                </LinkContainer>
               </Nav>
 
               <ButtonToolbar className="pulled-right-toolbar">
