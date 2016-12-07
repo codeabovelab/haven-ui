@@ -520,8 +520,10 @@ export default class ContainerCreate extends Component {
                 } else if (item.substring(0, 9) === 'affinity:') {
                   envVars.affinity.push(item.substring(9));
                 } else {
-                  let envParts = item.split("=");
-                  envVars.environment = [...envVars.environment, {field1: envParts[0], field2: envParts[1]}];
+                  let envParts = item.split(/=(.+)/);
+                  let firstPart = envParts[0];
+                  let secondPart = envParts[1];
+                  envVars.environment = [...envVars.environment, {field1: firstPart, field2: secondPart}];
                 }
               });
               this.setEnvironment(envVars);
