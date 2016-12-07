@@ -5,7 +5,7 @@ import {Link, RouteHandler} from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
 import {getDeployedImages} from 'redux/modules/images/images';
 import {updateContainers} from 'redux/modules/containers/containers';
-import {FormGroup, InputGroup, FormControl, ControlLabel, Button, ProgressBar, Nav, NavItem, Popover} from 'react-bootstrap';
+import {FormGroup, InputGroup, FormControl, ControlLabel, Button, ProgressBar, Nav, NavItem, Popover, Modal} from 'react-bootstrap';
 import _ from 'lodash';
 import Select from 'react-select';
 
@@ -65,8 +65,10 @@ export default class ClusterImages extends Component {
     this.state = {
       tagsSelected: {},
       imagesToUpdate: {},
+      showModal: false,
       updateStrategy: this.UPDATE_STRATEGIES[0],
-      updatePercents: 100
+      updatePercents: 100,
+      updateResponse: ''
     };
     getDeployedImages(name).then(() => {
       const {deployedImages} = this.props.images;
@@ -134,8 +136,15 @@ export default class ClusterImages extends Component {
     }
   }
 
+  closeModal() {
+    this.setState({ showModal: false });
+  }
+
+  openModal() {
+    this.setState({ showModal: true });
+  }
+
   checkRender(row) {
-    console.log(row);
     let iClassname = row.name ? "fa fa-check-square fa-2x" : "fa fa-exclamation-triangle fa-2x";
     return (
       <td key="check">
@@ -180,28 +189,36 @@ export default class ClusterImages extends Component {
   onSubmit() {
     const {params: {name}, updateContainers} = this.props;
     let images = [];
+    let message = '';
     let imagesToUpdate = this.state.imagesToUpdate;
     let tags = this.state.tagsSelected;
     _.map(imagesToUpdate, (el, key) => {
       let updateTo = tags[key];
-      console.log('el: ', el);
-      console.log('key: ', key);
-      console.log('to: ', updateTo);
       if (key && el && updateTo) {
-        console.log('push');
         images.push({name: key, to: updateTo});
       }
     });
     if (images.length > 0) {
-      updateContainers(name, this.state.updateStrategy, this.state.updatePercents, images);
+      updateContainers(name, this.state.updateStrategy, this.state.updatePercents, images).then((response)=> {
+        let status = response._res.status || response._res.code;
+        if (status) {
+          switch (status) {
+            case 200:
+              message = 'Update job successfully created';
+              break;
+            default:
+              message = 'Failed to create update job: ' + response._res.message;
+          }
+        }
+        this.setState({updateResponse: message});
+        this.openModal();
+      });
     }
-    console.log('IMAGES: ', images);
   }
 
   render() {
     require('react-select/dist/react-select.css');
     const {params: {name}, images} = this.props;
-    console.log('STATE: ', this.state);
     let rows = _.get(this.props.images, `deployedImages.${name}`, []);
     return (
       <div key={name}>
@@ -281,11 +298,17 @@ export default class ClusterImages extends Component {
             </div>
           )}
         </div>
-        {(this.state && this.state.actionDialog) && (
-          <div>
-            {this.state.actionDialog}
-          </div>
-        )}
+        <Modal show={this.state.showModal} onHide={this.closeModal.bind(this)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Update Info</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>{this.state.updateResponse}</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={this.closeModal.bind(this)}>Close</Button>
+          </Modal.Footer>
+        </Modal>
       </div>
     );
   }
