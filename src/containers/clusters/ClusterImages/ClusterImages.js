@@ -57,8 +57,16 @@ export default class ClusterImages extends Component {
     },
 
   ];
-  imagesToUpdate
+
   UPDATE_STRATEGIES = ['ui.updateContainers.stopThenStartEach', 'ui.updateContainers.startThenStopEach', 'ui.updateContainers.stopThenStartAll'];
+
+  statisticsMetrics = [
+    {
+      type: 'number',
+      title: 'Image Deployed',
+      titles: 'Images Deployed'
+    }
+  ];
 
   componentWillMount() {
     const {getDeployedImages, params: {name}} = this.props;
@@ -215,6 +223,8 @@ export default class ClusterImages extends Component {
       });
     } else {
       message = 'Select tags for chosen images to create update job.';
+      this.setState({updateResponse: message});
+      this.openModal();
     }
   }
 
@@ -222,6 +232,14 @@ export default class ClusterImages extends Component {
     require('react-select/dist/react-select.css');
     const {params: {name}, images} = this.props;
     let rows = _.get(this.props.images, `deployedImages.${name}`, []);
+    const imagesToUpdate = this.state.imagesToUpdate;
+    let disabledUpdateButton = true;
+    _.map(imagesToUpdate, (el, key) => {
+      if (imagesToUpdate[key]) {
+        disabledUpdateButton = false;
+        return false;
+      }
+    });
     return (
       <div key={name}>
         <ul className="breadcrumb">
@@ -229,6 +247,11 @@ export default class ClusterImages extends Component {
           <li><Link to={"/clusters/" + name}>{name}</Link></li>
           <li className="active">Images</li>
         </ul>
+        {rows && (
+          <StatisticsPanel metrics={this.statisticsMetrics}
+                           values={[rows.length]}
+          />
+        )}
         <div className="panel panel-default">
           {(images.loadingDeployed && rows.length === 0) && (
             <ProgressBar active now={100}/>
@@ -251,7 +274,7 @@ export default class ClusterImages extends Component {
                   <NavItem eventKey={5} disabled={name === "all"}>Registries</NavItem>
                 </LinkContainer>
                 <LinkContainer to={"/clusters/" + name + "/" + "images"}>
-                  <NavItem eventKey={5} disabled={name === "all"}>Images</NavItem>
+                  <NavItem eventKey={5} disabled={name === "all"}>Deployed Images</NavItem>
                 </LinkContainer>
               </Nav>
               <div className="clusterImages">
@@ -279,7 +302,8 @@ export default class ClusterImages extends Component {
                       </InputGroup>
                     </FormGroup>
                     <FormGroup>
-                      <Button bsStyle="primary" className="pulled-right" onClick={this.onSubmit.bind(this)}>
+                      <Button bsStyle="primary" className="pulled-right" onClick={this.onSubmit.bind(this)}
+                              disabled={disabledUpdateButton} title={disabledUpdateButton ? "Choose containers to update" : ""}>
                         <i className="fa fa-arrow-up"/>&nbsp;Update Selected Containers
                       </Button>
                     </FormGroup>
