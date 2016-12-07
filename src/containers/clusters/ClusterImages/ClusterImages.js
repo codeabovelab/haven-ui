@@ -1,11 +1,11 @@
 import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 import {connect} from 'react-redux';
-import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, Chain, LoadingDialog, StatisticsPanel, ActionMenu, ClusterUploadCompose, ClusterSetSource} from '../../../components/index';
-import { Link, browserHistory, Route, RouteHandler } from 'react-router';
-import { LinkContainer } from 'react-router-bootstrap';
+import {DockTable, Chain, LoadingDialog, StatisticsPanel} from '../../../components/index';
+import {Link, RouteHandler} from 'react-router';
+import {LinkContainer} from 'react-router-bootstrap';
 import {getDeployedImages} from 'redux/modules/images/images';
-import {Dropdown, SplitButton, Button, ButtonGroup, DropdownButton, ButtonToolbar, MenuItem, Panel, ProgressBar, Nav, NavItem, Image, Popover} from 'react-bootstrap';
+import {FormGroup, InputGroup, FormControl, ControlLabel, Button, ProgressBar, Nav, NavItem, Popover} from 'react-bootstrap';
 import _ from 'lodash';
 import Select from 'react-select';
 
@@ -136,6 +136,7 @@ export default class ClusterImages extends Component {
 
   checkRender(row) {
     console.log(row);
+    let iClassname = row.name ? "fa fa-check-square fa-2x" : "fa fa-exclamation-triangle fa-2x";
     return (
       <td key="check">
         <div className="checkbox-button"><label>
@@ -147,7 +148,7 @@ export default class ClusterImages extends Component {
                  onChange={this.toggleCheckbox.bind(this)}
           />
           <span title={row.name ? "" : "Can't be updated, image name is not available"} className="checkbox-label">
-            <i className="fa fa-check-square fa-2x"></i></span>
+            <i className={iClassname}></i></span>
         </label></div>
       </td>
     );
@@ -172,7 +173,7 @@ export default class ClusterImages extends Component {
         <ul className="breadcrumb">
           <li><Link to="/clusters">Clusters</Link></li>
           <li><Link to={"/clusters/" + name}>{name}</Link></li>
-          <li className="active">Containers</li>
+          <li className="active">Images</li>
         </ul>
         <div className="panel panel-default">
           {(images.loadingDeployed && rows.length === 0) && (
@@ -200,6 +201,32 @@ export default class ClusterImages extends Component {
                 </LinkContainer>
               </Nav>
               <div className="clusterImages">
+                <form>
+                  <div className="col-md-6">
+                    <FormGroup>
+                      <ControlLabel>Select Update Strategy</ControlLabel>
+                      <FormControl componentClass="select">
+                        <option value="ui.updateContainers.stopThenStartEach">ui.updateContainers.stopThenStartEach</option>
+                        <option value="ui.updateContainers.startThenStopEach">ui.updateContainers.startThenStopEach</option>
+                        <option value="ui.updateContainers.stopThenStartAll">ui.updateContainers.stopThenStartAll</option>
+                      </FormControl>
+                    </FormGroup>
+                  </div>
+                  <div className="col-md-6">
+                    <FormGroup>
+                      <label>Percentage of affected containers:</label>
+                      <InputGroup>
+                        <FormControl type="number" step="10" max="100" min="10"/>
+                        <InputGroup.Addon>%</InputGroup.Addon>
+                      </InputGroup>
+                    </FormGroup>
+                    <FormGroup>
+                      <Button bsStyle="primary" className="pulled-right">
+                        <i className="fa fa-arrow-up"/>&nbsp;Update Selected Containers
+                      </Button>
+                    </FormGroup>
+                  </div>
+                </form>
                 <DockTable columns={this.COLUMNS}
                            rows={rows}
                            key={name}
