@@ -40,11 +40,6 @@ export default class ClusterImages extends Component {
     },
 
     {
-      name: 'id',
-      width: '15%'
-    },
-
-    {
       name: 'containers',
       render: this.containersRender,
       width: '20%'
@@ -124,7 +119,7 @@ export default class ClusterImages extends Component {
     });
     tagsOptions.push({value: currentTag, label: currentTag});
     return (
-      <td key="tags">
+      <td key="tags" className="react-select-td">
         <Select value={this.state.tagsSelected[imageName]}
                 options={tagsOptions}
                 placeholder = ""

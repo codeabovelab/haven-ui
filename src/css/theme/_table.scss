@@ -349,6 +349,10 @@ th {
   margin-top: 10px;
 }
 
+.react-select-td {
+  min-width: 100px !important;
+}
+
 @media (max-width: 960px) {
   .table-responsive .dropdown-menu {
     position: static !important;
