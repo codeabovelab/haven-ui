@@ -213,6 +213,8 @@ export default class ClusterImages extends Component {
         this.setState({updateResponse: message});
         this.openModal();
       });
+    } else {
+      message = 'Select tags for chosen images to create update job.';
     }
   }
 
