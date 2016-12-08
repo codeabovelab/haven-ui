@@ -53,7 +53,20 @@ export default class ClusterImages extends Component {
 
   ];
 
-  UPDATE_STRATEGIES = ['ui.updateContainers.stopThenStartEach', 'ui.updateContainers.startThenStopEach', 'ui.updateContainers.stopThenStartAll'];
+  UPDATE_STRATEGIES = [
+    {
+      value: "ui.updateContainers.stopThenStartEach",
+      label: "Stop then start each"
+    },
+    {
+      value: "ui.updateContainers.startThenStopEach",
+      label: "Start then stop each"
+    },
+    {
+      value: "ui.updateContainers.stopThenStartAll",
+      label: "Stop then start all"
+    }
+  ];
 
   statisticsMetrics = [
     {
@@ -69,7 +82,7 @@ export default class ClusterImages extends Component {
       tagsSelected: {},
       imagesToUpdate: {},
       showModal: false,
-      updateStrategy: this.UPDATE_STRATEGIES[0],
+      updateStrategy: this.UPDATE_STRATEGIES[0].value,
       updatePercents: 100,
       updateResponse: ''
     };
@@ -281,7 +294,7 @@ export default class ClusterImages extends Component {
                                    onChange={this.handleSelectChange.bind(this, 'updateStrategy')}>
                         {
                           this.UPDATE_STRATEGIES.map((el, i) => {
-                            return <option key={i} value={el}>{el}</option>;
+                            return <option key={i} value={el.value}>{el.label}</option>;
                           })
                         }
                       </FormControl>
