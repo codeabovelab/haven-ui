@@ -148,11 +148,13 @@ export default class ClusterImages extends Component {
     tagsOptions = row.tags && row.tags.map(tag => {
       return {value: tag, label: tag};
     });
+    let disabled = !tagsOptions || tagsOptions.length === 0;
     return (
-      <td key="tags" className="react-select-td">
+      <td key="tags" className="react-select-td" title={disabled ? "No tags available" : ""}>
         <Select value={this.state.tagsSelected[imageName]}
                 options={tagsOptions}
                 placeholder = ""
+                disabled={disabled}
                 clearable={false}
                 onChange={handleChange.bind(this, imageName)}
         />
