@@ -270,7 +270,14 @@ export default class ClusterImages extends Component {
   render() {
     require('react-select/dist/react-select.css');
     const {params: {name}, images} = this.props;
-    let rows = _.get(this.props.images, `deployedImages.${name}`, []);
+    let rows = _.get(this.props.images, `deployedImages.${name}`, []).sort((a, b) => {
+      let tags = _.get(a, 'tags', []);
+      let lastTag = tags[tags.length - 1];
+      if (lastTag && lastTag !== a.currentTag) {
+        return -1;
+      }
+      return 1;
+    });
     const imagesToUpdate = this.state.imagesToUpdate;
     let disabledUpdateButton = true;
     _.map(imagesToUpdate, (el, key) => {
