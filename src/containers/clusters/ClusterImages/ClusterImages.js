@@ -107,6 +107,11 @@ export default class ClusterImages extends Component {
               [el.name]: lastTag
             }
           });
+          if (lastTag && el.currentTag !== lastTag) {
+            this.setState({
+              imagesToUpdate: {...this.state.imagesToUpdate, [el.name]: true}
+            });
+          }
         }
       });
     });
@@ -188,6 +193,7 @@ export default class ClusterImages extends Component {
                  className="checkbox-control"
                  defaultChecked={false}
                  disabled={!row.name}
+                 checked={this.state.imagesToUpdate[row.name]}
                  name={row.name}
                  onChange={this.toggleCheckbox.bind(this)}
           />
@@ -247,7 +253,6 @@ export default class ClusterImages extends Component {
   showResponse(response) {
     let message = 'Error';
     let status = '';
-    console.log(response);
     status = response.code || response._res.status || response._res.code;
     if (status) {
       switch (status) {
