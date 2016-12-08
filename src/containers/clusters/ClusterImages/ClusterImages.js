@@ -1,11 +1,11 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {DockTable, Chain, LoadingDialog, StatisticsPanel} from '../../../components/index';
+import {DockTable, Chain, StatisticsPanel} from '../../../components/index';
 import {Link, RouteHandler} from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
 import {getDeployedImages} from 'redux/modules/images/images';
 import {updateContainers} from 'redux/modules/containers/containers';
-import {FormGroup, InputGroup, FormControl, ControlLabel, Button, ProgressBar, Nav, NavItem, Popover, Modal} from 'react-bootstrap';
+import {FormGroup, InputGroup, FormControl, ControlLabel, Button, ProgressBar, Nav, NavItem, Popover, Modal, ButtonToolbar} from 'react-bootstrap';
 import _ from 'lodash';
 import Select from 'react-select';
 
@@ -90,7 +90,9 @@ export default class ClusterImages extends Component {
       showModal: false,
       updateStrategy: this.UPDATE_STRATEGIES[0].value,
       updatePercents: 100,
-      updateResponse: ''
+      updateResponse: '',
+      schedule: '',
+      jobTitle: ''
     };
     getDeployedImages(name).then(() => {
       const {deployedImages} = this.props.images;
@@ -304,7 +306,7 @@ export default class ClusterImages extends Component {
                 <form>
                   <div className="col-md-6">
                     <FormGroup>
-                      <ControlLabel>Select Update Strategy</ControlLabel>
+                      <ControlLabel>Update Strategy</ControlLabel>
                       <FormControl componentClass="select" id="updateStrategy" value={this.state.updateStrategy}
                                    onChange={this.handleSelectChange.bind(this, 'updateStrategy')}>
                         {
@@ -313,6 +315,10 @@ export default class ClusterImages extends Component {
                           })
                         }
                       </FormControl>
+                    </FormGroup>
+                    <FormGroup>
+                      <ControlLabel>Schedule</ControlLabel>
+                      <FormControl type="text" onChange={this.handleSelectChange.bind(this, 'schedule')}/>
                     </FormGroup>
                   </div>
                   <div className="col-md-6">
@@ -324,12 +330,24 @@ export default class ClusterImages extends Component {
                         <InputGroup.Addon>%</InputGroup.Addon>
                       </InputGroup>
                     </FormGroup>
-                    <FormGroup>
-                      <Button bsStyle="primary" className="pulled-right" onClick={this.onSubmit.bind(this)}
-                              disabled={disabledUpdateButton} title={disabledUpdateButton ? "Choose containers to update" : ""}>
-                        <i className="fa fa-arrow-up"/>&nbsp;Update Selected Containers
-                      </Button>
-                    </FormGroup>
+                    <div className="row">
+                      <div className="col-md-6">
+                        <FormGroup>
+                          <ControlLabel>Job Title</ControlLabel>
+                          <FormControl type="text" onChange={this.handleSelectChange.bind(this, 'jobTitle')}/>
+                        </FormGroup>
+                      </div>
+                      <div className="col-md-6">
+                        <FormGroup>
+                          <Button bsStyle="primary" onClick={this.onSubmit.bind(this)}
+                                  disabled={disabledUpdateButton}
+                                  className="pulled-down-button pulled-right"
+                                  title={disabledUpdateButton ? "Choose containers to update" : ""}>
+                            <i className="fa fa-arrow-up"/>&nbsp;Update Containers
+                          </Button>
+                        </FormGroup>
+                      </div>
+                    </div>
                   </div>
                 </form>
                 <DockTable columns={this.COLUMNS}
