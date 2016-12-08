@@ -36,13 +36,19 @@ export default class ClusterImages extends Component {
 
     {
       name: 'name',
-      width: '29%'
+      width: '24%'
     },
 
     {
       name: 'containers',
       render: this.containersRender,
-      width: '40%'
+      width: '30%'
+    },
+
+    {
+      name: 'Current Tag',
+      width: '15%',
+      render: this.currentTagRender
     },
 
     {
@@ -119,6 +125,15 @@ export default class ClusterImages extends Component {
                popoverRender={popoverRender}
                render={(container) => (<span title={String(container.name) || ""}>{String(container.name) || ""}</span>)}
         />
+      </td>
+    );
+  }
+
+  currentTagRender(row) {
+    let currentTag = _.get(row, 'currentTag', '');
+    return (
+      <td key="currentTag">
+        <span>{currentTag}</span>
       </td>
     );
   }
