@@ -92,7 +92,8 @@ export default class ClusterImages extends Component {
       updatePercents: 100,
       updateResponse: '',
       schedule: '',
-      jobTitle: ''
+      jobTitle: '',
+      mounted: true
     };
     getDeployedImages(name).then(() => {
       const {deployedImages} = this.props.images;
@@ -101,19 +102,27 @@ export default class ClusterImages extends Component {
         if (el.name) {
           let tags = _.get(el, 'tags', []);
           let lastTag = tags[tags.length - 1];
-          this.setState({
-            tagsSelected: {
-              ...this.state.tagsSelected,
-              [el.name]: lastTag
-            }
-          });
-          if (lastTag && el.currentTag !== lastTag) {
+          if (this.state.mounted) {
             this.setState({
-              imagesToUpdate: {...this.state.imagesToUpdate, [el.name]: true}
+              tagsSelected: {
+                ...this.state.tagsSelected,
+                [el.name]: lastTag
+              }
             });
+            if (lastTag && el.currentTag !== lastTag) {
+              this.setState({
+                imagesToUpdate: {...this.state.imagesToUpdate, [el.name]: true}
+              });
+            }
           }
         }
       });
+    });
+  }
+
+  componentWillUnmount() {
+    this.setState({
+      mounted: false
     });
   }
 
