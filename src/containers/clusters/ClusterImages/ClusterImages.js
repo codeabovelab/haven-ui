@@ -199,6 +199,7 @@ export default class ClusterImages extends Component {
       <td key="select" className="checkbox-td">
         <div className="checkbox-button"><label>
           <input type="checkbox"
+                 key={row.name}
                  className="checkbox-control"
                  defaultChecked={false}
                  disabled={!row.name}
@@ -216,9 +217,12 @@ export default class ClusterImages extends Component {
   toggleCheckbox(e) {
     let checked = e.target.checked;
     let name = e.target.name;
+    console.log('name ', name);
+    console.log('checked ', checked);
     this.setState({
       imagesToUpdate: $.extend(this.state.imagesToUpdate, {[name]: checked})
     });
+    console.log('STATE: ', this.state);
   }
 
   handleSelectChange(id, event) {
@@ -282,7 +286,7 @@ export default class ClusterImages extends Component {
     let rows = _.get(this.props.images, `deployedImages.${name}`, []).sort((a, b) => {
       let tags = _.get(a, 'tags', []);
       let lastTag = tags[tags.length - 1];
-      if (lastTag && lastTag !== a.currentTag) {
+      if ((lastTag && lastTag !== a.currentTag) || this.state.imagesToUpdate[a.name]) {
         return -1;
       }
       return 1;
