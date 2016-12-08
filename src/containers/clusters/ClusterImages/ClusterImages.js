@@ -97,10 +97,12 @@ export default class ClusterImages extends Component {
       const clustersImages = _.get(deployedImages, name, []);
       clustersImages.map(el => {
         if (el.name) {
+          let tags = _.get(el, 'tags', []);
+          let lastTag = tags[tags.length - 1];
           this.setState({
             tagsSelected: {
               ...this.state.tagsSelected,
-              [el.name]: _.get(el, 'currentTag', '')
+              [el.name]: lastTag
             }
           });
         }
@@ -141,11 +143,9 @@ export default class ClusterImages extends Component {
   tagsRender(row) {
     let tagsOptions;
     const imageName = row.name;
-    let currentTag = row.currentTag ? row.currentTag : '';
     tagsOptions = row.tags && row.tags.map(tag => {
       return {value: tag, label: tag};
     });
-    tagsOptions.push({value: currentTag, label: currentTag});
     return (
       <td key="tags" className="react-select-td">
         <Select value={this.state.tagsSelected[imageName]}
