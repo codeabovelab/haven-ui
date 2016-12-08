@@ -144,9 +144,11 @@ export function updateContainer(container, data) {
   };
 }
 
-export function updateContainers(cluster, type, percentage, images) {
+export function updateContainers(cluster, type, percentage, schedule, title, images) {
   let body = {
     type: type,
+    title: title,
+    schedule: schedule,
     parameters: {
       cluster: cluster,
       images: images,

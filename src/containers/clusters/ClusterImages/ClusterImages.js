@@ -5,7 +5,7 @@ import {Link, RouteHandler} from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
 import {getDeployedImages} from 'redux/modules/images/images';
 import {updateContainers} from 'redux/modules/containers/containers';
-import {FormGroup, InputGroup, FormControl, ControlLabel, Button, ProgressBar, Nav, NavItem, Popover, Modal, ButtonToolbar} from 'react-bootstrap';
+import {FormGroup, InputGroup, FormControl, ControlLabel, Button, ProgressBar, Nav, NavItem, Popover, Modal} from 'react-bootstrap';
 import _ from 'lodash';
 import Select from 'react-select';
 
@@ -77,8 +77,8 @@ export default class ClusterImages extends Component {
   statisticsMetrics = [
     {
       type: 'number',
-      title: 'Image Deployed',
-      titles: 'Images Deployed'
+      title: 'Image Running',
+      titles: 'Images Running'
     }
   ];
 
@@ -222,7 +222,6 @@ export default class ClusterImages extends Component {
   onSubmit() {
     const {params: {name}, updateContainers} = this.props;
     let images = [];
-    let message = '';
     let imagesToUpdate = this.state.imagesToUpdate;
     let tags = this.state.tagsSelected;
     _.map(imagesToUpdate, (el, key) => {
@@ -232,25 +231,33 @@ export default class ClusterImages extends Component {
       }
     });
     if (images.length > 0) {
-      updateContainers(name, this.state.updateStrategy, this.state.updatePercents, images).then((response)=> {
-        let status = response._res.status || response._res.code;
-        if (status) {
-          switch (status) {
-            case 200:
-              message = 'Update job successfully created';
-              break;
-            default:
-              message = 'Failed to create update job: ' + response._res.message;
-          }
-        }
-        this.setState({updateResponse: message});
-        this.openModal();
+      updateContainers(name, this.state.updateStrategy, this.state.updatePercents, this.state.schedule, this.state.jobTitle, images).then((response)=> {
+        this.showResponse(response);
+      }).catch((response) => {
+        this.showResponse(response);
       });
     } else {
-      message = 'Select tags for chosen images to create update job.';
-      this.setState({updateResponse: message});
+      this.setState({updateResponse: 'Select tags for chosen images to create update job.'});
       this.openModal();
     }
+  }
+
+  showResponse(response) {
+    let message = 'Error';
+    let status = '';
+    console.log(response);
+    status = response.code || response._res.status || response._res.code;
+    if (status) {
+      switch (status) {
+        case 200:
+          message = 'Update job successfully created';
+          break;
+        default:
+          message = 'Failed to create update job: ' + response.message || response._res.message;
+      }
+    }
+    this.setState({updateResponse: message});
+    this.openModal();
   }
 
   render() {
