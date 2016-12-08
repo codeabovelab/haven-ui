@@ -325,7 +325,8 @@ export default class ClusterImages extends Component {
                     </FormGroup>
                     <FormGroup>
                       <ControlLabel>Schedule</ControlLabel>
-                      <FormControl type="text" onChange={this.handleSelectChange.bind(this, 'schedule')}/>
+                      <FormControl type="text" onChange={this.handleSelectChange.bind(this, 'schedule')}
+                                   placeholder="'0 0 * * * *' = the top of every hour of every day"/>
                     </FormGroup>
                   </div>
                   <div className="col-md-6">
