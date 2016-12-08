@@ -194,21 +194,26 @@ export default class ClusterImages extends Component {
   }
 
   checkRender(row) {
-    let active = this.state.imagesToUpdate[row.name];
     return (
       <td key="select" className="checkbox-td">
-        <Button active={active} bsStyle={active ? "primary" : "default"}
-                disabled={!row.name} name={row.name} key={row.name} onClick={this.toggleCheckbox.bind(this, row.name)}>
-          <i key={row.name} name={row.name} className={active ? "fa fa-check-square-o fa-2x" : "fa fa-square-o fa-2x"}></i>
-          </Button>
+        <input type="checkbox"
+               key={row.name}
+               className="checkbox-control"
+               defaultChecked={false}
+               disabled={!row.name}
+               checked={this.state.imagesToUpdate[row.name]}
+               name={row.name}
+               onChange={this.toggleCheckbox.bind(this)}
+        />
       </td>
     );
   }
 
-  toggleCheckbox(rowName, e) {
-    let active = !this.state.imagesToUpdate[rowName];
+  toggleCheckbox(e) {
+    let checked = e.target.checked;
+    let name = e.target.name;
     this.setState({
-      imagesToUpdate: {...this.state.imagesToUpdate, [rowName]: active}
+      imagesToUpdate: {...this.state.imagesToUpdate, [name]: checked}
     });
   }
 

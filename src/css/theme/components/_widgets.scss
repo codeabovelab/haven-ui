@@ -184,6 +184,11 @@
   margin-top: 20px;
 }
 
+.checkbox-control {
+  cursor: pointer;
+  zoom: 1.5;
+}
+
 .pseudo-radio-group {
   .active {
     background-color: $primary!important;
