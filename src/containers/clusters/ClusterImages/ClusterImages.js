@@ -194,35 +194,22 @@ export default class ClusterImages extends Component {
   }
 
   checkRender(row) {
-    let iClassname = row.name ? "fa fa-check-square fa-2x" : "fa fa-exclamation-triangle fa-2x";
+    let active = this.state.imagesToUpdate[row.name];
     return (
       <td key="select" className="checkbox-td">
-        <div className="checkbox-button"><label>
-          <input type="checkbox"
-                 key={row.name}
-                 className="checkbox-control"
-                 defaultChecked={false}
-                 disabled={!row.name}
-                 checked={this.state.imagesToUpdate[row.name]}
-                 name={row.name}
-                 onChange={this.toggleCheckbox.bind(this)}
-          />
-          <span title={row.name ? "" : "Can't be updated, image name is not available"} className="checkbox-label">
-            <i className={iClassname}></i></span>
-        </label></div>
+        <Button active={active} bsStyle={active ? "primary" : "default"}
+                disabled={!row.name} name={row.name} key={row.name} onClick={this.toggleCheckbox.bind(this, row.name)}>
+          <i key={row.name} name={row.name} className={active ? "fa fa-check-square-o fa-2x" : "fa fa-square-o fa-2x"}></i>
+          </Button>
       </td>
     );
   }
 
-  toggleCheckbox(e) {
-    let checked = e.target.checked;
-    let name = e.target.name;
-    console.log('name ', name);
-    console.log('checked ', checked);
+  toggleCheckbox(rowName, e) {
+    let active = !this.state.imagesToUpdate[rowName];
     this.setState({
-      imagesToUpdate: $.extend(this.state.imagesToUpdate, {[name]: checked})
+      imagesToUpdate: {...this.state.imagesToUpdate, [rowName]: active}
     });
-    console.log('STATE: ', this.state);
   }
 
   handleSelectChange(id, event) {
