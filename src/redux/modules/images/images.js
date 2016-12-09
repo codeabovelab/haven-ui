@@ -52,12 +52,21 @@ export default function reducer(state = initialState, action = {}) {
         loadingDeployedError: null
       };
     case ACTIONS.GET_DEPLOYED_IMAGES_SUCCESS:
+      console.log('redux: ', action.result);
+      let sortedResult = action.result.sort((a, b) => {
+        let tags = _.get(a, 'tags', []);
+        let lastTag = tags[tags.length - 1];
+        if (lastTag && lastTag !== a.currentTag) {
+          return -1;
+        }
+        return 1;
+      });
       return {
         ...state,
         loadingDeployed: false,
         [action.id]: {
           ...state[action.id],
-          [action.clusterName]: action.result
+          [action.clusterName]: sortedResult
         }
       };
     case ACTIONS.GET_DEPLOYED_IMAGES_FAIL:
