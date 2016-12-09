@@ -59,3 +59,18 @@ export function deleteJob(jobId) {
     promise: (client) => client.del(`/ui/api/jobs/${jobId}/`)
   };
 }
+
+export function rollbackJob(jobId) {
+  let rollBackData = {
+    type: "job.rollback",
+    title: "Rollback " + jobId,
+    parameters: {
+      jobId: jobId
+    }
+  };
+  return {
+    types: [ACTIONS.ROLLBACK_JOB, ACTIONS.ROLLBACK_JOB_SUCCESS, ACTIONS.ROLLBACK_JOB_FAIL],
+    id: jobId,
+    promise: (client) => client.post('ui/api/jobs/', {data: rollBackData})
+  };
+}

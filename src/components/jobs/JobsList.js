@@ -6,7 +6,8 @@ export default class JobsList extends Component {
   static propTypes = {
     data: PropTypes.array,
     loading: PropTypes.bool,
-    actions: PropTypes.object.isRequired
+    actions: PropTypes.object.isRequired,
+    actionHandler: PropTypes.func.isRequired
   };
 
   COLUMNS = [
@@ -47,17 +48,26 @@ export default class JobsList extends Component {
       name: 'none',
       label: 'Actions',
       width: '5%',
-      render: (job) => {
-        let actions = this.props.actions;
-        return (<td key="actions" className="td-actions">
-          <ActionMenu subject={job}
-                    actions={actions.list}
-                    actionHandler={actions.handler}
-          />
-        </td>);
-      }
+      render: this.renderTdActions.bind(this)
     }
   ];
+
+
+  renderTdActions(job) {
+    const {actions, actionHandler} = this.props;
+    let actionsList = [];
+    if (job.canRollback === true) {
+      actionsList = actions.commonList;
+    } else {
+      actionsList = actions.rollbackDisList;
+    }
+    return (<td key={"actions" + job.id} className="td-actions">
+      <ActionMenu subject={job}
+                  actions={actionsList}
+                  actionHandler={actionHandler}
+      />
+    </td>);
+  }
 
   render() {
     let loading = this.props.loading;
