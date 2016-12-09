@@ -40,6 +40,7 @@ export default class ContainerScale extends Component {
               title={`Scale Container: ${container.name}`}
               onSubmit={this.onSubmit.bind(this)}
               onHide={this.props.onHide}
+              cancelTitle="Close"
       >
         {scaling && (
           <span>{' '}<i className="fa fa-spinner fa fa-pulse"/></span>
