@@ -42,7 +42,7 @@ export default class ClusterImages extends Component {
     {
       name: 'containers',
       render: this.containersRender,
-      width: '30%'
+      width: '45%'
     },
 
     {
@@ -54,7 +54,7 @@ export default class ClusterImages extends Component {
     {
       name: 'tags',
       render: this.tagsRender.bind(this),
-      width: '30%'
+      width: '15%'
     },
 
   ];
