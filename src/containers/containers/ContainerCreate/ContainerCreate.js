@@ -515,8 +515,8 @@ export default class ContainerCreate extends Component {
               envVars.affinity = [];
               envVars.constraints = [];
               defaultParams.environment.map((item, key) => {
-                if (item.substring(0, 12) === 'constraints:') {
-                  envVars.constraints.push(item.substring(12));
+                if (item.substring(0, 11) === 'constraint:') {
+                  envVars.constraints.push(item.substring(11));
                 } else if (item.substring(0, 9) === 'affinity:') {
                   envVars.affinity.push(item.substring(9));
                 } else {
@@ -840,7 +840,7 @@ export default class ContainerCreate extends Component {
     });
     constrVars.forEach(item => {
       if (item) {
-        environment.push('constraints:' + item);
+        environment.push('constraint:' + item);
       }
     });
     affVars.forEach(item => {
