@@ -151,7 +151,9 @@ export function updateContainers(cluster, type, percentage, schedule, title, ima
     schedule: schedule,
     parameters: {
       cluster: cluster,
-      images: images,
+      images: {
+        images: images
+      },
       "LoadContainersOfImage.percentage": percentage
     }
   };
