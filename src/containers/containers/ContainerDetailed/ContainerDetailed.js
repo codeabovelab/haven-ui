@@ -130,6 +130,7 @@ export default class ContainerDetailed extends Component {
           actionDialog: (
             <ContainerScale container={currentContainer}
                             onHide={this.onHideDialog.bind(this)}
+                            name={name}
             />
           )
         });

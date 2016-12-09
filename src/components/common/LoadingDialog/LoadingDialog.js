@@ -92,8 +92,9 @@ export default class LoadingDialog extends Component {
               onHide={this.props.onHide}
       >
         {!response && (
-          <div className="text-xs-center">
-            <i className="fa fa-spinner fa-5x fa-pulse"/>
+          <div className={s["loading-box"]}>
+            <span className={s["loading-icon"]}><i className="fa fa-spinner fa-5x fa-pulse"/>&nbsp;</span>
+            <span className={s["loading-text"]}>Perfoming Action...</span>
           </div>
         )}
         {error && (

@@ -97,7 +97,7 @@ export function scale(container, scaleFactor) {
   return {
     types: [ACTIONS.SCALE, ACTIONS.SCALE_SUCCESS, ACTIONS.SCALE_FAIL],
     id: container.id,
-    promise: (client) => client.post(`${url}/scale`, {data: {scaleFactor: scaleFactor, id: container.id}})
+    promise: (client) => client.post(`${url}/scale`, {params: {scaleFactor: scaleFactor}})
   };
 }
 

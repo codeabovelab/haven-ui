@@ -9,3 +9,19 @@
   margin: 0;
   resize: none;
 }
+
+.loading-text {
+  display:table-cell;
+  vertical-align: middle;
+  padding-left: 40px;
+  font-style: italic;
+}
+
+.loading-icon {
+  display:table-cell;
+  vertical-align: middle;
+}
+
+.loading-box {
+  display:table;
+}

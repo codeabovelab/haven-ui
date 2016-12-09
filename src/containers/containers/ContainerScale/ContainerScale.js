@@ -3,17 +3,20 @@ import {Dialog} from 'components';
 import {Row, Col, FormGroup, FormControl, Checkbox, ControlLabel, HelpBlock} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import {scale} from 'redux/modules/containers/containers';
+import {loadContainers} from 'redux/modules/clusters/clusters';
 import _ from 'lodash';
 
 @connect(state => ({
   containersUI: state.containersUI
-}), {scale})
+}), {scale, loadContainers})
 export default class ContainerScale extends Component {
   static propTypes = {
     containersUI: PropTypes.object.isRequired,
     container: PropTypes.object.isRequired,
     scale: PropTypes.func.isRequired,
-    onHide: PropTypes.func.isRequired
+    onHide: PropTypes.func.isRequired,
+    loadContainers: PropTypes.func.isRequired,
+    name: PropTypes.string.isRequired
   };
   static focusSelector = '#instances-number';
 
@@ -23,7 +26,7 @@ export default class ContainerScale extends Component {
   }
 
   onSubmit() {
-    return this.props.scale(this.props.container, this.state.scaleFactor);
+    this.scale();
   }
 
   handleChange(e) {
@@ -57,10 +60,7 @@ export default class ContainerScale extends Component {
   }
 
   scale() {
-    const {container, scale} = this.props;
-
-    return scale(container, this.state.scaleFactor)
-      .then(this.props.onHide())
-      .catch();
+    const {container, scale, loadContainers, name} = this.props;
+    return scale(container, this.state.scaleFactor).then(()=>loadContainers(name).then(()=>this.props.onHide())).catch();
   }
 }
