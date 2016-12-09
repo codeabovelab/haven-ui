@@ -61,6 +61,10 @@ export default class ClustersList extends Component {
       title: "Edit",
       default: true
     },
+    {
+      key: "manageNodes",
+      title: "Manage Nodes"
+    },
     null,
     {
       key: "information",

@@ -106,7 +106,6 @@ export default class NodesPanel extends Component {
   }
 
   manageNodes() {
-    console.log('component', this);
     this.setState({
       actionDialog: (
         <ClusterNodesDialog title="Manage Cluster Nodes"

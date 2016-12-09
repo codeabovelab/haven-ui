@@ -3,6 +3,7 @@ import * as clusterActions from 'redux/modules/clusters/clusters';
 import {connect} from 'react-redux';
 import { Link } from 'react-router';
 import _ from 'lodash';
+import {ClusterNodesDialog} from 'containers/index';
 import {DockTable, ClustersList, StatisticsPanel, Dialog, EventLog} from 'components';
 import {ClusterAdd, ClusterConfig, ClusterInformation} from '../../index';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar} from 'react-bootstrap';
@@ -278,6 +279,17 @@ export default class ClustersPanel extends Component {
             this.props.deleteClusterImages(cluster).catch(() => null);
           })
           .catch(() => null);
+        return;
+
+      case "manageNodes":
+        this.setState({
+          actionDialog: (
+            <ClusterNodesDialog title="Manage Cluster Nodes"
+                                clusterName={cluster}
+                                onHide={this.onHideDialog.bind(this)}
+            />
+          )
+        });
         return;
 
       default:
