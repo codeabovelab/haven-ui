@@ -83,6 +83,8 @@ export default class EventsPanel extends Component {
     let eventsCount = 0;
     if (name && events && name !== 'all') {
       events = _.filter(events, (el)=>(el.lastEvent.cluster === name));
+    } else {
+      events = _.filter(events, (el)=>(el.lastEvent.cluster !== 'undefined'));
     }
 
     if (clusters && cluster) {
