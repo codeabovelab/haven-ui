@@ -272,7 +272,7 @@ export default class ContainerCreate extends Component {
               onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}
               onHide={this.props.onHide}
               okTitle={creationLogVisible ? "Again" : "Create Container"}
-              cancelTitle={creationLogVisible ? "Cancel" : null}
+              cancelTitle={creationLogVisible ? "Close" : null}
               keyboard={!selectMenuVisible}
               backdrop="static"
       >
