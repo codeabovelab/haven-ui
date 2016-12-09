@@ -9,6 +9,7 @@ import {ClusterAdd, ClusterConfig, ClusterInformation} from '../../index';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar} from 'react-bootstrap';
 import {count as countEvents} from 'redux/modules/events/events';
 import {deleteClusterImages} from 'redux/modules/images/images';
+import {load as loadAllNodes} from 'redux/modules/nodes/nodes';
 import { Stomp } from 'stompjs/lib/stomp.min.js';
 import {connectToStomp} from '../../../utils/stompUtils';
 
@@ -27,7 +28,8 @@ let stompClient = null;
     deleteCluster: clusterActions.deleteCluster,
     loadNodes: clusterActions.loadNodes,
     countEvents,
-    deleteClusterImages
+    deleteClusterImages,
+    loadAllNodes
   }
 )
 export default class ClustersPanel extends Component {
@@ -37,6 +39,7 @@ export default class ClustersPanel extends Component {
     loadClusters: PropTypes.func.isRequired,
     deleteCluster: PropTypes.func.isRequired,
     loadNodes: PropTypes.func.isRequired,
+    loadAllNodes: PropTypes.func.isRequired,
     events: PropTypes.object,
     alerts: PropTypes.object,
     countEvents: PropTypes.func.isRequired,
@@ -93,9 +96,11 @@ export default class ClustersPanel extends Component {
   ];
 
   componentWillMount() {
+    const {loadAllNodes} = this.props;
     this.state = {
       clumanErrors: []
     };
+    loadAllNodes();
   }
 
   componentDidMount() {
