@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {ActionMenu, DockTable} from '../index';
 import {Panel, ProgressBar} from 'react-bootstrap';
+import TimeUtils from 'utils/TimeUtils';
 
 export default class JobsList extends Component {
   static propTypes = {
@@ -42,7 +43,7 @@ export default class JobsList extends Component {
       label: 'End',
       width: '10%',
       sortable: true,
-      formatter: "dateTime"
+      render: this.endTimeRender
     },
     {
       name: 'none',
@@ -67,6 +68,17 @@ export default class JobsList extends Component {
                   actionHandler={actionHandler}
       />
     </td>);
+  }
+
+  endTimeRender(job) {
+    let endTime = TimeUtils.format(job.endTime);
+    endTime = endTime === "Invalid Date" ? "In Process" : endTime;
+    console.log(endTime);
+    return (
+      <td key="endTime">
+        <span>{endTime}</span>
+      </td>
+    );
   }
 
   render() {
