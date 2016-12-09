@@ -52,7 +52,6 @@ export default function reducer(state = initialState, action = {}) {
         loadingDeployedError: null
       };
     case ACTIONS.GET_DEPLOYED_IMAGES_SUCCESS:
-      console.log('redux: ', action.result);
       let sortedResult = action.result.sort((a, b) => {
         let tags = _.get(a, 'tags', []);
         let lastTag = tags[tags.length - 1];
