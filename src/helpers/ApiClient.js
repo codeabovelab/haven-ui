@@ -58,7 +58,7 @@ export default class ApiClient {
     let state = this._store.getState();
     let stateLocation = state.routing.locationBeforeTransitions;
     if (stateLocation && stateLocation.pathname) {
-      backLocation = stateLocation.pathname;
+      backLocation = stateLocation.pathname !== '/login' ? stateLocation.pathname : '/dashboard';
     }
 
     this._store.dispatch(logout);
