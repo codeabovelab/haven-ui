@@ -35,16 +35,16 @@ export default class NodesList extends Component {
       render: this.clusterRender
     },
     {
-      name: 'health',
-      label: 'Docker Health',
-      width: '10%',
-      render: this.healthRender
-    },
-    {
       name: 'labels',
       label: 'Labels',
       width: '10%',
       render: this.labelsRender
+    },
+    {
+      name: 'health',
+      label: 'Docker Health',
+      width: '10%',
+      render: this.healthRender
     },
     {
       name: 'agentHealth',
