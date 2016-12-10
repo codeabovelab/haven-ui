@@ -1,8 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import { Link, RouteHandler } from 'react-router';
 import { LinkContainer } from 'react-router-bootstrap';
-import {DockTable, ActionMenu} from '../index';
-import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Nav, NavItem} from 'react-bootstrap';
+import {DockTable, ActionMenu, Chain} from '../index';
+import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Nav, NavItem, Popover} from 'react-bootstrap';
 import {Dialog, PropertyGrid} from 'components';
 import _ from 'lodash';
 
@@ -39,6 +39,12 @@ export default class NodesList extends Component {
       label: 'Docker Health',
       width: '10%',
       render: this.healthRender
+    },
+    {
+      name: 'labels',
+      label: 'Labels',
+      width: '10%',
+      render: this.labelsRender
     },
     {
       name: 'agentHealth',
@@ -226,6 +232,33 @@ export default class NodesList extends Component {
         {(!registry.on) && (
           <Label bsStyle="default">Off</Label>
         )}
+      </td>
+    );
+  }
+
+  labelsRender(row) {
+    let labels = [];
+    _.map(row.labels, (el, i)=>{
+      if (typeof(el) === 'string') {
+        labels.push(i + ': ' + el);
+      }
+    });
+    let popoverRender = (el) => (
+      <Popover>
+        {_.map(labels, (el, i)=> {
+          if (typeof(el) !== 'undefined') {
+            return (<div><span>{el}</span><br></br></div>);
+          }
+        })}
+      </Popover>
+    );
+    return (
+      <td key="labels">
+        <Chain data={labels.length > 0 ? ['Labels'] : []}
+               popoverPlacement="top"
+               popoverRender={popoverRender}
+               render={() => (<span title="Labels">Labels</span>)}
+        />
       </td>
     );
   }
