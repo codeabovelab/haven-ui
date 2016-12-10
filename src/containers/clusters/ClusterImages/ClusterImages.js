@@ -40,15 +40,15 @@ export default class ClusterImages extends Component {
     },
 
     {
-      name: 'containers',
-      render: this.containersRender,
-      width: '45%'
-    },
-
-    {
       name: 'Current Tag',
       width: '15%',
       render: this.currentTagRender
+    },
+
+    {
+      name: 'containers',
+      render: this.containersRender,
+      width: '45%'
     },
 
     {
@@ -262,10 +262,10 @@ export default class ClusterImages extends Component {
     if (status) {
       switch (status) {
         case 200:
-          message = 'Update job successfully created';
+          message = 'The Update job is successfully created. Please check the Jobs page for its status.';
           break;
         default:
-          message = 'Failed to create update job: ' + response.message || response._res.message;
+          message = 'Failed to create the Update job. Error message is: ' + response.message || response._res.message;
       }
     }
     this.setState({updateResponse: message});
@@ -318,7 +318,7 @@ export default class ClusterImages extends Component {
                   <NavItem eventKey={5} disabled={name === "all"}>Registries</NavItem>
                 </LinkContainer>
                 <LinkContainer to={"/clusters/" + name + "/" + "images"}>
-                  <NavItem eventKey={5} disabled={name === "all"}>Running Images</NavItem>
+                  <NavItem eventKey={5} disabled={name === "all"}>Update</NavItem>
                 </LinkContainer>
               </Nav>
               <div className="clusterImages">
@@ -343,7 +343,7 @@ export default class ClusterImages extends Component {
                   </div>
                   <div className="col-md-6">
                     <FormGroup>
-                      <label>Percentage of affected containers:</label>
+                      <label>Percentage of Containers to Update:</label>
                       <InputGroup>
                         <FormControl type="number" step="10" max="100" min="10" id="updatePercents" value={this.state.updatePercents}
                                      onChange={this.handleSelectChange.bind(this, 'updatePercents')}/>
