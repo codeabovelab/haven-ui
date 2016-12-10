@@ -18,7 +18,7 @@ export default class NodesList extends Component {
     {
       name: 'name',
       label: 'Node Name',
-      width: '30%',
+      width: '20%',
       sortable: true
     },
     {
@@ -55,7 +55,7 @@ export default class NodesList extends Component {
     {
       name: 'time',
       label: 'Healthy Since',
-      width: '30%',
+      width: '40%',
       render: this.timeFotmat
     },
     {
