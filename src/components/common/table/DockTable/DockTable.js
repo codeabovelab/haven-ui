@@ -187,7 +187,7 @@ export default class DockTable extends Component {
         {this.renderHeaderNoGroups()}
         <tbody>
         {this.currentRows.map((model, i) => (
-          <tr className="tr-value" key={i} {...model.__attributes}>
+          <tr className={"tr-value " + (model.trColor ? model.trColor : "")} key={i} {...model.__attributes}>
             {columns.map(column => this.tdRender(column.name, model))}
           </tr>
         ))}
