@@ -74,7 +74,7 @@ export default class JobsPanel extends Component {
         {key: "info", title: "Info"},
         {key: "log", title: "Log"},
         {key: "delete", title: "Delete"},
-        {key: "rollback", title: "Rollback"}
+        {key: "rollback", title: "Rollback", default: true}
       ],
       rollbackDisList: [
         {key: "info", title: "Info"},
