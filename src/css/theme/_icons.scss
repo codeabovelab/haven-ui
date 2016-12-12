@@ -42,7 +42,7 @@
 @mixin status-count-class($color) {
     display: block;
     font-size:20px;
-    background-color: $color;
+    background-color: $color !important;
     color: #ffffff;
     text-align: center;
     font-size: 1em;
@@ -59,6 +59,14 @@
 
 .down-status-count {
   @include status-count-class($danger);
+}
+
+.warning-status-count {
+  @include status-count-class($warning);
+}
+
+.off-status-count {
+  @include status-count-class($dropdown-text);
 }
 
 .default-status-count {

@@ -209,15 +209,15 @@ export default class NodesList extends Component {
   healthRender(registry) {
     let labelStyle;
     if ((!registry.on && registry.health.healthy) || !registry.time ) {
-      labelStyle = "default";
+      labelStyle = "off-status-count";
     }
     return (
       <td>
         {(registry.health.healthy) && (
-          <Label bsStyle={labelStyle ? labelStyle : "success"}>Healthy</Label>
+          <Badge bsClass={"badge " + (labelStyle ? labelStyle : "up-status-count")}>Healthy</Badge>
         )}
         {(!registry.health.healthy) && (
-          <Label bsStyle={labelStyle ? labelStyle : "warning"}>Not Healthy</Label>
+          <Badge bsClass={"badge " + (labelStyle ? labelStyle : "warning-status-count")}>Not Healthy</Badge>
         )}
       </td>
     );
@@ -227,10 +227,10 @@ export default class NodesList extends Component {
     return (
       <td>
         {(registry.on) && (
-          <Label bsStyle="success">On</Label>
+          <Badge bsClass="badge up-status-count">On</Badge>
         )}
         {(!registry.on) && (
-          <Label bsStyle="default">Off</Label>
+          <Badge bsClass="badge off-status-count">Off</Badge>
         )}
       </td>
     );
