@@ -5,7 +5,7 @@ import {Link, RouteHandler} from 'react-router';
 import {LinkContainer} from 'react-router-bootstrap';
 import {getDeployedImages} from 'redux/modules/images/images';
 import {updateContainers} from 'redux/modules/containers/containers';
-import {FormGroup, InputGroup, FormControl, ControlLabel, Button, ProgressBar, Nav, NavItem, Popover, Modal} from 'react-bootstrap';
+import {FormGroup, InputGroup, FormControl, ControlLabel, Button, ProgressBar, Nav, NavItem, Popover, Modal, OverlayTrigger} from 'react-bootstrap';
 import _ from 'lodash';
 import Select from 'react-select';
 
@@ -84,6 +84,7 @@ export default class ClusterImages extends Component {
 
   componentWillMount() {
     const {getDeployedImages, params: {name}} = this.props;
+    require('./ClusterImages.scss');
     this.state = {
       tagsSelected: {},
       imagesToUpdate: {},
@@ -194,18 +195,29 @@ export default class ClusterImages extends Component {
   }
 
   checkRender(row) {
+    const popoverTop = (
+      <Popover>
+        <strong>Update available!</strong>
+      </Popover>
+    );
+    let trigger = checkUpdateAvailability(row) ? 'hover' : '';
     return (
       <td key="select" className="checkbox-td">
-        <input type="checkbox"
-               key={row.name}
-               className="checkbox-control"
-               defaultChecked={false}
-               disabled={!row.name}
-               checked={this.state.imagesToUpdate[row.name]}
-               name={row.name}
-               onChange={this.toggleCheckbox.bind(this)}
-        />
+        <OverlayTrigger trigger={trigger} placement="right" overlay={popoverTop}>
+          <div className="select-update-block">
+            <input type="checkbox"
+                   key={row.name}
+                   className="checkbox-control"
+                   defaultChecked={false}
+                   disabled={!row.name}
+                   checked={this.state.imagesToUpdate[row.name]}
+                   name={row.name}
+                   onChange={this.toggleCheckbox.bind(this)}
+            />
+          </div>
+        </OverlayTrigger>
       </td>
+
     );
   }
 
@@ -276,9 +288,7 @@ export default class ClusterImages extends Component {
     require('react-select/dist/react-select.css');
     const {params: {name}, images} = this.props;
     let rows = _.get(this.props.images, `deployedImages.${name}`, []).map((row)=> {
-      let tags = _.get(row, 'tags', []);
-      let lastTag = tags[tags.length - 1];
-      if (lastTag && lastTag !== row.currentTag) {
+      if (checkUpdateAvailability(row)) {
         row.trColor = 'availableToUpdate';
       }
       return row;
@@ -415,4 +425,10 @@ function shortenName(name) {
     result = name.substr(0, MAX_LENGTH) + '...';
   }
   return result;
+}
+
+function checkUpdateAvailability(row) {
+  let tags = _.get(row, 'tags', []);
+  let lastTag = tags[tags.length - 1];
+  return lastTag && lastTag !== row.currentTag ? true : false;
 }
