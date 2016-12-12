@@ -196,14 +196,13 @@ export default class ClusterImages extends Component {
 
   checkRender(row) {
     const popoverTop = (
-      <Popover>
+      <Popover id={"pop" + row.name}>
         <strong>Update available!</strong>
       </Popover>
     );
-    let trigger = checkUpdateAvailability(row) ? 'hover' : '';
     return (
       <td key="select" className="checkbox-td">
-        <OverlayTrigger trigger={trigger} placement="right" overlay={popoverTop}>
+        <OverlayTrigger trigger={checkUpdateAvailability(row) ? ['hover', 'focus'] : []} placement="right" overlay={popoverTop}>
           <div className="select-update-block">
             <input type="checkbox"
                    key={row.name}
