@@ -153,7 +153,7 @@ export default class RegistryEdit extends Component {
         username: "",
         password: "",
         name: "",
-        url: "https://ni1.codeabovelab.com"
+        url: ""
       };
     }
     return init;
