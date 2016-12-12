@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {Link} from 'react-router';
-import {Glyphicon} from 'react-bootstrap';
+import {Badge} from 'react-bootstrap';
 
 export default class OnOff extends Component {
   static propTypes = {
@@ -14,12 +14,12 @@ export default class OnOff extends Component {
     return (
       <p>
       <Link className="on-off text-success" to={this.props.href}>
-        <span className={onColor}>{this.props.on}</span>
+        <Badge bsClass={"badge " + onColor}>&nbsp;{this.props.on}&nbsp;</Badge>
       </Link>
 
       {(this.props.off > 0) && (
         <Link className="on-off text-danger" to={this.props.href}>
-          <span className="down-status-count">{this.props.off}</span>
+          <Badge bsClass="badge down-status-count second-badge">&nbsp;{this.props.off}&nbsp;</Badge>
         </Link>
       )}
       </p>

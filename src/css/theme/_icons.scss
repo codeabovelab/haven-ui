@@ -41,16 +41,16 @@
 
 @mixin status-count-class($color) {
     display: block;
-    height: 21px;
-    width: 21px;
-    line-height: 21px;
     font-size:20px;
     background-color: $color;
     color: #ffffff;
     text-align: center;
     font-size: 1em;
     float: left;
-    margin: 10px;
+}
+
+.second-badge {
+  margin-left: 10px;
 }
 
 .up-status-count {
