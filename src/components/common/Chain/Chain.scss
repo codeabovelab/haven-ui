@@ -14,3 +14,16 @@
     margin-right: 0.3rem;
   }
 }
+
+.chainLink {
+  color: #ffffff !important;
+  text-decoration: none !important;
+  :focus {
+    color: #ffffff !important;
+    text-decoration: none !important;
+  }
+  :hover {
+    color: #ffffff !important;
+    text-decoration: none !important;
+  }
+}

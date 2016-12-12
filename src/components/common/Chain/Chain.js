@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {Button, Popover, ProgressBar, OverlayTrigger} from 'react-bootstrap';
+import {Link} from 'react-router';
 
 export default class Chain extends Component {
   static propTypes = {
@@ -25,7 +26,7 @@ export default class Chain extends Component {
     let first = maxCount >= src.length ? maxCount : maxCount - 2;
     let itemRender = this.props.render || ((a) => String(a));
     let buttonRender = (item, i) => (<Button key={"item." + i} bsStyle="info" className="spaced-items">{itemRender(item)}</Button>);
-    let simpleLinkRender = (item, i) => (<Button href={this.props.link} key={"item." + i} bsStyle="info" className="spaced-items">{itemRender(item)}</Button>);
+    let simpleLinkRender = (item, i) => (<Button key={"item." + i} bsStyle="info" className="spaced-items"><Link className={s.chainLink} to={this.props.link}>{itemRender(item)}</Link></Button>);
     let labelRender;
     if (this.props.popoverRender) {
       labelRender = (item, i) => (
