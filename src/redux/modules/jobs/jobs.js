@@ -12,7 +12,7 @@ export default function reducer(state = {}, action = {}) {
       });
       return {
         ...state,
-        jobs: sortedResult
+        jobs: _.keyBy(sortedResult, 'title')
       };
     case ACTIONS.LOAD_INFO_SUCCESS:
       return {
@@ -30,6 +30,20 @@ export default function reducer(state = {}, action = {}) {
           [action.id]: action.result
         }
       };
+    case ACTIONS.JOB_EVENT:
+      let data = action.event;
+      let jobTitle = _.get(data, 'info.title', null);
+      if (jobTitle) {
+        return {
+          ...state,
+          jobs: {
+            ...state.jobs,
+            [jobTitle]: data.info
+          }
+        };
+      }
+      return state;
+
     default:
       return state;
   }

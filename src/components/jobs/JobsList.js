@@ -73,7 +73,6 @@ export default class JobsList extends Component {
   endTimeRender(job) {
     let endTime = TimeUtils.format(job.endTime);
     endTime = endTime === "Invalid Date" ? "In Process" : endTime;
-    console.log(endTime);
     return (
       <td key="endTime">
         <span>{endTime}</span>

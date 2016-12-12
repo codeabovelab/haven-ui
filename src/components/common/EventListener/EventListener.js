@@ -1,8 +1,10 @@
 import SockJS from 'sockjs-client';
 import { Stomp } from 'stompjs/lib/stomp.min.js';
+import _ from 'lodash';
 
 import config from '../../../config';
 import { ACTIONS } from '../../../redux/modules/events/actions';
+import { ACTIONS as jobACTIONS } from '../../../redux/modules/jobs/actions';
 
 export function connectWebsocketEventsListener(store) {
   let url = config.eventServer;
@@ -47,20 +49,43 @@ export function connectWebsocketEventsListener(store) {
 
     stompClient.subscribe('/user/queue/*', (message) => {
       if (message.headers && message.body) {
-        store.dispatch({
-          type: ACTIONS.NEW_STAT_EVENT,
-          topic: message.headers.destination.replace('/user/queue/', ''),
-          event: JSON.parse(message.body)
-        });
+        let destination = _.get(message.headers, 'destination', '').match(/[^/]+.$/g);
+        let key = destination && destination[0] ? destination[0] : null;
+        switch (key) {
+          case 'bus.cluman.errors-stats':
+            store.dispatch({
+              type: ACTIONS.NEW_STAT_EVENT,
+              topic: key,
+              event: JSON.parse(message.body)
+            });
+            return;
+          case 'bus.cluman.job':
+            store.dispatch({
+              type: jobACTIONS.JOB_EVENT,
+              topic: key,
+              event: JSON.parse(message.body)
+            });
+            return;
+          default:
+            return;
+        }
       }
     });
     let yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    stompClient.send('/app/subscriptions/add', {}, JSON.stringify([{
-      source: 'bus.cluman.errors-stats',
-      historyCount: 7,
-      historySince: yesterday
-    }]));
+    let defaultChannels = [
+      {
+        source: 'bus.cluman.job',
+        historyCount: 7,
+        historySince: yesterday
+      },
+      {
+        source: 'bus.cluman.errors-stats',
+        historyCount: 7,
+        historySince: yesterday
+      }
+    ];
+    stompClient.send('/app/subscriptions/add', {}, JSON.stringify(defaultChannels));
   }, (error) => {
   });
 }

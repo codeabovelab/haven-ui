@@ -4,6 +4,7 @@ import TimeUtils from 'utils/TimeUtils';
 import {Dialog, StatisticsPanel, JobsList, PropertyGrid} from 'components';
 import {Label, Badge, ButtonToolbar, ProgressBar, SplitButton, MenuItem} from 'react-bootstrap';
 import {loadList, loadInfo, loadLog, deleteJob, rollbackJob} from 'redux/modules/jobs/jobs';
+import _ from 'lodash';
 
 @connect(
   state => ({
@@ -48,12 +49,12 @@ export default class JobsPanel extends Component {
 
   render() {
     require('./JobsPanel.scss');
-    let data = this.props.data.jobs;
+    let data = [];
     let running = 0;
     let failed = 0;
     let successfully = 0;
-    if (data) {
-      data.forEach((job) => {
+    if (this.props.data.jobs) {
+      data = _.map(this.props.data.jobs, (job) => {
         switch (job.status) {
           case "COMPLETED":
             successfully++;
@@ -67,6 +68,7 @@ export default class JobsPanel extends Component {
             break;
           default:
         }
+        return job;
       });
     }
     let actions = {
@@ -91,7 +93,7 @@ export default class JobsPanel extends Component {
         <StatisticsPanel metrics={this.statisticsMetrics}
                         values={[running, successfully, failed]}
         />
-        <JobsList loading={!data}
+        <JobsList loading={!this.props.data.jobs}
                   data={data}
                   actionHandler={this.onActionInvoke.bind(this)}
                   actions={actions}
