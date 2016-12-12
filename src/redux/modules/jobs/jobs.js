@@ -1,11 +1,18 @@
 import {ACTIONS} from './actions';
+import _ from 'lodash';
 
 export default function reducer(state = {}, action = {}) {
   switch (action.type) {
     case ACTIONS.LOAD_LIST_SUCCESS:
+      let sortedResult = action.result.sort((a, b) => {
+        if (_.get(a, 'createTime', '') > _.get(b, 'createTime', '')) {
+          return -1;
+        }
+        return 1;
+      });
       return {
         ...state,
-        jobs: action.result
+        jobs: sortedResult
       };
     case ACTIONS.LOAD_INFO_SUCCESS:
       return {
