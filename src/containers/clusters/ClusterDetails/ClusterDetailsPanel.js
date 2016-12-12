@@ -163,25 +163,29 @@ export default class ClusterDetailsPanel extends Component {
     {
       name: 'name',
       render: renderTdContainerName,
+      width: '15%'
     },
 
     {
       name: 'image',
       render: renderTdImage,
-      width: '5%'
+      width: '20%%'
     },
 
     {
       name: 'node',
+      width: '10%'
     },
 
     {
       name: 'application',
       render: renderTdApplication,
+      width: '20%'
     },
 
     {
       name: 'status',
+      width: '20%'
     },
 
     {
