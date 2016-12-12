@@ -19,7 +19,7 @@ export default class RegistriesList extends Component {
     {
       name: 'name',
       label: 'Name',
-      width: '20%',
+      width: '30%',
       sortable: true,
       render: this.renderName
     },
@@ -42,7 +42,7 @@ export default class RegistriesList extends Component {
     {
       name: 'errorMessage',
       label: 'Status',
-      width: '30%',
+      width: '20%',
       sortable: true,
       render: this.errorMessageRender
     },
@@ -165,8 +165,11 @@ export default class RegistriesList extends Component {
       msgStyle = "alert alert-danger";
       errorShort = error.length > MAX_LEN + 3 ? error.slice(0, MAX_LEN) + '...' : error;
     }
+    let statusClass = errorShort === "Connected" ? "up-status-count" : "down-status-count";
     return (
-      <td key="errorMessage" title={error} className={msgStyle}>{errorShort}</td>
+      <td key="errorMessage" title={error} className={msgStyle}>
+        <Badge bsClass={"badge " + statusClass}>{errorShort}</Badge>
+      </td>
     );
   }
 
