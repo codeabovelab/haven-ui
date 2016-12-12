@@ -91,7 +91,7 @@ export default class ClusterImages extends Component {
       showModal: false,
       updateStrategy: this.UPDATE_STRATEGIES[0].value,
       updatePercents: 100,
-      updateResponse: '',
+      updateResponse: {message: "", status: ""},
       schedule: '',
       jobTitle: '',
       mounted: true
@@ -274,13 +274,13 @@ export default class ClusterImages extends Component {
     if (status) {
       switch (status) {
         case 200:
-          message = 'The Update job is successfully created. Please check the Jobs page for its status.';
+          message = ''; //message for status "200" filled in modal's body
           break;
         default:
           message = 'Failed to create the Update job. Error message is: ' + response.message || response._res.message;
       }
     }
-    this.setState({updateResponse: message});
+    this.setState({updateResponse: {message: message, status: status}});
     this.openModal();
   }
 
@@ -407,7 +407,12 @@ export default class ClusterImages extends Component {
             <Modal.Title>Update Info</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>{this.state.updateResponse}</p>
+            {this.state.updateResponse.status === 200 && (
+              <p>The Update job is successfully created. Please check the <Link to="/jobs">Jobs page</Link> for its
+                status.</p>
+            ) || (
+              <p>{this.state.updateResponse.message}</p>
+            )}
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.closeModal.bind(this)}>Close</Button>
