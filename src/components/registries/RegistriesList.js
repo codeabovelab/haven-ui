@@ -62,6 +62,10 @@ export default class RegistriesList extends Component {
     },
     null,
     {
+      key: "refresh",
+      title: "Refresh"
+    },
+    {
       key: "delete",
       title: "Delete"
     }

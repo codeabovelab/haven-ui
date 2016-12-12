@@ -131,7 +131,7 @@ export default class ClusterAdd extends Component {
   }
 
   editProps(registries) {
-    return registries.map((registry)=> {
+    return _.map(registries, (registry)=> {
       delete registry.disabled;
       registry.name = registry.name ? registry.name : registry.title;
       registry.className = "Select-value-success";

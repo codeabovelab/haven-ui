@@ -1,24 +1,23 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {load as loadRegistries} from 'redux/modules/registries/registries';
+import {load as loadRegistries, refreshRegistry, removeRegistry} from 'redux/modules/registries/registries';
 import {loadClusterRegistries} from 'redux/modules/clusters/clusters';
 import {update, load} from 'redux/modules/clusters/clusters';
 import {DockTable, RegistriesList, StatisticsPanel, ClusterRegistriesDialog} from '../../../components/index';
 import {RegistryEditForms} from '../../index';
 import _ from 'lodash';
 import { Link } from 'react-router';
-import {removeRegistry} from 'redux/modules/registries/registries';
 
 @connect(
   state => ({
     registries: state.registries,
     registriesUI: state.registriesUI,
     clusters: state.clusters
-  }), {loadRegistries, removeRegistry, loadClusterRegistries, update, load})
+  }), {loadRegistries, removeRegistry, loadClusterRegistries, update, load, refreshRegistry})
 
 export default class RegistriesPanel extends Component {
   static propTypes = {
-    registries: PropTypes.array.isRequired,
+    registries: PropTypes.object.isRequired,
     registriesUI: PropTypes.object.isRequired,
     loadRegistries: PropTypes.func.isRequired,
     removeRegistry: PropTypes.func.isRequired,
@@ -26,7 +25,8 @@ export default class RegistriesPanel extends Component {
     loadClusterRegistries: PropTypes.func.isRequired,
     clusters: PropTypes.object,
     load: PropTypes.func.isRequired,
-    update: PropTypes.func.isRequired
+    update: PropTypes.func.isRequired,
+    refreshRegistry: PropTypes.func.isRequired
   };
 
   statisticsMetrics = [
@@ -41,7 +41,6 @@ export default class RegistriesPanel extends Component {
     const {load, loadRegistries, params: {name}, loadClusterRegistries} = this.props;
     this.state = {};
     loadRegistries();
-
     if (name) {
       load().then(()=>loadClusterRegistries(name));
     }
@@ -52,7 +51,7 @@ export default class RegistriesPanel extends Component {
   render() {
     const {registries, params: {name}, clusters} = this.props;
     //hack to prevent rewriting redux store.events with wrong data (className and etc) on displaying of ClusterRegistriesDialog
-    let rows = registries.map((el)=>{
+    let rows = _.map(registries, (el)=>{
       el.name = el.name === 'Docker Hub' ? '' : el.name;
       return el;
     });
@@ -180,6 +179,10 @@ export default class RegistriesPanel extends Component {
             />
           )
         });
+        return;
+
+      case "refresh":
+        this.props.refreshRegistry(registryId).catch(() => null);
         return;
 
       default:

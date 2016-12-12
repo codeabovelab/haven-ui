@@ -4,6 +4,7 @@ import {createValidator, required} from 'utils/validation';
 import {Dialog} from 'components';
 import Select from 'react-select';
 import {FormGroup, ControlLabel, Label} from 'react-bootstrap';
+import _ from 'lodash';
 
 export default class ClusterRegistriesDialog extends Component {
   static propTypes = {
@@ -53,7 +54,7 @@ export default class ClusterRegistriesDialog extends Component {
   }
 
   editProps(registries) {
-    return registries.map((registry)=> {
+    return _.map(registries, (registry)=> {
       delete registry.disabled;
       if (registry.name.trim().length === 0) {
         registry.name = registry.title;

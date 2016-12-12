@@ -86,7 +86,7 @@ export default class EventsPanel extends Component {
     } else {
       events = _.filter(events, (el)=>(el.lastEvent.cluster !== 'undefined'));
     }
-
+    console.log(events);
     if (clusters && cluster) {
       if (events) {
         _.forEach(events, (value, key) => {
