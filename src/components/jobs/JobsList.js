@@ -15,40 +15,40 @@ export default class JobsList extends Component {
     {
       name: 'title',
       label: 'Name',
-      width: '10%',
+      width: '20%',
       sortable: true
     },
     {
       name: 'status',
       label: 'Status',
-      width: '10%',
+      width: '15%',
       sortable: true
     },
     {
       name: 'createTime',
       label: 'Create',
-      width: '10%',
+      width: '15%',
       sortable: true,
       formatter: "dateTime"
     },
     {
       name: 'startTime',
       label: 'Start',
-      width: '10%',
+      width: '15%',
       sortable: true,
       formatter: "dateTime"
     },
     {
       name: 'endTime',
       label: 'End',
-      width: '10%',
+      width: '15%',
       sortable: true,
       render: this.endTimeRender
     },
     {
       name: 'none',
       label: 'Actions',
-      width: '5%',
+      width: '1%',
       render: this.renderTdActions.bind(this)
     }
   ];
