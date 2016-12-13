@@ -273,7 +273,8 @@ export default class ClusterImages extends Component {
     if (status) {
       switch (status) {
         case 200:
-          message = ''; //message for status "200" filled in modal's body
+          //full message for status "200" filled in modal's body
+          message = response.id;
           break;
         default:
           message = 'Failed to create the Update job. Error message is: ' + response.message || response._res.message;
@@ -407,8 +408,9 @@ export default class ClusterImages extends Component {
           </Modal.Header>
           <Modal.Body>
             {this.state.updateResponse.status === 200 && (
-              <p>The Update job is successfully created. Please check the <Link to="/jobs">Jobs page</Link> for its
-                status.</p>
+              <p>The Update job is successfully created. Please check the&nbsp;
+                <Link to={"/jobs/" + this.state.updateResponse.message}>Jobs page</Link> for its status.
+              </p>
             ) || (
               <p>{this.state.updateResponse.message}</p>
             )}

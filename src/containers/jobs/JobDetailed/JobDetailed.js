@@ -107,7 +107,7 @@ export default class JobDetailed extends Component {
         <Panel header={jobHeaderBar}>
           <PropertyGrid data={_.assign({},
             {title: job.title}, {status: job.status}, {created: TimeUtils.format(job.createTime)}, {started: TimeUtils.format(job.startTime)},
-            {ended: TimeUtils.format(job.endTime)}, {schedule: job.parameters.schedule}, {type: job.parameters.type},
+            {ended: TimeUtils.format(job.endTime)}, {schedule: _.get(job, 'parameters.schedule', '')}, {type: _.get(job, 'parameters.type', '')},
             {id: job.id}, {running: job.running}, {canRollback: job.canRollback})}/>
         </Panel>
         <div className="panel panel-default">
