@@ -146,12 +146,16 @@
   }
 }
 
-.success-header {
-  color: $success!important;
+.success-badge {
+  background-color: $success!important;
 }
 
-.warning-header {
-  color: $warning!important;
+.warning-badge {
+  background-color: $warning!important;
+}
+
+.common-badge {
+  background-color: $dropdown-text!important;
 }
 
 .pulled-right {
@@ -228,4 +232,9 @@
 
 .link {
   cursor: pointer;
+}
+
+.detailed-status-badge {
+  font-size: inherit!important;
+  margin-bottom: 3px;
 }

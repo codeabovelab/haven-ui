@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {PropertyGrid, ActionMenu, DockTable} from '../../../components/index';
 import {Link, browserHistory} from 'react-router';
-import {Dropdown, SplitButton, Button, ButtonToolbar, Accordion, Panel, ProgressBar, Tabs, Tab} from 'react-bootstrap';
+import {Dropdown, SplitButton, Button, ButtonToolbar, Accordion, Panel, ProgressBar, Tabs, Tab, Badge} from 'react-bootstrap';
 import {loadList, loadInfo, loadLog, deleteJob, rollbackJob} from 'redux/modules/jobs/jobs';
 import _ from 'lodash';
 import TimeUtils from 'utils/TimeUtils';
@@ -50,16 +50,16 @@ export default class JobDetailed extends Component {
     const log = _.get(this.props.jobs, 'jobLogs', null);
     const job = jobs ? jobs[name] : null;
     let title = '';
-    let headerClass = '';
+    let headerClass = 'common-badge';
     let jobHeaderBar;
     if (job) {
       title = job.title.length > 0 ? job.title : job.id;
       switch (job.status) {
         case "COMPLETED":
-          headerClass = "success-header";
+          headerClass = "success-badge";
           break;
         case "FAILED":
-          headerClass = "warning-header";
+          headerClass = "warning-badge";
           break;
         default:
           break;
@@ -67,8 +67,8 @@ export default class JobDetailed extends Component {
       jobHeaderBar = (
         <div className="clearfix">
           <h3 id="jobDetailsHeader">{title}&nbsp;&nbsp;
-            <span className={headerClass}>{job.status}</span>&nbsp;&nbsp;
-            {job.running && (
+            <Badge bsClass={"badge detailed-status-badge " + headerClass}>{job.status}</Badge>&nbsp;&nbsp;
+            {job.status === "STARTED" && (
               <i className="fa fa-spinner fa-pulse"/>
             )}
           </h3>
@@ -107,7 +107,7 @@ export default class JobDetailed extends Component {
           <PropertyGrid data={_.assign({},
             {title: job.title}, {status: job.status}, {created: TimeUtils.format(job.createTime)}, {started: TimeUtils.format(job.startTime)},
             {ended: TimeUtils.format(job.endTime)}, {schedule: _.get(job, 'parameters.schedule', '')}, {type: _.get(job, 'parameters.type', '')},
-            {id: job.id}, {running: job.running}, {canRollback: job.canRollback})}/>
+            {id: job.id}, {canRollback: job.canRollback})}/>
         </Panel>
         <div className="panel panel-default">
           <Tabs defaultActiveKey={1} id="tabContainerProps">

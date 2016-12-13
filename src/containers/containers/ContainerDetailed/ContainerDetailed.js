@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 import {PropertyGrid, LoadingDialog, ActionMenu, ContainerStatistics, EventLog} from '../../../components/index';
 import {ContainerScale, ContainerUpdate} from '../../../containers/index';
 import {Link} from 'react-router';
-import {Dropdown, SplitButton, Button, ButtonToolbar, Accordion, Panel, ProgressBar, Tabs, Tab} from 'react-bootstrap';
+import {Button, ButtonToolbar, Badge, Panel, ProgressBar, Tabs, Tab} from 'react-bootstrap';
 import _ from 'lodash';
 import {browserHistory} from 'react-router';
 import { Stomp } from 'stompjs/lib/stomp.min.js';
@@ -284,7 +284,7 @@ export default class ContainerDetailed extends Component {
       containerHeaderBar = (
         <div className="clearfix">
           <h3 id="containerDetailsHeader">{container.name}&nbsp;&nbsp;
-              <span className={container.run ? 'success-header' : ''}>{containerStatus}</span>&nbsp;&nbsp;
+              <Badge bsClass={"badge detailed-status-badge " + (container.run ? 'success-badge' : 'common-badge')}>{containerStatus}</Badge>&nbsp;&nbsp;
             {loading && (
               <i className="fa fa-spinner fa-pulse"/>
             )}
