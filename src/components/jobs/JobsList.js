@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {ActionMenu, DockTable} from '../index';
 import {Panel, ProgressBar} from 'react-bootstrap';
 import TimeUtils from 'utils/TimeUtils';
+import {Link} from 'react-router';
 
 export default class JobsList extends Component {
   static propTypes = {
@@ -16,7 +17,8 @@ export default class JobsList extends Component {
       name: 'title',
       label: 'Name',
       width: '20%',
-      sortable: true
+      sortable: true,
+      render: this.nameRender
     },
     {
       name: 'status',
@@ -76,6 +78,14 @@ export default class JobsList extends Component {
     return (
       <td key="endTime">
         <span>{endTime}</span>
+      </td>
+    );
+  }
+
+  nameRender(job) {
+    return (
+      <td key="name">
+        <Link to={"/jobs/" + job.title}>{job.title}</Link>
       </td>
     );
   }

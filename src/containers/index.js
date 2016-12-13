@@ -28,6 +28,7 @@ export ApplicationPanel from './application/ApplicationPanel/ApplicationPanel';
 export ApplicationCreate from './application/ApplicationCreate/ApplicationCreate';
 
 export JobsPanel from './jobs/JobsPanel/JobsPanel';
+export JobDetailed from './jobs/JobDetailed/JobDetailed';
 
 export SettingsPanel from './settings/SettingsPanel/SettingsPanel';
 

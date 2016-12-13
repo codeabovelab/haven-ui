@@ -13,6 +13,7 @@ import {
   NotFound,
   ApplicationPanel,
   JobsPanel,
+  JobDetailed,
   SettingsPanel,
   EventsPanel,
   ContainerDetailed,
@@ -60,6 +61,7 @@ export default (store) => {
         <Route name="Settings" path="settings" component={SettingsPanel}/>
         <Route name="Events" path="clusters/:name/events" component={EventsPanel}/>
         <Route name="Container Detailed View" path="clusters/:name/containers/:subname" component={ContainerDetailed}/>
+        <Route name="Job Detailed View" path="jobs/:name" component={JobDetailed}/>
         <Route name="Users" path="users" component={UsersPanel}/>
         <Route name="Agent" path="agent" component={AgentPanel}/>
       </Route>
