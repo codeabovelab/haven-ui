@@ -29,6 +29,13 @@ export default class JobsList extends Component {
       render: this.statusRender
     },
     {
+      name: 'cluster',
+      label: 'Cluster',
+      width: '10%',
+      sortable: true,
+      render: this.clusterRender
+    },
+    {
       name: 'schedule',
       label: 'Schedule',
       width: '10%',
@@ -87,6 +94,15 @@ export default class JobsList extends Component {
     return (
       <td key="endTime">
         <span>{endTime}</span>
+      </td>
+    );
+  }
+
+  clusterRender(job) {
+    let cluster = _.get(job, 'parameters.parameters.cluster', '');
+    return (
+      <td key="cluster">
+        <Link to={`/clusters/${cluster}`}>{cluster}</Link>
       </td>
     );
   }
