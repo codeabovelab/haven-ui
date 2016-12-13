@@ -27,7 +27,7 @@ export default function reducer(state = {}, action = {}) {
         ...state,
         jobLogs: {
           ...state.jobLogs,
-          [action.id]: action.result.reverse()
+          [action.id]: action.result
         }
       };
     case ACTIONS.JOB_EVENT:
