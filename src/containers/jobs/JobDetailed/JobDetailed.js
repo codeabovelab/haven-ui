@@ -44,7 +44,7 @@ export default class JobDetailed extends Component {
   ];
 
   render() {
-    const {params: {name}, deleteJob, rollbackJob} = this.props;
+    const {params: {name}, deleteJob, rollbackJob, loadLog} = this.props;
     const jobs = _.get(this.props.jobs, 'jobs', null);
     const info = _.get(this.props.jobs, 'jobInfos', null);
     const log = _.get(this.props.jobs, 'jobLogs', null);
@@ -119,7 +119,7 @@ export default class JobDetailed extends Component {
                 <ProgressBar active now={100}/>
               )}
             </Tab>
-            <Tab eventKey={2} title="Log">
+            <Tab eventKey={2} title="Log" onEnter={()=>loadLog(job.id)}>
               {(log && log[job.id]) && (
                 <DockTable columns={this.COLUMNS}
                            rows={log[job.id]}
