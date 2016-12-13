@@ -49,12 +49,11 @@ export default class JobDetailed extends Component {
     const info = _.get(this.props.jobs, 'jobInfos', null);
     const log = _.get(this.props.jobs, 'jobLogs', null);
     const job = jobs ? jobs[name] : null;
+    let title = '';
     let headerClass = '';
     let jobHeaderBar;
-    console.log('Jobs: ', jobs);
-    console.log('name: ', name);
-    console.log('Job: ', job);
     if (job) {
+      title = job.title.length > 0 ? job.title : job.id;
       switch (job.status) {
         case "COMPLETED":
           headerClass = "success-header";
@@ -67,7 +66,7 @@ export default class JobDetailed extends Component {
       }
       jobHeaderBar = (
         <div className="clearfix">
-          <h3 id="jobDetailsHeader">{job.title}&nbsp;&nbsp;
+          <h3 id="jobDetailsHeader">{title}&nbsp;&nbsp;
             <span className={headerClass}>{job.status}</span>&nbsp;&nbsp;
             {job.running && (
               <i className="fa fa-spinner fa-pulse"/>

@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {ActionMenu, DockTable} from '../index';
-import {Panel, ProgressBar} from 'react-bootstrap';
+import {Panel, ProgressBar, Badge} from 'react-bootstrap';
 import TimeUtils from 'utils/TimeUtils';
 import {Link} from 'react-router';
 
@@ -24,7 +24,8 @@ export default class JobsList extends Component {
       name: 'status',
       label: 'Status',
       width: '15%',
-      sortable: true
+      sortable: true,
+      render: this.statusRender
     },
     {
       name: 'createTime',
@@ -82,10 +83,30 @@ export default class JobsList extends Component {
     );
   }
 
+  statusRender(job) {
+    let status = job.status;
+    let statusClass = 'off-status-count';
+    switch (status) {
+      case "FAILED":
+        statusClass = 'warning-status-count';
+        break;
+      case "COMPLETED":
+        statusClass = 'up-status-count';
+        break;
+      default:
+        break;
+    }
+    return (
+      <td key="status" title={status}>
+        <Badge bsClass={"badge " + statusClass}>{status}</Badge>
+      </td>
+    );
+  }
+
   nameRender(job) {
     return (
       <td key="name">
-        <Link to={"/jobs/" + job.id}>{job.title}</Link>
+        <Link className="link" to={"/jobs/" + job.id}>{job.title}</Link>
       </td>
     );
   }

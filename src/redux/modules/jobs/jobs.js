@@ -23,7 +23,6 @@ export default function reducer(state = {}, action = {}) {
         }
       };
     case ACTIONS.LOAD_LOG_SUCCESS:
-      console.log('LOG LOADED!');
       return {
         ...state,
         jobLogs: {

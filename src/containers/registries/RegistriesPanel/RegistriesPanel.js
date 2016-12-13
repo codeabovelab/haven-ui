@@ -17,7 +17,7 @@ import { Link } from 'react-router';
 
 export default class RegistriesPanel extends Component {
   static propTypes = {
-    registries: PropTypes.object.isRequired,
+    registries: PropTypes.any.isRequired,
     registriesUI: PropTypes.object.isRequired,
     loadRegistries: PropTypes.func.isRequired,
     removeRegistry: PropTypes.func.isRequired,

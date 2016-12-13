@@ -164,14 +164,12 @@ export default class RegistriesList extends Component {
     const MAX_LEN = 60;
     let error = registry.errorMessage;
     let errorShort = "Connected";
-    let msgStyle = "";
     if (error != null) {
-      msgStyle = "alert alert-danger";
       errorShort = error.length > MAX_LEN + 3 ? error.slice(0, MAX_LEN) + '...' : error;
     }
     let statusClass = errorShort === "Connected" ? "up-status-count" : "down-status-count";
     return (
-      <td key="errorMessage" title={error} className={msgStyle}>
+      <td key="errorMessage" title={error}>
         <Badge bsClass={"badge " + statusClass}>{errorShort}</Badge>
       </td>
     );
