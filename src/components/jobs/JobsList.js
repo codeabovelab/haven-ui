@@ -3,6 +3,7 @@ import {ActionMenu, DockTable} from '../index';
 import {Panel, ProgressBar, Badge} from 'react-bootstrap';
 import TimeUtils from 'utils/TimeUtils';
 import {Link} from 'react-router';
+import _ from 'lodash';
 
 export default class JobsList extends Component {
   static propTypes = {
@@ -23,9 +24,16 @@ export default class JobsList extends Component {
     {
       name: 'status',
       label: 'Status',
-      width: '15%',
+      width: '10%',
       sortable: true,
       render: this.statusRender
+    },
+    {
+      name: 'schedule',
+      label: 'Schedule',
+      width: '10%',
+      sortable: true,
+      render: this.scheduleRender
     },
     {
       name: 'createTime',
@@ -83,6 +91,15 @@ export default class JobsList extends Component {
     );
   }
 
+  scheduleRender(job) {
+    let schedule = _.get(job, 'parameters.schedule', '');
+    return (
+      <td key="schedule">
+        <span>{schedule}</span>
+      </td>
+    );
+  }
+
   statusRender(job) {
     let status = job.status;
     let statusClass = 'off-status-count';
@@ -96,6 +113,7 @@ export default class JobsList extends Component {
       default:
         break;
     }
+    status = capitalize(status);
     return (
       <td key="status" title={status}>
         <Badge bsClass={"badge " + statusClass}>{status}</Badge>
@@ -131,4 +149,8 @@ export default class JobsList extends Component {
       </div>
     );
   }
+}
+
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
