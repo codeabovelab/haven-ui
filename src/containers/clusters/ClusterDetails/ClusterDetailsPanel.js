@@ -180,7 +180,7 @@ export default class ClusterDetailsPanel extends Component {
     {
       name: 'application',
       render: renderTdApplication,
-      width: '20%'
+      width: '10%'
     },
 
     {
@@ -378,7 +378,7 @@ export default class ClusterDetailsPanel extends Component {
     let groupBySelect = this.GROUP_BY_SELECT;
     let nodesNavId = isAllPage ? "/nodes" : "/clusters/" + name + "/" + "nodes";
     if (isAllPage && columns[3].name !== 'cluster') {
-      columns.splice(3, 0, {name: 'cluster', label: 'Cluster', render: this.renderTdCluster.bind(this)});
+      columns.splice(3, 0, {name: 'cluster', width: '10%', label: 'Cluster', render: this.renderTdCluster.bind(this)});
       groupBySelect.push('cluster');
     }
     if (!isAllPage) {
