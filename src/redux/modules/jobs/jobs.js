@@ -12,7 +12,7 @@ export default function reducer(state = {}, action = {}) {
       });
       return {
         ...state,
-        jobs: _.keyBy(sortedResult, 'title')
+        jobs: _.keyBy(sortedResult, 'id')
       };
     case ACTIONS.LOAD_INFO_SUCCESS:
       return {
@@ -23,22 +23,23 @@ export default function reducer(state = {}, action = {}) {
         }
       };
     case ACTIONS.LOAD_LOG_SUCCESS:
+      console.log('LOG LOADED!');
       return {
         ...state,
         jobLogs: {
           ...state.jobLogs,
-          [action.id]: action.result
+          [action.id]: action.result.reverse()
         }
       };
     case ACTIONS.JOB_EVENT:
       let data = action.event;
-      let jobTitle = _.get(data, 'info.title', null);
-      if (jobTitle) {
+      let jobId = _.get(data, 'info.id', null);
+      if (jobId) {
         return {
           ...state,
           jobs: {
             ...state.jobs,
-            [jobTitle]: data.info
+            [jobId]: data.info
           }
         };
       }

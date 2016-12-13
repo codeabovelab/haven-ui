@@ -85,7 +85,7 @@ export default class JobsList extends Component {
   nameRender(job) {
     return (
       <td key="name">
-        <Link to={"/jobs/" + job.title}>{job.title}</Link>
+        <Link to={"/jobs/" + job.id}>{job.title}</Link>
       </td>
     );
   }
