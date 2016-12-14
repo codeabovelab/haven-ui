@@ -31,17 +31,36 @@ export default class JobDetailed extends Component {
   COLUMNS = [
     {
       name: 'time',
-      width: '20%'
+      width: '7%',
+      render: this.timeRender,
+      sortable: true
     },
     {
       name: 'status',
-      width: '20%'
+      width: '5%',
+      render: this.statusRender
     },
     {
       name: 'message',
-      width: '20%'
+      width: '88%'
     }
   ];
+
+  timeRender(row) {
+    return (
+      <td key="time">
+        <span>{TimeUtils.format(row.time)}</span>
+      </td>
+    );
+  }
+
+  statusRender(row) {
+    return (
+      <td key="status">
+        <span>{row.info.status}</span>
+      </td>
+    );
+  }
 
   render() {
     const {params: {name}, deleteJob, rollbackJob, loadLog} = this.props;
@@ -124,6 +143,7 @@ export default class JobDetailed extends Component {
                            rows={log[job.id]}
                            striped={false}
                            searchable={false}
+                           nullDisplayName=""
                 />
               ) || (
                 <div className="alert alert-info">

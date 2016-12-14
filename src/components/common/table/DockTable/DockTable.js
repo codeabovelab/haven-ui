@@ -375,7 +375,7 @@ export default class DockTable extends Component {
       } else if (typeof field === 'object') {
         value = JSON.stringify(field);
       }
-      td = <td key={key} data-column={key}>{value == null ? (<em>none</em>) : value }</td>;
+      td = <td key={key} data-column={key}>{value === null || value === 'null' ? (<em>none</em>) : value }</td>;
     }
     return td;
   }
