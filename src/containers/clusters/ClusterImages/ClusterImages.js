@@ -71,7 +71,11 @@ export default class ClusterImages extends Component {
     {
       value: "ui.updateContainers.stopThenStartAll",
       label: "Stop then start all"
-    }
+    },
+    {
+      value: "wildCard",
+      label: "Wild Card"
+    },
   ];
 
   statisticsMetrics = [
@@ -362,7 +366,8 @@ export default class ClusterImages extends Component {
                     <FormGroup>
                       <label>Percentage of Containers to Update:</label>
                       <InputGroup>
-                        <FormControl type="number" step="10" max="100" min="10" id="updatePercents" value={this.state.updatePercents}
+                        <FormControl type="number" step="10" max="100" min="10" id="updatePercents"
+                                     value={this.state.updatePercents}
                                      onChange={this.handleSelectChange.bind(this, 'updatePercents')}/>
                         <InputGroup.Addon>%</InputGroup.Addon>
                       </InputGroup>
@@ -387,11 +392,53 @@ export default class ClusterImages extends Component {
                     </div>
                   </div>
                 </form>
-                <DockTable columns={this.COLUMNS}
-                           rows={rows}
-                           key={name}
-                           searchable={false}
-                />
+                {this.state.updateStrategy !== "wildCard" && (
+                  <DockTable columns={this.COLUMNS}
+                             rows={rows}
+                             key={name}
+                             searchable={false}
+                  />
+                ) || (
+                  <div>
+                    <div className="col-md-6">
+                      <FormGroup>
+                        <ControlLabel>Update Strategy</ControlLabel>
+                        <FormControl componentClass="select" id="updateStrategy" value={this.state.updateStrategy}
+                                     onChange={this.handleSelectChange.bind(this, 'updateStrategy')}>
+                          {
+                            this.UPDATE_STRATEGIES.map((el, i) => {
+                              return <option key={i} value={el.value}>{el.label}</option>;
+                            })
+                          }
+                        </FormControl>
+                      </FormGroup>
+                      <FormGroup>
+                        <ControlLabel>Schedule</ControlLabel>
+                        <FormControl type="text" onChange={this.handleSelectChange.bind(this, 'schedule')}
+                                     placeholder="'0 0 * * * *' = the top of every hour of every day"/>
+                      </FormGroup>
+                    </div>
+                    <div className="col-md-6">
+                      <FormGroup>
+                        <ControlLabel>Update Strategy</ControlLabel>
+                        <FormControl componentClass="select" id="updateStrategy" value={this.state.updateStrategy}
+                                     onChange={this.handleSelectChange.bind(this, 'updateStrategy')}>
+                          {
+                            this.UPDATE_STRATEGIES.map((el, i) => {
+                              return <option key={i} value={el.value}>{el.label}</option>;
+                            })
+                          }
+                        </FormControl>
+                      </FormGroup>
+                      <FormGroup>
+                        <ControlLabel>Schedule</ControlLabel>
+                        <FormControl type="text" onChange={this.handleSelectChange.bind(this, 'schedule')}
+                                     placeholder="'0 0 * * * *' = the top of every hour of every day"/>
+                      </FormGroup>
+                    </div>
+                    &nbsp;
+                  </div>
+                )}
               </div>
             </div>
           )}
