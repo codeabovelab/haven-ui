@@ -11,6 +11,7 @@ export default class Dialog extends Component {
     show: PropTypes.bool.isRequired,
     backdrop: PropTypes.bool,
     focus: PropTypes.bool,
+    showSpinner: PropTypes.bool,
     title: PropTypes.string.isRequired,
     size: PropTypes.string,
     errors: PropTypes.array,
@@ -63,6 +64,7 @@ export default class Dialog extends Component {
         <Modal.Header closeButton>
           <Modal.Title>
             {this.props.title}
+            {this.props.showSpinner && (<span>&nbsp;<i className="fa fa-spinner fa-pulse"/></span>)}
           </Modal.Title>
         </Modal.Header>
 

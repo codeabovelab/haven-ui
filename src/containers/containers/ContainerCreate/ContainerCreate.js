@@ -109,7 +109,8 @@ export default class ContainerCreate extends Component {
       selectImageValue: {value: '', label: ''},
       checkboxes: {checkboxInitial: ''},
       creationLogVisible: '',
-      selectMenuVisible: false
+      selectMenuVisible: false,
+      loadingParams: false
     };
   }
 
@@ -275,6 +276,7 @@ export default class ContainerCreate extends Component {
               cancelTitle={creationLogVisible ? "Close" : null}
               keyboard={!selectMenuVisible}
               backdrop="static"
+              showSpinner={this.state.loadingParams}
       >
           {this.props.createError && (
             <Alert bsStyle="danger">
@@ -480,7 +482,9 @@ export default class ContainerCreate extends Component {
   onImageChange(value) {
     const {loadImageTags} = this.props;
     if (value) {
-      loadImageTags(value);
+      this.setState({loadingParams: true});
+      loadImageTags(value).then(()=>this.setState({loadingParams: false}))
+        .catch(()=>this.setState({loadingParams: false}));
     }
   }
 
@@ -505,6 +509,7 @@ export default class ContainerCreate extends Component {
     let imageFullName = registry ? registry + '/' + image : image;
     let tag = value;
     if (tag && image) {
+      this.setState({loadingParams: true});
       loadDefaultParams({clusterId: cluster.name, image: imageFullName, tag})
         .then((defaultParams) => {
           _.forOwn(defaultParams, (value, key) => {
@@ -552,14 +557,17 @@ export default class ContainerCreate extends Component {
             }
             if (fields[key] !== undefined && !fields[key].value) {
               if (key === 'memoryLimit' && value) {
-                let result = value.replace(/TiB|GiB|MiB|KiB/gi, match=> {return match[0].toLowerCase();});
+                let result = value.replace(/TiB|GiB|MiB|KiB/gi, match=> {
+                  return match[0].toLowerCase();
+                });
                 fields[key].onChange(result);
               } else {
                 fields[key].onChange(value);
               }
             }
           });
-        });
+          this.setState({loadingParams: false});
+        }).catch(()=>this.setState({loadingParams: false}));
     }
   }
 
@@ -899,9 +907,5 @@ export default class ContainerCreate extends Component {
     }
     return value;
   }
-}
-
-function bytesToMb(value) {
-  return value / 1048576;
 }
 
