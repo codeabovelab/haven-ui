@@ -10,7 +10,7 @@
   <name>DockerMaster</name>
 
   <scm>
-    <connection>scm:git:git@bitbucket.org:codeabovelab/dockmaster-cluster-ui.git</connection>
+    <connection>scm:git:git@github.com:codeabovelab/haven-ui.git</connection>
     <tag>ui-1.0.0</tag>
   </scm>
 
