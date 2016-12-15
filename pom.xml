@@ -11,7 +11,7 @@
 
   <scm>
     <connection>scm:git:git@bitbucket.org:codeabovelab/dockmaster-cluster-ui.git</connection>
-    <tag>dm-ui-1.0.0</tag>
+    <tag>ui-1.0.0</tag>
   </scm>
 
   <properties>
