@@ -2,7 +2,6 @@ import React, { Component, PropTypes} from 'react';
 import config from '../../config';
 import Helmet from 'react-helmet';
 import {connect} from 'react-redux';
-import TimeAgo from 'react-timeago';
 import _ from 'lodash';
 import {Row, Col, Panel} from 'react-bootstrap';
 import {DockTable, StatisticsPanel, DashboardNodesList, DashboardClustersList} from '../../components';
@@ -199,25 +198,5 @@ export default class Dashboard extends Component {
         </Row>
       </div>
     );
-  }
-
-  renderEvent(event, i) {
-    if (event.info) {
-      return this.renderInfoEvent(event, i);
-    }
-    return <li className="list-group-item"/>;
-  }
-
-  renderInfoEvent(event, i) {
-    let info = event.info;
-    return (<li key={i} className="list-group-item">
-      <div>
-        <strong>{info.name}</strong>&nbsp;
-        {JSON.stringify(_.omit(info, ['name', 'created']))}
-      </div>
-      <div className="text-xs-right">
-        <small className="text-muted"><TimeAgo date={event.created}/></small>
-      </div>
-    </li>);
   }
 }
