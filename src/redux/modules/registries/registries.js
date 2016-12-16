@@ -4,7 +4,7 @@ import _ from 'lodash';
 export default function reducer(state = [], action = {}) {
   switch (action.type) {
     case ACTIONS.LOAD_REGISTRIES_SUCCESS:
-      return _.merge({}, state, _.keyBy(action.result, 'title'));
+      return _.keyBy(action.result, 'title');
     case ACTIONS.REFRESH_REGISTRY_SUCCESS:
       return {
         ...state,

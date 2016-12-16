@@ -86,6 +86,18 @@ export default class ClustersList extends Component {
     },
   ];
 
+  componentDidMount() {
+    $(window).resize(()=> {
+      let $box = $("#contentBox");
+      let $toolBar = $("#toolBar");
+      if ($box.width() < 480) {
+        $toolBar.removeClass("pulled-right");
+      } else {
+        $toolBar.addClass("pulled-right");
+      }
+    });
+  }
+
   render() {
     const panelHeader = (
       <div className="clearfix">
@@ -101,9 +113,9 @@ export default class ClustersList extends Component {
         )}
 
         {(this.props.data && !this.props.loading) && (
-          <div>
+          <div id="contentBox">
             {this.props.currentUserRole !== "ROLE_USER" && (
-              <ButtonToolbar className="pulled-right">
+              <ButtonToolbar id="toolBar" className="pulled-right">
                 <Button
                   bsStyle="primary"
                   onClick={this.props.onNewCluster}
