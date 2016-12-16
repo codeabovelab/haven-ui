@@ -316,15 +316,16 @@ export default class ClusterDetailsPanel extends Component {
 
   renderTdPorts(row) {
     let ports = row.ports;
-    let portsCoupled = ports.map((el) => {
-      if (typeof(el.PublicPort) !== "undefined" && typeof(el.PrivatePort) !== "undefined") {
-        return (el.PublicPort + ":" + el.PrivatePort);
+    let portsCoupled = [];
+    ports.map((el) => {
+      if (checkPort(el.PublicPort) && checkPort(el.PublicPort)) {
+        portsCoupled.push(el.PublicPort + ": " + el.PrivatePort);
       }
-    }).join(', ');
+    });
 
     return (
       <td key="ports">
-      <span>{portsCoupled}</span>
+      <span>{portsCoupled.join(', ')}</span>
       </td>
     );
   }
@@ -790,5 +791,9 @@ export default class ClusterDetailsPanel extends Component {
       )
     });
   }
-
 }
+
+function checkPort(port) {
+  return typeof(port) !== "undefined" && port !== 0;
+}
+
