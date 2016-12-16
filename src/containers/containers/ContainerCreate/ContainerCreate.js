@@ -99,7 +99,7 @@ export default class ContainerCreate extends Component {
     this.state = {
       dnsValue: [],
       dnsSearchValue: [],
-      publish: [{field1: '', field2: ''}],
+      ports: [{field1: '', field2: ''}],
       links: [{field1: '', field2: ''}],
       volumeBinds: [{value: ''}],
       volumesFrom: [{value: ''}],
@@ -375,7 +375,7 @@ export default class ContainerCreate extends Component {
                 {this.fieldVolumes()}
               </Panel>
               <Panel header="Network Settings" eventKey="4">
-                {this.fieldPublish()}
+                {this.fieldPorts()}
                 <div className="row">
                   {NETWORK_FIELDS_KEYS.map(key =>
                     <div className="col-sm-6" key={key}>
@@ -540,7 +540,7 @@ export default class ContainerCreate extends Component {
               });
               if (ports.length > 0) {
                 this.setState({
-                  publish: ports
+                  ports: ports
                 });
               }
             }
@@ -602,7 +602,7 @@ export default class ContainerCreate extends Component {
     container.image = $.trim(registry + fields.image.value + tag);
     let $logBlock = $('#creation-log-block');
     let $spinner = $logBlock.find('i');
-    container.publish = this.getPublish();
+    container.ports = this.getPorts();
     container.environment = this.getEnvironmentFields();
     container.restart = this.getRestart();
     container.volumesFrom = this.getVolumes('volumesFrom');
@@ -692,23 +692,23 @@ export default class ContainerCreate extends Component {
     return map;
   }
 
-  fieldPublish() {
-    let items = this.state.publish;
+  fieldPorts() {
+    let items = this.state.ports;
     return (
-      <div className="field-publish form-group">
+      <div className="field-ports form-group">
         <div className="field-header">
-          <label>Publish</label>
-          <a onClick={this.addPublishItem.bind(this)}><i className="fa fa-plus-circle"/></a>
+          <label>Ports</label>
+          <a onClick={this.addPortsItem.bind(this)}><i className="fa fa-plus-circle"/></a>
         </div>
         <div className="field-body">
           {items.map((item, key) => <div className="row" key={key}>
             <div className="col-sm-6">
               <input type="string" onChange={handleChange.bind(this, key, 'field1')} className="form-control"
-                     value={this.state.publish[key].field1} placeholder="Public Port"/>
+                     value={this.state.ports[key].field1} placeholder="Public Port"/>
             </div>
             <div className="col-sm-6">
               <input type="string" onChange={handleChange.bind(this, key, 'field2')} className="form-control"
-                     value={this.state.publish[key].field2} placeholder="Private Port"/>
+                     value={this.state.ports[key].field2} placeholder="Private Port"/>
             </div>
           </div>)}
         </div>
@@ -717,20 +717,20 @@ export default class ContainerCreate extends Component {
 
     function handleChange(i, type, event) {
       let state = Object.assign({}, this.state);
-      state.publish[i][type] = event.target.value;
+      state.ports[i][type] = event.target.value;
       this.setState(state);
     }
   }
 
-  addPublishItem() {
+  addPortsItem() {
     this.setState({
       ...this.state,
-      publish: [...this.state.publish, {field1: '', field2: ''}]
+      ports: [...this.state.ports, {field1: '', field2: ''}]
     });
   }
 
-  getPublish() {
-    return this.getMapField('publish');
+  getPorts() {
+    return this.getMapField('ports');
   }
 
   fieldEnvironment() {
