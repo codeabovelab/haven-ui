@@ -388,15 +388,6 @@ export default class ClusterImages extends Component {
                     </FormGroup>
                   </div>
                   <div className="col-md-6">
-                    <FormGroup>
-                      <label>Percentage of Containers to Update:</label>
-                      <InputGroup>
-                        <FormControl type="number" step="10" max="100" min="10" id="updatePercents"
-                                     value={this.state.updatePercents}
-                                     onChange={this.handleSelectChange.bind(this, 'updatePercents')}/>
-                        <InputGroup.Addon>%</InputGroup.Addon>
-                      </InputGroup>
-                    </FormGroup>
                     <div className="row">
                       <div className="col-md-6">
                         <FormGroup>
@@ -420,6 +411,15 @@ export default class ClusterImages extends Component {
                         </FormGroup>
                       </div>
                     </div>
+                    <FormGroup>
+                      <label>Percentage of Containers to Update:</label>
+                      <InputGroup>
+                        <FormControl type="number" step="10" max="100" min="10" id="updatePercents"
+                                     value={this.state.updatePercents}
+                                     onChange={this.handleSelectChange.bind(this, 'updatePercents')}/>
+                        <InputGroup.Addon>%</InputGroup.Addon>
+                      </InputGroup>
+                    </FormGroup>
                   </div>
                 </form>
                 {!wildCard && (
