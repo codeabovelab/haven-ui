@@ -178,6 +178,12 @@ export default class ClusterDetailsPanel extends Component {
     },
 
     {
+      name: 'ports',
+      render: this.renderTdPorts,
+      width: '10%'
+    },
+
+    {
       name: 'application',
       render: renderTdApplication,
       width: '10%'
@@ -306,6 +312,21 @@ export default class ClusterDetailsPanel extends Component {
     loadContainers(name);
 
     $('.input-search').focus();
+  }
+
+  renderTdPorts(row) {
+    let ports = row.ports;
+    let portsCoupled = ports.map((el) => {
+      if (typeof(el.PublicPort) !== "undefined" && typeof(el.PrivatePort) !== "undefined") {
+        return (el.PublicPort + ":" + el.PrivatePort);
+      }
+    }).join(', ');
+
+    return (
+      <td key="ports">
+      <span>{portsCoupled}</span>
+      </td>
+    );
   }
 
   renderTdCluster(row) {
@@ -549,14 +570,10 @@ export default class ClusterDetailsPanel extends Component {
   onActionInvoke(action, container) {
     const {clusters, params: {name}} = this.props;
     let cluster = clusters[name];
-
-    console.log('onActionInvoke', action, cluster);
-
     let currentContainer;
     if (container) {
       currentContainer = this.props.containers[container];
     }
-    console.log('container', container, currentContainer);
 
     switch (action) {
       case "create":
