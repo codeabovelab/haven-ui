@@ -704,11 +704,11 @@ export default class ContainerCreate extends Component {
           {items.map((item, key) => <div className="row" key={key}>
             <div className="col-sm-6">
               <input type="string" onChange={handleChange.bind(this, key, 'field1')} className="form-control"
-                     value={this.state.publish[key].field1} placeholder="Port"/>
+                     value={this.state.publish[key].field1} placeholder="Public Port"/>
             </div>
             <div className="col-sm-6">
               <input type="string" onChange={handleChange.bind(this, key, 'field2')} className="form-control"
-                     value={this.state.publish[key].field2} placeholder="Port"/>
+                     value={this.state.publish[key].field2} placeholder="Private Port"/>
             </div>
           </div>)}
         </div>
