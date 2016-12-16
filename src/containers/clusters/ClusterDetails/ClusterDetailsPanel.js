@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
-import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, Chain, LoadingDialog, StatisticsPanel, ActionMenu, ClusterUploadCompose, ClusterSetSource} from '../../../components/index';
+import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, Dialog, Chain, LoadingDialog, StatisticsPanel, ActionMenu, ClusterUploadCompose, ClusterSetSource} from '../../../components/index';
 import { Link, browserHistory, Route, RouteHandler } from 'react-router';
 import { LinkContainer } from 'react-router-bootstrap';
 import {ContainerCreate, ContainerScale, ContainerUpdate} from '../../../containers/index';
@@ -567,6 +567,31 @@ export default class ClusterDetailsPanel extends Component {
     });
   }
 
+  showJobLink(response) {
+    let message = '';
+    let status = response.code || response._res.status || response._res.code;
+    switch (status) {
+      case 200:
+        message = (<p>The Delete images job is successfully created. Please check the&nbsp;
+          <Link to={"/jobs/" + response.id}>Jobs page</Link> for its status.
+        </p>);
+        break;
+      default:
+        message = 'Failed to create the Delete images job. Error message is: ' + response.message || response._res.message;
+    }
+    this.setState({
+      actionDialog: (
+        <Dialog show
+                title="Delete Images Info"
+                onHide={this.onHideDialog.bind(this)}
+                cancelTitle="Close"
+                hideOk
+                children={message}
+        />
+      )
+    });
+  }
+
   onActionInvoke(action, container) {
     const {clusters, params: {name}} = this.props;
     let cluster = clusters[name];
@@ -665,7 +690,13 @@ export default class ClusterDetailsPanel extends Component {
       case "deleteImages":
         confirm("Are you sure you want to delete unused images in cluster " + name + "?")
           .then(() => {
-            this.props.deleteClusterImages(name).catch(() => null);
+            this.props.deleteClusterImages(name).catch(() => null)
+              .then((response)=>{
+                this.showJobLink(response);
+              })
+              .catch((response)=> {
+                this.showJobLink(response);
+              });
           })
           .catch(() => null);
         return;

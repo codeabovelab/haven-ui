@@ -204,6 +204,31 @@ export default class ClustersPanel extends Component {
     );
   }
 
+  showJobLink(response) {
+    let message = '';
+    let status = response.code || response._res.status || response._res.code;
+    switch (status) {
+      case 200:
+        message = (<p>The Delete images job is successfully created. Please check the&nbsp;
+          <Link to={"/jobs/" + response.id}>Jobs page</Link> for its status.
+        </p>);
+        break;
+      default:
+        message = 'Failed to create the Delete images job. Error message is: ' + response.message || response._res.message;
+    }
+    this.setState({
+      actionDialog: (
+        <Dialog show
+                title="Delete Images Info"
+                onHide={this.onHideDialog.bind(this)}
+                cancelTitle="Close"
+                hideOk
+                children={message}
+        />
+      )
+    });
+  }
+
   onHideDialog() {
     this.setState({
       actionDialog: undefined
@@ -281,7 +306,13 @@ export default class ClustersPanel extends Component {
       case "deleteImages":
         confirm("Are you sure you want to delete unused images in cluster " + cluster + "?")
           .then(() => {
-            this.props.deleteClusterImages(cluster).catch(() => null);
+            this.props.deleteClusterImages(cluster).catch(() => null)
+              .then((response)=> {
+                this.showJobLink(response);
+              })
+              .catch((response)=> {
+                this.showJobLink(response);
+              });
           })
           .catch(() => null);
         return;
