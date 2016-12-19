@@ -16,12 +16,10 @@ export function connectWebsocketEventsListener(store) {
 
   let state = store.getState();
   let token;
-  console.log("esState: ", state);
+
   if (state && state.auth && state.auth.token) {
     url = `${url}?token=${state.auth.token.key}`;
-  } else {
-    return false;
-  }
+  } 
 
   let ws = new SockJS(url);
   let stompClient = Stomp.over(ws);
