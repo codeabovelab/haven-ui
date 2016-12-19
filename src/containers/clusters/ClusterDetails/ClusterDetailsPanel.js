@@ -659,7 +659,7 @@ export default class ClusterDetailsPanel extends Component {
         return;
 
       case "start":
-        confirm('Are you sure you want to start container?')
+        confirm('Are you sure you want to start container "' + currentContainer.name + '" ?')
           .then(() => {
             this.setState({
               actionDialog: (
@@ -672,11 +672,11 @@ export default class ClusterDetailsPanel extends Component {
                 />
               )
             });
-          });
+          }).catch(()=>null);
         return;
 
       case "stop":
-        confirm('Are you sure you want to stop container?')
+        confirm('Are you sure you want to stop container "' + currentContainer.name + '" ?')
           .then(() => {
             this.setState({
               actionDialog: (
@@ -689,7 +689,7 @@ export default class ClusterDetailsPanel extends Component {
                 />
               )
             });
-          });
+          }).catch(()=>null);
         return;
 
       case "deleteImages":
@@ -707,7 +707,7 @@ export default class ClusterDetailsPanel extends Component {
         return;
 
       case "restart":
-        confirm('Are you sure you want to restart container?')
+        confirm('Are you sure you want to restart container "' + currentContainer.name + '" ?')
           .then(() => {
             this.setState({
               actionDialog: (
@@ -720,11 +720,11 @@ export default class ClusterDetailsPanel extends Component {
                 />
               )
             });
-          });
+          }).catch(()=>null);
         return;
 
       case "delete":
-        confirm('Are you sure you want to remove this container?')
+        confirm('Are you sure you want to remove container "' + currentContainer.name + '" ?')
           .then(() => {
             this.setState({
               actionDialog: (
@@ -737,7 +737,7 @@ export default class ClusterDetailsPanel extends Component {
                 />
               )
             });
-          });
+          }).catch(()=>null);
         return;
 
       case "edit":
@@ -757,7 +757,7 @@ export default class ClusterDetailsPanel extends Component {
 
   deleteCluster() {
     const {params: {name}, deleteCluster} = this.props;
-    confirm('Are you sure you want to remove this cluster?')
+    confirm('Are you sure you want to remove cluster "' + name + '" ?')
       .then(() => {
         deleteCluster(name)
           .then(() => browserHistory.push('/clusters'));
