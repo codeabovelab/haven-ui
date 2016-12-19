@@ -56,7 +56,7 @@ export default class SettingsPanel extends Component {
         </ul>
         <h4><a href="https://github.com/codeabovelab/haven-platform" target="_blank">Haven</a></h4>
         <div className="settingsList">
-          <p>Version: <span>{version.version}</span></p>
+          <p>Version: <a target="_blank" href={"https://github.com/codeabovelab/haven-platform/commit/" + version.buildRevision}>{version.version}</a></p>
           <p>Build Time: <span>{TimeUtils.format(version.buildTime)}</span></p>
           <div className = "settings-buttons-block">
             <a id="downloadSettingsFile" className="btn btn-default" onClick={this.getSettingsFile.bind(this)}>
