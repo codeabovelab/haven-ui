@@ -295,16 +295,16 @@ export default class ClustersPanel extends Component {
         return;
 
       case "delete":
-        confirm('Are you sure you want to remove this cluster?')
+        confirm('Are you sure you want to delete cluster "' + cluster + '" ?')
           .then(() => {
             this.props.deleteCluster(cluster).catch(() => null)
               .then(() => this.props.loadClusters(), this.props.loadNodes('orphans'));
           })
-          .catch(() => null);// confirm cancel
+          .catch(() => null);
         return;
 
       case "deleteImages":
-        confirm("Are you sure you want to delete unused images in cluster " + cluster + "?")
+        confirm('Are you sure you want to delete unused images in cluster "' + cluster + '" ?')
           .then(() => {
             this.props.deleteClusterImages(cluster).catch(() => null)
               .then((response)=> {
