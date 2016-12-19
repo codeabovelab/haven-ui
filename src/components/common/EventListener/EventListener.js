@@ -19,7 +19,7 @@ export function connectWebsocketEventsListener(store) {
 
   if (state && state.auth && state.auth.token) {
     url = `${url}?token=${state.auth.token.key}`;
-  } 
+  }
 
   let ws = new SockJS(url);
   let stompClient = Stomp.over(ws);

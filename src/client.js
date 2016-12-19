@@ -14,7 +14,6 @@ import useScroll from 'scroll-behavior/lib/useStandardScroll';
 import {loadFromLS as loadAuth} from 'redux/modules/auth/auth';
 import {loadFromLS as loadMenuLeft} from 'redux/modules/menuLeft/menuLeft';
 import {ConfirmDialog, SimpleModal} from './components/index';
-import { connectWebsocketEventsListener } from './components/common/EventListener/EventListener';
 
 import getRoutes from './routes';
 
@@ -61,8 +60,6 @@ if (__DEVTOOLS__ && !window.devToolsExtension) {
 }
 
 (() => {
-  connectWebsocketEventsListener(store);
-
   ConfirmDialog.initJs();
   SimpleModal.initJs(store);
 })();
