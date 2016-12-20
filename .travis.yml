@@ -1,18 +1,17 @@
-language: node_js
+language: java
+jdk:
+  - oraclejdk8
 
-node_js:
-  - "0.12"
-  - "4"
-  - "5"
-  - "stable"
+cache:
+  directories:
+  - $HOME/.m2
 
-sudo: false
+addons:
+  apt:
+    sources:
+    packages:
+      # Getting compile errors on javac 1.8.0_31-b13
+      - nodejs-legacy
+      - npm
 
-before_script:
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
-
-script:
-  - npm run lint
-  - npm test
-  - npm run test-node
+install: "mvn clean install"
