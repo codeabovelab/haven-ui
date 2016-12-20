@@ -12,4 +12,4 @@ before_install:
   - nvm install 5 # for Node v5
   - node --version
 
-install: "mvn clean install"
+install: "mvn clean deploy"
