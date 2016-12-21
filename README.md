@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/codeabovelab/haven-ui.svg?branch=master)](https://travis-ci.org/codeabovelab/haven-ui)
 # Haven Web App
 Haven Web App is the front-end to [Haven Container Manager](https://github.com/codeabovelab/haven-platform). Please see the [Haven Readme](https://github.com/codeabovelab/haven-platform/blob/master/README.md) for the complete installation instruction and feature list.
 
