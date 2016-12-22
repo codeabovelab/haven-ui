@@ -94,6 +94,9 @@ export default class ClusterImages extends Component {
       updateResponse: {message: "", status: ""},
       schedule: '',
       jobTitle: '',
+      wildCard: false,
+      wildCardImages: '',
+      wildCardVersion: '',
       mounted: true
     };
     getDeployedImages(name).then(() => {
@@ -228,6 +231,14 @@ export default class ClusterImages extends Component {
     });
   }
 
+  handleWildcardChange() {
+    let $updateBlock = $("#clusterImages");
+    $updateBlock.toggleClass('no-header-panel');
+    this.setState({
+      wildCard: !this.state.wildCard
+    });
+  }
+
   handleSelectChange(id, event) {
     let value = event.target ? event.target.value : event.value;
     if (id === 'updatePercents') {
@@ -244,26 +255,38 @@ export default class ClusterImages extends Component {
   }
 
   onSubmit() {
-    const {params: {name}, updateContainers} = this.props;
     let images = [];
     let imagesToUpdate = this.state.imagesToUpdate;
     let tags = this.state.tagsSelected;
-    _.map(imagesToUpdate, (el, key) => {
-      let updateTo = tags[key];
-      if (key && el && updateTo) {
-        images.push({name: key, to: updateTo});
-      }
-    });
-    if (images.length > 0) {
-      updateContainers(name, this.state.updateStrategy, this.state.updatePercents, this.state.schedule, this.state.jobTitle, images).then((response)=> {
-        this.showResponse(response);
-      }).catch((response) => {
-        this.showResponse(response);
-      });
+    let strategy = this.state.updateStrategy;
+    let wildCard = this.state.wildCard;
+
+    if (wildCard) {
+      images.push({name: this.state.wildCardImages, to: this.state.wildCardVersion});
+      this.safeUpdateContainers(strategy, this.state.updatePercents, this.state.schedule, this.state.jobTitle, images);
     } else {
-      this.setState({updateResponse: 'Select tags for chosen images to create update job.'});
-      this.openModal();
+      _.map(imagesToUpdate, (el, key) => {
+        let updateTo = tags[key];
+        if (key && el && updateTo) {
+          images.push({name: key, to: updateTo});
+        }
+      });
+      if (images.length > 0) {
+        this.safeUpdateContainers(strategy, this.state.updatePercents, this.state.schedule, this.state.jobTitle, images);
+      } else {
+        this.setState({updateResponse: 'Select tags for chosen images to create update job.'});
+        this.openModal();
+      }
     }
+  }
+
+  safeUpdateContainers(strategy, updatePercents, schedule, jobTitle, images) {
+    const {params: {name}, updateContainers} = this.props;
+    updateContainers(name, strategy, updatePercents, schedule, jobTitle, images).then((response)=> {
+      this.showResponse(response);
+    }).catch((response) => {
+      this.showResponse(response);
+    });
   }
 
   showResponse(response) {
@@ -287,6 +310,7 @@ export default class ClusterImages extends Component {
   render() {
     require('react-select/dist/react-select.css');
     const {params: {name}, images} = this.props;
+    const wildCard = this.state.wildCard;
     let rows = _.get(this.props.images, `deployedImages.${name}`, []).map((row)=> {
       if (checkUpdateAvailability(row)) {
         row.trColor = 'availableToUpdate';
@@ -295,12 +319,17 @@ export default class ClusterImages extends Component {
     });
     const imagesToUpdate = this.state.imagesToUpdate;
     let disabledUpdateButton = true;
-    _.map(imagesToUpdate, (el, key) => {
-      if (imagesToUpdate[key]) {
-        disabledUpdateButton = false;
-        return false;
-      }
-    });
+    if (wildCard) {
+      disabledUpdateButton = !(this.state.wildCardImages && this.state.wildCardVersion);
+    } else {
+      _.map(imagesToUpdate, (el, key) => {
+        if (imagesToUpdate[key]) {
+          disabledUpdateButton = false;
+          return false;
+        }
+      });
+    }
+
     return (
       <div key={name}>
         <ul className="breadcrumb">
@@ -338,7 +367,7 @@ export default class ClusterImages extends Component {
                   <NavItem eventKey={5} disabled={name === "all"}>Update</NavItem>
                 </LinkContainer>
               </Nav>
-              <div className="clusterImages">
+              <div id="clusterImages">
                 <form>
                   <div className="col-md-6">
                     <FormGroup>
@@ -359,14 +388,6 @@ export default class ClusterImages extends Component {
                     </FormGroup>
                   </div>
                   <div className="col-md-6">
-                    <FormGroup>
-                      <label>Percentage of Containers to Update:</label>
-                      <InputGroup>
-                        <FormControl type="number" step="10" max="100" min="10" id="updatePercents" value={this.state.updatePercents}
-                                     onChange={this.handleSelectChange.bind(this, 'updatePercents')}/>
-                        <InputGroup.Addon>%</InputGroup.Addon>
-                      </InputGroup>
-                    </FormGroup>
                     <div className="row">
                       <div className="col-md-6">
                         <FormGroup>
@@ -376,6 +397,11 @@ export default class ClusterImages extends Component {
                       </div>
                       <div className="col-md-6">
                         <FormGroup>
+                          <Button active={wildCard} bsStyle={wildCard ? "primary" : "default"}
+                                  className="pulled-down-button"
+                                  onClick={this.handleWildcardChange.bind(this)}>
+                            Wildcard
+                          </Button>
                           <Button bsStyle="primary" onClick={this.onSubmit.bind(this)}
                                   disabled={disabledUpdateButton}
                                   className="pulled-down-button pulled-right"
@@ -385,13 +411,44 @@ export default class ClusterImages extends Component {
                         </FormGroup>
                       </div>
                     </div>
+                    <FormGroup>
+                      <label>Percentage of Containers to Update:</label>
+                      <InputGroup>
+                        <FormControl type="number" step="10" max="100" min="10" id="updatePercents"
+                                     value={this.state.updatePercents}
+                                     onChange={this.handleSelectChange.bind(this, 'updatePercents')}/>
+                        <InputGroup.Addon>%</InputGroup.Addon>
+                      </InputGroup>
+                    </FormGroup>
                   </div>
                 </form>
-                <DockTable columns={this.COLUMNS}
-                           rows={rows}
-                           key={name}
-                           searchable={false}
-                />
+                {!wildCard && (
+                  <DockTable columns={this.COLUMNS}
+                             rows={rows}
+                             key={name}
+                             searchable={false}
+                  />
+                ) || (
+                  <div>
+                    <div className="col-md-6">
+                      <FormGroup required>
+                        <ControlLabel>Wildcard Images</ControlLabel>
+                        <FormControl type="text" onChange={this.handleSelectChange.bind(this, 'wildCardImages')}
+                                     value={this.state.wildCardImages}
+                                     placeholder="ni1.codeabolab.com/*"/>
+                      </FormGroup>
+                    </div>
+                    <div className="col-md-6">
+                      <FormGroup required>
+                        <ControlLabel>Wildcard Target Version</ControlLabel>
+                        <FormControl type="text" onChange={this.handleSelectChange.bind(this, 'wildCardVersion')}
+                                     placeholder="*latest"
+                                     value={this.state.wildCardVersion}/>
+                      </FormGroup>
+                    </div>
+                    &nbsp;
+                  </div>
+                )}
               </div>
             </div>
           )}

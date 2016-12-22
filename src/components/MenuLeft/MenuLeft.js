@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import {getCurrentUser} from 'redux/modules/users/users';
 import _ from 'lodash';
 import {UserPassChange} from '../../containers/index';
+import { connectWebsocketEventsListener } from '../common/EventListener/EventListener';
 
 @connect(
   state => ({
@@ -31,6 +32,10 @@ export default class MenuLeft extends Component {
     window.location.assign('/login');
   };
 
+  static contextTypes = {
+    store: React.PropTypes.object
+  };
+
   componentWillMount() {
     const {getCurrentUser} = this.props;
     getCurrentUser().then(()=> {
@@ -43,6 +48,7 @@ export default class MenuLeft extends Component {
 
   componentDidMount() {
     this.checkSideBarCollapsed();
+    connectWebsocketEventsListener(this.context.store);
   }
 
   onHideDialog() {
