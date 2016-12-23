@@ -19,7 +19,8 @@ import _ from 'lodash';
   fields: [
     'name',
     'description',
-    'assignedNodes'
+    'assignedNodes',
+    'filter'
   ],
   validate: createValidator({
     name: [required, alphanumeric],
@@ -42,27 +43,51 @@ export default class ClusterAdd extends Component {
     valid: PropTypes.bool.isRequired,
     cluster: PropTypes.any,
     description: PropTypes.any,
+    filter: PropTypes.string,
+    strategy: PropTypes.string,
     ownRegistries: PropTypes.any,
     onHide: PropTypes.func.isRequired,
     okTitle: PropTypes.string,
     existingClusters: PropTypes.array,
     loadRegistries: PropTypes.func.isRequired,
     loadClusterRegistries: PropTypes.func.isRequired,
-    registries: PropTypes.array.isRequired,
+    registries: PropTypes.object.isRequired,
     update: PropTypes.func.isRequired
   };
+
+  STRATEGIES = [
+    {
+      value: "DEFAULT",
+      label: "DEFAULT"
+    },
+    {
+      value: "SPREAD",
+      label: "SPREAD"
+    },
+    {
+      value: "BINPACK",
+      label: "BINPACK"
+    },
+    {
+      value: "RANDOM",
+      label: "RANDOM"
+    }
+  ];
+
   constructor() {
     super();
     this.state = {
-      firstLoad: true
+      firstLoad: true,
+      strategy: ''
     };
   }
+
   onSubmit() {
     const { create, update, cluster, resetForm } = this.props;
     this.setState({
       firstLoad: false
     });
-    let submitAction = cluster ? update : create;
+    let submitAction = create;
     let registries = this.state.assignedRegistries.map((registry)=> {
       let el = registry.name ? registry.name : registry;
       el = el === 'Docker Hub' ? '' : el;
@@ -74,7 +99,16 @@ export default class ClusterAdd extends Component {
       this.refs.error.textContent = 'Cluster with name: "' + fields.name.value + '" already exists. Please use another name.';
       return false;
     }
-    return submitAction(fields.name.value, {"config": {"registries": registries}, "description": fields.description.value}).then(() => {
+    let payload = {
+      "config": {"registries": registries, "strategy": this.state.strategy},
+      "description": fields.description.value,
+      "filter": fields.filter.value
+    };
+    if (cluster) {
+      delete payload.config.strategy;
+      submitAction = update;
+    }
+    return submitAction(fields.name.value, payload).then(() => {
       if (typeof(fields.assignedNodes.value) !== 'undefined' && fields.assignedNodes.value.length > 0) {
         fields.assignedNodes.value.map(function createNode(node) {
           if (typeof(node) !== 'undefined') {
@@ -96,23 +130,27 @@ export default class ClusterAdd extends Component {
   }
 
   componentDidMount() {
-    const {fields, cluster, description} = this.props;
+    const {fields, cluster, description, filter} = this.props;
     if (cluster) {
       fields.name.onChange(cluster);
     }
     if (description) {
       fields.description.onChange(description);
     }
+    if (filter) {
+      fields.filter.onChange(filter);
+    }
   }
 
   componentWillMount() {
-    const {loadRegistries, cluster, ownRegistries} = this.props;
+    const {loadRegistries, cluster, ownRegistries, strategy} = this.props;
     loadRegistries().then(()=> {
       if (!cluster) {
         let registries = this.props.registries;
         registries = this.editProps(registries);
         this.setState({
-          assignedRegistries: registries
+          assignedRegistries: registries,
+          strategy: this.STRATEGIES[0].value
         });
       }
     });
@@ -121,7 +159,8 @@ export default class ClusterAdd extends Component {
         return el.length === 0 ? 'Docker Hub' : el;
       });
       this.setState({
-        assignedRegistries: registriesFiltered
+        assignedRegistries: registriesFiltered,
+        strategy: strategy
       });
     }
   }
@@ -148,6 +187,13 @@ export default class ClusterAdd extends Component {
   handleSelectChange(value) {
     this.setState({
       assignedRegistries: value
+    });
+  }
+
+  handleStrategyChange(event) {
+    let value = event.target ? event.target.value : event.value;
+    this.setState({
+      strategy: value
     });
   }
 
@@ -215,6 +261,24 @@ export default class ClusterAdd extends Component {
               <HelpBlock>{fields.description.error}</HelpBlock>
             )}
           </FormGroup>
+          <FormGroup>
+            <ControlLabel>Filter</ControlLabel>
+            <FormControl type="text"
+                         {...fields.filter}
+                         placeholder="Filter"
+            />
+          </FormGroup>
+              <FormGroup>
+                <ControlLabel>Strategy</ControlLabel>
+                <FormControl componentClass="select" id="Strategy" value={this.state.strategy}
+                             onChange={this.handleStrategyChange.bind(this)} disabled={this.props.cluster}>
+                  {
+                    this.STRATEGIES.map((el, i) => {
+                      return <option key={i} value={el.value}>{el.label}</option>;
+                    })
+                  }
+                </FormControl>
+              </FormGroup>
           {typeof(this.props.cluster) === 'undefined' && (
             <FormGroup validationState={fields.assignedNodes.error ? "error" : ""}>
               <ControlLabel>Assigned Nodes</ControlLabel>
