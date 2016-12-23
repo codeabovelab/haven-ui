@@ -256,12 +256,16 @@ export default class ClustersPanel extends Component {
 
       case "edit":
         let description = this.props.clusters[cluster].description;
+        let filter = this.props.clusters[cluster].filter;
         let registries = this.props.clusters[cluster].config.registries;
+        let strategy = this.props.clusters[cluster].config.strategy;
         this.setState({
           actionDialog: (
             <ClusterAdd title="Edit Cluster"
                         cluster={cluster}
                         description={description}
+                        filter={filter}
+                        strategy={strategy}
                         orphanNodes = {orphanNodes}
                         onHide={this.onHideDialog.bind(this)}
                         okTitle="Update Cluster"
