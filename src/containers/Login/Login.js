@@ -79,7 +79,7 @@ export default class Login extends Component {
         <div className="loginWrapper">
           <h2 className="text-lg-center"><img className="login-logo" src="/logo.png"/>Haven</h2>
           <h4 className="text-xs-center">Container Management Simplified</h4>
-          <div className={"container loginContainer"}>
+          <div className="container loginContainer">
             <Helmet title="Login"/>
             {(!lsToken || !lsUser) && (
               <div>
