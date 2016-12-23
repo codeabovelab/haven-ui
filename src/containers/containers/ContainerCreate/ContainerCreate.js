@@ -616,6 +616,7 @@ export default class ContainerCreate extends Component {
       .then((response) => {
         $('#creation-log').val(response._res.text);
         $spinner.hide();
+        fields.name.onChange('');
         return loadContainers(cluster.name);
       })
       .catch((response) => {
