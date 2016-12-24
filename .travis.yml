@@ -12,4 +12,6 @@ before_install:
   - nvm install 5 # for Node v5
   - node --version
 
-install: "mvn clean deploy --settings settings.xml -Pstaging"
+install: true
+script:
+  - mvn clean deploy --settings settings.xml -Pstaging
