@@ -104,20 +104,16 @@ export default class ClusterImages extends Component {
       const clustersImages = _.get(deployedImages, name, []);
       clustersImages.map(el => {
         if (el.name) {
+          let key = el.registry.trim().length > 0 ? el.registry + '/' + el.name : el.name;
           let tags = _.get(el, 'tags', []);
           let lastTag = tags[tags.length - 1];
           if (this.state.mounted) {
             this.setState({
               tagsSelected: {
                 ...this.state.tagsSelected,
-                [el.name]: lastTag
+                [key]: lastTag
               }
             });
-            if (lastTag && el.currentTag !== lastTag) {
-              this.setState({
-                imagesToUpdate: {...this.state.imagesToUpdate, [el.name]: true}
-              });
-            }
           }
         }
       });
@@ -162,19 +158,19 @@ export default class ClusterImages extends Component {
 
   tagsRender(row) {
     let tagsOptions;
-    const imageName = row.name;
+    const key = row.registry.trim().length > 0 ? row.registry + '/' + row.name : row.name;
     tagsOptions = row.tags && row.tags.map(tag => {
       return {value: tag, label: tag};
     });
     let disabled = !tagsOptions || tagsOptions.length === 0;
     return (
       <td key="tags" className="react-select-td" title={disabled ? "No tags available" : ""}>
-        <Select value={this.state.tagsSelected[imageName]}
+        <Select value={this.state.tagsSelected[key]}
                 options={tagsOptions}
                 placeholder = ""
                 disabled={disabled}
                 clearable={false}
-                onChange={handleChange.bind(this, imageName)}
+                onChange={handleChange.bind(this, key)}
         />
       </td>
     );
@@ -203,17 +199,18 @@ export default class ClusterImages extends Component {
         <strong>Update available!</strong>
       </Popover>
     );
+    let checkBoxName = row.registry.trim().length > 0 ? row.registry + '/' + row.name : row.name;
     return (
       <td key="select" className="checkbox-td">
         <OverlayTrigger trigger={checkUpdateAvailability(row) ? ['hover', 'focus'] : []} placement="right" overlay={popoverTop}>
           <div className="select-update-block">
             <input type="checkbox"
-                   key={row.name}
+                   key={checkBoxName}
                    className="checkbox-control"
                    defaultChecked={false}
                    disabled={!row.name}
-                   checked={this.state.imagesToUpdate[row.name]}
-                   name={row.name}
+                   checked={this.state.imagesToUpdate[checkBoxName]}
+                   name={checkBoxName}
                    onChange={this.toggleCheckbox.bind(this)}
             />
           </div>
