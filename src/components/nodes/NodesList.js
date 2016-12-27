@@ -4,6 +4,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import {DockTable, ActionMenu, Chain} from '../index';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Nav, NavItem, Popover} from 'react-bootstrap';
 import {Dialog, PropertyGrid} from 'components';
+import TimeUtils from 'utils/TimeUtils';
 import _ from 'lodash';
 
 export default class NodesList extends Component {
@@ -24,13 +25,13 @@ export default class NodesList extends Component {
     {
       name: 'address',
       label: 'IP Address',
-      width: '20%',
+      width: '10%',
       sortable: true
     },
     {
       name: 'cluster',
       label: 'Cluster',
-      width: '15%',
+      width: '10%',
       sortable: true,
       render: this.clusterRender
     },
@@ -77,9 +78,16 @@ export default class NodesList extends Component {
     const rows = this.additionalData(data);
     let nodesNavId = clusterName ? "/clusters/" + clusterName + "/" + "nodes" : "/nodes";
     let name = clusterName ? clusterName : "all";
+    let columns = this.COLUMNS;
+    if (name !== "all") {
+      columns.splice(3, 0, {name: 'reservedCPUS', width: '4%', label: 'Reserved CPUs', render: this.cpusRender.bind(this)});
+      columns.splice(4, 0, {name: 'reservedMemory', width: '7%', label: 'Reserved Memory', render: this.memoryRender.bind(this)});
+    } else {
+      columns = columns.filter((object)=> object.name !== 'reservedCPUS' && object.name !== 'reservedMemory');
+    }
 
     return (
-      <div>
+      <div key={name}>
         <div className="panel panel-default">
           {this.props.loading && (
             <ProgressBar active now={100}/>
@@ -121,7 +129,7 @@ export default class NodesList extends Component {
                 </ButtonToolbar>
               )}
               <div className="nodes">
-              <DockTable columns={this.COLUMNS}
+              <DockTable columns={columns}
                          rows={rows}
               />
               </div>
@@ -236,6 +244,22 @@ export default class NodesList extends Component {
     );
   }
 
+  cpusRender(row) {
+    return (
+      <td key="cpus">
+        <span>{row.health.swarmCpusReserved + '/' + row.health.swarmCpusTotal}</span>
+      </td>
+    );
+  }
+
+  memoryRender(row) {
+    return (
+      <td key="memory">
+        <span>{bytesToMb(row.health.swarmMemReserved) + '/' + bytesToMb(row.health.swarmMemTotal) + ' MB'}</span>
+      </td>
+    );
+  }
+
   labelsRender(row) {
     let labels = [];
     _.map(row.labels, (el, i)=>{
@@ -277,14 +301,15 @@ export default class NodesList extends Component {
   }
 
   timeFotmat(registry) {
-    let time = 'none';
-    if (registry.time) {
-      time = registry.time.substring(11, 19) + ' ' + registry.time.substring(0, 10);
-    }
+    let time = registry.time ? TimeUtils.format(registry.time) : 'none';
     return (
       <td>
         {time}
       </td>
     );
   }
+}
+
+function bytesToMb(value) {
+  return Math.round(value / 1048576);
 }

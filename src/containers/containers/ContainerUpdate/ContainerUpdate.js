@@ -195,7 +195,7 @@ export default class ContainerUpdate extends Component {
             <label>Update Log: <i className="fa fa-spinner fa-2x fa-pulse"/></label>
             <textarea readOnly
                       className="container-creation-log"
-                      defaultValue=""
+                      defaultValue="Updating Container..."
                       id="creation-log"
             />
           </div>

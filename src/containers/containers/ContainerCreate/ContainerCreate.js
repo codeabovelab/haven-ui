@@ -414,7 +414,7 @@ export default class ContainerCreate extends Component {
               <label>Create Log: <i className="fa fa-spinner fa-2x fa-pulse"/></label>
               <textarea readOnly
                         className="container-creation-log"
-                        defaultValue=""
+                        defaultValue="Creating Container..."
                         id="creation-log"
               />
             </div>
