@@ -156,14 +156,16 @@ export default class ContainerUpdate extends Component {
     $spinner.show();
     return updateContainer(container, containerUpdData)
       .then((response) => {
-        $logArea.val(response._res.text);
+        let msg = (response._res.text && response._res.text.length > 0) ? response._res.text : "No response message";
+        $logArea.val(msg);
         $spinner.hide();
         loadDetails(container).then((response)=> {
           updateFields(response, fields);
         }).catch(()=>null);
       }).catch((response) => {
         $spinner.hide();
-        $logArea.val(response.message);
+        let msg = (response.message && response.message.length > 0) ? response.message : "No response message";
+        $logArea.val(msg);
         throw new SubmissionError(response.message);
       });
   }

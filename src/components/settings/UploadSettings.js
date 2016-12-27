@@ -62,7 +62,8 @@ export default class UploadSettings extends Component {
         if (response._res.status === 200 && response._res.text === '') {
           $logBlockArea.val('Settings were successfully uploaded!');
         } else {
-          $logBlockArea.val(response._res.text);
+          let msg = (response._res.text && response._res.text.length > 0) ? response._res.text : "No response message";
+          $logBlockArea.val(msg);
         }
         $spinner.hide();
       }).catch((response) => {

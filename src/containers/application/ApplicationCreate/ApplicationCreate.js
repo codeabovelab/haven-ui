@@ -63,7 +63,8 @@ export default class ApplicationCreate extends Component {
     });
     $spinner.show();
     return this.props.uploadFile(clusterName, fields.name.value, fields.file.value[0]).then((response) => {
-      $logBlockArea.val(response._res.text);
+      let msg = (response._res.text && response._res.text.length > 0) ? response._res.text : "No response message";
+      $logBlockArea.val(msg);
       this.props.list(clusterName);
       $spinner.hide();
     }).catch((response) => {

@@ -614,7 +614,8 @@ export default class ContainerCreate extends Component {
     $spinner.show();
     return create(container)
       .then((response) => {
-        $('#creation-log').val(response._res.text);
+        let msg = (response._res.text && response._res.text.length > 0) ? response._res.text : "No response message";
+        $('#creation-log').val(msg);
         $spinner.hide();
         fields.name.onChange('');
         return loadContainers(cluster.name);
