@@ -170,6 +170,7 @@ export default class ClusterImages extends Component {
                 placeholder = ""
                 disabled={disabled}
                 clearable={false}
+                searchable
                 onChange={handleChange.bind(this, key)}
         />
       </td>
