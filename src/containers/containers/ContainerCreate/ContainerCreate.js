@@ -106,6 +106,8 @@ export default class ContainerCreate extends Component {
       environment: [{field1: '', field2: ''}],
       constraints: [""],
       affinity: [""],
+      command: [""],
+      entrypoint: [""],
       selectImageValue: {value: '', label: ''},
       checkboxes: {checkboxInitial: ''},
       creationLogVisible: '',
@@ -357,10 +359,12 @@ export default class ContainerCreate extends Component {
               <input type="text" {...fields.name} className="form-control"/>
             </div>
             <Accordion className="accordion-create-container">
-              <Panel header="Environment Variables" eventKey="1">
+              <Panel header="Environment Variables and Entrypoints" eventKey="1">
                 {this.fieldEnvironment()}
                 {this.fieldConstraints()}
                 {this.fieldAffinity()}
+                {this.fieldCommand()}
+                {this.fieldEntrypoint()}
               </Panel>
               <Panel header="Runtime Constraints" eventKey="2">
                 <div className="row">
@@ -544,6 +548,13 @@ export default class ContainerCreate extends Component {
                 });
               }
             }
+            if (key === 'command' || key === 'entrypoint') {
+              if (value.length > 0) {
+                this.setState({
+                  [key]: value
+                });
+              }
+            }
             if (key === 'volumeBinds' || key === 'volumesFrom') {
               let volumes = [];
               _.map(defaultParams[key], (item, key) => {
@@ -607,6 +618,8 @@ export default class ContainerCreate extends Component {
     container.restart = this.getRestart();
     container.volumesFrom = this.getVolumes('volumesFrom');
     container.volumeBinds = this.getVolumes('volumeBinds');
+    container.command = this.state.command;
+    container.entrypoint = this.state.entrypoint;
     $logBlock.show();
     this.setState({
       creationLogVisible: true
@@ -908,6 +921,72 @@ export default class ContainerCreate extends Component {
       value += `[:${restartRetries.value}]`;
     }
     return value;
+  }
+
+  fieldCommand() {
+    let items = this.state.command;
+    return (
+      <div className="field-command form-group">
+        <div className="field-header">
+          <label>Command</label>
+          <a onClick={this.addCommandItem.bind(this)}><i className="fa fa-plus-circle"/></a>
+        </div>
+        <div className="field-body">
+          {items.map((item, key) => <div className="row" key={key}>
+            <div className="col-sm-12">
+              <input type="text" onChange={handleChange.bind(this, key)} value={this.state.command[key]} className="form-control"
+                     placeholder=""/>
+            </div>
+          </div>)}
+        </div>
+      </div>
+    );
+
+    function handleChange(i, event) {
+      let state = Object.assign({}, this.state);
+      state.command[i] = event.target.value;
+      this.setState(state);
+    }
+  }
+
+  addCommandItem() {
+    this.setState({
+      ...this.state,
+      command: [...this.state.command, ""]
+    });
+  }
+
+  fieldEntrypoint() {
+    let items = this.state.entrypoint;
+    return (
+      <div className="field-entrypoint form-group">
+        <div className="field-header">
+          <label>Entry point</label>
+          <a onClick={this.addEntrypointItem.bind(this)}><i className="fa fa-plus-circle"/></a>
+        </div>
+        <div className="field-body">
+          {items.map((item, key) => <div className="row" key={key}>
+            <div className="col-sm-12">
+              <input type="text" onChange={handleChange.bind(this, key)} value={this.state.entrypoint[key]} className="form-control"
+                     placeholder=""/>
+            </div>
+          </div>)}
+        </div>
+      </div>
+    );
+
+    function handleChange(i, event) {
+      let state = Object.assign({}, this.state);
+      state.entrypoint[i] = event.target.value;
+      this.setState(state);
+    }
+  }
+
+  addEntrypointItem() {
+    this.setState({
+      ...this.state,
+      entrypoint: [...this.state.entrypoint, ""]
+    });
   }
 }
 
