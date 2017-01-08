@@ -7,10 +7,33 @@
   <artifactId>dm-ui</artifactId>
   <version>1.0.1</version>
   <packaging>pom</packaging>
-  <name>DockerMaster</name>
+  <name>Haven Web App</name>
 
+  <description>Haven Web App is the front-end to Haven Container Manager. 
+    Please see the Haven Readme for the complete installation instruction and feature list 
+    https://github.com/codeabovelab/haven-platform.</description>
+  <url>https://github.com/codeabovelab/haven-ui</url>
+  
+  <licenses>
+   <license>
+     <name>The Apache License, Version 2.0</name>
+     <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+   </license>
+  </licenses>
+  
+  <developers>
+    <developer>
+      <name>https://github.com/codeabovelab/haven-platform/issues</name>
+      <email>info@codeabovelab.com</email>
+      <organization>codeabovelab</organization>
+      <organizationUrl>https://codeabovelab.com</organizationUrl>
+    </developer>
+  </developers>
+  
   <scm>
     <connection>scm:git:git@github.com:codeabovelab/haven-ui.git</connection>
+    <developerConnection>scm:git:git@github.com:codeabovelab/haven-ui.git</developerConnection>
+    <url>https://github.com/codeabovelab/haven-ui</url>
     <tag>ui-1.0.1</tag>
   </scm>
 
