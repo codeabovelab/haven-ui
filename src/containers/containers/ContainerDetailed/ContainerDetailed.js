@@ -273,8 +273,8 @@ export default class ContainerDetailed extends Component {
             continue;
           }
           index++;
-          let key = container.environment[prop].match(/([^=]+)={1,2}/)[0];
-          key = key ? key : index;
+          let key = container.environment[prop].match(/([^=]+)={1,2}/);
+          key = key[0] ? key[0] : index;
           let val = isInt(key) ? container.environment[prop] : container.environment[prop].substring(key.length);
           _.assign(environment, {[key]: val});
         }
