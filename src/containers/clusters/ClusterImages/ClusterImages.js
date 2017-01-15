@@ -288,6 +288,7 @@ export default class ClusterImages extends Component {
     const {params: {name}, updateContainers} = this.props;
     updateContainers(name, strategy, updatePercents, schedule, jobTitle, images).then((response)=> {
       this.showResponse(response);
+      this.setState({imagesToUpdate: {}});
     }).catch((response) => {
       this.showResponse(response);
     });
