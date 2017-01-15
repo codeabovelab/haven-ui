@@ -169,6 +169,7 @@ export default class ContainerCreate extends Component {
     let registry;
     let image;
     const {fields} = this.props;
+    console.log('updating image value, new value ll be: ', newValue);
     if (newValue.length !== 0) {
       this.setState({
         selectImageValue: newValue
