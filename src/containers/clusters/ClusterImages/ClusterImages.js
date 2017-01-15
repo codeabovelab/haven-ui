@@ -312,6 +312,8 @@ export default class ClusterImages extends Component {
   }
 
   render() {
+    let $searchInput = $('.input-search')[0];
+    $($searchInput).addClass('pseudo-label');
     require('react-select/dist/react-select.css');
     const {params: {name}, images} = this.props;
     const wildCard = this.state.wildCard;
@@ -450,7 +452,6 @@ export default class ClusterImages extends Component {
                   <DockTable columns={this.COLUMNS}
                              rows={rows}
                              key={name}
-                             searchable={false}
                   />
                 ) || (
                   <div>
