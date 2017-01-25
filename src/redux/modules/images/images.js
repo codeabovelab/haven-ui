@@ -171,9 +171,9 @@ export function deleteImages(arg) {
 export function deleteClusterImages(cluster) {
   let body = {
     type: "job.removeClusterImages",
-    timestamp: Math.floor(Date.now() / 1000),
     title: "Delete images in cluster \"" + cluster + "\"",
     parameters: {
+      timestamp: Math.floor(Date.now() / 1000),
       clusterName: cluster
     }
   };

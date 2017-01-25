@@ -148,9 +148,9 @@ export function updateContainers(cluster, type, percentage, schedule, title, ima
   let body = {
     type: type,
     title: title,
-    timestamp: Math.floor(Date.now() / 1000),
     schedule: schedule,
     parameters: {
+      timestamp: Math.floor(Date.now() / 1000),
       cluster: cluster,
       images: {
         images: images
