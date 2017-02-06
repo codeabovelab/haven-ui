@@ -221,30 +221,30 @@ export default class NodesList extends Component {
     });
   }
 
-  healthRender(registry) {
+  healthRender(row) {
     let labelStyle;
-    if ((!registry.on && registry.health.healthy) || !registry.time ) {
+    if ((!row.on && row.health.healthy) || !row.time ) {
       labelStyle = "off-status-count";
     }
     return (
-      <td>
-        {(registry.health.healthy) && (
+      <td key="health">
+        {(row.health.healthy) && (
           <Badge bsClass={"badge " + (labelStyle ? labelStyle : "up-status-count")}>Healthy</Badge>
         )}
-        {(!registry.health.healthy) && (
+        {(!row.health.healthy) && (
           <Badge bsClass={"badge " + (labelStyle ? labelStyle : "warning-status-count")}>Not Healthy</Badge>
         )}
       </td>
     );
   }
 
-  agentHealthRender(registry) {
+  agentHealthRender(row) {
     return (
-      <td>
-        {(registry.on) && (
+      <td key="agentHealth">
+        {(row.on) && (
           <Badge bsClass="badge up-status-count">On</Badge>
         )}
-        {(!registry.on) && (
+        {(!row.on) && (
           <Badge bsClass="badge off-status-count">Off</Badge>
         )}
       </td>
@@ -253,7 +253,7 @@ export default class NodesList extends Component {
 
   cpusRender(row) {
     return (
-      <td key={"cpus-" + row.id}>
+      <td key="cpus">
         <span>{row.health.swarmCpusReserved + '/' + row.health.swarmCpusTotal}</span>
       </td>
     );
@@ -261,7 +261,7 @@ export default class NodesList extends Component {
 
   memoryRender(row) {
     return (
-      <td key={"memory-" + row.id}>
+      <td key="memory">
         <span>{bytesToMb(row.health.swarmMemReserved) + '/' + bytesToMb(row.health.swarmMemTotal) + ' MB'}</span>
       </td>
     );
@@ -284,7 +284,7 @@ export default class NodesList extends Component {
       </Popover>
     );
     return (
-      <td key={"labels-" + row.id}>
+      <td key="labels">
         <Chain data={labels.length > 0 ? ['Labels'] : []}
                popoverPlacement="top"
                popoverRender={popoverRender}
@@ -294,23 +294,23 @@ export default class NodesList extends Component {
     );
   }
 
-  clusterRender(registry) {
+  clusterRender(row) {
     return (
-      <td>
-        {(registry.cluster != null) && (
-          <Link to={`/clusters/${registry.cluster}`}>{registry.cluster}</Link>
+      <td key="cluster">
+        {(row.cluster != null) && (
+          <Link to={`/clusters/${row.cluster}`}>{row.cluster}</Link>
         )}
-        {(registry.cluster == null) && (
+        {(row.cluster == null) && (
           <label>None</label>
         )}
       </td>
     );
   }
 
-  timeFotmat(registry) {
-    let time = registry.time ? TimeUtils.format(registry.time) : 'none';
+  timeFotmat(row) {
+    let time = row.time ? TimeUtils.format(row.time) : 'none';
     return (
-      <td>
+      <td key="time">
         {time}
       </td>
     );
