@@ -17,7 +17,7 @@ export default class StatisticsPanel extends React.Component {
         {this.props.metrics && this.props.metrics.map((metric, index) => {
           return (
             <Col sm={3} key={index}>
-              <Panel bsStyle={metric.highlight ? "danger" : ""}>
+              <Panel bsStyle={metric.highlight ? "danger" : "default"}>
                 <div className="metric-row">
                   <div className={this.props.values[index] > 999 ? "metric-value-large" : "metric-value"}>
                     {this.props.values[index]}
