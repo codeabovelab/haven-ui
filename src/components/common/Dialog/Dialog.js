@@ -9,7 +9,7 @@ export default class Dialog extends Component {
 
   static propTypes = {
     show: PropTypes.bool.isRequired,
-    backdrop: PropTypes.bool,
+    backdrop: PropTypes.any,
     focus: PropTypes.bool,
     showSpinner: PropTypes.bool,
     title: PropTypes.string.isRequired,
