@@ -480,7 +480,7 @@ export default class ClusterDetailsPanel extends Component {
                   </Button>
                   }
                   <ButtonGroup>
-                    <DropdownButton bsStyle="primary" pullRight className="pulled-right" title="More Actions">
+                    <DropdownButton bsStyle="primary" pullRight className="pulled-right" title="More Actions" id="moreActionsBtn">
                       <MenuItem eventKey="1"
                                 bsStyle="default"
                                 onClick={this.getClusterSource.bind(this)}

@@ -34,6 +34,8 @@ export default class ActionMenu extends Component {
         return (
           <ButtonToolbar>
             <DropdownButton bsStyle={this.DEFAULT_STYLE}
+                            id={"tdDrop" + this.props.subject}
+                            key={this.props.subject}
                          title={titleWithoutAction}
                          pullRight
             >
@@ -58,6 +60,8 @@ export default class ActionMenu extends Component {
       return (
           <ButtonToolbar>
             <SplitButton bsStyle={this.DEFAULT_STYLE}
+                         id={"tdDrop" + this.props.subject}
+                         key={this.props.subject}
                          title={defaultAction.title}
                          disabled={defaultAction.disabled || this.props.disabled}
                          onClick={this.handleClick.bind(this, defaultAction.key, this.props.subject)}
