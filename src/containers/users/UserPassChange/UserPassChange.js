@@ -64,7 +64,7 @@ export default class UserAdd extends Component {
         )}
         <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
           <FormGroup title="required" required
-                     validationState={(fields.password.error && fields.password.touched) ? "error" : ""}>
+                     validationState={(fields.password.error && fields.password.touched) ? "error" : null}>
             <ControlLabel>Password</ControlLabel>
             <FormControl type="password"
                          {...fields.password}
@@ -75,7 +75,7 @@ export default class UserAdd extends Component {
             )}
           </FormGroup>
 
-          <FormGroup validationState={fields.password.error === "Passwords do not match" && fields.password.touched ? "error" : ""}>
+          <FormGroup validationState={fields.password.error === "Passwords do not match" && fields.password.touched ? "error" : null}>
             <ControlLabel>Confirm Password</ControlLabel>
 
             <FormControl type="password"

@@ -109,7 +109,7 @@ export default class ClusterUploadCompose extends Component {
         )}
 
         <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
-          <FormGroup validationState={fields.name.error && fields.name.touched ? "error" : ""}>
+          <FormGroup validationState={fields.name.error && fields.name.touched ? "error" : null}>
             <ControlLabel>Cluster's Name</ControlLabel>
 
             <FormControl type="text"
@@ -124,7 +124,7 @@ export default class ClusterUploadCompose extends Component {
             )}
           </FormGroup>
 
-          <FormGroup validationState={fields.file.error && fileInputTouched ? "error" : ""}>
+          <FormGroup validationState={fields.file.error && fileInputTouched ? "error" : null}>
             <ControlLabel className="btn btn-default btn-file">
               Choose Compose File
               <FormControl type="file"

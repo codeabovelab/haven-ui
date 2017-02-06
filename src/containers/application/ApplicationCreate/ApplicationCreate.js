@@ -97,7 +97,7 @@ export default class ApplicationCreate extends Component {
         )}
 
         <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
-          <FormGroup validationState={fields.name.error ? "error" : ""}>
+          <FormGroup validationState={fields.name.error ? "error" : null}>
             <ControlLabel>Name</ControlLabel>
 
             <FormControl type="text"
@@ -111,7 +111,7 @@ export default class ApplicationCreate extends Component {
             )}
           </FormGroup>
 
-          <FormGroup validationState={fields.file.error ? "error" : ""}>
+          <FormGroup validationState={fields.file.error ? "error" : null}>
             <ControlLabel className="btn btn-default btn-file">
             Choose Compose File
             <FormControl type="file"

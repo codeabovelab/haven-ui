@@ -261,7 +261,7 @@ export default class UserAdd extends Component {
           {/* it prevents browser from filling every user'a password and email fields with the same cached data*/}
           <input type="password" className="dummyInput"/>
 
-          <FormGroup title="required" required validationState={fields.username.error && fields.username.touched ? "error" : ""}>
+          <FormGroup title="required" required validationState={fields.username.error && fields.username.touched ? "error" : null}>
             <ControlLabel>Name</ControlLabel>
             <FormControl type="text"
                          {...fields.username}
@@ -276,7 +276,7 @@ export default class UserAdd extends Component {
           <div ref="usernameError" className="text-danger text-xs-center text-error field-error">
           </div>
 
-          <FormGroup validationState={fields.email.error ? "error" : ""}>
+          <FormGroup validationState={fields.email.error ? "error" : null}>
             <ControlLabel>Email</ControlLabel>
             <FormControl type="text"
                          {...fields.email}
@@ -289,7 +289,7 @@ export default class UserAdd extends Component {
 
           {!userName && (
             <div>
-              <FormGroup title="required" required validationState={fields.password.error && fields.password.touched ? "error" : ""}>
+              <FormGroup title="required" required validationState={fields.password.error && fields.password.touched ? "error" : null}>
                 <ControlLabel>Password</ControlLabel>
 
                 <FormControl type="password"
@@ -301,7 +301,7 @@ export default class UserAdd extends Component {
                 )}
               </FormGroup>
 
-              <FormGroup validationState={fields.password.error === "Passwords do not match" && fields.password.touched ? "error" : ""}>
+              <FormGroup validationState={fields.password.error === "Passwords do not match" && fields.password.touched ? "error" : null}>
                 <ControlLabel>Confirm Password</ControlLabel>
 
                 <FormControl type="password"

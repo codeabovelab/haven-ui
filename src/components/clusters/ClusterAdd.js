@@ -221,7 +221,7 @@ export default class ClusterAdd extends Component {
 
         <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
           <FormGroup title="required" required validationState={
-            (fields.name.error && (!this.state.firstLoad || fields.name.touched || fields.name.error !== 'Required')) ? "error" : ""}
+            (fields.name.error && (!this.state.firstLoad || fields.name.touched || fields.name.error !== 'Required')) ? "error" : null}
           >
             <ControlLabel>Name</ControlLabel>
             <FormControl type="text"
@@ -250,7 +250,7 @@ export default class ClusterAdd extends Component {
                     options={this.getAvailableRegistries()}
                     searchable />
           </FormGroup>
-          <FormGroup validationState={fields.description.error ? "error" : ""}>
+          <FormGroup validationState={fields.description.error ? "error" : null}>
             <ControlLabel>Description</ControlLabel>
 
             <FormControl type="text"
@@ -280,7 +280,7 @@ export default class ClusterAdd extends Component {
                 </FormControl>
               </FormGroup>
           {typeof(this.props.cluster) === 'undefined' && (
-            <FormGroup validationState={fields.assignedNodes.error ? "error" : ""}>
+            <FormGroup validationState={fields.assignedNodes.error ? "error" : null}>
               <ControlLabel>Assigned Nodes</ControlLabel>
               <FormControl multiple componentClass="select" {...fields.assignedNodes} >
                 {
