@@ -178,14 +178,14 @@ export default class RegistriesList extends Component {
   formatUserName(registry) {
     const username = registry.registryType === 'AWS' ? ('accessKey: ' + registry.accessKey) : registry.username;
     return (
-      <td>{username}</td>
+      <td key="username">{username}</td>
     );
   }
 
   renderName(registry) {
     const name = registry.name === '' ? 'Docker Hub' : registry.name;
     return (
-      <td>{name}</td>
+      <td key="registryName">{name}</td>
     );
   }
 }
