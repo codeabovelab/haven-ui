@@ -129,7 +129,7 @@ export default class ClusterImages extends Component {
   containersRender(row) {
     let chainContainers = row.containers;
     let popoverRender = (el) => (
-      <Popover>
+      <Popover id={el.id}>
         <span>Node: {shortenName(el.node) || ''}</span>
         <br></br>
         <span>Id: {shortenName(el.id) || ''}</span>
