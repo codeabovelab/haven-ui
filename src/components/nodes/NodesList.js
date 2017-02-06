@@ -36,6 +36,18 @@ export default class NodesList extends Component {
       render: this.clusterRender
     },
     {
+      name: 'reservedCPUS',
+      label: 'Reserved CPUs',
+      width: '4%',
+      render: this.cpusRender
+    },
+    {
+      name: 'reservedMemory',
+      label: 'Reserved Memory',
+      width: '7%',
+      render: this.memoryRender
+    },
+    {
       name: 'labels',
       label: 'Labels',
       width: '10%',
@@ -79,13 +91,9 @@ export default class NodesList extends Component {
     let nodesNavId = clusterName ? "/clusters/" + clusterName + "/" + "nodes" : "/nodes";
     let name = clusterName ? clusterName : "all";
     let columns = this.COLUMNS;
-    if (name !== "all") {
-      columns.splice(3, 0, {name: 'reservedCPUS', width: '4%', label: 'Reserved CPUs', render: this.cpusRender.bind(this)});
-      columns.splice(4, 0, {name: 'reservedMemory', width: '7%', label: 'Reserved Memory', render: this.memoryRender.bind(this)});
-    } else {
+    if (name === "all") {
       columns = columns.filter((object)=> object.name !== 'reservedCPUS' && object.name !== 'reservedMemory');
     }
-
     return (
       <div key={name}>
         <div className="panel panel-default">
@@ -95,7 +103,6 @@ export default class NodesList extends Component {
 
           {(this.props.data && !this.props.loading) && (
             <div>
-
               <Nav bsStyle="tabs" className="dockTable-nav">
                 <LinkContainer to={"/clusters/" + name}>
                   <NavItem eventKey={1}>Containers</NavItem>
@@ -246,7 +253,7 @@ export default class NodesList extends Component {
 
   cpusRender(row) {
     return (
-      <td key="cpus">
+      <td key={"cpus-" + row.id}>
         <span>{row.health.swarmCpusReserved + '/' + row.health.swarmCpusTotal}</span>
       </td>
     );
@@ -254,7 +261,7 @@ export default class NodesList extends Component {
 
   memoryRender(row) {
     return (
-      <td key="memory">
+      <td key={"memory-" + row.id}>
         <span>{bytesToMb(row.health.swarmMemReserved) + '/' + bytesToMb(row.health.swarmMemTotal) + ' MB'}</span>
       </td>
     );
@@ -277,7 +284,7 @@ export default class NodesList extends Component {
       </Popover>
     );
     return (
-      <td key="labels">
+      <td key={"labels-" + row.id}>
         <Chain data={labels.length > 0 ? ['Labels'] : []}
                popoverPlacement="top"
                popoverRender={popoverRender}
