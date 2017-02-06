@@ -14,6 +14,7 @@ import { Stomp } from 'stompjs/lib/stomp.min.js';
 import {connectToStomp} from '../../../utils/stompUtils';
 
 let stompClient = null;
+let clustersPanelMounted = null;
 
 @connect(
   state => ({
@@ -106,6 +107,7 @@ export default class ClustersPanel extends Component {
   componentDidMount() {
     const {loadClusters, loadNodes, countEvents, token} = this.props;
     let clusterNames = [];
+    clustersPanelMounted = true;
     loadClusters().then(() => {
       for (let key in this.props.clusters) {
         if (typeof(this.props.clusters[key] === 'Cluster')) {
@@ -119,18 +121,25 @@ export default class ClustersPanel extends Component {
       stompClient = connectedClient;
       stompClient.subscribe('/topic/**', (message) => {
         let newError = JSON.parse(message.body);
-        this.setState({
-          clumanErrors: [...this.state.clumanErrors, newError]
-        });
+        this.addError(newError);
       });
     });
-
     $('.input-search').focus();
   }
 
+  addError(newError) {
+    if (clustersPanelMounted) {
+      this.setState({
+        clumanErrors: [...this.state.clumanErrors, newError]
+      });
+    }
+  }
+
   componentWillUnmount() {
-    stompClient.disconnect();
-    this.state.clumanErrors = [];
+    if (stompClient) {
+      stompClient.disconnect();
+    }
+    clustersPanelMounted = false;
   }
 
   render() {

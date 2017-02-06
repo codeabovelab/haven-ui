@@ -9,6 +9,8 @@ import {FormGroup, InputGroup, FormControl, ControlLabel, Button, ProgressBar, N
 import _ from 'lodash';
 import Select from 'react-select';
 
+let clusterImagesMounted = null;
+
 @connect(
   state => ({
     clusters: state.clusters,
@@ -83,7 +85,6 @@ export default class ClusterImages extends Component {
   ];
 
   componentWillMount() {
-    const {getDeployedImages, params: {name}} = this.props;
     require('./ClusterImages.scss');
     this.state = {
       tagsSelected: {},
@@ -96,9 +97,13 @@ export default class ClusterImages extends Component {
       jobTitle: '',
       wildCard: false,
       wildCardImages: '',
-      wildCardVersion: '',
-      mounted: true
+      wildCardVersion: ''
     };
+  }
+
+  componentDidMount() {
+    const {getDeployedImages, params: {name}} = this.props;
+    clusterImagesMounted = true;
     getDeployedImages(name).then(() => {
       const {deployedImages} = this.props.images;
       const clustersImages = _.get(deployedImages, name, []);
@@ -107,7 +112,7 @@ export default class ClusterImages extends Component {
           let key = el.registry.trim().length > 0 ? el.registry + '/' + el.name : el.name;
           let tags = _.get(el, 'tags', []);
           let lastTag = tags[tags.length - 1];
-          if (this.state.mounted) {
+          if (clusterImagesMounted) {
             this.setState({
               tagsSelected: {
                 ...this.state.tagsSelected,
@@ -121,9 +126,7 @@ export default class ClusterImages extends Component {
   }
 
   componentWillUnmount() {
-    this.setState({
-      mounted: false
-    });
+    clusterImagesMounted = false;
   }
 
   containersRender(row) {
