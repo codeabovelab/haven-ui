@@ -101,8 +101,8 @@ export default class ContainerCreate extends Component {
       dnsSearchValue: [],
       ports: [{field1: '', field2: ''}],
       links: [{field1: '', field2: ''}],
-      volumeBinds: [{value: ''}],
-      volumesFrom: [{value: ''}],
+      volumeBinds: [""],
+      volumesFrom: [""],
       environment: [{field1: '', field2: ''}],
       constraints: [""],
       affinity: [""],
@@ -360,7 +360,7 @@ export default class ContainerCreate extends Component {
             </div>
             <Accordion className="accordion-create-container">
               <Panel header="Environment Variables and Entrypoints" eventKey="1">
-                {this.fieldEnvironment()}
+                {this.doubleInputField('environment', 'Environment')}
                 {this.oneInputField('constraints', 'Constraints')}
                 {this.oneInputField('affinity', 'Affinity')}
                 {this.oneInputField('command', 'Command')}
@@ -376,10 +376,11 @@ export default class ContainerCreate extends Component {
                 </div>
               </Panel>
               <Panel header="Volume Settings" eventKey="3">
-                {this.fieldVolumes()}
+                {this.oneInputField('volumeBinds', 'Volume Binds', 'host-src:container-dest[:<options>]')}
+                {this.oneInputField('volumesFrom', 'Volumes From', "container:['rw'|'ro']")}
               </Panel>
               <Panel header="Network Settings" eventKey="4">
-                {this.fieldPorts()}
+                {this.doubleInputField('ports', 'Ports', 'Public Port', 'Private Port')}
                 <div className="row">
                   {NETWORK_FIELDS_KEYS.map(key =>
                     <div className="col-sm-6" key={key}>
@@ -616,10 +617,10 @@ export default class ContainerCreate extends Component {
     container.ports = this.getPorts();
     container.environment = this.getEnvironmentFields();
     container.restart = this.getRestart();
-    container.volumesFrom = this.getVolumes('volumesFrom');
-    container.volumeBinds = this.getVolumes('volumeBinds');
-    container.command = this.state.command;
-    container.entrypoint = this.state.entrypoint;
+    container.volumesFrom = this.getOneInputField('volumesFrom');
+    container.volumeBinds = this.getOneInputField('volumeBinds');
+    container.command = this.getOneInputField('command');
+    container.entrypoint = this.getOneInputField('entrypoint');
     $logBlock.show();
     this.setState({
       creationLogVisible: true
@@ -639,116 +640,50 @@ export default class ContainerCreate extends Component {
       });
   }
 
-  fieldVolumes() {
-    let itemsBinds = this.state.volumeBinds;
-    let itemsFrom = this.state.volumesFrom;
+  doubleInputField(fieldName, label, placeholder1 = "", placeholder2 = "" ) {
+    let items = this.state[fieldName];
     return (
-      <div>
-        <div className="field-volumeBinds form-group">
-          <div className="field-header">
-            <label>Volume Binds</label>
-            <a onClick={this.addVBItem.bind(this)}><i className="fa fa-plus-circle"/></a>
-          </div>
-          <div className="field-body">
-            {itemsBinds.map((item, key) => <div className="row" key={key}>
-              <div className="col-sm-12">
-                <input type="string" onChange={handleChange.bind(this, key, 'volumeBinds')} className="form-control"
-                       placeholder="host-src:container-dest[:<options>]" value={this.state.volumeBinds[key].value}/>
-              </div>
-            </div>)}
-          </div>
-        </div>
-        <div className="field-volumesFrom form-group">
-          <div className="field-header">
-            <label>Volumes From</label>
-            <a onClick={this.addVFItem.bind(this)}><i className="fa fa-plus-circle"/></a>
-          </div>
-          <div className="field-body">
-            {itemsFrom.map((item, key) => <div className="row" key={key}>
-              <div className="col-sm-12">
-                <input type="string" onChange={handleChange.bind(this, key, 'volumesFrom')} className="form-control"
-                       placeholder="container:['rw'|'ro']" value={this.state.volumesFrom[key].value}/>
-              </div>
-            </div>)}
-          </div>
-        </div>
-      </div>
-    );
-
-    function handleChange(i, type, event) {
-      let state = Object.assign({}, this.state);
-      state[type][i].value = event.target ? event.target.value : event.value;
-      this.setState(state);
-    }
-  }
-
-  addVBItem() {
-    this.setState({
-      ...this.state,
-      volumeBinds: [...this.state.volumeBinds, {value: ''}]
-    });
-  }
-
-  addVFItem() {
-    this.setState({
-      ...this.state,
-      volumesFrom: [...this.state.volumesFrom, {value: ''}]
-    });
-  }
-
-  getVolumes(key) {
-    let list = this.state[key];
-    let map = [];
-    list.forEach(item => {
-      if (item.value) {
-        map.push(item.value);
-      }
-    });
-    return map;
-  }
-
-  fieldPorts() {
-    let items = this.state.ports;
-    return (
-      <div className="field-ports form-group">
+      <div className={"form-group " + "field-" + fieldName}>
         <div className="field-header">
-          <label>Ports</label>
-          <a onClick={this.addPortsItem.bind(this)}><i className="fa fa-plus-circle"/></a>
+          <label>{label}</label>
+          <a onClick={addItem.bind(this, fieldName)}><i className="fa fa-plus-circle"/></a>
         </div>
         <div className="field-body">
           {items.map((item, key) => <div className="row" key={key}>
             <div className="col-sm-6">
-              <input type="string" onChange={handleChange.bind(this, key, 'field1')} className="form-control"
-                     value={this.state.ports[key].field1} placeholder="Public Port"/>
+              <input type="string" onChange={handleChange.bind(this, fieldName, key, 'field1')} className="form-control"
+                     placeholder={placeholder1} value={this.state[fieldName][key].field1}/>
             </div>
-            <div className="col-sm-6">
-              <input type="string" onChange={handleChange.bind(this, key, 'field2')} className="form-control"
-                     value={this.state.ports[key].field2} placeholder="Private Port"/>
+            <div className="col-sm-6 preIcon">
+              <input type="string" onChange={handleChange.bind(this, fieldName, key, 'field2')} className="form-control"
+                     placeholder={placeholder2} value={this.state[fieldName][key].field2}/>
+              {key > 0 && (
+                <div className="iconContainer">
+                  <a className="minus-icon" onClick={this.deleteField.bind(this, fieldName, key)}><i
+                    className="fa fa-minus-circle"/></a>
+                </div>
+              )}
             </div>
           </div>)}
         </div>
       </div>
     );
 
-    function handleChange(i, type, event) {
+    function handleChange(fieldName, i, type, event) {
       let state = Object.assign({}, this.state);
-      state.ports[i][type] = event.target.value;
+      state[fieldName][i][type] = event.target.value;
       this.setState(state);
+    }
+
+    function addItem(fieldName) {
+      this.setState({
+        ...this.state,
+        [fieldName]: [...this.state[fieldName], {field1: '', field2: ''}]
+      });
     }
   }
 
-  addPortsItem() {
-    this.setState({
-      ...this.state,
-      ports: [...this.state.ports, {field1: '', field2: ''}]
-    });
-  }
-
-  getPorts() {
-    return this.getMapField('ports');
-  }
-
-  oneInputField(fieldName, label) {
+  oneInputField(fieldName, label, placeholder = "") {
     let items = this.state[fieldName];
     return (
       <div className={"form-group " + "field-" + fieldName}>
@@ -761,7 +696,7 @@ export default class ContainerCreate extends Component {
             <div className="col-sm-12 preIcon">
               <input type="text" onChange={handleChange.bind(this, key, fieldName)} value={this.state[fieldName][key]}
                      className="form-control"
-                     placeholder=""/>
+                     placeholder={placeholder}/>
               {key > 0 && (
                 <div className="iconContainer">
                   <a className="minus-icon" onClick={this.deleteField.bind(this, fieldName, key)}><i
@@ -794,49 +729,6 @@ export default class ContainerCreate extends Component {
     this.setState(state);
   }
 
-  fieldEnvironment() {
-    let items = this.state.environment;
-    return (
-      <div className="field-environment form-group">
-        <div className="field-header">
-          <label>Environment</label>
-          <a onClick={this.addEnvironmentItem.bind(this)}><i className="fa fa-plus-circle"/></a>
-        </div>
-        <div className="field-body">
-          {items.map((item, key) => <div className="row" key={key}>
-            <div className="col-sm-6">
-              <input type="string" onChange={handleChange.bind(this, key, 'field1')} className="form-control"
-                     placeholder="" value={this.state.environment[key].field1}/>
-            </div>
-            <div className="col-sm-6 preIcon">
-              <input type="string" onChange={handleChange.bind(this, key, 'field2')} className="form-control"
-                     placeholder="" value={this.state.environment[key].field2}/>
-              {key > 0 && (
-                <div className="iconContainer">
-                  <a className="minus-icon" onClick={this.deleteField.bind(this, 'environment', key)}><i
-                    className="fa fa-minus-circle"/></a>
-                </div>
-              )}
-            </div>
-          </div>)}
-        </div>
-      </div>
-    );
-
-    function handleChange(i, type, event) {
-      let state = Object.assign({}, this.state);
-      state.environment[i][type] = event.target.value;
-      this.setState(state);
-    }
-  }
-
-  addEnvironmentItem() {
-    this.setState({
-      ...this.state,
-      environment: [...this.state.environment, {field1: '', field2: ''}]
-    });
-  }
-
   getEnvironmentFields() {
     let envVars = this.state.environment;
     let constrVars = this.state.constraints;
@@ -860,6 +752,10 @@ export default class ContainerCreate extends Component {
     return environment;
   }
 
+  getPorts() {
+    return this.getMapField('ports');
+  }
+
   getMapField(field) {
     let list = this.state[field];
     let map = {};
@@ -869,6 +765,17 @@ export default class ContainerCreate extends Component {
       }
     });
     return map;
+  }
+
+  getOneInputField(fieldName) {
+    let list = this.state[fieldName];
+    let provedList = [];
+    list.forEach(item => {
+      if (item.length > 0) {
+        provedList.push(item);
+      }
+    });
+    return provedList;
   }
 
   fieldRestart() {
