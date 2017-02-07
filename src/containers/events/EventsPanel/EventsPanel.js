@@ -2,10 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import { asyncConnect } from 'redux-async-connect';
 import { Link, RouteHandler } from 'react-router';
-import { LinkContainer } from 'react-router-bootstrap';
 import _ from 'lodash';
-import {DockTable, ClustersList, StatisticsPanel, Dialog, EventLog} from 'components';
-import {Panel, Nav, NavItem} from 'react-bootstrap';
+import {DockTable, ClustersList, StatisticsPanel, Dialog, EventLog, NavContainer} from 'components';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 
 @asyncConnect([{
@@ -79,7 +77,6 @@ export default class EventsPanel extends Component {
     let runningNodes = 0;
     let Apps = 0;
     let uniqueEvents = [];
-    let nodesNavId = name === 'all' ? "/nodes" : "/clusters/" + name + "/" + "nodes";
     let eventsCount = 0;
     if (name && events && name !== 'all') {
       events = _.filter(events, (el)=>(el.lastEvent.cluster === name));
@@ -128,26 +125,7 @@ export default class EventsPanel extends Component {
           />
         )}
         <div className="panel panel-default">
-          <Nav bsStyle="tabs" className="dockTable-nav">
-            <LinkContainer to={"/clusters/" + name}>
-              <NavItem eventKey={1}>Containers</NavItem>
-            </LinkContainer>
-            <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
-              <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
-            </LinkContainer>
-            <LinkContainer to={nodesNavId}>
-              <NavItem eventKey={3}>Nodes</NavItem>
-            </LinkContainer>
-            <LinkContainer to={"/clusters/" + name + "/" + "events"}>
-              <NavItem eventKey={4}>Events</NavItem>
-            </LinkContainer>
-            <LinkContainer to={"/clusters/" + name + "/" + "registries"}>
-              <NavItem eventKey={5} disabled={name === "all"}>Registries</NavItem>
-            </LinkContainer>
-            <LinkContainer to={"/clusters/" + name + "/" + "images"}>
-              <NavItem eventKey={5} disabled={name === "all"}>Update</NavItem>
-            </LinkContainer>
-          </Nav>
+          <NavContainer clusterName={name}/>
           {this.props.events && (
             <EventLog data={uniqueEvents}
                       loading={!this.props.events}

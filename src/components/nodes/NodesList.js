@@ -1,9 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import { Link, RouteHandler } from 'react-router';
-import { LinkContainer } from 'react-router-bootstrap';
 import {DockTable, ActionMenu, Chain} from '../index';
-import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Nav, NavItem, Popover} from 'react-bootstrap';
-import {Dialog, PropertyGrid} from 'components';
+import {Badge, ButtonToolbar, Button, ProgressBar, Popover} from 'react-bootstrap';
+import {Dialog, PropertyGrid, NavContainer} from 'components';
 import TimeUtils from 'utils/TimeUtils';
 import _ from 'lodash';
 
@@ -88,7 +87,6 @@ export default class NodesList extends Component {
   render() {
     const {data, clusterName} = this.props;
     const rows = this.additionalData(data);
-    let nodesNavId = clusterName ? "/clusters/" + clusterName + "/" + "nodes" : "/nodes";
     let name = clusterName ? clusterName : "all";
     let columns = this.COLUMNS;
     if (name === "all") {
@@ -103,26 +101,7 @@ export default class NodesList extends Component {
 
           {(this.props.data && !this.props.loading) && (
             <div>
-              <Nav bsStyle="tabs" className="dockTable-nav">
-                <LinkContainer to={"/clusters/" + name}>
-                  <NavItem eventKey={1}>Containers</NavItem>
-                </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
-                  <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
-                </LinkContainer>
-                <LinkContainer to={nodesNavId}>
-                  <NavItem eventKey={3}>Nodes</NavItem>
-                </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "events"}>
-                  <NavItem eventKey={4}>Events</NavItem>
-                </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "registries"}>
-                  <NavItem eventKey={5} disabled={name === "all"}>Registries</NavItem>
-                </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "images"}>
-                  <NavItem eventKey={5} disabled={name === "all"}>Update</NavItem>
-                </LinkContainer>
-              </Nav>
+              <NavContainer clusterName={name}/>
               {this.props.clusterName && (
                 <ButtonToolbar className="pulled-right-toolbar">
                   <Button

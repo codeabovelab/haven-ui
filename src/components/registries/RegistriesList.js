@@ -1,9 +1,7 @@
 import React, {Component, PropTypes} from 'react';
-import {Link} from 'react-router';
-import {DockTable, OnOff, ActionMenu} from '../index';
-import {RegistryEdit} from '../../containers/index';
-import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Glyphicon, Nav, NavItem, Image} from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
+import {DockTable, ActionMenu} from '../index';
+import {NavContainer} from '../../components/index';
+import {Badge, ButtonToolbar, Button, ProgressBar} from 'react-bootstrap';
 
 export default class RegistriesList extends Component {
   static propTypes = {
@@ -90,26 +88,7 @@ export default class RegistriesList extends Component {
         {(this.props.data && !this.props.loading) && (
           <div>
             {name && (
-              <Nav bsStyle="tabs" className="dockTable-nav">
-                <LinkContainer to={"/clusters/" + name}>
-                  <NavItem eventKey={1}>Containers</NavItem>
-                </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
-                  <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
-                </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "nodes"}>
-                  <NavItem eventKey={3}>Nodes</NavItem>
-                </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "events"}>
-                  <NavItem eventKey={4}>Events</NavItem>
-                </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "registries"}>
-                  <NavItem eventKey={5} disabled={name === "all"}>Registries</NavItem>
-                </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "images"}>
-                  <NavItem eventKey={5} disabled={name === "all"}>Update</NavItem>
-                </LinkContainer>
-              </Nav>
+              <NavContainer clusterName={name}/>
             )}
             <ButtonToolbar className={buttonBarClassName}>
               {!name && (

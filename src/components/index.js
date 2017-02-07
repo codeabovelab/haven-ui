@@ -39,4 +39,4 @@ export ClusterUploadCompose from './clusters/ClusterUploadCompose';
 export ClusterSetSource from './clusters/ClusterSetSource';
 export ClusterRegistriesDialog from './clusters/ClusterRegistriesDialog';
 export AgentPanel from './agent/AgentPanel';
-
+export NavContainer from './common/NavContainer/NavContainer';

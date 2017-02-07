@@ -1,11 +1,10 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {DockTable, Chain, StatisticsPanel} from '../../../components/index';
+import {DockTable, Chain, StatisticsPanel, NavContainer} from '../../../components/index';
 import {Link, RouteHandler} from 'react-router';
-import {LinkContainer} from 'react-router-bootstrap';
 import {getDeployedImages} from 'redux/modules/images/images';
 import {updateContainers} from 'redux/modules/containers/containers';
-import {FormGroup, InputGroup, FormControl, ControlLabel, Button, ProgressBar, Nav, NavItem, Popover, Modal, OverlayTrigger} from 'react-bootstrap';
+import {FormGroup, InputGroup, FormControl, ControlLabel, Button, ProgressBar, Popover, Modal, OverlayTrigger} from 'react-bootstrap';
 import _ from 'lodash';
 import Select from 'react-select';
 
@@ -357,26 +356,7 @@ export default class ClusterImages extends Component {
             <ProgressBar active now={100}/>
           ) || (
             <div>
-              <Nav bsStyle="tabs" className="dockTable-nav">
-                <LinkContainer to={"/clusters/" + name}>
-                  <NavItem eventKey={1}>Containers</NavItem>
-                </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
-                  <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
-                </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "nodes"}>
-                  <NavItem eventKey={3}>Nodes</NavItem>
-                </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "events"}>
-                  <NavItem eventKey={4}>Events</NavItem>
-                </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "registries"}>
-                  <NavItem eventKey={5} disabled={name === "all"}>Registries</NavItem>
-                </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "images"}>
-                  <NavItem eventKey={5} disabled={name === "all"}>Update</NavItem>
-                </LinkContainer>
-              </Nav>
+              <NavContainer clusterName={name}/>
               <div id="clusterImages">
                 <form>
                   <div className="col-md-6">

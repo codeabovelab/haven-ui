@@ -4,9 +4,9 @@ import * as applicationActions from 'redux/modules/application/application';
 import {connect} from 'react-redux';
 import { Link, RouteHandler } from 'react-router';
 import { LinkContainer } from 'react-router-bootstrap';
-import {DockTable, LoadingDialog, Chain, NodeInfo, ActionMenu, StatisticsPanel} from '../../../components/index';
+import {DockTable, LoadingDialog, Chain, NavContainer, ActionMenu, StatisticsPanel} from '../../../components/index';
 import { asyncConnect } from 'redux-async-connect';
-import {Button, ButtonToolbar, Panel, ProgressBar, Popover, Nav, NavItem} from 'react-bootstrap';
+import {Button, ButtonToolbar, ProgressBar, Popover, Nav, NavItem} from 'react-bootstrap';
 import {ApplicationCreate} from '../../../containers/index';
 import {downloadFile} from '../../../utils/fileActions';
 import _ from 'lodash';
@@ -243,28 +243,7 @@ export default class ApplicationPanel extends Component {
 
           {rows && (
             <div>
-
-              <Nav bsStyle="tabs" className="dockTable-nav">
-                <LinkContainer to={"/clusters/" + name}>
-                  <NavItem eventKey={1}>Containers</NavItem>
-                </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
-                  <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
-                </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "nodes"}>
-                  <NavItem eventKey={3}>Nodes</NavItem>
-                </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "events"}>
-                  <NavItem eventKey={4}>Events</NavItem>
-                </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "registries"}>
-                  <NavItem eventKey={5} disabled={name === "all"}>Registries</NavItem>
-                </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "images"}>
-                  <NavItem eventKey={5} disabled={name === "all"}>Update</NavItem>
-                </LinkContainer>
-              </Nav>
-
+              <NavContainer clusterName={name}/>
               <ButtonToolbar className="pulled-right-toolbar">
                 <Button
                   bsStyle="primary"

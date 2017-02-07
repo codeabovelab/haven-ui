@@ -2,13 +2,12 @@ import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
-import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, Dialog, Chain, LoadingDialog, StatisticsPanel, ActionMenu, ClusterUploadCompose, ClusterSetSource} from '../../../components/index';
-import { Link, browserHistory, Route, RouteHandler } from 'react-router';
-import { LinkContainer } from 'react-router-bootstrap';
+import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, Dialog, Chain, LoadingDialog, StatisticsPanel, ActionMenu, ClusterUploadCompose, ClusterSetSource, NavContainer} from '../../../components/index';
+import { Link, browserHistory, RouteHandler } from 'react-router';
 import {ContainerCreate, ContainerScale, ContainerUpdate} from '../../../containers/index';
 import { asyncConnect } from 'redux-async-connect';
 import {deleteClusterImages} from 'redux/modules/images/images';
-import {Dropdown, SplitButton, Button, ButtonGroup, DropdownButton, ButtonToolbar, MenuItem, Panel, ProgressBar, Nav, NavItem, Image} from 'react-bootstrap';
+import {Button, ButtonGroup, DropdownButton, ButtonToolbar, MenuItem, ProgressBar} from 'react-bootstrap';
 import _ from 'lodash';
 import {downloadFile} from '../../../utils/fileActions';
 
@@ -402,7 +401,6 @@ export default class ClusterDetailsPanel extends Component {
 
     let columns = this.COLUMNS;
     let groupBySelect = this.GROUP_BY_SELECT;
-    let nodesNavId = isAllPage ? "/nodes" : "/clusters/" + name + "/" + "nodes";
     if (isAllPage && columns[3].name !== 'cluster') {
       columns.splice(3, 0, {name: 'cluster', width: '10%', label: 'Cluster', render: this.renderTdCluster.bind(this)});
       groupBySelect.push('cluster');
@@ -441,26 +439,7 @@ export default class ClusterDetailsPanel extends Component {
 
           {rows && (
             <div>
-              <Nav bsStyle="tabs" className="dockTable-nav">
-                <LinkContainer to={"/clusters/" + name}>
-                  <NavItem eventKey={1}>Containers</NavItem>
-                </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "applications"}>
-                  <NavItem eventKey={2} disabled={name === "all"}>Applications</NavItem>
-                </LinkContainer>
-                <LinkContainer to={nodesNavId}>
-                  <NavItem eventKey={3}>Nodes</NavItem>
-                </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "events"}>
-                  <NavItem eventKey={4}>Events</NavItem>
-                </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "registries"}>
-                  <NavItem eventKey={5} disabled={name === "all"}>Registries</NavItem>
-                </LinkContainer>
-                <LinkContainer to={"/clusters/" + name + "/" + "images"}>
-                  <NavItem eventKey={5} disabled={name === "all"}>Update</NavItem>
-                </LinkContainer>
-              </Nav>
+              <NavContainer clusterName={name}/>
               {!isAllPage && (
                 <ButtonToolbar className="pulled-right-toolbar">
                   <Button
