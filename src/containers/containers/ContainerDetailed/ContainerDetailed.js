@@ -259,12 +259,56 @@ export default class ContainerDetailed extends Component {
     }
   }
 
+  headerBar(clusterName, containersUI, startContainer, stopContainer, loadDetailsByName, container) {
+    let containerStatus = container.run ? 'RUNNING' : 'EXITED';
+    let loading = (containersUI[container.id] && (containersUI[container.id].starting || containersUI[container.id].stopping));
+    let headerBar = '';
+    if (container) {
+      headerBar = (
+        <div className="clearfix">
+          <h3 id="containerDetailsHeader">{container.name}&nbsp;&nbsp;
+            <Badge
+              bsClass={"badge detailed-status-badge " + (container.run ? 'success-badge' : 'common-badge')}>{containerStatus}</Badge>&nbsp;&nbsp;
+            {loading && (
+              <i className="fa fa-spinner fa-pulse"/>
+            )}
+          </h3>
+          <ButtonToolbar>
+            {container.run && (
+              <Button
+                bsStyle="primary"
+                onClick={()=> {
+                  this.processToggleResponse(stopContainer, clusterName, container, loadDetailsByName);
+                }}
+              >
+                <i className="fa fa-stop"/>&nbsp;Stop
+              </Button>
+            )}
+            {!container.run && (
+              <Button
+                bsStyle="primary"
+                onClick={()=> {
+                  this.processToggleResponse(startContainer, clusterName, container, loadDetailsByName);
+                }}
+              >
+                <i className="fa fa-play"/>&nbsp;Start
+              </Button>
+            )}
+          </ButtonToolbar>
+          <ActionMenu subject={container}
+                      actions={this.ACTIONS}
+                      actionHandler={this.onActionInvoke.bind(this)}
+          />
+        </div>
+      );
+    }
+    return headerBar;
+  }
+
   render() {
     const {containersByName, containersUI, params: {name}, params: {subname}, startContainer, stopContainer, loadDetailsByName} = this.props;
     const container = containersByName ? containersByName[subname] : null;
     let environment = {};
-    let loading = '';
-    let containerHeaderBar = '';
     if (container) {
       if (container.environment) {
         let index = 0;
@@ -279,51 +323,12 @@ export default class ContainerDetailed extends Component {
           _.assign(environment, {[key]: val});
         }
       }
-      let containerStatus = container.run ? 'RUNNING' : 'EXITED';
-      loading = (containersUI[container.id] && (containersUI[container.id].starting || containersUI[container.id].stopping));
-      containerHeaderBar = (
-        <div className="clearfix">
-          <h3 id="containerDetailsHeader">{container.name}&nbsp;&nbsp;
-              <Badge bsClass={"badge detailed-status-badge " + (container.run ? 'success-badge' : 'common-badge')}>{containerStatus}</Badge>&nbsp;&nbsp;
-            {loading && (
-              <i className="fa fa-spinner fa-pulse"/>
-            )}
-          </h3>
-          <ButtonToolbar>
-            {container.run && (
-              <Button
-                bsStyle="primary"
-                onClick={()=> {
-                  this.processToggleResponse(stopContainer, name, container, loadDetailsByName);
-                }}
-              >
-                <i className="fa fa-stop"/>&nbsp;Stop
-              </Button>
-            )}
-            {!container.run && (
-              <Button
-                bsStyle="primary"
-                onClick={()=> {
-                  this.processToggleResponse(startContainer, name, container, loadDetailsByName);
-                }}
-              >
-                <i className="fa fa-play"/>&nbsp;Start
-              </Button>
-            )}
-          </ButtonToolbar>
-          <ActionMenu subject={containersByName[subname]}
-                      actions={this.ACTIONS}
-                      actionHandler={this.onActionInvoke.bind(this)}
-          />
-        </div>
-      );
     }
     if (!container) {
       return (
         <div><ProgressBar active now={100} /></div>
       );
     }
-
     return (
       <div>
         <ul className="breadcrumb">
@@ -331,7 +336,7 @@ export default class ContainerDetailed extends Component {
           <li><Link to={"/clusters" + "/" + name}>{name}</Link></li>
           <li className="active">{subname}</li>
         </ul>
-        <Panel header={containerHeaderBar}>
+        <Panel header={this.headerBar(name, containersUI, startContainer, stopContainer, loadDetailsByName, container)}>
           <PropertyGrid data={_.assign({},
             {name: container.name}, {hostname: container.hostname}, {image: container.image},
             {cluster: container.cluster}, {node: container.node})}/>
@@ -381,7 +386,6 @@ export default class ContainerDetailed extends Component {
             </Tab>
           </Tabs>
           </div>
-
         {(this.state && this.state.actionDialog) && (
           <div>
             {this.state.actionDialog}
