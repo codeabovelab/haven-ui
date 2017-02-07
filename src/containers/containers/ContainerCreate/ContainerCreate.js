@@ -97,8 +97,8 @@ export default class ContainerCreate extends Component {
   constructor(...params) {
     super(...params);
     this.state = {
-      dnsValue: [],
-      dnsSearchValue: [],
+      dns: [],
+      dnsSearch: [],
       ports: [{field1: '', field2: ''}],
       links: [{field1: '', field2: ''}],
       volumeBinds: [""],
@@ -224,24 +224,14 @@ export default class ContainerCreate extends Component {
     }.bind(this), 500);
   }
 
-  dnsOnChange(value) {
+  dnsOnChange(fieldName, value) {
     let vals = [];
     const fields = this.props.fields;
-    this.setState({dnsValue: value});
+    this.setState({[fieldName]: value});
     value.map((el) => {
       vals.push(el.value);
     });
-    fields.dns.onChange(vals);
-  }
-
-  dnsSearchOnChange(value) {
-    let vals = [];
-    const fields = this.props.fields;
-    this.setState({dnsSearchValue: value});
-    value.map((el) => {
-      vals.push(el.value);
-    });
-    fields.dnsSearch.onChange(vals);
+    fields[fieldName].onChange(vals);
   }
 
   getDnsLabel(label) {
@@ -251,21 +241,20 @@ export default class ContainerCreate extends Component {
   render() {
     require('./ContainerCreate.scss');
     require('react-select/dist/react-select.css');
-    const {clusters, cluster, fields, containersUI, containers} = this.props;
+    const {clusters, cluster, fields, containers} = this.props;
     let clusterRegistries = _.get(cluster, 'config.registries', []);
     let containersNames = [];
     _.forEach(containers, (container) => {
       containersNames.push(container.name);
     });
-    const dnsValue = this.state.dnsValue;
-    const dnsSearchValue = this.state.dnsSearchValue;
+    const dnsValue = this.state.dns;
+    const dnsSearchValue = this.state.dnsSearch;
     const creationLogVisible = this.state.creationLogVisible;
     let clusterDetailed = clusters[cluster.name];// to ensure loading of nodes with loadNodes;
     let nodes = clusterDetailed.nodesList;
     nodes = nodes ? nodes : [];
     let field;
     let image = this.getCurrentImage();
-    let creating = containersUI.new.creating;
     const selectMenuVisible = this.state.selectMenuVisible;
 
     return (
@@ -393,7 +382,7 @@ export default class ContainerCreate extends Component {
                       multi
                       noResultsText=""
                       placeholder="Enter DNS address"
-                      onChange={this.dnsOnChange.bind(this)}
+                      onChange={this.dnsOnChange.bind(this, "dns")}
                       value={dnsValue}
                       promptTextCreator={this.getDnsLabel}
                     />
@@ -404,7 +393,7 @@ export default class ContainerCreate extends Component {
                       multi
                       noResultsText=""
                       placeholder="Enter domain name"
-                      onChange={this.dnsSearchOnChange.bind(this)}
+                      onChange={this.dnsOnChange.bind(this, "dnsSearch")}
                       value={dnsSearchValue}
                       promptTextCreator={this.getDnsLabel}
                     />
@@ -412,7 +401,6 @@ export default class ContainerCreate extends Component {
                   </div>
                 </div>
               </Panel>
-
             </Accordion>
             {this.fieldRestart()}
             <div className="form-group" id="creation-log-block">
@@ -426,7 +414,6 @@ export default class ContainerCreate extends Component {
           </form>
       </Dialog>
     );
-
 
     function fieldComponent(name) {
       let property = CPU_FIELDS[name] || NETWORK_FIELDS[name];
