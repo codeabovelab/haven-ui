@@ -631,10 +631,7 @@ export default class ContainerCreate extends Component {
     let items = this.state[fieldName];
     return (
       <div className={"form-group " + "field-" + fieldName}>
-        <div className="field-header">
-          <label>{label}</label>
-          <a onClick={addItem.bind(this, fieldName)}><i className="fa fa-plus-circle"/></a>
-        </div>
+        {this.iconPlus(fieldName, label, addItem)}
         <div className="field-body">
           {items.map((item, key) => <div className="row" key={key}>
             <div className="col-sm-6">
@@ -644,12 +641,7 @@ export default class ContainerCreate extends Component {
             <div className="col-sm-6 preIcon">
               <input type="string" onChange={handleChange.bind(this, fieldName, key, 'field2')} className="form-control"
                      placeholder={placeholder2} value={this.state[fieldName][key].field2}/>
-              {key > 0 && (
-                <div className="iconContainer">
-                  <a className="minus-icon" onClick={this.deleteField.bind(this, fieldName, key)}><i
-                    className="fa fa-minus-circle"/></a>
-                </div>
-              )}
+              {key > 0 && this.iconMinus(fieldName, key)}
             </div>
           </div>)}
         </div>
@@ -670,26 +662,36 @@ export default class ContainerCreate extends Component {
     }
   }
 
+  iconMinus(fieldName, key) {
+    return (
+      <div className="iconContainer">
+        <a className="minus-icon" onClick={this.deleteField.bind(this, fieldName, key)}><i
+          className="fa fa-minus-circle"/></a>
+      </div>
+    );
+  }
+
+  iconPlus(fieldName, label, addItem) {
+    return (
+      <div className="field-header">
+        <label>{label}</label>
+        <a onClick={addItem.bind(this, fieldName)}><i className="fa fa-plus-circle"/></a>
+      </div>
+    );
+  }
+
   oneInputField(fieldName, label, placeholder = "") {
     let items = this.state[fieldName];
     return (
       <div className={"form-group " + "field-" + fieldName}>
-        <div className="field-header">
-          <label>{label}</label>
-          <a onClick={addItem.bind(this, fieldName)}><i className="fa fa-plus-circle"/></a>
-        </div>
+        {this.iconPlus(fieldName, label, addItem)}
         <div className="field-body">
           {items.map((item, key) => <div className="row" key={key}>
             <div className="col-sm-12 preIcon">
               <input type="text" onChange={handleChange.bind(this, key, fieldName)} value={this.state[fieldName][key]}
                      className="form-control"
                      placeholder={placeholder}/>
-              {key > 0 && (
-                <div className="iconContainer">
-                  <a className="minus-icon" onClick={this.deleteField.bind(this, fieldName, key)}><i
-                    className="fa fa-minus-circle"/></a>
-                </div>
-              )}
+              {key > 0 && this.iconMinus(fieldName, key)}
             </div>
           </div>)}
         </div>
