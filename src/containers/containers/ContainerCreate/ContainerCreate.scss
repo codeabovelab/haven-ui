@@ -21,3 +21,19 @@
     margin-top: 2rem;
   }
 }
+:global(.preIcon) {
+  input {
+    display: inline-block !important;
+    width: 99.8%;
+    margin: 0!important;
+  }
+}
+:global(.iconContainer) {
+  width: 0.2%;
+  float: right;
+  height: 34px;
+  a {
+    line-height: 34px;
+    cursor: pointer;
+  }
+}

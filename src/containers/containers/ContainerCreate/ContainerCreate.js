@@ -249,7 +249,7 @@ export default class ContainerCreate extends Component {
   }
 
   render() {
-    let s = require('./ContainerCreate.scss');
+    require('./ContainerCreate.scss');
     require('react-select/dist/react-select.css');
     const {clusters, cluster, fields, containersUI, containers} = this.props;
     let clusterRegistries = _.get(cluster, 'config.registries', []);
@@ -750,6 +750,7 @@ export default class ContainerCreate extends Component {
 
   fieldEnvironment() {
     let items = this.state.environment;
+    console.log('items: ', items);
     return (
       <div className="field-environment form-group">
         <div className="field-header">
@@ -762,9 +763,15 @@ export default class ContainerCreate extends Component {
               <input type="string" onChange={handleChange.bind(this, key, 'field1')} className="form-control"
                      placeholder="" value={this.state.environment[key].field1}/>
             </div>
-            <div className="col-sm-6">
+            <div className="col-sm-6 preIcon">
               <input type="string" onChange={handleChange.bind(this, key, 'field2')} className="form-control"
                      placeholder="" value={this.state.environment[key].field2}/>
+              {key > 0 && (
+                <div className="iconContainer">
+                  <a className="minus-icon" onClick={deleteEnvironmentItem.bind(this, key)}><i
+                    className="fa fa-minus-circle"/></a>
+                </div>
+              )}
             </div>
           </div>)}
         </div>
@@ -774,6 +781,12 @@ export default class ContainerCreate extends Component {
     function handleChange(i, type, event) {
       let state = Object.assign({}, this.state);
       state.environment[i][type] = event.target.value;
+      this.setState(state);
+    }
+
+    function deleteEnvironmentItem(key) {
+      let state = Object.assign({}, this.state);
+      state.environment.splice(key, 1);
       this.setState(state);
     }
   }
