@@ -551,6 +551,20 @@ export default class ClusterDetailsPanel extends Component {
     });
   }
 
+  createLoadingDialog(currentContainer, longTermAction, actionKey) {
+    const {params: {name}} = this.props;
+
+    return (
+      <LoadingDialog container={currentContainer}
+                     onHide={this.onHideDialog.bind(this)}
+                     name={name}
+                     longTermAction={longTermAction}
+                     loadContainers={this.props.loadContainers}
+                     actionKey={actionKey}
+      />
+    );
+  }
+
   showJobLink(response) {
     let message = '';
     let status = response.code || response._res.status || response._res.code;
@@ -641,15 +655,7 @@ export default class ClusterDetailsPanel extends Component {
         confirm('Are you sure you want to start container "' + currentContainer.name + '" ?')
           .then(() => {
             this.setState({
-              actionDialog: (
-                <LoadingDialog container={currentContainer}
-                               onHide={this.onHideDialog.bind(this)}
-                               name={name}
-                               longTermAction={this.props.startContainer}
-                               loadContainers={this.props.loadContainers}
-                               actionKey="started"
-                />
-              )
+              actionDialog: this.createLoadingDialog(currentContainer, this.props.startContainer, 'started')
             });
           }).catch(()=>null);
         return;
@@ -658,15 +664,7 @@ export default class ClusterDetailsPanel extends Component {
         confirm('Are you sure you want to stop container "' + currentContainer.name + '" ?')
           .then(() => {
             this.setState({
-              actionDialog: (
-                <LoadingDialog container={currentContainer}
-                               onHide={this.onHideDialog.bind(this)}
-                               name={name}
-                               longTermAction={this.props.stopContainer}
-                               loadContainers={this.props.loadContainers}
-                               actionKey="stopped"
-                />
-              )
+              actionDialog: this.createLoadingDialog(currentContainer, this.props.stopContainer, 'stopped')
             });
           }).catch(()=>null);
         return;
@@ -689,15 +687,7 @@ export default class ClusterDetailsPanel extends Component {
         confirm('Are you sure you want to restart container "' + currentContainer.name + '" ?')
           .then(() => {
             this.setState({
-              actionDialog: (
-                <LoadingDialog container={currentContainer}
-                               onHide={this.onHideDialog.bind(this)}
-                               name={name}
-                               longTermAction={this.props.restartContainer}
-                               loadContainers={this.props.loadContainers}
-                               actionKey="restarted"
-                />
-              )
+              actionDialog: this.createLoadingDialog(currentContainer, this.props.restartContainer, 'restarted')
             });
           }).catch(()=>null);
         return;
@@ -706,15 +696,7 @@ export default class ClusterDetailsPanel extends Component {
         confirm('Are you sure you want to remove container "' + currentContainer.name + '" ?')
           .then(() => {
             this.setState({
-              actionDialog: (
-                <LoadingDialog container={currentContainer}
-                               onHide={this.onHideDialog.bind(this)}
-                               name={name}
-                               longTermAction={this.props.removeContainer}
-                               loadContainers={this.props.loadContainers}
-                               actionKey="removed"
-                />
-              )
+              actionDialog: this.createLoadingDialog(currentContainer, this.props.removeContainer, 'removed')
             });
           }).catch(()=>null);
         return;
