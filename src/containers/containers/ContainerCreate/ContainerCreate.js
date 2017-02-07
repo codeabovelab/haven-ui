@@ -361,10 +361,10 @@ export default class ContainerCreate extends Component {
             <Accordion className="accordion-create-container">
               <Panel header="Environment Variables and Entrypoints" eventKey="1">
                 {this.fieldEnvironment()}
-                {this.fieldConstraints()}
-                {this.fieldAffinity()}
-                {this.fieldCommand()}
-                {this.fieldEntrypoint()}
+                {this.oneInputField('constraints', 'Constraints')}
+                {this.oneInputField('affinity', 'Affinity')}
+                {this.oneInputField('command', 'Command')}
+                {this.oneInputField('entrypoint', 'Entry Point')}
               </Panel>
               <Panel header="Runtime Constraints" eventKey="2">
                 <div className="row">
@@ -748,9 +748,54 @@ export default class ContainerCreate extends Component {
     return this.getMapField('ports');
   }
 
+  oneInputField(fieldName, label) {
+    let items = this.state[fieldName];
+    return (
+      <div className={"form-group " + "field-" + fieldName}>
+        <div className="field-header">
+          <label>{label}</label>
+          <a onClick={addItem.bind(this, fieldName)}><i className="fa fa-plus-circle"/></a>
+        </div>
+        <div className="field-body">
+          {items.map((item, key) => <div className="row" key={key}>
+            <div className="col-sm-12 preIcon">
+              <input type="text" onChange={handleChange.bind(this, key, fieldName)} value={this.state[fieldName][key]}
+                     className="form-control"
+                     placeholder=""/>
+              {key > 0 && (
+                <div className="iconContainer">
+                  <a className="minus-icon" onClick={this.deleteField.bind(this, fieldName, key)}><i
+                    className="fa fa-minus-circle"/></a>
+                </div>
+              )}
+            </div>
+          </div>)}
+        </div>
+      </div>
+    );
+
+    function handleChange(i, fieldName, event) {
+      let state = Object.assign({}, this.state);
+      state[fieldName][i] = event.target.value;
+      this.setState(state);
+    }
+
+    function addItem(fieldName) {
+      this.setState({
+        ...this.state,
+        [fieldName]: [...this.state[fieldName], ""]
+      });
+    }
+  }
+
+  deleteField(fieldName, key) {
+    let state = Object.assign({}, this.state);
+    state[fieldName].splice(key, 1);
+    this.setState(state);
+  }
+
   fieldEnvironment() {
     let items = this.state.environment;
-    console.log('items: ', items);
     return (
       <div className="field-environment form-group">
         <div className="field-header">
@@ -768,7 +813,7 @@ export default class ContainerCreate extends Component {
                      placeholder="" value={this.state.environment[key].field2}/>
               {key > 0 && (
                 <div className="iconContainer">
-                  <a className="minus-icon" onClick={deleteEnvironmentItem.bind(this, key)}><i
+                  <a className="minus-icon" onClick={this.deleteField.bind(this, 'environment', key)}><i
                     className="fa fa-minus-circle"/></a>
                 </div>
               )}
@@ -783,84 +828,12 @@ export default class ContainerCreate extends Component {
       state.environment[i][type] = event.target.value;
       this.setState(state);
     }
-
-    function deleteEnvironmentItem(key) {
-      let state = Object.assign({}, this.state);
-      state.environment.splice(key, 1);
-      this.setState(state);
-    }
   }
 
   addEnvironmentItem() {
     this.setState({
       ...this.state,
       environment: [...this.state.environment, {field1: '', field2: ''}]
-    });
-  }
-
-  fieldConstraints() {
-    let items = this.state.constraints;
-    return (
-      <div className="field-constraints form-group">
-        <div className="field-header">
-          <label>Constraints</label>
-          <a onClick={this.addConstraintsItem.bind(this)}><i className="fa fa-plus-circle"/></a>
-        </div>
-        <div className="field-body">
-          {items.map((item, key) => <div className="row" key={key}>
-            <div className="col-sm-12">
-              <input type="text" onChange={handleChange.bind(this, key)} value={this.state.constraints[key]} className="form-control"
-                     placeholder=""/>
-            </div>
-          </div>)}
-        </div>
-      </div>
-    );
-
-    function handleChange(i, event) {
-      let state = Object.assign({}, this.state);
-      state.constraints[i] = event.target.value;
-      this.setState(state);
-    }
-  }
-
-  addConstraintsItem() {
-    this.setState({
-      ...this.state,
-      constraints: [...this.state.constraints, ""]
-    });
-  }
-
-  fieldAffinity() {
-    let items = this.state.affinity;
-    return (
-      <div className="field-environment form-group">
-        <div className="field-header">
-          <label>Affinity</label>
-          <a onClick={this.addAffinityItem.bind(this)}><i className="fa fa-plus-circle"/></a>
-        </div>
-        <div className="field-body">
-          {items.map((item, key) => <div className="row" key={key}>
-            <div className="col-sm-12">
-              <input type="text" onChange={handleChange.bind(this, key)} value={this.state.affinity[key]} className="form-control"
-                     placeholder=""/>
-            </div>
-          </div>)}
-        </div>
-      </div>
-    );
-
-    function handleChange(i, event) {
-      let state = Object.assign({}, this.state);
-      state.affinity[i] = event.target.value;
-      this.setState(state);
-    }
-  }
-
-  addAffinityItem() {
-    this.setState({
-      ...this.state,
-      affinity: [...this.state.affinity, ""]
     });
   }
 
@@ -934,72 +907,6 @@ export default class ContainerCreate extends Component {
       value += `[:${restartRetries.value}]`;
     }
     return value;
-  }
-
-  fieldCommand() {
-    let items = this.state.command;
-    return (
-      <div className="field-command form-group">
-        <div className="field-header">
-          <label>Command</label>
-          <a onClick={this.addCommandItem.bind(this)}><i className="fa fa-plus-circle"/></a>
-        </div>
-        <div className="field-body">
-          {items.map((item, key) => <div className="row" key={key}>
-            <div className="col-sm-12">
-              <input type="text" onChange={handleChange.bind(this, key)} value={this.state.command[key]} className="form-control"
-                     placeholder=""/>
-            </div>
-          </div>)}
-        </div>
-      </div>
-    );
-
-    function handleChange(i, event) {
-      let state = Object.assign({}, this.state);
-      state.command[i] = event.target.value;
-      this.setState(state);
-    }
-  }
-
-  addCommandItem() {
-    this.setState({
-      ...this.state,
-      command: [...this.state.command, ""]
-    });
-  }
-
-  fieldEntrypoint() {
-    let items = this.state.entrypoint;
-    return (
-      <div className="field-entrypoint form-group">
-        <div className="field-header">
-          <label>Entry point</label>
-          <a onClick={this.addEntrypointItem.bind(this)}><i className="fa fa-plus-circle"/></a>
-        </div>
-        <div className="field-body">
-          {items.map((item, key) => <div className="row" key={key}>
-            <div className="col-sm-12">
-              <input type="text" onChange={handleChange.bind(this, key)} value={this.state.entrypoint[key]} className="form-control"
-                     placeholder=""/>
-            </div>
-          </div>)}
-        </div>
-      </div>
-    );
-
-    function handleChange(i, event) {
-      let state = Object.assign({}, this.state);
-      state.entrypoint[i] = event.target.value;
-      this.setState(state);
-    }
-  }
-
-  addEntrypointItem() {
-    this.setState({
-      ...this.state,
-      entrypoint: [...this.state.entrypoint, ""]
-    });
   }
 }
 
