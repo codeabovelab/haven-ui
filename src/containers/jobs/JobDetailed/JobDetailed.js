@@ -118,10 +118,6 @@ export default class JobDetailed extends Component {
 
     return (
       <div>
-        <ul className="breadcrumb">
-          <li><Link to="/jobs">Jobs</Link></li>
-          <li className="active">{name}</li>
-        </ul>
         <Panel header={jobHeaderBar}>
           <PropertyGrid data={_.assign({},
             {title: job.title}, {status: job.status}, {created: TimeUtils.format(job.createTime)}, {started: TimeUtils.format(job.startTime)},
