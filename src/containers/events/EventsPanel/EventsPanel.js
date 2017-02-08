@@ -113,11 +113,6 @@ export default class EventsPanel extends Component {
 
     return (
       <div>
-        <ul className="breadcrumb">
-          <li><Link to="/clusters">Clusters</Link></li>
-          <li><Link to={"/clusters/" + name}>{name}</Link></li>
-          <li className="active">Events</li>
-        </ul>
         {cluster && (
           <StatisticsPanel metrics={this.statisticsMetrics}
                            cluster={cluster}

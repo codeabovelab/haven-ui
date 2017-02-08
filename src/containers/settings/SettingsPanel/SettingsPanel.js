@@ -51,9 +51,6 @@ export default class SettingsPanel extends Component {
     }
     return (
       <div>
-        <ul className="breadcrumb">
-          <li className="active">Settings</li>
-        </ul>
         <h4><a href="https://github.com/codeabovelab/haven-platform" target="_blank">Haven</a></h4>
         <div className="settingsList">
           <p>Version: <a target="_blank" href={"https://github.com/codeabovelab/haven-platform/commit/" + version.buildRevision}>{version.version}</a></p>

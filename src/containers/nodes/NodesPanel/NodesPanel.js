@@ -4,7 +4,6 @@ import {connect} from 'react-redux';
 import {ClusterNodesDialog} from '../../../containers/index';
 import {DockTable, NodesList, StatisticsPanel} from '../../../components';
 import {NodeAdd} from '../../index';
-import {Link} from 'react-router';
 
 @connect(
   state => ({
@@ -64,21 +63,6 @@ export default class NodesPanel extends Component {
     }
     return (
       <div>
-        { params.name && (
-          <ul className="breadcrumb">
-            <li><Link to="/clusters">Clusters</Link></li>
-            <li><Link to={"/clusters/" + params.name}>{params.name}</Link></li>
-            <li className="active">Nodes</li>
-          </ul>
-        )}
-        { !params.name && (
-          <ul className="breadcrumb">
-            <li><Link to="/clusters">Clusters</Link></li>
-            <li><Link to="/clusters/all">all</Link></li>
-            <li className="active">Nodes</li>
-          </ul>
-        )}
-
         <StatisticsPanel metrics={this.statisticsMetrics}
                          values={[runningNodes, stoppedNodes, totalNodes]}
         />

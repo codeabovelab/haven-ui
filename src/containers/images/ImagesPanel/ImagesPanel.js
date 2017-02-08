@@ -73,9 +73,6 @@ export default class ImagesPanel extends Component {
     };
     return (
       <div>
-        <ul className="breadcrumb">
-          <li className="active">Images</li>
-        </ul>
         <StatisticsPanel metrics={this.statisticsMetrics}
                         values={[availableImages, runningImages]}
         />

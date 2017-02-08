@@ -415,11 +415,6 @@ export default class ClusterDetailsPanel extends Component {
 
     return (
       <div key={name}>
-        <ul className="breadcrumb">
-          <li><Link to="/clusters">Clusters</Link></li>
-          <li><Link to={"/clusters/" + name}>{name}</Link></li>
-          <li className="active">Containers</li>
-        </ul>
         {(runningNodes > 0 || runningNodes === downNodes) && (
           <StatisticsPanel metrics={this.statisticsMetricsNodesUp}
                            cluster={cluster}

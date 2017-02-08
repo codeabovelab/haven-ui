@@ -1,7 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import Nav from 'react-bootstrap/lib/Nav';
-import NavItem from 'react-bootstrap/lib/NavItem';
 import Helmet from 'react-helmet';
 import { MenuLeft, Navbar } from 'components';
 import { routerActions } from 'react-router-redux';
@@ -89,9 +87,7 @@ export default class App extends Component {
 
         <Helmet {...config.app.head} />
 
-        {this.props.user && (
-          <MenuLeft />
-        )}
+        {this.props.user && (<MenuLeft />)}
         <div className="al-main">
           <div className="al-content">
             {this.props.user && (
@@ -99,16 +95,9 @@ export default class App extends Component {
                 <h1 className="al-title ng-binding">
                   {pageTitle}
                 </h1>
-
-                {false && (
-                  <Breadcrumbs
-                    routes={this.props.routes}
-                    params={this.props.params}
-                  />
-                )}
               </div>
             )}
-
+            {this.props.user && (<Breadcrumbs routes={this.props.routes} params={this.props.params}/>)}
             {this.props.children}
           </div>
         </div>

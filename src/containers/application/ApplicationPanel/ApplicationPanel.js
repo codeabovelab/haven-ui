@@ -227,11 +227,6 @@ export default class ApplicationPanel extends Component {
 
     return (
       <div>
-        <ul className="breadcrumb">
-          <li><Link to="/clusters">Clusters</Link></li>
-          <li><Link to={"/clusters/" + name}>{name}</Link></li>
-          <li className="active">Applications</li>
-        </ul>
         <StatisticsPanel metrics={this.statisticsMetrics}
                          cluster={cluster}
                          values={[runningContainers, runningNodes, Apps, eventsCount]}

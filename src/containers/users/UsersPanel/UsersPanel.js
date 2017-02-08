@@ -1,7 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {DockTable, StatisticsPanel, UsersList} from '../../../components';
-import {Link} from 'react-router';
+import {StatisticsPanel, UsersList} from '../../../components';
 import * as usersActions from 'redux/modules/users/users';
 import {UserAdd, UserPassChange} from '../../index';
 import _ from 'lodash';
@@ -78,9 +77,6 @@ export default class UsersPanel extends Component {
     }
     return (
       <div>
-        <ul className="breadcrumb">
-          <li className="active">Users</li>
-        </ul>
         <StatisticsPanel metrics={this.statisticsMetrics}
                          values={[usersCount, adminsCount]}
         />

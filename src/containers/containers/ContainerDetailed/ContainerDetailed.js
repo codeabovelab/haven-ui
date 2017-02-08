@@ -331,11 +331,6 @@ export default class ContainerDetailed extends Component {
     }
     return (
       <div>
-        <ul className="breadcrumb">
-          <li><Link to="/clusters">Clusters</Link></li>
-          <li><Link to={"/clusters" + "/" + name}>{name}</Link></li>
-          <li className="active">{subname}</li>
-        </ul>
         <Panel header={this.headerBar(name, containersUI, startContainer, stopContainer, loadDetailsByName, container)}>
           <PropertyGrid data={_.assign({},
             {name: container.name}, {hostname: container.hostname}, {image: container.image},

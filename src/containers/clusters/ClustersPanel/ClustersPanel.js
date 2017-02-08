@@ -176,9 +176,6 @@ export default class ClustersPanel extends Component {
 
     return (
       <div>
-        <ul className="breadcrumb">
-          <li className="active">Clusters</li>
-        </ul>
         {(runningNodes > 0 || runningNodes === downNodes) && (
           <StatisticsPanel metrics={this.statisticsMetricsNodesUp}
                            values={[clusterCount, runningNodes, runningContainers, errorCount]}

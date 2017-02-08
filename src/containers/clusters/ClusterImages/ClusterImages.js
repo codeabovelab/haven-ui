@@ -341,11 +341,6 @@ export default class ClusterImages extends Component {
 
     return (
       <div key={name}>
-        <ul className="breadcrumb">
-          <li><Link to="/clusters">Clusters</Link></li>
-          <li><Link to={"/clusters/" + name}>{name}</Link></li>
-          <li className="active">Images</li>
-        </ul>
         {rows && (
           <StatisticsPanel metrics={this.statisticsMetrics}
                            values={[rows.length]}

@@ -68,18 +68,6 @@ export default class RegistriesPanel extends Component {
 
     return (
       <div>
-        {name && (
-          <ul className="breadcrumb">
-            <li><Link to="/clusters">Clusters</Link></li>
-            <li><Link to={"/clusters/" + name}>{name}</Link></li>
-            <li className="active">Registries</li>
-          </ul>
-        ) || (
-          <ul className="breadcrumb">
-            <li className="active">Registries</li>
-          </ul>
-        )}
-
         <StatisticsPanel metrics={this.statisticsMetrics} values={[connectedRegistries]}/>
 
         <RegistriesList loading={typeof RegistriesList === "undefined"}

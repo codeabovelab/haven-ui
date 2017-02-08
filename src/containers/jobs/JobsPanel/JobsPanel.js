@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import TimeUtils from 'utils/TimeUtils';
 import {Dialog, StatisticsPanel, JobsList, PropertyGrid} from 'components';
-import {Label, Badge, ButtonToolbar, ProgressBar, SplitButton, MenuItem} from 'react-bootstrap';
+import {ProgressBar} from 'react-bootstrap';
 import {loadList, loadInfo, loadLog, deleteJob, rollbackJob} from 'redux/modules/jobs/jobs';
 import _ from 'lodash';
 
@@ -87,9 +87,6 @@ export default class JobsPanel extends Component {
     };
     return (
       <div>
-        <ul className="breadcrumb">
-          <li className="active">Jobs</li>
-        </ul>
         <StatisticsPanel metrics={this.statisticsMetrics}
                         values={[running, successfully, failed]}
         />
