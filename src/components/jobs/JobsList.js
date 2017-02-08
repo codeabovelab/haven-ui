@@ -148,15 +148,16 @@ export default class JobsList extends Component {
   render() {
     let loading = this.props.loading;
     let data = this.props.data;
-    let hasData = !loading && data && data.length !== 0;
+    let hasData = data && data.length !== 0;
     return (
       <div>
         <Panel>
           {loading && (
             <ProgressBar active now={100} />
-          ) || hasData && (
+          ) || data && (
             <DockTable columns={this.COLUMNS} rows={data} />
-          ) || (
+          )}
+          {(!hasData && !loading) && (
             <div className="alert alert-info">
               No jobs yet
             </div>
