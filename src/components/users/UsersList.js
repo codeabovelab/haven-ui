@@ -122,7 +122,7 @@ export default class UsersList extends Component {
 
   emailRender(row) {
     return (
-      <td>
+      <td key="email">
         {_.get(row, 'email', '')}
       </td>
     );
@@ -130,7 +130,7 @@ export default class UsersList extends Component {
 
   roleRender(row) {
     return (
-      <td>
+      <td key="role">
         {_.get(row, 'roles[0].name', '')}
       </td>
     );
