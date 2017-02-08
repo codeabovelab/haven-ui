@@ -505,68 +505,72 @@ export default class ContainerCreate extends Component {
       loadDefaultParams({clusterId: cluster.name, image: imageFullName, tag})
         .then((defaultParams) => {
           _.forOwn(defaultParams, (value, key) => {
-            if (['tag'].indexOf(key) > -1) return;
-            if (key === 'environment') {
-              let envVars = {};
-              envVars.environment = [];
-              envVars.affinity = [];
-              envVars.constraints = [];
-              defaultParams.environment.map((item, key) => {
-                if (item.substring(0, 11) === 'constraint:') {
-                  envVars.constraints.push(item.substring(11));
-                } else if (item.substring(0, 9) === 'affinity:') {
-                  envVars.affinity.push(item.substring(9));
-                } else {
-                  let envParts = item.split(/=(.+)/);
-                  let firstPart = envParts[0];
-                  let secondPart = envParts[1];
-                  envVars.environment = [...envVars.environment, {field1: firstPart, field2: secondPart}];
-                }
-              });
-              this.setEnvironment(envVars);
-            }
-            if (key === 'ports') {
-              let ports = [];
-              _.map(defaultParams.ports, (item, key) => {
-                ports = [...ports, {field1: key, field2: item}];
-              });
-              if (ports.length > 0) {
-                this.setState({
-                  ports: ports
-                });
-              }
-            }
-            if (key === 'command' || key === 'entrypoint') {
-              if (value.length > 0) {
-                this.setState({
-                  [key]: value
-                });
-              }
-            }
-            if (key === 'volumeBinds' || key === 'volumesFrom') {
-              let volumes = [];
-              _.map(defaultParams[key], (item, key) => {
-                volumes = [...volumes, {value: item}];
-              });
-              if (volumes.length > 0) {
-                this.setState({
-                  [key]: volumes
-                });
-              }
-            }
-            if (fields[key] !== undefined && !fields[key].value) {
-              if (key === 'memoryLimit' && value) {
-                let result = value.replace(/TiB|GiB|MiB|KiB/gi, match=> {
-                  return match[0].toLowerCase();
-                });
-                fields[key].onChange(result);
-              } else {
-                fields[key].onChange(value);
-              }
-            }
+            this.setDefaultFields(defaultParams, value, key, fields);
           });
           this.setState({loadingParams: false});
         }).catch(()=>this.setState({loadingParams: false}));
+    }
+  }
+
+  setDefaultFields(defaultParams, value, key, fields) {
+    if (['tag'].indexOf(key) > -1) return;
+    if (key === 'environment') {
+      let envVars = {};
+      envVars.environment = [];
+      envVars.affinity = [];
+      envVars.constraints = [];
+      defaultParams.environment.map((item, key) => {
+        if (item.substring(0, 11) === 'constraint:') {
+          envVars.constraints.push(item.substring(11));
+        } else if (item.substring(0, 9) === 'affinity:') {
+          envVars.affinity.push(item.substring(9));
+        } else {
+          let envParts = item.split(/=(.+)/);
+          let firstPart = envParts[0];
+          let secondPart = envParts[1];
+          envVars.environment = [...envVars.environment, {field1: firstPart, field2: secondPart}];
+        }
+      });
+      this.setEnvironment(envVars);
+    }
+    if (key === 'ports') {
+      let ports = [];
+      _.map(defaultParams.ports, (item, key) => {
+        ports = [...ports, {field1: key, field2: item}];
+      });
+      if (ports.length > 0) {
+        this.setState({
+          ports: ports
+        });
+      }
+    }
+    if (key === 'command' || key === 'entrypoint') {
+      if (value.length > 0) {
+        this.setState({
+          [key]: value
+        });
+      }
+    }
+    if (key === 'volumeBinds' || key === 'volumesFrom') {
+      let volumes = [];
+      _.map(defaultParams[key], (item, key) => {
+        volumes = [...volumes, {value: item}];
+      });
+      if (volumes.length > 0) {
+        this.setState({
+          [key]: volumes
+        });
+      }
+    }
+    if (fields[key] !== undefined && !fields[key].value) {
+      if (key === 'memoryLimit' && value) {
+        let result = value.replace(/TiB|GiB|MiB|KiB/gi, match=> {
+          return match[0].toLowerCase();
+        });
+        fields[key].onChange(result);
+      } else {
+        fields[key].onChange(value);
+      }
     }
   }
 
