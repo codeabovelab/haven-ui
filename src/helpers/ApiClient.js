@@ -19,35 +19,40 @@ function formatUrl(path) {
 export default class ApiClient {
   constructor(req) {
     methods.forEach((method) =>
-      this[method] = (path, { params, data, contentType } = {}) => new Promise((resolve, reject) => {
+      this[method] = (path, {params, data, contentType} = {}) => new Promise((resolve, reject) => {
         const request = superagent[method](formatUrl(path));
-        this.setToken(request);
-        if (params) {
-          request.query(params);
-        }
-
-        if (data) {
-          if (contentType) {
-            request.set("Content-Type", contentType);
-          }
-          request.send(data);
-        }
-
+        this.sendRequest(params, data, contentType, request);
         request.end((err, response = {}) => {
-          let {body} = response;
-
-          if (err) {
-            this._handleAuth(response);
-            reject(body || err);
-          } else {
-            let res = body ? body : {};
-            if (!(res instanceof Array)) {
-              res._res = response;
-            }
-            resolve(res);
-          }
+          this.handleResponse(err, response, resolve, reject);
         });
       }));
+  }
+
+  sendRequest(params, data, contentType, request) {
+    this.setToken(request);
+    if (params) {
+      request.query(params);
+    }
+    if (data) {
+      if (contentType) {
+        request.set("Content-Type", contentType);
+      }
+      request.send(data);
+    }
+  }
+
+  handleResponse(err, response, resolve, reject) {
+    let {body} = response;
+    if (err) {
+      this._handleAuth(response);
+      reject(body || err);
+    } else {
+      let res = body ? body : {};
+      if (!(res instanceof Array)) {
+        res._res = response;
+      }
+      resolve(res);
+    }
   }
 
   _handleAuth(response) {
