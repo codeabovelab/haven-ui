@@ -150,7 +150,7 @@ export default class ApplicationPanel extends Component {
       }
     }
     let popoverRender = (el) => (
-      <Popover>
+      <Popover id={el.image}>
         <span>Image: {shortenName(el.image) || ''}</span>
         <br></br>
         <span>Status: {shortenName(el.status) || ''}</span>
@@ -174,6 +174,38 @@ export default class ApplicationPanel extends Component {
     listApps(name);
   }
 
+  countStatistics(events, rows, containers, cluster) {
+    let resultStat = {
+      runningContainers: 0,
+      runningNodes: 0,
+      apps: 0,
+      eventsCount: 0
+    };
+    if (events) {
+      let eventsFiltered = events;
+      if (name && name !== 'all') {
+        eventsFiltered = _.filter(eventsFiltered, (el)=>(el.lastEvent.cluster === name));
+      }
+      _.forEach(eventsFiltered, (value, key) => {
+        resultStat.eventsCount += value.count;
+      });
+    }
+    if (rows) {
+      resultStat.apps = rows.length;
+    }
+    if (containers && _.size(containers) > 0) {
+      _.forEach(containers, (container) => {
+        if (container.run && (cluster.name === 'all' || cluster.name === container.cluster)) {
+          resultStat.runningContainers++;
+        }
+      });
+    }
+    if (typeof(cluster.nodes.on) !== 'undefined') {
+      resultStat.runningNodes = cluster.nodes.on;
+    }
+    return resultStat;
+  }
+
   render() {
     this.COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
     const GROUP_BY_SELECT = ['name', 'creatingDate'];
@@ -195,41 +227,15 @@ export default class ApplicationPanel extends Component {
         }
       }
     }
-    let runningContainers = 0;
-    let runningNodes = 0;
-    let Apps = 0;
-    let eventsCount = 0;
     let events = this.props.events['bus.cluman.errors-stats'];
-
-    if (events) {
-      if (name && name !== 'all') {
-        events = _.filter(events, (el)=>(el.lastEvent.cluster === name));
-      }
-      _.forEach(events, (value, key) => {
-        eventsCount += value.count;
-      });
-    }
-    if (rows) {
-      Apps = rows.length;
-    }
-    if (containers && _.size(containers) > 0) {
-      _.forEach(containers, (container) => {
-        if (container.run && (name === 'all' || name === container.cluster)) {
-          runningContainers++;
-        }
-      });
-    }
-    if (typeof(cluster.nodes.on) !== 'undefined') {
-      runningNodes = cluster.nodes.on;
-    }
-
+    const stats = this.countStatistics(events, rows, containers, cluster);
     this.additionalData(rows);
 
     return (
       <div>
         <StatisticsPanel metrics={this.statisticsMetrics}
                          cluster={cluster}
-                         values={[runningContainers, runningNodes, Apps, eventsCount]}
+                         values={[stats.runningContainers, stats.runningNodes, stats.apps, stats.eventsCount]}
         />
         <div className="panel panel-default">
           {!rows && (
@@ -304,9 +310,22 @@ export default class ApplicationPanel extends Component {
     });
   }
 
+  createLoadingDialog(currentApplication, longTermAction, actionKey) {
+    const {params: {name}, listApps, loadContainers} = this.props;
+    return (
+      <LoadingDialog application={currentApplication}
+                     onHide={this.onHideDialog.bind(this)}
+                     name={name}
+                     longTermAction={longTermAction}
+                     loadContainers={loadContainers}
+                     actionKey={actionKey}
+                     listApps={listApps}
+      />
+    );
+  }
+
   onActionInvoke(action, application) {
-    const {clusters, params: {name}} = this.props;
-    let cluster = clusters[name];
+    const {params: {name}} = this.props;
     let currentApplication;
     if (application) {
       currentApplication = this.props.application[name][application];
@@ -317,16 +336,7 @@ export default class ApplicationPanel extends Component {
         confirm('Are you sure you want to start application?')
           .then(() => {
             this.setState({
-              actionDialog: (
-                <LoadingDialog application={currentApplication}
-                               onHide={this.onHideDialog.bind(this)}
-                               name={name}
-                               longTermAction={this.props.startApp}
-                               loadContainers={this.props.loadContainers}
-                               actionKey="started"
-                               listApps={this.props.listApps}
-                />
-              )
+              actionDialog: this.createLoadingDialog(currentApplication, this.props.startApp, 'started')
             });
           });
         return;
@@ -335,16 +345,7 @@ export default class ApplicationPanel extends Component {
         confirm('Are you sure you want to stop application?')
           .then(() => {
             this.setState({
-              actionDialog: (
-                <LoadingDialog application={currentApplication}
-                               onHide={this.onHideDialog.bind(this)}
-                               name={name}
-                               longTermAction={this.props.stopApp}
-                               loadContainers={this.props.loadContainers}
-                               actionKey="stopped"
-                               listApps={this.props.listApps}
-                />
-              )
+              actionDialog: this.createLoadingDialog(currentApplication, this.props.stopApp, 'stopped')
             });
           });
         return;
@@ -353,16 +354,7 @@ export default class ApplicationPanel extends Component {
         confirm('Are you sure you want to delete this application?')
           .then(() => {
             this.setState({
-              actionDialog: (
-                <LoadingDialog application={currentApplication}
-                               onHide={this.onHideDialog.bind(this)}
-                               name={name}
-                               longTermAction={this.props.deleteApp}
-                               loadContainers={this.props.loadContainers}
-                               actionKey="deleted"
-                               listApps={this.props.listApps}
-                />
-              )
+              actionDialog: this.createLoadingDialog(currentApplication, this.props.deleteApp, 'deleted')
             });
           });
         return;
