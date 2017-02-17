@@ -260,16 +260,41 @@ export default class ClusterImages extends Component {
     });
   }
 
+  generateJobTitle(title, wildCard, imagesToUpdate = []) {
+    let resultTitle = title;
+    if (title === '') {
+      resultTitle = 'Update_';
+      switch (wildCard) {
+        case true:
+          resultTitle += this.state.wildCardImages + '_' + this.state.wildCardVersion + '_';
+          break;
+        case false:
+          _.map(imagesToUpdate, (el, key) => {
+            if (imagesToUpdate[key]) {
+              resultTitle += imagesToUpdate[key].name + '_';
+            }
+          });
+          break;
+        default:
+          break;
+      }
+      resultTitle += Math.floor(Date.now() / 1000);
+    }
+    return resultTitle;
+  }
+
   onSubmit() {
     let images = [];
     let imagesToUpdate = this.state.imagesToUpdate;
     let tags = this.state.tagsSelected;
     let strategy = this.state.updateStrategy;
     let wildCard = this.state.wildCard;
+    let title = '';
 
     if (wildCard) {
       images.push({name: this.state.wildCardImages, to: this.state.wildCardVersion});
-      this.safeUpdateContainers(strategy, this.state.updatePercents, this.state.schedule, this.state.jobTitle, images);
+      title = this.generateJobTitle(title, true);
+      this.safeUpdateContainers(strategy, this.state.updatePercents, this.state.schedule, title, images);
     } else {
       _.map(imagesToUpdate, (el, key) => {
         let updateTo = tags[key];
@@ -277,10 +302,11 @@ export default class ClusterImages extends Component {
           images.push({name: key, to: updateTo});
         }
       });
+      title = this.generateJobTitle(this.state.jobTitle, false, images);
       if (images.length > 0) {
-        this.safeUpdateContainers(strategy, this.state.updatePercents, this.state.schedule, this.state.jobTitle, images);
+        this.safeUpdateContainers(strategy, this.state.updatePercents, this.state.schedule, title, images);
       } else {
-        this.setState({updateResponse: 'Select tags for chosen images to create update job.'});
+        this.setState({updateResponse: {message: 'Select tags for chosen images to create update job.'}});
         this.openModal();
       }
     }
