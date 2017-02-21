@@ -554,7 +554,7 @@ export default class ContainerCreate extends Component {
     if (key === 'volumeBinds' || key === 'volumesFrom') {
       let volumes = [];
       _.map(defaultParams[key], (item, key) => {
-        volumes = [...volumes, {value: item}];
+        volumes = [...volumes, item];
       });
       if (volumes.length > 0) {
         this.setState({
