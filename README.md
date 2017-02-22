@@ -20,6 +20,13 @@ limitations under the License.
 
 ## Developing Haven Web App
 
+## Tested Platform
+
+* Unbuntu
+* Mac OSX 
+
+It should work on other flavors of Linux but current are not tested.  
+
 ### Requirements
 
 The minimum requirements are:
