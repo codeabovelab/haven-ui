@@ -804,7 +804,7 @@ export default class ContainerCreate extends Component {
     let {fields: {restart, restartRetries}} = this.props;
     let value = restart.value;
     if (restart.value === "on-failure" && restartRetries.value) {
-      value += `[:${restartRetries.value}]`;
+      value += `:${restartRetries.value}`;
     }
     return value;
   }
