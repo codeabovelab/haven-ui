@@ -18,12 +18,13 @@ import createHistory from 'react-router/lib/createMemoryHistory';
 import {Provider} from 'react-redux';
 import getRoutes from './routes';
 
-const targetUrl = 'http://' + config.apiHost;
 const pretty = new PrettyError();
 const app = new Express();
 const server = new http.Server(app);
 const proxy = httpProxy.createProxyServer({
-  target: targetUrl,
+  target: {
+    host: config.apiHost,
+  },
   ws: true
 });
 
@@ -35,11 +36,12 @@ app.use(Express.static(path.join(__dirname, '..', 'static')));
 // Proxy to API server
 app.use('/api', (req, res) => {
   const protocol = req.headers.referer.match(/^(https|http):\/\//g);
-  proxy.web(req, res, {target: protocol + config.apiHost});
+  proxy.web(req, res, {target: protocol + config.apiHost, secure: false, toProxy: true});
 });
 
 app.use('/ws', (req, res) => {
-  proxy.web(req, res, {target: targetUrl + '/ws'});
+  const protocol = req.headers.referer.match(/^(https|http):\/\//g);
+  proxy.web(req, res, {target:  protocol + config.apiHost + '/ws'});
 });
 
 server.on('upgrade', (req, socket, head) => {
