@@ -34,7 +34,8 @@ app.use(Express.static(path.join(__dirname, '..', 'static')));
 
 // Proxy to API server
 app.use('/api', (req, res) => {
-  proxy.web(req, res, {target: targetUrl});
+  const protocol = req.headers.referer.match(/^(https|http):\/\//g);
+  proxy.web(req, res, {target: protocol + config.apiHost});
 });
 
 app.use('/ws', (req, res) => {
