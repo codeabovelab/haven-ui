@@ -10,8 +10,10 @@ function formatUrl(path) {
   const adjustedPath = path[0] !== '/' ? '/' + path : path;
   if (!__API_PROXY__ || __SERVER__) {
     // Prepend host and port of the API server to the path.
+    console.log('Request Routing: Prepending host and port of the API server to the path');
     return 'http://' + config.apiHost + adjustedPath;
   }
+  console.log('Request Routing: Relative URL');
   // Prepend `/api` to relative URL, to proxy to API server.
   return '/api' + adjustedPath;
 }
