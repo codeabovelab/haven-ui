@@ -60,6 +60,12 @@ export function alphanumeric(value) {
   }
 }
 
+export function ipOrEmpty(value) {
+  if (!isEmpty(value) && !/\b(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}\b/.test(value)) {
+    return "Node's IP address should match ip v4 pattern or be empty";
+  }
+}
+
 export function createValidator(rules) {
   return (data = {}) => {
     const errors = {};
