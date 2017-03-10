@@ -22,6 +22,7 @@ import jobs from './jobs/jobs';
 import settings from './settings/settings';
 import users from './users/users';
 import errors from './errors/errors';
+import networks from './networks/networks';
 
 export default combineReducers({
   routing: routerReducer,
@@ -39,6 +40,7 @@ export default combineReducers({
   jobs,
   settings,
   users,
+  networks,
   //END models data
   application,
   imagesUI,

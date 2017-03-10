@@ -31,7 +31,10 @@ export default class NavContainer extends Component {
         <NavItem eventKey={5} disabled={clusterName === "all"}>Registries</NavItem>
       </LinkContainer>
       <LinkContainer to={"/clusters/" + clusterName + "/" + "images"}>
-        <NavItem eventKey={5} disabled={clusterName === "all"}>Update</NavItem>
+        <NavItem eventKey={6} disabled={clusterName === "all"}>Update</NavItem>
+      </LinkContainer>
+      <LinkContainer to={"/clusters/" + clusterName + "/" + "networks"}>
+        <NavItem eventKey={7} disabled={clusterName === "all"}>Networks</NavItem>
       </LinkContainer>
     </Nav>
     );

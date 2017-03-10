@@ -8,6 +8,7 @@ export ClustersPanel from './clusters/ClustersPanel/ClustersPanel';
 export ClusterDetailsPanel from './clusters/ClusterDetails/ClusterDetailsPanel';
 export ClusterNodesDialog from './clusters/ClusterNodesDialog/ClusterNodesDialog';
 export ClusterImages from './clusters/ClusterImages/ClusterImages';
+export ClusterNetworks from './clusters/ClusterNetworks/ClusterNetworks';
 
 export ClusterAdd from '../components/clusters/ClusterAdd';
 export ClusterConfig from '../components/clusters/ClusterConfig';
