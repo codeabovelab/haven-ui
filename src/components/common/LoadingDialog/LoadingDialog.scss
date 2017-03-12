@@ -25,3 +25,7 @@
 .loading-box {
   display:table;
 }
+
+.message:first-letter {
+  text-transform: capitalize;
+}

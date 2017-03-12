@@ -150,10 +150,11 @@ export default class ContainerDetailed extends Component {
         this.setState({
           actionDialog: (
             <LoadingDialog container={currentContainer}
+                           entityType="container"
                            onHide={this.onHideDialogAfterRestart.bind(this)}
                            name={name}
                            longTermAction={this.props.restartContainer}
-                           loadContainers={this.props.loadContainers}
+                           refreshData={this.props.loadContainers}
                            actionKey="restarted"
             />
           )
@@ -166,10 +167,11 @@ export default class ContainerDetailed extends Component {
             this.setState({
               actionDialog: (
                 <LoadingDialog container={currentContainer}
+                               entityType="container"
                                onHide={this.onHideDialogAfterDelete.bind(this)}
                                name={name}
                                longTermAction={this.props.removeContainer}
-                               loadContainers={this.props.loadContainers}
+                               refreshData={this.props.loadContainers}
                                actionKey="removed"
                 />
               )

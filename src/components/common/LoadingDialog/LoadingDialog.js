@@ -12,15 +12,16 @@ import {connect} from 'react-redux';
   containerActions)
 export default class LoadingDialog extends Component {
   static propTypes = {
-    containers: PropTypes.object.isRequired,
-    containersUI: PropTypes.object.isRequired,
+    containers: PropTypes.object,
+    containersUI: PropTypes.object,
     container: PropTypes.object,
     application: PropTypes.object,
+    network: PropTypes.object,
     name: PropTypes.string.isRequired,
+    entityType: PropTypes.string.isRequired,
     actionKey: PropTypes.string.isRequired,
     longTermAction: PropTypes.func.isRequired,
-    loadContainers: PropTypes.func,
-    listApps: PropTypes.func,
+    refreshData: PropTypes.func.isRequired,
     onHide: PropTypes.func.isRequired
   };
 
@@ -33,15 +34,22 @@ export default class LoadingDialog extends Component {
 
   componentDidMount() {
     let result;
-    const {container, name, longTermAction, application, loadContainers, listApps} = this.props;
-    let funcRequest = application ? longTermAction(name, application.name) : longTermAction(container);
+    let funcRequest;
+    const {container, name, longTermAction, application, network, refreshData} = this.props;
+    if (network) {
+      funcRequest = longTermAction(name, network.id);
+    } else if (application) {
+      funcRequest = longTermAction(name, application.name);
+    } else if (container) {
+      funcRequest = longTermAction(container);
+    }
     funcRequest.catch((response) =>{
       this.setState({
         longTermActionResponse: response
       });
     })
       .then((response) => {
-        let refreshData = application ? listApps(name) : loadContainers(name);
+        refreshData(name);
         result = response === null ? 'Action has no effect' : response._res;
         this.setState({
           longTermActionResponse: result
@@ -52,17 +60,16 @@ export default class LoadingDialog extends Component {
   componentWillUpdate(nextProps, nextState) {
     let message = '';
     let $actionResponse = $('#actionResponse');
-    const {actionKey, container, application} = this.props;
-    let entity = container ? container : application;
-    let entityType = container ? 'Container ' : 'Application ';
+    const {actionKey, entityType} = this.props;
+    let entity = this.props[entityType];
     const status = nextState.longTermActionResponse.status || nextState.longTermActionResponse.code;
     if (status) {
       switch (status) {
         case 200:
-          message = entityType + "\"" + entity.name + "\"" + ' successfully ' + actionKey;
+          message = entityType + " \"" + entity.name + "\"" + ' successfully ' + actionKey;
           break;
         case 304:
-          message = entityType + "\"" + entity.name + "\"" + ' was not modified';
+          message = entityType + " \"" + entity.name + "\"" + ' was not modified';
           break;
         default:
           message = 'Error: ' + nextState.longTermActionResponse.message;
@@ -72,8 +79,9 @@ export default class LoadingDialog extends Component {
   }
 
   render() {
-    const {container, application} = this.props;
+    const {entityType} = this.props;
     let error;
+    let title = capitalize(entityType) + ' "' + this.props[entityType].name + '"';
     let s = require('./LoadingDialog.scss');
     let response = this.state.longTermActionResponse;
     response = response === undefined ? '' : response;
@@ -86,7 +94,7 @@ export default class LoadingDialog extends Component {
       <Dialog show
               hideCancel
               size="large"
-              title={ container ? "Container " + "\"" + container.name + "\"" : "Application " + "\"" + application.name + "\""}
+              title={title}
               okTitle="Close"
               onSubmit={this.props.onHide}
               onHide={this.props.onHide}
@@ -108,10 +116,14 @@ export default class LoadingDialog extends Component {
             defaultValue=""
             id="actionResponse"
           >
-            <div></div>
+            <div className={s.message}></div>
           </div>
         )}
       </Dialog>
     );
   }
+}
+
+function capitalize(string) {
+  return string[0].toUpperCase() + string.slice(1);
 }

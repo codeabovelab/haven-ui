@@ -314,12 +314,12 @@ export default class ApplicationPanel extends Component {
     const {params: {name}, listApps, loadContainers} = this.props;
     return (
       <LoadingDialog application={currentApplication}
+                     entityType="application"
                      onHide={this.onHideDialog.bind(this)}
                      name={name}
                      longTermAction={longTermAction}
-                     loadContainers={loadContainers}
                      actionKey={actionKey}
-                     listApps={listApps}
+                     refreshData={listApps}
       />
     );
   }

@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {NavContainer, DockTable, ActionMenu, LoadingDialog} from '../../../components/index';
+import {NavContainer, DockTable, ActionMenu, LoadingDialog, Dialog} from '../../../components/index';
 import {Link, RouteHandler} from 'react-router';
 import {getDeployedImages} from 'redux/modules/images/images';
 import {updateContainers} from 'redux/modules/containers/containers';
@@ -83,6 +83,13 @@ export default class ClusterNetworks extends Component {
     }
   ];
 
+  constructor() {
+    super();
+    this.state = {
+      actionDialog: undefined
+    };
+  }
+
   componentWillMount() {
     const {listNetworks, params: {name}} = this.props;
     listNetworks(name);
@@ -131,7 +138,7 @@ export default class ClusterNetworks extends Component {
   actionsRender(row) {
     return (
       <td key="actions" className="td-actions">
-        <ActionMenu subject={row.id}
+        <ActionMenu subject={row}
                     actions={this.ACTIONS}
                     actionHandler={this.onActionInvoke.bind(this)}
         />
@@ -142,7 +149,6 @@ export default class ClusterNetworks extends Component {
   render() {
     const {params: {name}, networks} = this.props;
     let rows = _.get(networks, 'list', []);
-    console.log('rows: ', rows);
 
     return (
       <div className="panel panel-default">
@@ -159,22 +165,43 @@ export default class ClusterNetworks extends Component {
             </div>
           </div>
         )}
+        {(this.state.actionDialog) && (
+          <div>
+            {this.state.actionDialog}
+          </div>
+        )}
       </div>);
   }
 
   onActionInvoke(action, network) {
     const {params: {name}} = this.props;
-
     switch (action) {
       case "delete":
-        confirm('Are you sure you want to delete?')
+        confirm('Are you sure you want to delete network "' + network.name + '"?')
           .then(() => {
-            this.props.deleteNetwork(name, network);
+            this.setState({
+              actionDialog: (
+                <LoadingDialog network={network}
+                               entityType="network"
+                               onHide={this.onHideDialog.bind(this)}
+                               name={name}
+                               longTermAction={this.props.deleteNetwork}
+                               refreshData={this.props.listNetworks}
+                               actionKey="deleted"
+                />
+              )
+            });
           }).catch(()=>null);
         return;
 
       default:
         return;
     }
+  }
+
+  onHideDialog() {
+    this.setState({
+      actionDialog: undefined
+    });
   }
 }

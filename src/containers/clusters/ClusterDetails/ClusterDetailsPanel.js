@@ -551,10 +551,11 @@ export default class ClusterDetailsPanel extends Component {
 
     return (
       <LoadingDialog container={currentContainer}
+                     entityType="container"
                      onHide={this.onHideDialog.bind(this)}
                      name={name}
                      longTermAction={longTermAction}
-                     loadContainers={this.props.loadContainers}
+                     refreshData={this.props.loadContainers}
                      actionKey={actionKey}
       />
     );
