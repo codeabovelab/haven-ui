@@ -118,7 +118,7 @@ export function getRoles() {
 export function getCurrentUser() {
   return {
     types: [ACTIONS.GET_CURRENT_USER, ACTIONS.GET_CURRENT_USER_SUCCESS, ACTIONS.GET_CURRENT_USER_FAIL],
-    promise: (client) => client.get(`/ui/api/users/current`)
+    promise: (client) => client.get(`/ui/api/users/current/`)
   };
 }
 
