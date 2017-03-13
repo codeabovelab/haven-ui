@@ -19,7 +19,8 @@ import {
   ContainerDetailed,
   UsersPanel,
   ClusterImages,
-  ClusterNetworks
+  ClusterNetworks,
+  NetworkContainers
 } from 'containers';
 import {AgentPanel} from 'components';
 

@@ -38,3 +38,5 @@ export EventsPanel from './events/EventsPanel/EventsPanel';
 export UsersPanel from './users/UsersPanel/UsersPanel';
 export UserAdd from './users/UserAdd/UserAdd';
 export UserPassChange from './users/UserPassChange/UserPassChange';
+
+export NetworkContainers from './networks/NetworkContainers/NetworkContainers';
