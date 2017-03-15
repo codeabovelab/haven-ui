@@ -30,11 +30,25 @@ export function listNetworks(clusterId) {
     promise: (client) => client.get(`/ui/api/clusters/${clusterId}/networks`)
   };
 }
-
-export function deleteNetwork(clusterId, networkId) {
+//container = null to optimize loadingDialog code, don't delete
+export function deleteNetwork(clusterId, networkId, container = null) {
   return {
     types: [ACTIONS.DELETE_NETWORK, ACTIONS.DELETE_NETWORK_SUCCESS, ACTIONS.DELETE_NETWORK_FAIL],
     promise: (client) => client.del('/ui/api/networks/delete', {params: {cluster: clusterId, network: networkId}})
+  };
+}
+
+export function connectNetwork(clusterId, networkId, container) {
+  return {
+    types: [ACTIONS.CONNECT_NETWORK, ACTIONS.CONNECT_NETWORK_SUCCESS, ACTIONS.CONNECT_NETWORK_FAIL],
+    promise: (client) => client.post('/ui/api/networks/connect', {params: {cluster: clusterId, network: networkId, container: container.id}})
+  };
+}
+
+export function disconnectNetwork(clusterId, networkId, container) {
+  return {
+    types: [ACTIONS.DISCONNECT_NETWORK, ACTIONS.DISCONNECT_NETWORK_SUCCESS, ACTIONS.DISCONNECT_NETWORK_FAIL],
+    promise: (client) => client.post('/ui/api/networks/disconnect', {params: {cluster: clusterId, network: networkId, container: container.id}})
   };
 }
 

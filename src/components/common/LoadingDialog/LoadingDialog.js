@@ -35,12 +35,12 @@ export default class LoadingDialog extends Component {
   componentDidMount() {
     let result;
     let funcRequest;
-    const {container, name, longTermAction, application, network, refreshData} = this.props;
-    if (network) {
-      funcRequest = longTermAction(name, network.id);
-    } else if (application) {
+    const {container, name, longTermAction, application, network, refreshData, entityType} = this.props;
+    if (entityType === 'network') {
+      funcRequest = longTermAction(name, network.id, container);
+    } else if (entityType === 'application') {
       funcRequest = longTermAction(name, application.name);
-    } else if (container) {
+    } else if (entityType === 'container') {
       funcRequest = longTermAction(container);
     }
     funcRequest.catch((response) =>{

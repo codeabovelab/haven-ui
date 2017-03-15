@@ -1,14 +1,10 @@
 import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
-import * as containerActions from 'redux/modules/containers/containers';
 import * as networkActions from 'redux/modules/networks/networks';
 import {connect} from 'react-redux';
-import {NavContainer, DockTable, ActionMenu, LoadingDialog, Dialog} from '../../../components/index';
-import {ContainerScale, ContainerUpdate} from '../../../containers/index';
-import {Link} from 'react-router';
-import {Button, ButtonToolbar, Badge, Panel, ProgressBar, Tabs, Tab} from 'react-bootstrap';
+import {DockTable, ActionMenu, LoadingDialog} from '../../../components/index';
+import {Panel, ProgressBar} from 'react-bootstrap';
 import _ from 'lodash';
-import {browserHistory} from 'react-router';
 
 function renderTdImage(row) {
   let name = row.image || '';
@@ -36,6 +32,8 @@ function renderTdImage(row) {
   loadContainers: clusterActions.loadContainers,
   loadClusters: clusterActions.load,
   listNetworks: networkActions.listNetworks,
+  connectNetwork: networkActions.connectNetwork,
+  disconnectNetwork: networkActions.disconnectNetwork,
 })
 export default class NetworkContainers extends Component {
   static propTypes = {
@@ -46,20 +44,22 @@ export default class NetworkContainers extends Component {
     loadContainers: PropTypes.func.isRequired,
     loadClusters: PropTypes.func.isRequired,
     listNetworks: PropTypes.func.isRequired,
+    connectNetwork: PropTypes.func.isRequired,
+    disconnectNetwork: PropTypes.func.isRequired,
   };
 
   DETACHED_ACTIONS = [
     {
-      key: "attach",
-      title: "Attach",
+      key: "connect",
+      title: "Connect",
       default: true
     }
   ];
 
   ATTACHED_ACTIONS = [
     {
-      key: "detach",
-      title: "Detach",
+      key: "disconnect",
+      title: "Disconnect",
       default: true
     }
   ];
@@ -67,49 +67,139 @@ export default class NetworkContainers extends Component {
   COLUMNS = [
     {
       name: 'name',
-      width: '15%'
+      width: '15%',
+      sortable: true
     },
     {
       name: 'image',
       render: renderTdImage,
-      width: '35%'
+      width: '35%',
+      sortable: true
     },
     {
       name: 'status',
-      width: '20%'
+      width: '20%',
+      sortable: true
+    },
+    {
+      name: 'connection',
+      width: '10%',
+      sortable: true
+    },
+    {
+      name: 'Actions',
+      width: '1%',
+      render: this.actionsRender.bind(this)
     }
   ];
 
   constructor() {
     super();
     this.state = {
-      actionDialog: undefined
+      actionDialog: undefined,
+      currentNetwork: {}
     };
   }
 
-  componentDidMount() {
-    const {loadContainers, listNetworks, networks, loadClusters, params: {name}} = this.props;
-
+  componentWillMount() {
+    const {loadContainers, listNetworks, loadClusters, params: {name}, params: {subname}} = this.props;
     loadClusters();
     loadContainers(name);
-    listNetworks(name);
+    listNetworks(name).then(()=> {
+      this.setState({
+        currentNetwork: _.find(this.props.networks.list, {id: subname})
+      });
+    });
+  }
 
+  componentDidMount() {
     $('.input-search').focus();
+  }
+
+  actionsRender(row) {
+    return (
+      <td key="actions" className="td-actions">
+        <ActionMenu subject={row}
+                    actions={row.connection === 'Connected' ? this.ATTACHED_ACTIONS : this.DETACHED_ACTIONS}
+                    actionHandler={this.onActionInvoke.bind(this)}
+        />
+      </td>
+    );
+  }
+
+  onHideDialog() {
+    this.setState({
+      actionDialog: undefined
+    });
+  }
+
+  onActionInvoke(action, row) {
+    const {params: {name}} = this.props;
+    switch (action) {
+      case "connect":
+        confirm(`Are you sure you want to connect container "${row.name}" to network "${row.network.name}" ?`)
+          .then(() => {
+            this.setState({
+              actionDialog: (
+                <LoadingDialog network={row.network}
+                               container={row}
+                               entityType="network"
+                               onHide={this.onHideDialog.bind(this)}
+                               name={name}
+                               longTermAction={this.props.connectNetwork}
+                               refreshData={this.props.listNetworks}
+                               actionKey={`connected to container "${row.name}"`}
+                />
+              )
+            });
+          }).catch(()=>null);
+        return;
+      case "disconnect":
+        confirm(`Are you sure you want to disconnect container "${row.name}" from network "${row.network.name}" ?`)
+          .then(() => {
+            this.setState({
+              actionDialog: (
+                <LoadingDialog network={row.network}
+                               container={row}
+                               entityType="network"
+                               onHide={this.onHideDialog.bind(this)}
+                               name={name}
+                               longTermAction={this.props.disconnectNetwork}
+                               refreshData={this.props.listNetworks}
+                               actionKey={`disconnected from container "${row.name}"`}
+                />
+              )
+            });
+          }).catch(()=>null);
+        return;
+
+      default:
+        return;
+    }
   }
 
   render() {
     const {containers, clusters, params: {name}} = this.props;
     const cluster = clusters[name];
+    const network = this.state.currentNetwork;
+    const panelHeader = (
+      <div className="clearfix">
+        <h3>{`Cluster "${name}" containers relations to network "${_.get(this.state.currentNetwork, 'name', "")}"`}</h3>
+      </div>
+    );
     if (!cluster) {
       return (
         <div></div>
       );
     }
     const containersIds = cluster.containersList;
-    const rows = containersIds == null ? null : containersIds.map(id => containers[id]);
+    const rows = containersIds == null ? null : containersIds.map(id => {
+      const connectionStatus = _.find(network.containers, {id: id}) ? "Connected" : "Disconnected";
+      return _.merge(containers[id], {connection: connectionStatus, network: network});
+    });
 
     return (
-      <div className="panel panel-default">
+      <Panel header={panelHeader}>
         {!rows && (
           <ProgressBar active now={100}/>
         ) || (
@@ -125,7 +215,7 @@ export default class NetworkContainers extends Component {
             {this.state.actionDialog}
           </div>
         )}
-      </div>
+      </Panel>
     );
   }
 }
