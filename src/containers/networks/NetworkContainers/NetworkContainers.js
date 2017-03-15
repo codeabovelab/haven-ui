@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as networkActions from 'redux/modules/networks/networks';
 import {connect} from 'react-redux';
-import {DockTable, ActionMenu, LoadingDialog} from '../../../components/index';
+import {DockTable, ActionMenu, LoadingDialog, StatisticsPanel} from '../../../components/index';
 import {Panel, ProgressBar} from 'react-bootstrap';
 import _ from 'lodash';
 
@@ -61,6 +61,14 @@ export default class NetworkContainers extends Component {
       key: "disconnect",
       title: "Disconnect",
       default: true
+    }
+  ];
+
+  statisticsMetrics = [
+    {
+      type: 'number',
+      title: 'Container',
+      titles: 'Containers'
     }
   ];
 
@@ -184,7 +192,7 @@ export default class NetworkContainers extends Component {
     const network = this.state.currentNetwork;
     const panelHeader = (
       <div className="clearfix">
-        <h3>{`Cluster "${name}" containers relations to network "${_.get(this.state.currentNetwork, 'name', "")}"`}</h3>
+        <h3>{`network "${_.get(this.state.currentNetwork, 'name', "")}" containers relations`}</h3>
       </div>
     );
     if (!cluster) {
@@ -199,23 +207,30 @@ export default class NetworkContainers extends Component {
     });
 
     return (
-      <Panel header={panelHeader}>
-        {!rows && (
-          <ProgressBar active now={100}/>
-        ) || (
-          <div>
+      <div key={name}>
+        {rows && (
+          <StatisticsPanel metrics={this.statisticsMetrics}
+                           values={[rows.length]}
+          />
+        )}
+        <Panel header={panelHeader}>
+          {!rows && (
+            <ProgressBar active now={100}/>
+          ) || (
+            <div>
               <DockTable columns={this.COLUMNS}
                          rows={rows}
                          key={name}
               />
-          </div>
-        )}
-        {(this.state.actionDialog) && (
-          <div>
-            {this.state.actionDialog}
-          </div>
-        )}
-      </Panel>
+            </div>
+          )}
+          {(this.state.actionDialog) && (
+            <div>
+              {this.state.actionDialog}
+            </div>
+          )}
+        </Panel>
+      </div>
     );
   }
 }

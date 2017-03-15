@@ -1,10 +1,10 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {NavContainer, DockTable, ActionMenu, LoadingDialog, Dialog} from '../../../components/index';
+import {NavContainer, DockTable, ActionMenu, LoadingDialog, StatisticsPanel} from '../../../components/index';
 import {Link, RouteHandler} from 'react-router';
 import {getDeployedImages} from 'redux/modules/images/images';
 import {updateContainers} from 'redux/modules/containers/containers';
-import {Button, ProgressBar, Popover, Modal, OverlayTrigger} from 'react-bootstrap';
+import {ProgressBar} from 'react-bootstrap';
 import _ from 'lodash';
 import {listNetworks, deleteNetwork} from 'redux/modules/networks/networks';
 
@@ -79,8 +79,8 @@ export default class ClusterNetworks extends Component {
   statisticsMetrics = [
     {
       type: 'number',
-      title: 'Networks Total',
-      titles: 'Networks Total'
+      title: 'Network',
+      titles: 'Networks'
     }
   ];
 
@@ -162,25 +162,32 @@ export default class ClusterNetworks extends Component {
     let rows = _.get(networks, 'list', []);
 
     return (
-      <div className="panel panel-default">
-        {(networks.loadingList && rows.length === 0) && (
-          <ProgressBar active now={100}/>
-        ) || (
-          <div>
-            <NavContainer clusterName={name}/>
+      <div key={name}>
+        {rows && (
+          <StatisticsPanel metrics={this.statisticsMetrics}
+                           values={[rows.length]}
+          />
+        )}
+        <div className="panel panel-default">
+          {(networks.loadingList && rows.length === 0) && (
+            <ProgressBar active now={100}/>
+          ) || (
             <div>
-              <DockTable columns={this.COLUMNS}
-                         rows={rows}
-                         key={name}
-              />
+              <NavContainer clusterName={name}/>
+              <div>
+                <DockTable columns={this.COLUMNS}
+                           rows={rows}
+                           key={name}
+                />
+              </div>
             </div>
-          </div>
-        )}
-        {(this.state.actionDialog) && (
-          <div>
-            {this.state.actionDialog}
-          </div>
-        )}
+          )}
+          {(this.state.actionDialog) && (
+            <div>
+              {this.state.actionDialog}
+            </div>
+          )}
+        </div>
       </div>);
   }
 
