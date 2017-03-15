@@ -26,7 +26,8 @@ export default class ClusterNetworks extends Component {
     {
       name: 'name',
       width: '10%',
-      sortable: true
+      sortable: true,
+      render: this.nameRender.bind(this),
     },
     {
       name: 'driver',
@@ -97,6 +98,16 @@ export default class ClusterNetworks extends Component {
 
   componentDidMount() {
     clusterNetworksMounted = true;
+  }
+
+  nameRender(row) {
+    const {params: {name}} = this.props;
+    const networkName = _.get(row, 'name', '');
+    return (
+      <td key="name">
+        <Link to={`/clusters/${name}/networks/${row.id}`}>{networkName}</Link>
+      </td>
+    );
   }
 
   attachableRender(row) {

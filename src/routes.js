@@ -59,6 +59,7 @@ export default (store) => {
         <Route name="Registries" path="clusters/:name/registries" component={RegistriesPanel}/>
         <Route name="Update" path="clusters/:name/images" component={ClusterImages}/>
         <Route name="Networks" path="clusters/:name/networks" component={ClusterNetworks}/>
+        <Route name="Network Detailed" path="clusters/:name/networks/:subname" component={NetworkContainers}/>
         <Route name="Applications" path="clusters/:name/applications" component={ApplicationPanel}/>
         <Route name="Jobs" path="jobs" component={JobsPanel}/>
         <Route name="Settings" path="settings" component={SettingsPanel}/>
