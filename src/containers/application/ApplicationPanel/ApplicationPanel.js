@@ -208,7 +208,6 @@ export default class ApplicationPanel extends Component {
 
   render() {
     this.COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
-    const css = require('./ApplicationPanel.scss');
     const GROUP_BY_SELECT = ['name', 'creatingDate'];
     const {containers, clusters, application, params: {name}} = this.props;
     const cluster = clusters[name];
@@ -261,7 +260,7 @@ export default class ApplicationPanel extends Component {
               </div>
             )}
             {!rows && (
-              <div className={css.progressBarBlock}>
+              <div className="progressBarBlock">
                 <ProgressBar active now={100}/>
               </div>
             )}

@@ -169,19 +169,27 @@ export default class ClusterNetworks extends Component {
           />
         )}
         <div className="panel panel-default">
-          {(networks.loadingList && rows.length === 0) && (
-            <ProgressBar active now={100}/>
-          ) || (
+          <div>
+            <NavContainer clusterName={name}/>
             <div>
-              <NavContainer clusterName={name}/>
-              <div>
+              {(networks.loadingList && rows.length === 0) && (
+                <div className="progressBarBlock">
+                  <ProgressBar active now={100}/>
+                </div>
+              )}
+              {(!networks.loadingList && rows.length === 0) && (
+                <div className="alert alert-info">
+                  No networks yet
+                </div>
+              )}
+              {(!networks.loadingList && rows.length > 0) && (
                 <DockTable columns={this.COLUMNS}
                            rows={rows}
                            key={name}
                 />
-              </div>
+              )}
             </div>
-          )}
+          </div>
           {(this.state.actionDialog) && (
             <div>
               {this.state.actionDialog}

@@ -344,7 +344,6 @@ export default class ClusterImages extends Component {
     let $searchInput = $('.input-search')[0];
     $($searchInput).addClass('pseudo-label');
     require('react-select/dist/react-select.css');
-    const css = require('./ClusterImages.scss');
     const {params: {name}, images} = this.props;
     const wildCard = this.state.wildCard;
     let rows = _.get(this.props.images, `deployedImages.${name}`, []).map((row)=> {
@@ -480,7 +479,7 @@ export default class ClusterImages extends Component {
               </div>
             </div>
           {(images.loadingDeployed && rows.length === 0) && (
-            <div className={css.progressBarBlock}>
+            <div className="progressBarBlock">
               <ProgressBar active now={100}/>
             </div>
           )}
