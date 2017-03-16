@@ -344,6 +344,7 @@ export default class ClusterImages extends Component {
     let $searchInput = $('.input-search')[0];
     $($searchInput).addClass('pseudo-label');
     require('react-select/dist/react-select.css');
+    const css = require('./ClusterImages.scss');
     const {params: {name}, images} = this.props;
     const wildCard = this.state.wildCard;
     let rows = _.get(this.props.images, `deployedImages.${name}`, []).map((row)=> {
@@ -373,9 +374,6 @@ export default class ClusterImages extends Component {
           />
         )}
         <div className="panel panel-default">
-          {(images.loadingDeployed && rows.length === 0) && (
-            <ProgressBar active now={100}/>
-          ) || (
             <div>
               <NavContainer clusterName={name}/>
               <div id="clusterImages">
@@ -453,7 +451,7 @@ export default class ClusterImages extends Component {
                     </div>
                   </div>
                 </form>
-                {!wildCard && (
+                {(!wildCard && rows) && (
                   <DockTable columns={this.COLUMNS}
                              rows={rows}
                              key={name}
@@ -481,8 +479,11 @@ export default class ClusterImages extends Component {
                 )}
               </div>
             </div>
+          {(images.loadingDeployed && rows.length === 0) && (
+            <div className={css.progressBarBlock}>
+              <ProgressBar active now={100}/>
+            </div>
           )}
-
           {(rows.length === 0 && !images.loadingDeployed) && (
             <div className="alert alert-info">
               No images yet
