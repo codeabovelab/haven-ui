@@ -38,15 +38,22 @@ export default (store) => {
     checkNotAuth();
   };
   const redirectLogin = (nextState, replace, cb) => {
+    let redirect = '/dashboard';
+    if (window && window.location.search) {
+      let search = window.location.search.match(/\?back=(.+)/);
+      if (search && search[1]) {
+        redirect = search[1];
+      }
+    }
+
     function checkAuth() {
       const { auth: { user }} = store.getState();
       if (user) {
-        // already logged in, so proceed to /dashboard!
-        replace('/dashboard');
+        replace(redirect);
       }
       cb();
     }
-
+    console.log('redirect: ', redirect);
     checkAuth();
   };
 

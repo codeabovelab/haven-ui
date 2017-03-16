@@ -52,7 +52,6 @@ export default class Login extends Component {
           iPassword.value = '';
           if (location && location.query && location.query.back) {
             replace(location.query.back);
-            return true;
           }
         }
       });
@@ -79,9 +78,9 @@ export default class Login extends Component {
         <div className="loginWrapper">
           <h2 className="text-lg-center"><img className="login-logo" src="/logo.png"/>Haven</h2>
           <h4 className="text-xs-center">Container Management Simplified</h4>
-          <div className="container loginContainer">
-            <Helmet title="Login"/>
-            {(!lsToken || !lsUser) && (
+          {(!lsToken || !lsUser) && (
+            <div className="container loginContainer">
+              <Helmet title="Login"/>
               <div>
                 <form className="login-form" onSubmit={this.handleSubmit}>
                   <div className="form-group">
@@ -100,8 +99,11 @@ export default class Login extends Component {
                   {!loginError && <span>&nbsp;</span>}
                   {loginError && errorMessage}
                 </div>
-              </div>)}
-          </div>
+              </div>
+            </div>
+          ) || (
+            <span><i className="fa fa-spinner fa-5x fa-pulse"/></span>
+          )}
         </div>
       </div>
     );
