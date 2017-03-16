@@ -10,14 +10,14 @@ export default class Chain extends Component {
     popoverRender: PropTypes.func,
     popoverPlacement: PropTypes.string,
     link: PropTypes.string,
-    preventTransform: PropTypes.bool
+    Transform: PropTypes.bool
   };
 
   render() {
     const s = require('./Chain.scss');
     let maxCount = (this.props.maxCount || 5);
     let src = this.props.data;
-    let btnClass = this.props.preventTransform ? "spaced-items btnNotTransformed" : "spaced-items";
+    let btnClass = this.props.Transform ? "spaced-items" : "spaced-items btnNotTransformed";
     if (src instanceof Function) {
       src = src();
     }
