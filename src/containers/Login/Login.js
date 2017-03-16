@@ -100,15 +100,7 @@ export default class Login extends Component {
                   {!loginError && <span>&nbsp;</span>}
                   {loginError && errorMessage}
                 </div>
-              </div>) || (
-              <div>
-                <p className="text-xs-center lead">You are currently logged in as <strong>{user.name}</strong>.</p>
-                <div className="text-xs-center">
-                  <button className="btn btn-danger" onClick={this.handleLogout.bind(this)}><i className="fa fa-sign-out"/>{' '}Log Out
-                  </button>
-                </div>
-              </div>
-            )}
+              </div>)}
           </div>
         </div>
       </div>

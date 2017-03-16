@@ -24,11 +24,23 @@ import {AgentPanel} from 'components';
 
 export default (store) => {
   const requireLogin = (nextState, replace, cb) => {
-    function checkAuth() {
+    function checkNotAuth() {
       const { auth: { user }} = store.getState();
       if (!user) {
         // oops, not logged in, so can't be here!
         replace('/login');
+      }
+      cb();
+    }
+
+    checkNotAuth();
+  };
+  const redirectLogin = (nextState, replace, cb) => {
+    function checkAuth() {
+      const { auth: { user }} = store.getState();
+      if (user) {
+        // already logged in, so proceed to /dashboard!
+        replace('/dashboard');
       }
       cb();
     }
@@ -67,7 +79,9 @@ export default (store) => {
       </Route>
 
       { /* Public Routes */ }
-      <Route name="Login" path="login" component={Login}/>
+      <Route onEnter={redirectLogin}>
+        <Route name="Login" path="login" component={Login}/>
+      </Route>
 
       { /* Catch all route */ }
       <Route name="Not Found" path="*" component={NotFound} status={404}/>
