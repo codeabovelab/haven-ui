@@ -67,6 +67,7 @@ export default class ImagesList extends Component {
             <Chain data={image.ids || []}
               popoverPlacement="right"
               popoverRender={popoverRender}
+              preventTransform
               render={(img) => (<span title={title(img)}>{String(img.tags) || "[untagged]"}</span>)}
             />
           </td>

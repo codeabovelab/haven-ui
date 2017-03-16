@@ -9,13 +9,15 @@ export default class Chain extends Component {
     render: PropTypes.func,
     popoverRender: PropTypes.func,
     popoverPlacement: PropTypes.string,
-    link: PropTypes.string
+    link: PropTypes.string,
+    preventTransform: PropTypes.bool
   };
 
   render() {
     const s = require('./Chain.scss');
     let maxCount = (this.props.maxCount || 5);
     let src = this.props.data;
+    let btnClass = this.props.preventTransform ? "spaced-items btnNotTransformed" : "spaced-items";
     if (src instanceof Function) {
       src = src();
     }
@@ -25,8 +27,8 @@ export default class Chain extends Component {
     src = src || [];
     let first = maxCount >= src.length ? maxCount : maxCount - 2;
     let itemRender = this.props.render || ((a) => String(a));
-    let buttonRender = (item, i) => (<Button key={"item." + i} bsStyle="info" className="spaced-items">{itemRender(item)}</Button>);
-    let simpleLinkRender = (item, i) => (<Button key={"item." + i} bsStyle="info" className="spaced-items"><Link className={s.chainLink} to={this.props.link}>{itemRender(item)}</Link></Button>);
+    let buttonRender = (item, i) => (<Button key={"item." + i} bsStyle="info" className={btnClass}>{itemRender(item)}</Button>);
+    let simpleLinkRender = (item, i) => (<Button key={"item." + i} bsStyle="info" className={btnClass}><Link className={s.chainLink} to={this.props.link}>{itemRender(item)}</Link></Button>);
     let labelRender;
     if (this.props.popoverRender) {
       labelRender = (item, i) => (
