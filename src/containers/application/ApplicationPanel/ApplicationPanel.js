@@ -208,15 +208,11 @@ export default class ApplicationPanel extends Component {
 
   render() {
     this.COLUMNS.forEach(column => column.sortable = column.name !== 'actions');
+    const css = require('./ApplicationPanel.scss');
     const GROUP_BY_SELECT = ['name', 'creatingDate'];
     const {containers, clusters, application, params: {name}} = this.props;
     const cluster = clusters[name];
-    if (!application) {
-      return (
-        <div></div>
-      );
-    }
-    const applications = application[name];
+    const applications = _.get(application, name, null);
     let rows = [];
     if (applications == null) {
       rows = null;
@@ -233,38 +229,43 @@ export default class ApplicationPanel extends Component {
 
     return (
       <div>
-        <StatisticsPanel metrics={this.statisticsMetrics}
-                         cluster={cluster}
-                         values={[stats.runningContainers, stats.runningNodes, stats.apps, stats.eventsCount]}
-        />
+        {cluster && (
+          <StatisticsPanel metrics={this.statisticsMetrics}
+                           cluster={cluster}
+                           values={[stats.runningContainers, stats.runningNodes, stats.apps, stats.eventsCount]}
+          />
+        )}
         <div className="panel panel-default">
-          {!rows && (
-            <ProgressBar active now={100}/>
-          )}
+          <div>
+            <NavContainer clusterName={name}/>
+            {rows && (
+              <div>
+                <ButtonToolbar className="pulled-right-toolbar">
+                  <Button
+                    bsStyle="primary"
+                    className="pulled-right"
+                    onClick={this.onActionInvoke.bind(this, "create")}
+                  >
+                    <i className="fa fa-plus"/>&nbsp;
+                    New Application
+                  </Button>
+                </ButtonToolbar>
 
-          {rows && (
-            <div>
-              <NavContainer clusterName={name}/>
-              <ButtonToolbar className="pulled-right-toolbar">
-                <Button
-                  bsStyle="primary"
-                  className="pulled-right"
-                  onClick={this.onActionInvoke.bind(this, "create")}
-                >
-                  <i className="fa fa-plus"/>&nbsp;
-                  New Application
-                </Button>
-              </ButtonToolbar>
-
-              <div className="applications">
-                <DockTable columns={this.COLUMNS}
-                           rows={rows}
-                           groupBySelect={GROUP_BY_SELECT}
-                           size={DockTable.SIZES.SM}
-                />
+                <div className="applications">
+                  <DockTable columns={this.COLUMNS}
+                             rows={rows}
+                             groupBySelect={GROUP_BY_SELECT}
+                             size={DockTable.SIZES.SM}
+                  />
+                </div>
               </div>
+            )}
+            {!rows && (
+              <div className={css.progressBarBlock}>
+                <ProgressBar active now={100}/>
+              </div>
+            )}
             </div>
-          )}
 
           {(rows && rows.length === 0) && (
             <div className="alert alert-info">
