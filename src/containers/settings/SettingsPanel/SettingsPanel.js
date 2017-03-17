@@ -6,6 +6,8 @@ import {ProgressBar} from 'react-bootstrap';
 import {downloadFile} from '../../../utils/fileActions';
 import TimeUtils from 'utils/TimeUtils';
 
+let addScript;
+
 @connect(
   state => ({
     settings: state.settings
@@ -24,9 +26,20 @@ export default class SettingsPanel extends Component {
   };
 
   componentDidMount() {
+    addScript = document.createElement('script');
+    addScript.setAttribute('src', 'https://buttons.github.io/buttons.js');
+    addScript.setAttribute('async', '');
+    addScript.setAttribute('defer', '');
+    setTimeout(()=>document.body.appendChild(addScript), 500);
     require('./SettingsPanel.scss');
     this.props.getSettings();
     this.props.getAppInfo();
+  }
+
+  componentWillUnmount() {
+    if (addScript) {
+      addScript.remove();
+    }
   }
 
   onHideDialog() {
@@ -51,7 +64,18 @@ export default class SettingsPanel extends Component {
     }
     return (
       <div>
-        <h4><a href="https://github.com/codeabovelab/haven-platform" target="_blank">Haven</a></h4>
+        <h4>
+          <a href="https://github.com/codeabovelab/haven-platform" target="_blank">Haven</a>&nbsp;
+        </h4>
+        <h4>
+          <a className="github-button" href="https://github.com/codeabovelab/haven-platform"
+             data-icon="octicon-star" data-style="mega"
+             data-count-href="/codeabovelab/haven-platform/stargazers"
+             data-count-api="/repos/codeabovelab/haven-platform#stargazers_count"
+             data-count-aria-label="# stargazers on GitHub" aria-label="Star codeabovelab/haven-platform on GitHub">
+            Star
+          </a>
+        </h4>
         <div className="settingsList">
           <p>Version: <a target="_blank" href={"https://github.com/codeabovelab/haven-platform/commit/" + version.buildRevision}>{version.version}</a></p>
           <p>Build Time: <span>{TimeUtils.format(version.buildTime)}</span></p>

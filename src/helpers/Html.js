@@ -46,6 +46,7 @@ export default class Html extends Component {
           <script dangerouslySetInnerHTML={{__html: `window.__data=${serialize(store.getState())};`}} charSet="UTF-8"/>
           <script src={assets.javascript.global} charSet="UTF-8"/>
           <script src={assets.javascript.main} charSet="UTF-8"/>
+          <script async defer src="https://buttons.github.io/buttons.js"></script>
         </body>
       </html>
     );
