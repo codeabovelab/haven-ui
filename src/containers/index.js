@@ -40,3 +40,5 @@ export UserAdd from './users/UserAdd/UserAdd';
 export UserPassChange from './users/UserPassChange/UserPassChange';
 
 export NetworkContainers from './networks/NetworkContainers/NetworkContainers';
+
+export AgentPanel from './agent/AgentPanel';

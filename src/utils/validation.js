@@ -1,4 +1,4 @@
-const isEmpty = value => value === undefined || value === null || value === '';
+export const isEmpty = value => value === undefined || value === null || value === '';
 const join = (rules) => (value, data) => rules.map(rule => rule(value, data)).filter(error => !!error)[0 /* first error */ ];
 
 export function email(value) {
@@ -63,6 +63,12 @@ export function alphanumeric(value) {
 export function ipOrEmpty(value) {
   if (!isEmpty(value) && !/\b(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}\b/.test(value)) {
     return "Node's IP address should match ip v4 pattern or be empty";
+  }
+}
+
+export function ipWithPort(value) {
+  if (!/\b(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}(:\d{1,5})\b/.test(value)) {
+    return "Address should match ip v4 pattern with port, ex. 123.34.56.78:2375";
   }
 }
 

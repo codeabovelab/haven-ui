@@ -3,8 +3,7 @@ import config from '../../config';
 import {FormGroup, FormControl, ControlLabel, HelpBlock, Button} from 'react-bootstrap';
 import {createValidator, required, ipOrEmpty} from 'utils/validation';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
-
-const isEmpty = value => value === undefined || value === null || value === '';
+import {isEmpty} from '../../utils/validation';
 
 @reduxForm({
   form: 'GetAgent',
@@ -15,14 +14,15 @@ const isEmpty = value => value === undefined || value === null || value === '';
     nodeIp: [ipOrEmpty],
   })
 })
-export default class AgentPanel extends Component {
+export default class AgentGet extends Component {
 
   static propTypes = {
-    fields: PropTypes.object.isRequired,
+    fields: PropTypes.object,
+    css: PropTypes.object.isRequired
   };
 
   render() {
-    const css = require('./AgentPanel.scss');
+    const css = this.props.css;
     const fields = this.props.fields;
     const nodeIpEmpty = isEmpty(fields.nodeIp.value);
     let agentURL = location.protocol + '//' + config.apiHost + "/discovery/agent/haven-agent.py";
@@ -48,9 +48,8 @@ export default class AgentPanel extends Component {
         </div>
         <div className="col-md-3 col-sm-12">
           <Button
-            className={css.buttonLink}
+            className={"btn btn-primary " + css.buttonLink}
             type="button"
-            bsStyle="primary"
             disabled={fields.nodeIp.error}
             href={agentURL}>Get Agent</Button>
         </div>

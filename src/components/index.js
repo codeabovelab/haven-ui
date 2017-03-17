@@ -38,5 +38,6 @@ export DashboardClustersList from '../components/clusters/DashboardClustersList'
 export ClusterUploadCompose from './clusters/ClusterUploadCompose';
 export ClusterSetSource from './clusters/ClusterSetSource';
 export ClusterRegistriesDialog from './clusters/ClusterRegistriesDialog';
-export AgentPanel from './agent/AgentPanel';
+export AgentGet from './agent/AgentGet';
+export AgentAddNode from './agent/AgentAddNode';
 export NavContainer from './common/NavContainer/NavContainer';

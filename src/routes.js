@@ -20,9 +20,9 @@ import {
   UsersPanel,
   ClusterImages,
   ClusterNetworks,
-  NetworkContainers
+  NetworkContainers,
+  AgentPanel
 } from 'containers';
-import {AgentPanel} from 'components';
 
 export default (store) => {
   const requireLogin = (nextState, replace, cb) => {

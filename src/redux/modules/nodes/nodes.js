@@ -61,3 +61,10 @@ export function remove({name, cluster}) {
     promise: (client) => client.del(`/ui/api/clusters/${cluster}/nodes/${name}`)
   };
 }
+
+export function add(name, address) {
+  return {
+    types: [ACTIONS.ADD, ACTIONS.ADD_SUCCESS, ACTIONS.ADD_FAIL],
+    promise: (client) => client.put(`/ui/api/nodes/${name}`, {params: {address: address}})
+  };
+}
