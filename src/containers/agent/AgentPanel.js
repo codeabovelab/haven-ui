@@ -19,14 +19,14 @@ export default class AgentPanel extends Component {
     const css = require('./AgentPanel.scss');
 
     return (
-      <div className="col-md-offset-2 col-md-8 col-md-offset-2">
-        <Panel>
+      <Panel>
+        <div className="col-md-offset-1 col-md-10 col-md-offset-1">
           <h3>Get Agent</h3>
           <AgentGet css={css}/>
           <h3>Add Node</h3>
           <AgentAddNode css={css} addNode={this.props.addNode} loadNodes={this.props.loadNodes}/>
-        </Panel>
-      </div>
+        </div>
+      </Panel>
     );
   }
 }
