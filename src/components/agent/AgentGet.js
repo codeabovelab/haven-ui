@@ -32,7 +32,7 @@ export default class AgentGet extends Component {
 
     return (
       <div className="row">
-        <div className="col-md-4 col-sm-12">
+        <div className="col-md-10 col-sm-12">
           <form onSubmit={this.handleSubmit}>
             <FormGroup validationState={fields.nodeIp.error ? "error" : null}>
               <ControlLabel>Node IP</ControlLabel>
@@ -46,7 +46,7 @@ export default class AgentGet extends Component {
             </FormGroup>
           </form>
         </div>
-        <div className="col-md-3 col-sm-12">
+        <div className="col-md-2 col-sm-12">
           <Button
             className={"btn btn-primary " + css.buttonLink}
             type="button"
