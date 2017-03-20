@@ -5,6 +5,11 @@ export default function reducer(state = {}, action = {}) {
   let result;
 
   switch (action.type) {
+    case ACTIONS.LOAD:
+      return {
+        ...state,
+        loading: true
+      };
     case ACTIONS.LOAD_SUCCESS:
       result = action.result.map((node) => {
         let result = node;
@@ -34,7 +39,13 @@ export default function reducer(state = {}, action = {}) {
 
       return {
         ...state,
-        ..._.keyBy(result, 'name')
+        ..._.keyBy(result, 'name'),
+        loading: false
+      };
+    case ACTIONS.LOAD_FAIL:
+      return {
+        ...state,
+        loading: false
       };
     default:
       return state;

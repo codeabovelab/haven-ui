@@ -428,13 +428,9 @@ export default class ClusterDetailsPanel extends Component {
           />
         )}
         <div className="panel panel-default">
-          {!rows && (
-            <ProgressBar active now={100} />
-          )}
-
+          <NavContainer clusterName={name}/>
           {rows && (
             <div>
-              <NavContainer clusterName={name}/>
               {!isAllPage && (
                 <ButtonToolbar className="pulled-right-toolbar">
                   <Button
@@ -470,8 +466,8 @@ export default class ClusterDetailsPanel extends Component {
                         Upload Config File
                       </MenuItem>
                       <MenuItem eventKey="3"
-                        bsStyle="default"
-                        onClick={this.deployCompose.bind(this)}
+                                bsStyle="default"
+                                onClick={this.deployCompose.bind(this)}
                       >
                         <img src={require('../../../assets/img/black-octopus.png')}/>&nbsp;
                         Deploy Compose File
@@ -483,7 +479,7 @@ export default class ClusterDetailsPanel extends Component {
                         <i className="fa fa-bomb"/>&nbsp;
                         Delete Images
                       </MenuItem>
-                      </DropdownButton>
+                    </DropdownButton>
                   </ButtonGroup>
                 </ButtonToolbar>
               )}
@@ -497,7 +493,11 @@ export default class ClusterDetailsPanel extends Component {
               </div>
             </div>
           )}
-
+          {!rows && (
+            <div className="progressBarBlock">
+              <ProgressBar active now={100}/>
+            </div>
+          )}
           {(rows && rows.length === 0) && (
             <div className="alert alert-info">
               No containers yet

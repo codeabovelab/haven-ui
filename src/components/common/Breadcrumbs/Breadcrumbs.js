@@ -17,7 +17,6 @@ export class Breadcrumbs extends Component {
   buildCrumbs() {
     let {routes, params} = this.props;
     let route = routes.pop();
-    console.log('Route: ', route);
     let breadCrumbs = '';
     if ($.isEmptyObject(params)) {
       breadCrumbs = (

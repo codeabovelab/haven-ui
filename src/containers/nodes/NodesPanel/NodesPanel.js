@@ -66,7 +66,7 @@ export default class NodesPanel extends Component {
         <StatisticsPanel metrics={this.statisticsMetrics}
                          values={[runningNodes, stoppedNodes, totalNodes]}
         />
-        <NodesList loading={typeof nodesList === "undefined"}
+        <NodesList loading={nodes.loading}
                    data={nodesList}
                    clusterName={params.name}
                    manageNodes={this.manageNodes.bind(this)}

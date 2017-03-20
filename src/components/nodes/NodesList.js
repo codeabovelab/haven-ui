@@ -95,13 +95,9 @@ export default class NodesList extends Component {
     return (
       <div key={name}>
         <div className="panel panel-default">
-          {this.props.loading && (
-            <ProgressBar active now={100}/>
-          )}
-
+          <NavContainer clusterName={name}/>
           {(this.props.data && !this.props.loading) && (
             <div>
-              <NavContainer clusterName={name}/>
               {this.props.clusterName && (
                 <ButtonToolbar className="pulled-right-toolbar">
                   <Button
@@ -109,19 +105,23 @@ export default class NodesList extends Component {
                     className="pulled-right"
                     onClick={this.props.manageNodes}
                   >
-                    <i className="fa fa-pencil-square-o" />&nbsp;
+                    <i className="fa fa-pencil-square-o"/>&nbsp;
                     Add/Remove Node
                   </Button>
                 </ButtonToolbar>
               )}
               <div className="nodes">
-              <DockTable columns={columns}
-                         rows={rows}
-              />
+                <DockTable columns={columns}
+                           rows={rows}
+                />
               </div>
             </div>
           )}
-
+          {this.props.loading && (
+            <div className="progressBarBlock">
+              <ProgressBar active now={100}/>
+            </div>
+          )}
           {(this.props.data && this.props.data.length === 0) && (
             <div className="alert alert-info">
               No nodes to display
@@ -254,10 +254,10 @@ export default class NodesList extends Component {
       }
     });
     let popoverRender = (el) => (
-      <Popover>
+      <Popover id={el + '-popover'}>
         {_.map(labels, (el, i)=> {
           if (typeof(el) !== 'undefined') {
-            return (<div><span>{el}</span><br></br></div>);
+            return (<div key={el + i}><span>{el}</span><br></br></div>);
           }
         })}
       </Popover>
