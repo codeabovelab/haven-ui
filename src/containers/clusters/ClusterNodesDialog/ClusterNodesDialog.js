@@ -69,7 +69,7 @@ export default class ClusterNodesDialog extends Component {
       Object.keys(nodes).map((k) => {
         return {
           ...nodes[k],
-          className: nodes[k].health.healthy ? 'Select-value-success' : 'Select-value-warning'
+          className: nodes[k].health && nodes[k].health.healthy ? 'Select-value-success' : 'Select-value-warning'
         };
       });
   }

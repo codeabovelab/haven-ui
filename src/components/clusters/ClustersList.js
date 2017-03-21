@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {Link} from 'react-router';
 import {DockTable, OnOff, Chain, ActionMenu} from '../index';
+import _ from 'lodash';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Glyphicon} from 'react-bootstrap';
 
 export default class ClustersList extends Component {
@@ -24,6 +25,12 @@ export default class ClustersList extends Component {
       name: 'description',
       label: 'Description',
       sortable: true
+    },
+    {
+      name: 'features',
+      label: 'Type',
+      sortable: true,
+      render: this.typeRender
     },
     {
       name: 'containers',
@@ -142,22 +149,10 @@ export default class ClustersList extends Component {
     );
   }
 
-  titleRender(cluster) {
-    return (
-      <td key="title">
-        <Link to={`/clusters/${cluster.name}`}>{cluster.title || cluster.name}</Link>
-      </td>
-    );
-  }
-
-  featuresRender(cluster) {
+  typeRender(cluster) {
     return (
       <td key="features">
-        {cluster.features.map((feature) => {
-          return (
-            <Label bsStyle="info">{feature}</Label>
-          );
-        })}
+        <span>{_.get(cluster, 'features[0]', '')}</span>
       </td>
     );
   }

@@ -265,6 +265,7 @@ export default class ClustersPanel extends Component {
         let filter = this.props.clusters[cluster].filter;
         let registries = this.props.clusters[cluster].config.registries;
         let strategy = this.props.clusters[cluster].config.strategy;
+        let type = _.get(this.props.clusters[cluster], 'features[0]', '');
         this.setState({
           actionDialog: (
             <ClusterAdd title="Edit Cluster"
@@ -277,6 +278,7 @@ export default class ClustersPanel extends Component {
                         okTitle="Update Cluster"
                         ownRegistries = {registries}
                         existingClusters={clustersNames}
+                        type={type}
             />
           )
         });

@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {Link} from 'react-router';
 import {DockTable, OnOff, Chain} from '../index';
+import _ from 'lodash';
 import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar, Glyphicon} from 'react-bootstrap';
 
 export default class DashboardClustersList extends Component {
@@ -22,6 +23,12 @@ export default class DashboardClustersList extends Component {
       label: 'Description',
       sortable: true,
       width: '30%'
+    },
+    {
+      name: 'features',
+      label: 'Type',
+      sortable: true,
+      render: this.typeRender
     },
     {
       name: 'nodes',
@@ -74,11 +81,10 @@ export default class DashboardClustersList extends Component {
     );
   }
 
-  titleRender(cluster) {
+  typeRender(cluster) {
     return (
-      <td key="title">
-        <Link to={`/clusters/${cluster.name}`}>{cluster.title || cluster.name}</Link>
-        <div>{cluster.description}</div>
+      <td key="features">
+        <span>{_.get(cluster, 'features[0]', '')}</span>
       </td>
     );
   }

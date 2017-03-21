@@ -44,6 +44,7 @@ export default class ClusterAdd extends Component {
     cluster: PropTypes.any,
     description: PropTypes.any,
     filter: PropTypes.string,
+    type: PropTypes.string,
     strategy: PropTypes.string,
     ownRegistries: PropTypes.any,
     onHide: PropTypes.func.isRequired,
@@ -74,11 +75,23 @@ export default class ClusterAdd extends Component {
     }
   ];
 
+  TYPES = [
+    {
+      value: "DOCKER",
+      label: '"DOCKER"(docker in swarm-mode cluster)'
+    },
+    {
+      value: "SWARM",
+      label: '"SWARM"(standalone swarm cluster)'
+    }
+  ];
+
   constructor() {
     super();
     this.state = {
       firstLoad: true,
-      strategy: ''
+      strategy: this.STRATEGIES[0].value,
+      type: this.TYPES[0].value,
     };
   }
 
@@ -102,7 +115,8 @@ export default class ClusterAdd extends Component {
     let payload = {
       "config": {"registries": registries, "strategy": this.state.strategy},
       "description": fields.description.value,
-      "filter": fields.filter.value
+      "filter": fields.filter.value,
+      "type": this.state.type
     };
     if (cluster) {
       delete payload.config.strategy;
@@ -143,14 +157,13 @@ export default class ClusterAdd extends Component {
   }
 
   componentWillMount() {
-    const {loadRegistries, cluster, ownRegistries, strategy} = this.props;
+    const {loadRegistries, cluster, ownRegistries, strategy, type} = this.props;
     loadRegistries().then(()=> {
       if (!cluster) {
         let registries = this.props.registries;
-        registries = this.editProps(registries);
+        registries = this.editRegistriesProps(registries);
         this.setState({
-          assignedRegistries: registries,
-          strategy: this.STRATEGIES[0].value
+          assignedRegistries: registries
         });
       }
     });
@@ -160,7 +173,8 @@ export default class ClusterAdd extends Component {
       });
       this.setState({
         assignedRegistries: registriesFiltered,
-        strategy: strategy
+        strategy: strategy,
+        type: type
       });
     }
   }
@@ -169,7 +183,7 @@ export default class ClusterAdd extends Component {
     return <Label className="Select-value-success">{option.name}</Label>;
   }
 
-  editProps(registries) {
+  editRegistriesProps(registries) {
     return _.map(registries, (registry)=> {
       delete registry.disabled;
       registry.name = registry.name ? registry.name : registry.title;
@@ -180,20 +194,20 @@ export default class ClusterAdd extends Component {
 
   getAvailableRegistries() {
     let registries = this.props.registries;
-    registries = this.editProps(registries);
+    registries = this.editRegistriesProps(registries);
     return registries;
   }
 
-  handleSelectChange(value) {
+  handleRegistriesChange(value) {
     this.setState({
       assignedRegistries: value
     });
   }
 
-  handleStrategyChange(event) {
+  handleSelectChange(fieldName, event) {
     let value = event.target ? event.target.value : event.value;
     this.setState({
-      strategy: value
+      [fieldName]: value
     });
   }
 
@@ -233,6 +247,17 @@ export default class ClusterAdd extends Component {
               <HelpBlock>{fields.name.error}</HelpBlock>
             )}
           </FormGroup>
+          <FormGroup title="required">
+            <ControlLabel>Type</ControlLabel>
+            <FormControl componentClass="select" id="Type" value={this.state.type}
+                         onChange={this.handleSelectChange.bind(this, 'type')} disabled={this.props.cluster}>
+              {
+                this.TYPES.map((el, i) => {
+                  return <option key={i} value={el.value}>{el.label}</option>;
+                })
+              }
+            </FormControl>
+          </FormGroup>
           <FormGroup>
             <ControlLabel>Registries</ControlLabel>
             <Select ref="registriesSelect"
@@ -242,7 +267,7 @@ export default class ClusterAdd extends Component {
                     multi
                     clearable
                     valueRenderer={this.renderSelectValue}
-                    onChange={this.handleSelectChange.bind(this)}
+                    onChange={this.handleRegistriesChange.bind(this)}
                     name="assignedRegistries"
                     value={this.state.assignedRegistries}
                     labelKey="name"
@@ -268,17 +293,17 @@ export default class ClusterAdd extends Component {
                          placeholder="Filter"
             />
           </FormGroup>
-              <FormGroup>
-                <ControlLabel>Strategy</ControlLabel>
-                <FormControl componentClass="select" id="Strategy" value={this.state.strategy}
-                             onChange={this.handleStrategyChange.bind(this)} disabled={this.props.cluster}>
-                  {
-                    this.STRATEGIES.map((el, i) => {
-                      return <option key={i} value={el.value}>{el.label}</option>;
-                    })
-                  }
-                </FormControl>
-              </FormGroup>
+          <FormGroup>
+            <ControlLabel>Strategy</ControlLabel>
+            <FormControl componentClass="select" id="Strategy" value={this.state.strategy}
+                         onChange={this.handleSelectChange.bind(this, 'strategy')} disabled={this.props.cluster}>
+              {
+                this.STRATEGIES.map((el, i) => {
+                  return <option key={i} value={el.value}>{el.label}</option>;
+                })
+              }
+            </FormControl>
+          </FormGroup>
           {typeof(this.props.cluster) === 'undefined' && (
             <FormGroup validationState={fields.assignedNodes.error ? "error" : null}>
               <ControlLabel>Assigned Nodes</ControlLabel>
