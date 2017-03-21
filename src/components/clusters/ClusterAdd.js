@@ -19,7 +19,6 @@ import _ from 'lodash';
   fields: [
     'name',
     'description',
-    'assignedNodes',
     'filter'
   ],
   validate: createValidator({
@@ -92,6 +91,8 @@ export default class ClusterAdd extends Component {
       firstLoad: true,
       strategy: this.STRATEGIES[0].value,
       type: this.TYPES[0].value,
+      assignedRegistries: [],
+      assignedNodes: []
     };
   }
 
@@ -100,11 +101,17 @@ export default class ClusterAdd extends Component {
     this.setState({
       firstLoad: false
     });
+    let nodes = [];
     let submitAction = create;
     let registries = this.state.assignedRegistries.map((registry)=> {
       let el = registry.name ? registry.name : registry;
       el = el === 'Docker Hub' ? '' : el;
       return el;
+    });
+    nodes = this.state.assignedNodes.map((node)=> {
+      if (node.name) {
+        return node.name;
+      }
     });
     this.refs.error.textContent = '';
     const {fields, existingClusters} = this.props;
@@ -123,9 +130,9 @@ export default class ClusterAdd extends Component {
       submitAction = update;
     }
     return submitAction(fields.name.value, payload).then(() => {
-      if (typeof(fields.assignedNodes.value) !== 'undefined' && fields.assignedNodes.value.length > 0) {
-        fields.assignedNodes.value.map(function createNode(node) {
-          if (typeof(node) !== 'undefined') {
+      if (nodes.length > 0) {
+        nodes.map(function createNode(node) {
+          if (typeof(node) === 'string') {
             let data = {name: node, cluster: fields.name.value};
             this.props.createNode(data);
           }
@@ -192,15 +199,23 @@ export default class ClusterAdd extends Component {
     });
   }
 
+  getNodes() {
+    return _.map(this.props.orphanNodes, (node)=> {
+      if (typeof(node === 'string')) {
+        return {name: node, className: "Select-value-success"};
+      }
+    });
+  }
+
   getAvailableRegistries() {
     let registries = this.props.registries;
     registries = this.editRegistriesProps(registries);
     return registries;
   }
 
-  handleRegistriesChange(value) {
+  handleReactSelectChange(field, value) {
     this.setState({
-      assignedRegistries: value
+      [field]: value
     });
   }
 
@@ -267,7 +282,7 @@ export default class ClusterAdd extends Component {
                     multi
                     clearable
                     valueRenderer={this.renderSelectValue}
-                    onChange={this.handleRegistriesChange.bind(this)}
+                    onChange={this.handleReactSelectChange.bind(this, 'assignedRegistries')}
                     name="assignedRegistries"
                     value={this.state.assignedRegistries}
                     labelKey="name"
@@ -305,22 +320,25 @@ export default class ClusterAdd extends Component {
             </FormControl>
           </FormGroup>
           {typeof(this.props.cluster) === 'undefined' && (
-            <FormGroup validationState={fields.assignedNodes.error ? "error" : null}>
-              <ControlLabel>Assigned Nodes</ControlLabel>
-              <FormControl multiple componentClass="select" {...fields.assignedNodes} >
-                {
-                  orphanNodes.map(function listNodes(node, i) {
-                    if (typeof(node) !== 'undefined' && node.trim() !== '') {
-                      return <option key={i} value={node}>{node}</option>;
-                    }
-                  })
-                }
-              </FormControl>
-              <FormControl.Feedback />
-              {fields.assignedNodes.error && (
-                <HelpBlock>{fields.assignedNodes.error}</HelpBlock>
-              )}
-            </FormGroup>
+            <div>
+              <FormGroup>
+                <ControlLabel>Nodes</ControlLabel>
+                <Select ref="nodesSelect"
+                        className="nodesSelect"
+                        placeholder="Select Nodes"
+                        autoFocus
+                        multi
+                        clearable
+                        valueRenderer={this.renderSelectValue}
+                        onChange={this.handleReactSelectChange.bind(this, 'assignedNodes')}
+                        name="assignedNodes"
+                        value={this.state.assignedNodes}
+                        labelKey="name"
+                        valueKey="name"
+                        options={this.getNodes()}
+                        searchable/>
+              </FormGroup>
+            </div>
           )}
         </form>
         <div ref="error" className="text-danger text-xs-center text-error">
