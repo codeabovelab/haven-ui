@@ -36,6 +36,7 @@ export default class ClusterAdd extends Component {
     fields: PropTypes.object.isRequired,
     handleSubmit: PropTypes.func,
     orphanNodes: PropTypes.array,
+    managers: PropTypes.array,
     resetForm: PropTypes.func,
     submitting: PropTypes.bool,
     createError: PropTypes.string,
@@ -51,7 +52,7 @@ export default class ClusterAdd extends Component {
     existingClusters: PropTypes.array,
     loadRegistries: PropTypes.func.isRequired,
     loadClusterRegistries: PropTypes.func.isRequired,
-    registries: PropTypes.object.isRequired,
+    registries: PropTypes.any.isRequired,
     update: PropTypes.func.isRequired
   };
 
@@ -92,7 +93,8 @@ export default class ClusterAdd extends Component {
       strategy: this.STRATEGIES[0].value,
       type: this.TYPES[0].value,
       assignedRegistries: [],
-      assignedNodes: []
+      assignedNodes: [],
+      managers: []
     };
   }
 
@@ -102,6 +104,7 @@ export default class ClusterAdd extends Component {
       firstLoad: false
     });
     let nodes = [];
+    let managers = [];
     let submitAction = create;
     let registries = this.state.assignedRegistries.map((registry)=> {
       let el = registry.name ? registry.name : registry;
@@ -109,6 +112,11 @@ export default class ClusterAdd extends Component {
       return el;
     });
     nodes = this.state.assignedNodes.map((node)=> {
+      if (node.name) {
+        return node.name;
+      }
+    });
+    managers = this.state.managers.map((node)=> {
       if (node.name) {
         return node.name;
       }
@@ -123,7 +131,8 @@ export default class ClusterAdd extends Component {
       "config": {"registries": registries, "strategy": this.state.strategy},
       "description": fields.description.value,
       "filter": fields.filter.value,
-      "type": this.state.type
+      "type": this.state.type,
+      "managers": managers
     };
     if (cluster) {
       delete payload.config.strategy;
@@ -164,7 +173,7 @@ export default class ClusterAdd extends Component {
   }
 
   componentWillMount() {
-    const {loadRegistries, cluster, ownRegistries, strategy, type} = this.props;
+    const {loadRegistries, cluster, ownRegistries, strategy, type, managers} = this.props;
     loadRegistries().then(()=> {
       if (!cluster) {
         let registries = this.props.registries;
@@ -178,10 +187,12 @@ export default class ClusterAdd extends Component {
       let registriesFiltered = ownRegistries.map((el)=> {
         return el.length === 0 ? 'Docker Hub' : el;
       });
+      let assignedManagers = this.getNodes(managers);
       this.setState({
         assignedRegistries: registriesFiltered,
         strategy: strategy,
-        type: type
+        type: type,
+        managers: assignedManagers
       });
     }
   }
@@ -199,8 +210,8 @@ export default class ClusterAdd extends Component {
     });
   }
 
-  getNodes() {
-    return _.map(this.props.orphanNodes, (node)=> {
+  getNodes(nodes) {
+    return _.map(nodes, (node)=> {
       if (typeof(node === 'string')) {
         return {name: node, className: "Select-value-success"};
       }
@@ -230,7 +241,6 @@ export default class ClusterAdd extends Component {
     require('react-select/dist/react-select.css');
     require('css/theme/component-overrides/react-select.scss');
     const { fields, okTitle } = this.props;
-    const orphanNodes = this.props.orphanNodes;
     return (
       <Dialog show
               size="large"
@@ -320,26 +330,41 @@ export default class ClusterAdd extends Component {
             </FormControl>
           </FormGroup>
           {typeof(this.props.cluster) === 'undefined' && (
-            <div>
-              <FormGroup>
-                <ControlLabel>Nodes</ControlLabel>
-                <Select ref="nodesSelect"
-                        className="nodesSelect"
-                        placeholder="Select Nodes"
-                        autoFocus
-                        multi
-                        clearable
-                        valueRenderer={this.renderSelectValue}
-                        onChange={this.handleReactSelectChange.bind(this, 'assignedNodes')}
-                        name="assignedNodes"
-                        value={this.state.assignedNodes}
-                        labelKey="name"
-                        valueKey="name"
-                        options={this.getNodes()}
-                        searchable/>
-              </FormGroup>
-            </div>
+            <FormGroup>
+              <ControlLabel>Nodes</ControlLabel>
+              <Select ref="nodesSelect"
+                      className="nodesSelect"
+                      placeholder="Select Nodes"
+                      autoFocus
+                      multi
+                      clearable
+                      valueRenderer={this.renderSelectValue}
+                      onChange={this.handleReactSelectChange.bind(this, 'assignedNodes')}
+                      name="assignedNodes"
+                      value={this.state.assignedNodes}
+                      labelKey="name"
+                      valueKey="name"
+                      options={this.getNodes(this.props.orphanNodes)}
+                      searchable/>
+            </FormGroup>
           )}
+          <FormGroup>
+            <ControlLabel>Managers</ControlLabel>
+            <Select ref="managersSelect"
+                    className="managersSelect"
+                    placeholder="Select nodes, which will be used as managers"
+                    autoFocus
+                    multi
+                    clearable
+                    valueRenderer={this.renderSelectValue}
+                    onChange={this.handleReactSelectChange.bind(this, 'managers')}
+                    name="managers"
+                    value={this.state.managers}
+                    labelKey="name"
+                    valueKey="name"
+                    options={this.getNodes(this.props.orphanNodes)}
+                    searchable/>
+          </FormGroup>
         </form>
         <div ref="error" className="text-danger text-xs-center text-error">
         </div>
