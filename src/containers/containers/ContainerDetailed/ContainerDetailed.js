@@ -147,7 +147,7 @@ export default class ContainerDetailed extends Component {
       case "clone":
         this.setState({
           actionDialog: (
-            <ContainerCreate title={`Clone Container ${currentContainer.name}`}
+            <ContainerCreate title={`Clone Container "${currentContainer.name}"`}
                              cluster={cluster}
                              origin={currentContainer}
                              onHide={this.onHideDialog.bind(this)}

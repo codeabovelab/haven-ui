@@ -93,7 +93,8 @@ export default class ContainerCreate extends Component {
     loadImageTags: PropTypes.func.isRequired,
     searchImages: PropTypes.func.isRequired,
     create: PropTypes.func.isRequired,
-    loadDetails: PropTypes.func.isRequired
+    loadDetails: PropTypes.func.isRequired,
+    title: PropTypes.string.isRequired
   };
 
   constructor(...params) {
@@ -308,7 +309,7 @@ export default class ContainerCreate extends Component {
     return (
       <Dialog show
               size="large"
-              title="Create Container"
+              title={this.props.title}
               onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}
               onHide={this.props.onHide}
               okTitle={creationLogVisible ? "Again" : "Create Container"}
