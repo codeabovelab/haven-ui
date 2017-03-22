@@ -117,7 +117,7 @@ export default class Dashboard extends Component {
           return true;
         }
       }).map((element)=> {
-        if (typeof(element.health.sysCpuLoad) === 'undefined') {
+        if (_.isEmpty(element.health.sysCpuLoad)) {
           element.health.sysCpuLoad = 0;
         }
         return element;
