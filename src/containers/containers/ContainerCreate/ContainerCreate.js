@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {Dialog} from 'components';
 import {reduxForm, SubmissionError} from 'redux-form';
-import {create} from 'redux/modules/containers/containers';
+import {create, loadDetails} from 'redux/modules/containers/containers';
 import {loadNodes, loadContainers, loadDefaultParams} from 'redux/modules/clusters/clusters';
 import {loadImages, loadImageTags, searchImages} from 'redux/modules/images/images';
 import {Alert, Accordion, Panel, Label} from 'react-bootstrap';
@@ -65,7 +65,8 @@ const NETWORK_FIELDS_KEYS = Object.keys(NETWORK_FIELDS);
   containers: state.containers,
   containersUI: state.containersUI,
   images: state.images
-}), {create, loadNodes, loadImages, loadImageTags, searchImages, loadContainers, loadDefaultParams})
+}), {create, loadNodes, loadImages, loadImageTags, searchImages,
+  loadContainers, loadDefaultParams, loadDetails})
 @reduxForm({
   form: 'newContainer',
   fields: ['image', 'tag', 'name', 'node', 'registry', 'restart', 'restartRetries', 'dns', 'dnsSearch']
@@ -78,20 +79,21 @@ export default class ContainerCreate extends Component {
     containersUI: PropTypes.object.isRequired,
     images: PropTypes.object.isRequired,
     cluster: PropTypes.object.isRequired,
-    create: PropTypes.func.isRequired,
     createError: PropTypes.string,
-    loadNodes: PropTypes.func.isRequired,
-    loadImages: PropTypes.func.isRequired,
-    loadImageTags: PropTypes.func.isRequired,
-    searchImages: PropTypes.func.isRequired,
     fields: PropTypes.object.isRequired,
+    origin: PropTypes.object,
     handleSubmit: PropTypes.func,
     resetForm: PropTypes.func.isRequired,
     loadContainers: PropTypes.func.isRequired,
     loadDefaultParams: PropTypes.func.isRequired,
     dispatch: PropTypes.func.isRequired,
-
-    onHide: PropTypes.func.isRequired
+    onHide: PropTypes.func.isRequired,
+    loadNodes: PropTypes.func.isRequired,
+    loadImages: PropTypes.func.isRequired,
+    loadImageTags: PropTypes.func.isRequired,
+    searchImages: PropTypes.func.isRequired,
+    create: PropTypes.func.isRequired,
+    loadDetails: PropTypes.func.isRequired
   };
 
   constructor(...params) {
@@ -117,9 +119,8 @@ export default class ContainerCreate extends Component {
   }
 
   componentWillMount() {
-    const {loadNodes, loadImages, cluster, fields} = this.props;
-    loadNodes(cluster.name);
-    loadImages();
+    const {loadNodes, loadImages, cluster, fields, origin} = this.props;
+
     fields.restart.value = 'no';
     fields.publishAllPorts.value = 'false';
     _.each(fields, function loopFields(value, key) {
@@ -127,6 +128,45 @@ export default class ContainerCreate extends Component {
         fields[key].onChange(CPU_FIELDS[key].defaultValue);
       }
     });
+    if (origin) {
+      this.setOriginParams();
+    }
+    loadNodes(cluster.name);
+    loadImages();
+  }
+
+  setOriginParams() {
+    const {fields, loadDetails, origin} = this.props;
+    let registryImage = '';
+    let tag = '';
+    this.setState({loadingParams: true});
+    loadDetails(origin).then((originParams) => {
+      _.forOwn(originParams, (value, key) => {
+        this.setDefaultFields(originParams, value, key, fields);
+      });
+      if (typeof(originParams.image) === 'string') {
+        let imageValSplitted = this.splitImageTag(originParams.image);
+        if (imageValSplitted.length === 2) {
+          tag = imageValSplitted[1];
+        }
+        registryImage = imageValSplitted[0];
+        this.updateImageValue({value: registryImage});
+        if (!_.isEmpty(tag)) {
+          this.updateTagValue(tag);
+        }
+      }
+      this.setState({loadingParams: false});
+    }).catch(()=>this.setState({loadingParams: false}));
+  }
+
+  splitImageTag(image) {
+    let result = [];
+    let imageValSplitted = image.split(':');
+    result.push(imageValSplitted[0]);
+    if (imageValSplitted.length === 2) {
+      result.push(imageValSplitted[1]);
+    }
+    return result;
   }
 
   getTagsOptions(image) {
@@ -139,29 +179,34 @@ export default class ContainerCreate extends Component {
   }
 
   getImageOptions(input, callback) {
-    const {cluster} = this.props;
-    let options = [];
-    let registriesArr = _.get(cluster, 'config.registries', []).map(function listRegistries(element) {
-      let checkBoxState = this.state.checkboxes[element];
-      if (checkBoxState && checkBoxState.checked === true) {
-        return element;
-      }
-    }.bind(this)).filter((element)=> {
-      return typeof(element) !== 'undefined';
-    });
-    let registries = registriesArr.join(', ');
-    if (input.length > 0) {
-      this.props.dispatch(searchImages(input, 10, 100, registries, cluster.name)).then(() => {
-        let results = this.props.images.search.results;
-        for (let i = 0; i < results.length; i++) {
-          let imageName = results[i].name;
-          options.push({value: imageName, label: imageName});
+    const {cluster, origin} = this.props;
+    if (origin) {
+      const imageNoTag = this.splitImageTag(origin.image)[0];
+      callback(null, {options: [{value: imageNoTag, label: imageNoTag}]});
+    } else {
+      let options = [];
+      let registriesArr = _.get(cluster, 'config.registries', []).map(function listRegistries(element) {
+        let checkBoxState = this.state.checkboxes[element];
+        if (checkBoxState && checkBoxState.checked === true) {
+          return element;
         }
-      }).then(()=> {
-        callback(null, {options: options});
+      }.bind(this)).filter((element)=> {
+        return typeof(element) !== 'undefined';
       });
-    }else {
-      callback(null, options = {value: '', label: ''});
+      let registries = registriesArr.join(', ');
+      if (input.length > 0) {
+        this.props.dispatch(searchImages(input, 10, 100, registries, cluster.name)).then(() => {
+          let results = this.props.images.search.results;
+          for (let i = 0; i < results.length; i++) {
+            let imageName = results[i].name;
+            options.push({value: imageName, label: imageName});
+          }
+        }).then(()=> {
+          callback(null, {options: options});
+        });
+      } else {
+        callback(null, options = {value: '', label: ''});
+      }
     }
   }
 
@@ -179,7 +224,7 @@ export default class ContainerCreate extends Component {
         selectImageValue: {label: '', value: ''}
       });
     }
-    let ValSplitted = this.splitImageName(newValue.value);
+    let ValSplitted = this.splitImageRegistry(newValue.value);
     registry = ValSplitted.registry;
     image = ValSplitted.image;
     fields.registry.onChange(registry);
@@ -187,11 +232,13 @@ export default class ContainerCreate extends Component {
   }
 
   updateTagValue(newValue) {
-    const {fields} = this.props;
+    const {fields, origin} = this.props;
     this.setState({
       selectTagValue: newValue
     });
-    this.onTagChange(newValue);
+    if (!origin) {
+      this.onTagChange(newValue);
+    }
     fields.tag.onChange(newValue);
   }
 
@@ -241,7 +288,8 @@ export default class ContainerCreate extends Component {
   render() {
     require('./ContainerCreate.scss');
     require('react-select/dist/react-select.css');
-    const {clusters, cluster, fields, containers} = this.props;
+    const {clusters, cluster, fields, containers, origin} = this.props;
+    const originImage = origin ? this.splitImageTag(origin.image)[0] : '';
     let clusterRegistries = _.get(cluster, 'config.registries', []);
     let containersNames = [];
     _.forEach(containers, (container) => {
@@ -286,7 +334,8 @@ export default class ContainerCreate extends Component {
                             onClose={this.onSelectMenuClose.bind(this)}
                             className="imageSelect"
                             minimumInput={ 1 }
-                            value={this.state.selectImageValue}
+                            value={origin ? originImage : this.state.selectImageValue}
+                            disabled={origin ? true : false}
                             autoload
                             cache={false}
                             placeholder = "Search..."
@@ -480,7 +529,7 @@ export default class ContainerCreate extends Component {
     }
   }
 
-  splitImageName(value) {
+  splitImageRegistry(value) {
     let result = {image: '', registry: ''};
     if (typeof(value) !== 'undefined') {
       let imageValSplitted = value.split('/');

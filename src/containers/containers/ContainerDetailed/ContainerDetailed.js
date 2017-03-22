@@ -3,7 +3,7 @@ import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import {PropertyGrid, LoadingDialog, ActionMenu, ContainerStatistics, EventLog} from '../../../components/index';
-import {ContainerScale, ContainerUpdate} from '../../../containers/index';
+import {ContainerScale, ContainerUpdate, ContainerCreate} from '../../../containers/index';
 import {Link} from 'react-router';
 import {Button, ButtonToolbar, Badge, Panel, ProgressBar, Tabs, Tab} from 'react-bootstrap';
 import _ from 'lodash';
@@ -23,6 +23,7 @@ let stompClient = null;
   users: state.users
 }), {
   loadContainers: clusterActions.loadContainers,
+  loadClusters: clusterActions.load,
   loadStatistics: containerActions.loadStatistics,
   startContainer: containerActions.start,
   stopContainer: containerActions.stop,
@@ -44,6 +45,7 @@ export default class ContainerDetailed extends Component {
     startContainer: PropTypes.func.isRequired,
     stopContainer: PropTypes.func.isRequired,
     loadContainers: PropTypes.func.isRequired,
+    loadClusters: PropTypes.func.isRequired,
     loadLogs: PropTypes.func.isRequired,
     restartContainer: PropTypes.func.isRequired,
     removeContainer: PropTypes.func.isRequired,
@@ -68,6 +70,10 @@ export default class ContainerDetailed extends Component {
       title: "Scale"
     },
     {
+      key: "clone",
+      title: "Clone"
+    },
+    {
       key: "edit",
       title: "Edit",
       default: true
@@ -83,7 +89,8 @@ export default class ContainerDetailed extends Component {
     this.state = {
       containerErrors: []
     };
-    const {loadDetailsByName, params: {name}, params: {subname}} = this.props;
+    const {loadDetailsByName, params: {name}, params: {subname}, loadClusters} = this.props;
+    loadClusters();
     loadDetailsByName(name, subname).then(()=> {
       this.refreshLogs();
     });
@@ -121,8 +128,9 @@ export default class ContainerDetailed extends Component {
   }
 
   onActionInvoke(action, container) {
-    const {params: {name}} = this.props;
+    const {params: {name}, clusters} = this.props;
     let currentContainer = container;
+    const cluster = clusters[name];
 
     switch (action) {
       case "scale":
@@ -131,6 +139,18 @@ export default class ContainerDetailed extends Component {
             <ContainerScale container={currentContainer}
                             onHide={this.onHideDialog.bind(this)}
                             name={name}
+            />
+          )
+        });
+        return;
+
+      case "clone":
+        this.setState({
+          actionDialog: (
+            <ContainerCreate title={`Clone Container ${currentContainer.name}`}
+                             cluster={cluster}
+                             origin={currentContainer}
+                             onHide={this.onHideDialog.bind(this)}
             />
           )
         });

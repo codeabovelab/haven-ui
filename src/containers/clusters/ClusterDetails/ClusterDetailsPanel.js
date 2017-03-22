@@ -231,6 +231,10 @@ export default class ClusterDetailsPanel extends Component {
       title: "Scale"
     },
     {
+      key: "clone",
+      title: "Clone"
+    },
+    {
       key: "details",
       title: "Details"
     },
@@ -276,6 +280,10 @@ export default class ClusterDetailsPanel extends Component {
       key: "scale",
       title: "Scale",
       disabled: true
+    },
+    {
+      key: "clone",
+      title: "Clone"
     },
     {
       key: "details",
@@ -601,6 +609,18 @@ export default class ClusterDetailsPanel extends Component {
             <ContainerCreate title="Create New Container"
                              cluster={cluster}
                              onHide={this.onHideDialog.bind(this)}
+            />
+          )
+        });
+        return;
+
+      case "clone":
+        this.setState({
+          actionDialog: (
+            <ContainerCreate title={`Clone Container ${currentContainer.name}`}
+                             cluster={cluster}
+                             onHide={this.onHideDialog.bind(this)}
+                             origin={currentContainer}
             />
           )
         });
