@@ -152,9 +152,7 @@ export function updateContainers(cluster, type, percentage, schedule, title, ima
     parameters: {
       timestamp: Math.floor(Date.now() / 1000),
       cluster: cluster,
-      images: {
-        images: images
-      },
+      images: images,
       "LoadContainersOfImage.percentage": percentage
     }
   };
