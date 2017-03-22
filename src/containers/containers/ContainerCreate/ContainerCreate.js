@@ -111,6 +111,7 @@ export default class ContainerCreate extends Component {
       affinity: [""],
       command: [""],
       entrypoint: [""],
+      originTag: '',
       selectImageValue: {value: '', label: ''},
       checkboxes: {checkboxInitial: ''},
       creationLogVisible: '',
@@ -142,6 +143,7 @@ export default class ContainerCreate extends Component {
     let tag = '';
     this.setState({loadingParams: true});
     loadDetails(origin).then((originParams) => {
+      console.log('originParams: ', originParams);
       _.forOwn(originParams, (value, key) => {
         this.setDefaultFields(originParams, value, key, fields);
       });
@@ -149,6 +151,9 @@ export default class ContainerCreate extends Component {
         let imageValSplitted = this.splitImageTag(originParams.image);
         if (imageValSplitted.length === 2) {
           tag = imageValSplitted[1];
+          this.setState({
+            originTag: ':' + tag
+          });
         }
         registryImage = imageValSplitted[0];
         this.updateImageValue({value: registryImage});
@@ -163,9 +168,21 @@ export default class ContainerCreate extends Component {
   splitImageTag(image) {
     let result = [];
     let imageValSplitted = image.split(':');
-    result.push(imageValSplitted[0]);
-    if (imageValSplitted.length === 2) {
-      result.push(imageValSplitted[1]);
+    switch (imageValSplitted.length) {
+      case 0:
+        result.push('');
+        break;
+      case 1:
+        result.push(imageValSplitted[0]);
+        break;
+      default:
+        let imageName = '';
+        for (let i = 0; i < imageValSplitted.length - 1; i++) {
+          imageName = i === imageValSplitted.length - 2 ? imageName + imageValSplitted[i] : imageName + imageValSplitted[i] + ':';
+        }
+        result.push(imageName);
+        result.push(imageValSplitted[imageValSplitted.length - 1]);
+        break;
     }
     return result;
   }
@@ -639,7 +656,7 @@ export default class ContainerCreate extends Component {
   }
 
   create() {
-    const {fields, create, cluster, resetForm, loadContainers} = this.props;
+    const {fields, create, cluster, resetForm, loadContainers, origin} = this.props;
     let container = {
       cluster: cluster.name
     };
@@ -652,6 +669,9 @@ export default class ContainerCreate extends Component {
     });
     let registry = fields.registry.value ? fields.registry.value + '/' : '';
     let tag = fields.tag.value ? ':' + fields.tag.value : '';
+    if (origin && this.state.originTag === tag) {
+      container.imageId = origin.imageId;
+    }
     container.image = $.trim(registry + fields.image.value + tag);
     let $logBlock = $('#creation-log-block');
     let $spinner = $logBlock.find('i');
