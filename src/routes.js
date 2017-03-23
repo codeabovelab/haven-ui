@@ -21,7 +21,8 @@ import {
   ClusterImages,
   ClusterNetworks,
   NetworkContainers,
-  AgentPanel
+  AgentPanel,
+  ServicesPanel
 } from 'containers';
 
 export default (store) => {
@@ -83,6 +84,7 @@ export default (store) => {
         <Route name="Jobs" path="jobs" component={JobsPanel}/>
         <Route name="Settings" path="settings" component={SettingsPanel}/>
         <Route name="Events" path="clusters/:name/events" component={EventsPanel}/>
+        <Route name="Services" path="clusters/:name/services" component={ServicesPanel}/>
         <Route name="Container Detailed View" path="clusters/:name/containers/:subname" component={ContainerDetailed}/>
         <Route name="Job Detailed View" path="jobs/:name" component={JobDetailed}/>
         <Route name="Users" path="users" component={UsersPanel}/>
