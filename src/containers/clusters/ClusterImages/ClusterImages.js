@@ -83,11 +83,14 @@ export default class ClusterImages extends Component {
     }
   ];
 
-  componentWillMount() {
-    require('./ClusterImages.scss');
+  constructor(...params) {
+    super(...params);
     this.state = {
       tagsSelected: {},
+      containersToUpdate: [],
+      containersExcluded: {},
       imagesToUpdate: {},
+      showConfirmModal: false,
       showModal: false,
       updateStrategy: this.UPDATE_STRATEGIES[0].value,
       updatePercents: 100,
@@ -96,8 +99,13 @@ export default class ClusterImages extends Component {
       jobTitle: '',
       wildCard: false,
       wildCardImages: '',
-      wildCardVersion: ''
+      wildCardVersion: '',
     };
+    this.getRows = this.getRows.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
+    this.submitConfirmModal = this.submitConfirmModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
+    this.openModal = this.openModal.bind(this);
   }
 
   componentDidMount() {
@@ -188,12 +196,12 @@ export default class ClusterImages extends Component {
     }
   }
 
-  closeModal() {
-    this.setState({ showModal: false });
+  closeModal(modalId) {
+    this.setState({ [modalId]: false });
   }
 
-  openModal() {
-    this.setState({ showModal: true });
+  openModal(modalId) {
+    this.setState({ [modalId]: true });
   }
 
   checkRender(row) {
@@ -228,6 +236,14 @@ export default class ClusterImages extends Component {
     let name = e.target.name;
     this.setState({
       imagesToUpdate: {...this.state.imagesToUpdate, [name]: checked}
+    });
+  }
+
+  toggleContainerCheckbox(e) {
+    let checked = e.target.checked;
+    let name = e.target.name;
+    this.setState({
+      containersExcluded: $.extend(this.state.containersExcluded, {[name]: {checked: checked}})
     });
   }
 
@@ -284,32 +300,67 @@ export default class ClusterImages extends Component {
   }
 
   onSubmit() {
-    let images = [];
-    let imagesToUpdate = this.state.imagesToUpdate;
-    let tags = this.state.tagsSelected;
-    let strategy = this.state.updateStrategy;
-    let wildCard = this.state.wildCard;
-    let title = '';
+    const strategy = this.state.updateStrategy;
+    const wildCard = this.state.wildCard;
+    const images = this.getImages();
 
     if (wildCard) {
-      images.push({name: this.state.wildCardImages, to: this.state.wildCardVersion});
-      title = this.generateJobTitle(title, true);
+      const title = this.generateJobTitle(title, true);
       this.safeUpdateContainers(strategy, this.state.updatePercents, this.state.schedule, title, images);
+    } else {
+      if (images.images.length > 0) {
+        this.getContainersList(images);
+        this.openModal('showConfirmModal');
+      } else {
+        this.setState({updateResponse: {message: 'Select tags for chosen images to create update job.'}});
+        this.openModal('showModal');
+      }
+    }
+  }
+
+  getImages() {
+    const tags = this.state.tagsSelected;
+    let images = {images: []};
+    const imagesToUpdate = this.state.imagesToUpdate;
+    const wildCard = this.state.wildCard;
+    if (wildCard) {
+      images.images.push({name: this.state.wildCardImages, to: this.state.wildCardVersion});
     } else {
       _.map(imagesToUpdate, (el, key) => {
         let updateTo = tags[key];
         if (key && el && updateTo) {
-          images.push({name: key, to: updateTo});
+          images.images.push({name: key, to: updateTo});
         }
       });
-      title = this.generateJobTitle(this.state.jobTitle, false, images);
-      if (images.length > 0) {
-        this.safeUpdateContainers(strategy, this.state.updatePercents, this.state.schedule, title, images);
-      } else {
-        this.setState({updateResponse: {message: 'Select tags for chosen images to create update job.'}});
-        this.openModal();
-      }
     }
+    return images;
+  }
+
+  checkIfAllExcluded() {
+    let excludedNumber = 0;
+    const allContainersNumber = this.state.containersToUpdate.length;
+    _.forEach(this.state.containersExcluded, (value, key) => {
+      if (!value.checked) {
+        excludedNumber += 1;
+      }
+    });
+    return allContainersNumber === excludedNumber;
+  }
+
+  submitConfirmModal() {
+    let images = this.getImages();
+    const title = this.generateJobTitle(this.state.jobTitle, false, images.images);
+    let excluded = {containers: []};
+    _.forEach(this.state.containersExcluded, (value, key) => {
+      if (!value.checked) {
+        excluded.containers.push(key);
+      }
+    });
+    if (excluded.containers.length > 0) {
+      images.excluded = excluded;
+    }
+    this.closeModal('showConfirmModal');
+    this.safeUpdateContainers(this.state.updateStrategy, this.state.updatePercents, this.state.schedule, title, images);
   }
 
   safeUpdateContainers(strategy, updatePercents, schedule, jobTitle, images) {
@@ -319,6 +370,32 @@ export default class ClusterImages extends Component {
       this.setState({imagesToUpdate: {}});
     }).catch((response) => {
       this.showResponse(response);
+    });
+  }
+
+  getContainersList(images) {
+    const rowsUpdated = this.getRows();
+    let rowsFiltered = [];
+    let containersUpdated = [];
+    _.forEach(images.images, (value, key) => {
+      rowsFiltered = _.concat(rowsFiltered, _.filter(rowsUpdated, {'name': value.name}));
+    });
+    _.forEach(rowsFiltered, (value, key) => {
+      containersUpdated = _.concat(containersUpdated, value.containers);
+    });
+    this.setState({
+      containersToUpdate: containersUpdated
+    });
+    return containersUpdated;
+  }
+
+  getRows() {
+    const {images, params: {name}} = this.props;
+    return _.get(images, `deployedImages.${name}`, []).map((row)=> {
+      if (checkUpdateAvailability(row)) {
+        row.trColor = 'availableToUpdate';
+      }
+      return row;
     });
   }
 
@@ -337,21 +414,17 @@ export default class ClusterImages extends Component {
       }
     }
     this.setState({updateResponse: {message: message, status: status}});
-    this.openModal();
+    this.openModal('showModal');
   }
 
   render() {
+    require('./ClusterImages.scss');
+    require('react-select/dist/react-select.css');
     let $searchInput = $('.input-search')[0];
     $($searchInput).addClass('pseudo-label');
-    require('react-select/dist/react-select.css');
     const {params: {name}, images} = this.props;
     const wildCard = this.state.wildCard;
-    let rows = _.get(this.props.images, `deployedImages.${name}`, []).map((row)=> {
-      if (checkUpdateAvailability(row)) {
-        row.trColor = 'availableToUpdate';
-      }
-      return row;
-    });
+    let rows = this.getRows();
     const imagesToUpdate = this.state.imagesToUpdate;
     let disabledUpdateButton = true;
     if (wildCard) {
@@ -489,7 +562,39 @@ export default class ClusterImages extends Component {
             </div>
           )}
         </div>
-        <Modal show={this.state.showModal} onHide={this.closeModal.bind(this)}>
+        {/*Modal with containers list to exclude unwanted*/}
+        <Modal show={this.state.showConfirmModal} onHide={() => this.closeModal('showConfirmModal')}>
+          <Modal.Header closeButton>
+            <Modal.Title>Confirm containers update</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div className="checkbox-list check-containers-block">
+              {
+                this.state.containersToUpdate.map(function list(container, i) {
+                  if (typeof(container) !== 'undefined') {
+                    return (<div className="checkbox-button" key={i}><label>
+                      <input type="checkbox"
+                             className="checkbox-control registry-checkbox"
+                             value={container.id}
+                             defaultChecked
+                             onChange={this.toggleContainerCheckbox.bind(this)}
+                             name={container.id}
+                      />
+                      <span className="checkbox-label">{container.name}</span>
+                    </label></div>);
+                  }
+                }.bind(this))
+              }
+            </div>
+            <p className="checkboxesHint">*Unselect containers, that you don't want to update</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button bsStyle="primary" disabled={this.checkIfAllExcluded()} onClick={this.submitConfirmModal}>Confirm Update</Button>
+            <Button onClick={() => this.closeModal('showConfirmModal')}>Close</Button>
+          </Modal.Footer>
+        </Modal>
+        {/*Modal, containing job response message*/}
+        <Modal show={this.state.showModal} onHide={() => this.closeModal('showModal')}>
           <Modal.Header closeButton>
             <Modal.Title>Update Info</Modal.Title>
           </Modal.Header>
@@ -503,7 +608,7 @@ export default class ClusterImages extends Component {
             )}
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={this.closeModal.bind(this)}>Close</Button>
+            <Button onClick={() => this.closeModal('showModal')}>Close</Button>
           </Modal.Footer>
         </Modal>
       </div>

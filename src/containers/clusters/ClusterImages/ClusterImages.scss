@@ -2,3 +2,13 @@
   width: 14px !important;
   height: 28px !important;
 }
+
+:global(.check-containers-block) {
+  max-height: 400px;
+  overflow: auto;
+  padding-bottom: 10px;
+}
+
+:global(.checkboxesHint) {
+  margin: 15px 0 0 5px;
+}
