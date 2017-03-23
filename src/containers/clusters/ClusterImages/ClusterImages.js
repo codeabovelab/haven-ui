@@ -568,7 +568,7 @@ export default class ClusterImages extends Component {
             <Modal.Title>Confirm containers update</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <div className="checkbox-list">
+            <div className="checkbox-list check-containers-block">
               {
                 this.state.containersToUpdate.map(function list(container, i) {
                   if (typeof(container) !== 'undefined') {
@@ -586,6 +586,7 @@ export default class ClusterImages extends Component {
                 }.bind(this))
               }
             </div>
+            <p className="checkboxesHint">*Unselect containers, that you don't want to update</p>
           </Modal.Body>
           <Modal.Footer>
             <Button bsStyle="primary" disabled={this.checkIfAllExcluded()} onClick={this.submitConfirmModal}>Confirm Update</Button>
