@@ -111,7 +111,7 @@ export default class ContainerCreate extends Component {
       affinity: [""],
       command: [""],
       entrypoint: [""],
-      originTag: '',
+      originTag: undefined,
       selectImageValue: {value: '', label: ''},
       checkboxes: {checkboxInitial: ''},
       creationLogVisible: '',
@@ -151,15 +151,15 @@ export default class ContainerCreate extends Component {
         let imageValSplitted = this.splitImageTag(originParams.image);
         if (imageValSplitted.length === 2) {
           tag = imageValSplitted[1];
-          this.setState({
-            originTag: ':' + tag
-          });
+          if (!_.isEmpty(tag)) {
+            this.updateTagValue(tag);
+            this.setState({
+              originTag: tag
+            });
+          }
         }
         registryImage = imageValSplitted[0];
         this.updateImageValue({value: registryImage});
-        if (!_.isEmpty(tag)) {
-          this.updateTagValue(tag);
-        }
       }
       this.setState({loadingParams: false});
     }).catch(()=>this.setState({loadingParams: false}));
@@ -668,10 +668,11 @@ export default class ContainerCreate extends Component {
       }
     });
     let registry = fields.registry.value ? fields.registry.value + '/' : '';
-    let tag = fields.tag.value ? ':' + fields.tag.value : '';
-    if (origin && this.state.originTag === tag) {
+    if (origin && this.state.originTag === fields.tag.value) {
       container.imageId = origin.imageId;
     }
+    let tag = fields.tag.value ? ':' + fields.tag.value : '';
+
     container.image = $.trim(registry + fields.image.value + tag);
     let $logBlock = $('#creation-log-block');
     let $spinner = $logBlock.find('i');
