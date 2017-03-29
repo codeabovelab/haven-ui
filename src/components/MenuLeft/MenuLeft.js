@@ -92,8 +92,8 @@ export default class MenuLeft extends Component {
     return (
       <aside id="menu-left" className="al-sidebar">
         <div className="clearfix">
-          <a href="" className="al-logo clearfix"><img src="/logo-white.png" title="Haven" />
-            <span className="product-name">Haven</span></a>
+          <Link to="/dashboard" className="al-logo clearfix"><img src="/logo-white.png" title="Haven" />
+            <span className="product-name">Haven</span></Link>
         </div>
         <ul className="al-sidebar-list">
           <li className="al-sidebar-list-item" title="Dashboard">
