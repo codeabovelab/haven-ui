@@ -17,6 +17,7 @@ export default class LoadingDialog extends Component {
     container: PropTypes.object,
     application: PropTypes.object,
     network: PropTypes.object,
+    service: PropTypes.object,
     node: PropTypes.object,
     name: PropTypes.string.isRequired,
     entityType: PropTypes.string.isRequired,
@@ -36,7 +37,7 @@ export default class LoadingDialog extends Component {
   componentDidMount() {
     let result;
     let funcRequest;
-    const {container, name, longTermAction, application, network, refreshData, entityType, node} = this.props;
+    const {container, name, longTermAction, application, network, refreshData, entityType, node, service} = this.props;
     if (entityType === 'network') {
       funcRequest = longTermAction(name, network.id, container);
     } else if (entityType === 'application') {
@@ -45,6 +46,8 @@ export default class LoadingDialog extends Component {
       funcRequest = longTermAction(container);
     } else if (entityType === 'node') {
       funcRequest = longTermAction(node.name, node.address);
+    } else if (entityType === 'service') {
+      funcRequest = longTermAction(name, service);
     }
     funcRequest.catch((response) =>{
       this.setState({

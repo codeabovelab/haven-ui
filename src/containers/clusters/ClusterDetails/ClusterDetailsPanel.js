@@ -325,7 +325,7 @@ export default class ClusterDetailsPanel extends Component {
     let ports = row.ports;
     let portsCoupled = [];
     ports.map((el) => {
-      if (checkPort(el.PublicPort) && checkPort(el.PublicPort)) {
+      if (checkPort(el.PublicPort) && checkPort(el.PrivatePort)) {
         if (el.IP) {
           portsCoupled.push(el.IP + ":" + el.PublicPort + ":" + el.PrivatePort);
         } else {

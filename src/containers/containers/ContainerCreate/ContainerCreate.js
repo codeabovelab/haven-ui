@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {Dialog} from 'components';
 import {reduxForm, SubmissionError} from 'redux-form';
 import {create, loadDetails} from 'redux/modules/containers/containers';
+import {getClusterServices, create as createService} from 'redux/modules/services/services';
 import {loadNodes, loadContainers, loadDefaultParams} from 'redux/modules/clusters/clusters';
 import {loadImages, loadImageTags, searchImages} from 'redux/modules/images/images';
 import {Alert, Accordion, Panel, Label} from 'react-bootstrap';
@@ -60,16 +61,19 @@ const NETWORK_FIELDS = {
 const CPU_FIELDS_KEYS = Object.keys(CPU_FIELDS);
 const NETWORK_FIELDS_KEYS = Object.keys(NETWORK_FIELDS);
 
+const SERVICE_PORTS_MODES = ['INGRESS', 'HOST'];
+const SERVICE_PORTS_TYPES = ['TCP', 'UDP'];
+
 @connect(state => ({
   clusters: state.clusters,
   containers: state.containers,
   containersUI: state.containersUI,
   images: state.images
 }), {create, loadNodes, loadImages, loadImageTags, searchImages,
-  loadContainers, loadDefaultParams, loadDetails})
+  loadContainers, loadDefaultParams, loadDetails, createService, getClusterServices})
 @reduxForm({
   form: 'newContainer',
-  fields: ['image', 'tag', 'name', 'node', 'registry', 'restart', 'restartRetries', 'dns', 'dnsSearch']
+  fields: ['image', 'tag', 'name', 'serviceName', 'node', 'registry', 'restart', 'restartRetries', 'dns', 'dnsSearch']
     .concat(CPU_FIELDS_KEYS, NETWORK_FIELDS_KEYS)
 })
 export default class ContainerCreate extends Component {
@@ -94,7 +98,10 @@ export default class ContainerCreate extends Component {
     searchImages: PropTypes.func.isRequired,
     create: PropTypes.func.isRequired,
     loadDetails: PropTypes.func.isRequired,
-    title: PropTypes.string.isRequired
+    createService: PropTypes.func.isRequired,
+    getClusterServices: PropTypes.func.isRequired,
+    title: PropTypes.string.isRequired,
+    service: PropTypes.bool
   };
 
   constructor(...params) {
@@ -103,11 +110,12 @@ export default class ContainerCreate extends Component {
       dns: [],
       dnsSearch: [],
       ports: [{field1: '', field2: ''}],
+      servicePorts: [{privatePort: '', publicPort: '', type: SERVICE_PORTS_TYPES[0], mode: SERVICE_PORTS_MODES[0]}],
       links: [{field1: '', field2: ''}],
       volumeBinds: [""],
       volumesFrom: [""],
       environment: [{field1: '', field2: ''}],
-      constraints: [""],
+      constraints: [],
       affinity: [""],
       command: [""],
       entrypoint: [""],
@@ -143,7 +151,6 @@ export default class ContainerCreate extends Component {
     let tag = '';
     this.setState({loadingParams: true});
     loadDetails(origin).then((originParams) => {
-      console.log('originParams: ', originParams);
       _.forOwn(originParams, (value, key) => {
         this.setDefaultFields(originParams, value, key, fields);
       });
@@ -306,7 +313,7 @@ export default class ContainerCreate extends Component {
   render() {
     require('./ContainerCreate.scss');
     require('react-select/dist/react-select.css');
-    const {clusters, cluster, fields, containers, origin} = this.props;
+    const {clusters, cluster, fields, containers, origin, service} = this.props;
     const originImage = origin ? this.splitImageTag(origin.image)[0] : '';
     let clusterRegistries = _.get(cluster, 'config.registries', []);
     let containersNames = [];
@@ -322,6 +329,7 @@ export default class ContainerCreate extends Component {
     let field;
     let image = this.getCurrentImage();
     const selectMenuVisible = this.state.selectMenuVisible;
+    const createLabel = service ? "Create Service" : "Create Container";
 
     return (
       <Dialog show
@@ -329,7 +337,7 @@ export default class ContainerCreate extends Component {
               title={this.props.title}
               onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}
               onHide={this.props.onHide}
-              okTitle={creationLogVisible ? "Again" : "Create Container"}
+              okTitle={creationLogVisible ? "Again" : createLabel}
               cancelTitle={creationLogVisible ? "Close" : null}
               keyboard={!selectMenuVisible}
               backdrop="static"
@@ -414,6 +422,13 @@ export default class ContainerCreate extends Component {
               {fields.name.error && fields.name.touched && <div className="text-danger">{fields.name.error}</div>}
               <input type="text" {...fields.name} className="form-control"/>
             </div>
+            {service && (
+              <div className="form-group">
+                <label>Service Name:</label>
+                {fields.serviceName.error && fields.serviceName.touched && <div className="text-danger">{fields.serviceName.error}</div>}
+                <input type="text" {...fields.serviceName} className="form-control"/>
+              </div>
+            )}
             <Accordion className="accordion-create-container">
               <Panel header="Environment Variables and Entrypoints" eventKey="1">
                 {this.doubleInputField('environment', 'Environment')}
@@ -436,7 +451,11 @@ export default class ContainerCreate extends Component {
                 {this.oneInputField('volumesFrom', 'Volumes From', "container:['rw'|'ro']")}
               </Panel>
               <Panel header="Network Settings" eventKey="4">
-                {this.doubleInputField('ports', 'Ports', 'Public Port', 'Private Port')}
+                {!service && (
+                  this.doubleInputField('ports', 'Ports', 'Public Port', 'Private Port')
+                ) || (
+                  this.servicePortsField()
+                )}
                 <div className="row">
                   {NETWORK_FIELDS_KEYS.map(key =>
                     <div className="col-sm-6" key={key}>
@@ -474,7 +493,7 @@ export default class ContainerCreate extends Component {
               <label>Create Log: <i className="fa fa-spinner fa-2x fa-pulse"/></label>
               <textarea readOnly
                         className="container-creation-log"
-                        defaultValue="Creating Container..."
+                        defaultValue= {service ? "Creating Service..." : "Creating Container..."}
                         id="creation-log"
               />
             </div>
@@ -652,11 +671,7 @@ export default class ContainerCreate extends Component {
   }
 
   onSubmit() {
-    this.create();
-  }
-
-  create() {
-    const {fields, create, cluster, resetForm, loadContainers, origin} = this.props;
+    const {fields, cluster, origin} = this.props;
     let container = {
       cluster: cluster.name
     };
@@ -688,6 +703,43 @@ export default class ContainerCreate extends Component {
       creationLogVisible: true
     });
     $spinner.show();
+
+    if (this.props.service) {
+      this.createService(container, $spinner);
+    } else {
+      this.createContainer(container, $spinner);
+    }
+  }
+
+  createService(container, $spinner) {
+    const {fields, createService, cluster, getClusterServices} = this.props;
+    let service = {
+      container: container,
+      cluster: cluster.name,
+      ports: this.state.servicePorts,
+      name: fields.serviceName.value ? fields.serviceName.value : ''
+    };
+    if (!_.isEmpty(this.state.constraints)) {
+      service.constraints = this.state.constraints;
+    }
+    return createService(service)
+      .then((response) => {
+        let msg = (response._res.text && response._res.text.length > 0) ? response._res.text : "No response message";
+        $('#creation-log').val(msg);
+        $spinner.hide();
+        fields.name.onChange('');
+        fields.serviceName.onChange('');
+        return getClusterServices(cluster.name);
+      })
+      .catch((response) => {
+        $spinner.hide();
+        $('#creation-log').val(response.message);
+      });
+  }
+
+  createContainer(container, $spinner) {
+    const {fields, create, cluster, loadContainers} = this.props;
+
     return create(container)
       .then((response) => {
         let msg = (response._res.text && response._res.text.length > 0) ? response._res.text : "No response message";
@@ -698,8 +750,56 @@ export default class ContainerCreate extends Component {
       })
       .catch((response) => {
         $spinner.hide();
-        throw new SubmissionError(response.message);
+        $('#creation-log').val(response.message);
       });
+  }
+
+  servicePortsField() {
+    let items = this.state.servicePorts;
+    return (
+      <div className="form-group field-servicePorts">
+        {this.iconPlus('servicePorts', 'Service Ports', addItem)}
+        <div className="field-body">
+          {items.map((item, key) => <div className="row" key={key}>
+            <div className="col-sm-6">
+              <input type="string" onChange={handleChange.bind(this, key, 'publicPort')} className="form-control"
+                     placeholder="Public Port" value={this.state.servicePorts[key].publicPort}/>
+              <select className="form-control" onChange={handleChange.bind(this, key, 'mode')}>
+                {SERVICE_PORTS_MODES.map(value =>
+                  <option key={value} value={value}>{value}</option>
+                )}
+              </select>
+            </div>
+            <div className="col-sm-6 preIcon">
+              <input type="string" onChange={handleChange.bind(this, key, 'privatePort')} className="form-control"
+                     placeholder="Private Port" value={this.state.servicePorts[key].privatePort}/>
+              {key > 0 && this.iconMinus("servicePorts", key)}
+              <select className="form-control" onChange={handleChange.bind(this, key, 'type')}>
+                {SERVICE_PORTS_TYPES.map(value =>
+                  <option key={value} value={value}>{value}</option>
+                )}
+              </select>
+            </div>
+          </div>)}
+        </div>
+      </div>
+    );
+
+    function handleChange(i, type, event) {
+      let state = Object.assign({}, this.state);
+      state.servicePorts[i][type] = event.target.value;
+      this.setState(state);
+    }
+
+    function addItem() {
+      this.setState({
+        ...this.state,
+        servicePorts: [
+          ...this.state.servicePorts,
+          {privatePort: '', publicPort: '', type: SERVICE_PORTS_TYPES[0], mode: SERVICE_PORTS_MODES[0]}
+        ]
+      });
+    }
   }
 
   doubleInputField(fieldName, label, placeholder1 = "", placeholder2 = "" ) {
