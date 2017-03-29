@@ -18,26 +18,26 @@ export default class NavContainer extends Component {
       <LinkContainer to={"/clusters/" + clusterName}>
         <NavItem eventKey={1}>Containers</NavItem>
       </LinkContainer>
-      <LinkContainer to={"/clusters/" + clusterName + "/" + "applications"}>
-        <NavItem eventKey={2} disabled={clusterName === "all"}>Applications</NavItem>
+      <LinkContainer to={"/clusters/" + clusterName + "/" + "services"}>
+        <NavItem eventKey={2} disabled={clusterName === "all"}>Services</NavItem>
       </LinkContainer>
       <LinkContainer to={nodesNavId}>
         <NavItem eventKey={3}>Nodes</NavItem>
       </LinkContainer>
+      <LinkContainer to={"/clusters/" + clusterName + "/" + "images"}>
+        <NavItem eventKey={4} disabled={clusterName === "all"}>Update</NavItem>
+      </LinkContainer>
       <LinkContainer to={"/clusters/" + clusterName + "/" + "events"}>
-        <NavItem eventKey={4}>Events</NavItem>
+        <NavItem eventKey={5}>Events</NavItem>
       </LinkContainer>
       <LinkContainer to={"/clusters/" + clusterName + "/" + "registries"}>
-        <NavItem eventKey={5} disabled={clusterName === "all"}>Registries</NavItem>
+        <NavItem eventKey={6} disabled={clusterName === "all"}>Registries</NavItem>
       </LinkContainer>
-      <LinkContainer to={"/clusters/" + clusterName + "/" + "images"}>
-        <NavItem eventKey={6} disabled={clusterName === "all"}>Update</NavItem>
+      <LinkContainer to={"/clusters/" + clusterName + "/" + "applications"}>
+        <NavItem eventKey={7} disabled={clusterName === "all"}>Applications</NavItem>
       </LinkContainer>
       <LinkContainer to={"/clusters/" + clusterName + "/" + "networks"}>
-        <NavItem eventKey={7} disabled={clusterName === "all"}>Networks</NavItem>
-      </LinkContainer>
-      <LinkContainer to={"/clusters/" + clusterName + "/" + "services"}>
-        <NavItem eventKey={8} disabled={clusterName === "all"}>Services</NavItem>
+        <NavItem eventKey={8} disabled={clusterName === "all"}>Networks</NavItem>
       </LinkContainer>
     </Nav>
     );
