@@ -115,7 +115,7 @@ export default class ContainerCreate extends Component {
       volumeBinds: [""],
       volumesFrom: [""],
       environment: [{field1: '', field2: ''}],
-      constraints: [],
+      constraints: [""],
       affinity: [""],
       command: [""],
       entrypoint: [""],
@@ -434,7 +434,7 @@ export default class ContainerCreate extends Component {
                 {this.doubleInputField('environment', 'Environment')}
                 {this.oneInputField('constraints', 'Constraints')}
                 {this.oneInputField('affinity', 'Affinity')}
-                {this.oneInputField('command', 'Command')}
+                {this.oneInputField('command', 'Command', {hint: '  Add each argument in a separate line using (+)'})}
                 {this.oneInputField('entrypoint', 'Entry Point')}
               </Panel>
               <Panel header="Runtime Constraints" eventKey="2">
@@ -447,8 +447,8 @@ export default class ContainerCreate extends Component {
                 </div>
               </Panel>
               <Panel header="Volume Settings" eventKey="3">
-                {this.oneInputField('volumeBinds', 'Volume Binds', 'host-src:container-dest[:<options>]')}
-                {this.oneInputField('volumesFrom', 'Volumes From', "container:['rw'|'ro']")}
+                {this.oneInputField('volumeBinds', 'Volume Binds', {text: 'host-src:container-dest[:<options>]'})}
+                {this.oneInputField('volumesFrom', 'Volumes From', {text: "container:['rw'|'ro']"})}
               </Panel>
               <Panel header="Network Settings" eventKey="4">
                 {!service && (
@@ -719,7 +719,7 @@ export default class ContainerCreate extends Component {
       ports: this.state.servicePorts,
       name: fields.serviceName.value ? fields.serviceName.value : ''
     };
-    if (!_.isEmpty(this.state.constraints)) {
+    if (this.state.constraints !== [""]) {
       service.constraints = this.state.constraints;
     }
     return createService(service)
@@ -846,26 +846,27 @@ export default class ContainerCreate extends Component {
     );
   }
 
-  iconPlus(fieldName, label, addItem) {
+  iconPlus(fieldName, label, addItem, hint) {
     return (
       <div className="field-header">
         <label>{label}</label>
         <a onClick={addItem.bind(this, fieldName)}><i className="fa fa-plus-circle"/></a>
+        {hint && <span>&nbsp;{hint}</span>}
       </div>
     );
   }
 
-  oneInputField(fieldName, label, placeholder = "") {
+  oneInputField(fieldName, label, placeholder = {text: '', hint: null}) {
     let items = this.state[fieldName];
     return (
       <div className={"form-group " + "field-" + fieldName}>
-        {this.iconPlus(fieldName, label, addItem)}
+        {this.iconPlus(fieldName, label, addItem, placeholder.hint)}
         <div className="field-body">
           {items.map((item, key) => <div className="row" key={key}>
             <div className="col-sm-12 preIcon">
               <input type="text" onChange={handleChange.bind(this, key, fieldName)} value={this.state[fieldName][key]}
                      className="form-control"
-                     placeholder={placeholder}/>
+                     placeholder={placeholder.text}/>
               {key > 0 && this.iconMinus(fieldName, key)}
             </div>
           </div>)}

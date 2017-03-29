@@ -71,6 +71,16 @@ function renderTdImage(row) {
   );
 }
 
+function renderTdReplicas(row) {
+  const replicas = _.get(row, 'mode.replicas', 0);
+  const runningReplicas = _.get(row, 'runningReplicas', 0);
+  return (
+    <td key="replicas">
+      <span>{`${runningReplicas}/${replicas}`}</span>
+    </td>
+  );
+}
+
 @asyncConnect([{
   promise: ({store: {dispatch, getState}}) => {
     const promises = [];
@@ -167,6 +177,12 @@ export default class ServicesPanel extends Component {
       name: 'ports',
       render: this.renderTdPorts,
       width: '10%'
+    },
+
+    {
+      name: 'Running_Replicas/Replicas',
+      render: renderTdReplicas,
+      width: '15%',
     },
 
     {
