@@ -3,6 +3,7 @@ import {AgentGet, AgentAddNode} from '../../components/index';
 import {add, load} from '../../redux/modules/nodes/nodes';
 import {connect} from 'react-redux';
 import {Panel} from 'react-bootstrap';
+import Helmet from 'react-helmet';
 
 @connect(
   state => ({}), {
@@ -20,6 +21,7 @@ export default class AgentPanel extends Component {
 
     return (
       <Panel>
+        <Helmet title="Agent"/>
         <div className="col-md-offset-1 col-md-10 col-md-offset-1">
           <h3>Get Agent</h3>
           <AgentGet css={css}/>
