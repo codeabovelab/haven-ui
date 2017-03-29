@@ -1,21 +1,27 @@
 import React, {Component, PropTypes} from 'react';
 import {Dialog} from 'components';
-import {Row, Col, FormGroup, FormControl, Checkbox, ControlLabel, HelpBlock} from 'react-bootstrap';
+import {FormGroup, FormControl, ControlLabel} from 'react-bootstrap';
 import {connect} from 'react-redux';
-import {scale} from 'redux/modules/containers/containers';
+import {scale as scaleContainer} from 'redux/modules/containers/containers';
+import {getClusterServices, scaleService} from 'redux/modules/services/services';
 import {loadContainers} from 'redux/modules/clusters/clusters';
 import _ from 'lodash';
 
 @connect(state => ({
-  containersUI: state.containersUI
-}), {scale, loadContainers})
+  containersUI: state.containersUI,
+  services: state.services
+}), {scaleContainer, loadContainers, scaleService, getClusterServices})
 export default class ContainerScale extends Component {
   static propTypes = {
-    containersUI: PropTypes.object.isRequired,
-    container: PropTypes.object.isRequired,
-    scale: PropTypes.func.isRequired,
+    containersUI: PropTypes.object,
+    container: PropTypes.object,
+    services: PropTypes.object,
+    service: PropTypes.object,
+    scaleContainer: PropTypes.func.isRequired,
+    scaleService: PropTypes.func.isRequired,
     onHide: PropTypes.func.isRequired,
     loadContainers: PropTypes.func.isRequired,
+    getClusterServices: PropTypes.func.isRequired,
     name: PropTypes.string.isRequired
   };
   static focusSelector = '#instances-number';
@@ -26,7 +32,11 @@ export default class ContainerScale extends Component {
   }
 
   onSubmit() {
-    this.scale();
+    if (this.props.container) {
+      this.scaleContainer();
+    } else {
+      this.scaleService();
+    }
   }
 
   handleChange(e) {
@@ -34,13 +44,15 @@ export default class ContainerScale extends Component {
   }
 
   render() {
-    const {container, containersUI} = this.props;
-    let scaling = _.get(containersUI, `[${container.id}].scaling`, false);
+    const {container, containersUI, service, services, name} = this.props;
+    let scaling = container ? _.get(containersUI, `[${container.id}].scaling`, false) :
+      _.get(services, `${name}.${service.id}.scaling`, false);
+    let scaleTitle = container ? `Scale Container: ${container.name}` : `Scale Service: ${service.name}`;
 
     return (
       <Dialog show
               size="large"
-              title={`Scale Container: ${container.name}`}
+              title={scaleTitle}
               onSubmit={this.onSubmit.bind(this)}
               onHide={this.props.onHide}
               cancelTitle="Close"
@@ -59,8 +71,13 @@ export default class ContainerScale extends Component {
     );
   }
 
-  scale() {
-    const {container, scale, loadContainers, name} = this.props;
-    return scale(container, this.state.scaleFactor).then(()=>loadContainers(name).then(()=>this.props.onHide())).catch();
+  scaleContainer() {
+    const {container, scaleContainer, loadContainers, name} = this.props;
+    return scaleContainer(container, this.state.scaleFactor).then(()=>loadContainers(name).then(()=>this.props.onHide())).catch();
+  }
+
+  scaleService() {
+    const {service, scaleService, getClusterServices, name} = this.props;
+    return scaleService(service, name, this.state.scaleFactor).then(()=>getClusterServices(name).then(()=>this.props.onHide())).catch();
   }
 }

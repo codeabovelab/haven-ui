@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as containerActions from 'redux/modules/containers/containers';
-import {getClusterServices} from 'redux/modules/services/services';
+import {getClusterServices, deleteService, scaleService} from 'redux/modules/services/services';
 import {connect} from 'react-redux';
 import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, Dialog, Chain, LoadingDialog, StatisticsPanel, ActionMenu, ClusterUploadCompose, ClusterSetSource, NavContainer} from '../../../components/index';
 import { Link, browserHistory, RouteHandler } from 'react-router';
@@ -91,14 +91,10 @@ function renderTdImage(row) {
   }), {
     loadContainers: clusterActions.loadContainers,
     loadClusters: clusterActions.load,
-    deleteCluster: clusterActions.deleteCluster,
-    startContainer: containerActions.start,
-    stopContainer: containerActions.stop,
-    restartContainer: containerActions.restart,
-    removeContainer: containerActions.remove,
-    getClusterSource: clusterActions.getClusterSource,
     getClusterServices,
     deleteClusterImages,
+    deleteService,
+    scaleService
   })
 export default class ServicesPanel extends Component {
   static propTypes = {
@@ -109,15 +105,10 @@ export default class ServicesPanel extends Component {
     users: PropTypes.object,
     services: PropTypes.object,
     loadContainers: PropTypes.func.isRequired,
-    deleteCluster: PropTypes.func.isRequired,
-    startContainer: PropTypes.func.isRequired,
-    stopContainer: PropTypes.func.isRequired,
-    restartContainer: PropTypes.func.isRequired,
-    removeContainer: PropTypes.func.isRequired,
-    getClusterSource: PropTypes.func.isRequired,
     getClusterServices: PropTypes.func.isRequired,
+    deleteService: PropTypes.func.isRequired,
+    scaleService: PropTypes.func.isRequired,
     loadClusters: PropTypes.func.isRequired,
-    deleteClusterImages: PropTypes.func.isRequired,
   };
 
   statisticsMetricsNodesUp = [
@@ -267,12 +258,21 @@ export default class ServicesPanel extends Component {
   render() {
     const {containers, clusters, params: {name}, services} = this.props;
     const cluster = clusters[name];
+    let rows = [];
     if (!cluster) {
       return (
         <div></div>
       );
     }
-    const rows = _.get(services, `${name}`, null);
+    const data = _.get(services, `${name}`, null);
+    if (data) {
+      for (let el in data) {
+        if (!data.hasOwnProperty(el)) {
+          continue;
+        }
+        rows.push(data[el]);
+      }
+    }
     this.additionalData(rows);
     let runningContainers = 0;
     let runningNodes = 0;
@@ -412,27 +412,28 @@ export default class ServicesPanel extends Component {
     });
   }
 
-  createLoadingDialog(currentContainer, longTermAction, actionKey) {
+  createLoadingDialog(currentService, longTermAction, actionKey) {
     const {params: {name}} = this.props;
 
     return (
-      <LoadingDialog container={currentContainer}
-                     entityType="container"
+      <LoadingDialog service={currentService}
+                     entityType="service"
                      onHide={this.onHideDialog.bind(this)}
                      name={name}
                      longTermAction={longTermAction}
-                     refreshData={this.props.loadContainers}
+                     refreshData={this.props.getClusterServices}
                      actionKey={actionKey}
       />
     );
   }
 
-  onActionInvoke(action, container) {
-    const {clusters, params: {name}} = this.props;
+  onActionInvoke(action, serviceId) {
+    const {clusters, params: {name}, services} = this.props;
+    const servicesList = _.get(services, `${name}`, []);
     let cluster = clusters[name];
-    let currentContainer;
-    if (container) {
-      currentContainer = this.props.containers[container];
+    let currentService;
+    if (serviceId) {
+      currentService = _.get(servicesList, `${serviceId}`, null);
     }
 
     switch (action) {
@@ -451,7 +452,7 @@ export default class ServicesPanel extends Component {
       case "scale":
         this.setState({
           actionDialog: (
-            <ContainerScale container={currentContainer}
+            <ContainerScale service={currentService}
                             onHide={this.onHideDialog.bind(this)}
                             name={name}
             />
@@ -460,10 +461,10 @@ export default class ServicesPanel extends Component {
         return;
 
       case "delete":
-        confirm('Are you sure you want to remove container "' + currentContainer.name + '" ?')
+        confirm('Are you sure you want to delete service "' + currentService.name + '" ?')
           .then(() => {
             this.setState({
-              actionDialog: this.createLoadingDialog(currentContainer, this.props.removeContainer, 'removed')
+              actionDialog: this.createLoadingDialog(currentService, this.props.deleteService, 'deleted')
             });
           }).catch(()=>null);
         return;

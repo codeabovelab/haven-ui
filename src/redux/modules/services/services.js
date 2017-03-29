@@ -12,11 +12,44 @@ export default function reducer(state = {}, action = {}) {
       return {
         ...state,
         loading: false,
-        [action.id]: action.result
+        [action.cluster]: _.keyBy(action.result, 'id')
       };
     case ACTIONS.LOAD_SERVICES_FAIL:
       return {
         loading: false,
+      };
+    case ACTIONS.SCALE_SERVICE:
+      return {
+        ...state,
+        [action.cluster]: {
+          ...state[action.cluster],
+          [action.id]: {
+            ...state[action.cluster][action.id],
+            scaling: true
+          }
+        }
+      };
+    case ACTIONS.SCALE_SERVICE_SUCCESS:
+      return {
+        ...state,
+        [action.cluster]: {
+          ...state[action.cluster],
+          [action.id]: {
+            ...state[action.cluster][action.id],
+            scaling: false
+          }
+        }
+      };
+    case ACTIONS.SCALE_SERVICE_FAIL:
+      return {
+        ...state,
+        [action.cluster]: {
+          ...state[action.cluster],
+          [action.id]: {
+            ...state[action.cluster][action.id],
+            scaling: false
+          }
+        }
       };
     default:
       return state;
@@ -27,7 +60,7 @@ export default function reducer(state = {}, action = {}) {
 export function getClusterServices(clusterId) {
   return {
     types: [ACTIONS.LOAD_SERVICES, ACTIONS.LOAD_SERVICES_SUCCESS, ACTIONS.LOAD_SERVICES_FAIL],
-    id: clusterId,
+    cluster: clusterId,
     promise: (client) => client.get(`/ui/api/clusters/${clusterId}/services`)
   };
 }
@@ -40,16 +73,18 @@ export function create(service) {
   };
 }
 
-export function deleteService(serviceId, cluster) {
+export function deleteService(cluster, service) {
   return {
     types: [ACTIONS.DELETE_SERVICE, ACTIONS.DELETE_SERVICE_SUCCESS, ACTIONS.DELETE_SERVICE_FAIL],
-    promise: (client) => client.post(`/ui/api/services/delete`, {params: {id: serviceId, cluster: cluster}})
+    promise: (client) => client.post(`/ui/api/services/delete`, {params: {id: service.id, cluster: cluster}})
   };
 }
 
-export function scaleService(serviceId, cluster, scale) {
+export function scaleService(service, cluster, scale) {
   return {
+    id: service.id,
+    cluster: cluster,
     types: [ACTIONS.SCALE_SERVICE, ACTIONS.SCALE_SERVICE_SUCCESS, ACTIONS.SCALE_SERVICE_FAIL],
-    promise: (client) => client.post(`/ui/api/services/scale`, {params: {id: serviceId, cluster: cluster, scale: scale}})
+    promise: (client) => client.post(`/ui/api/services/scale`, {params: {id: service.id, cluster: cluster, scale: scale}})
   };
 }
