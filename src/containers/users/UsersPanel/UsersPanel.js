@@ -4,6 +4,7 @@ import {StatisticsPanel, UsersList} from '../../../components';
 import * as usersActions from 'redux/modules/users/users';
 import {UserAdd, UserPassChange} from '../../index';
 import _ from 'lodash';
+import Helmet from 'react-helmet';
 
 @connect(
   state => ({
@@ -77,6 +78,7 @@ export default class UsersPanel extends Component {
     }
     return (
       <div>
+        <Helmet title="Users"/>
         <StatisticsPanel metrics={this.statisticsMetrics}
                          values={[usersCount, adminsCount]}
         />

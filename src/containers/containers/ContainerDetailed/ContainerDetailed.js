@@ -4,12 +4,12 @@ import * as containerActions from 'redux/modules/containers/containers';
 import {connect} from 'react-redux';
 import {PropertyGrid, LoadingDialog, ActionMenu, ContainerStatistics, EventLog} from '../../../components/index';
 import {ContainerScale, ContainerUpdate, ContainerCreate} from '../../../containers/index';
-import {Link} from 'react-router';
 import {Button, ButtonToolbar, Badge, Panel, ProgressBar, Tabs, Tab} from 'react-bootstrap';
 import _ from 'lodash';
 import {browserHistory} from 'react-router';
 import { Stomp } from 'stompjs/lib/stomp.min.js';
 import {connectToStomp} from '../../../utils/stompUtils';
+import Helmet from 'react-helmet';
 
 let stompClient = null;
 
@@ -353,6 +353,7 @@ export default class ContainerDetailed extends Component {
     }
     return (
       <div>
+        <Helmet title="Container Detailed"/>
         <Panel header={this.headerBar(name, containersUI, startContainer, stopContainer, loadDetailsByName, container)}>
           <PropertyGrid data={_.assign({},
             {name: container.name}, {hostname: container.hostname}, {image: container.image},

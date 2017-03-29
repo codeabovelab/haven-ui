@@ -10,6 +10,7 @@ import {deleteClusterImages} from 'redux/modules/images/images';
 import {Button, ButtonToolbar, ProgressBar} from 'react-bootstrap';
 import _ from 'lodash';
 import TimeUtils from 'utils/TimeUtils';
+import Helmet from 'react-helmet';
 
 function renderTdApplication(row) {
   let resultValue = processTdVal(row.application);
@@ -278,6 +279,7 @@ export default class ServicesPanel extends Component {
 
     return (
       <div key={name}>
+        <Helmet title="Services"/>
         {(runningNodes > 0 || runningNodes === downNodes) && (
           <StatisticsPanel metrics={this.statisticsMetricsNodesUp}
                            cluster={cluster}

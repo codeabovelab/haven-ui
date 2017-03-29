@@ -2,10 +2,9 @@ import React, {Component, PropTypes} from 'react';
 import {loadImages} from 'redux/modules/images/images';
 import {deleteImages} from 'redux/modules/images/images';
 import {connect} from 'react-redux';
-import {DockTable, ImagesList, StatisticsPanel} from '../../../components/index';
-import {RegistryEdit} from '../../index';
-import {Button, Label, Badge, ButtonToolbar, SplitButton, MenuItem} from 'react-bootstrap';
-import _ from 'lodash';
+import {ImagesList, StatisticsPanel} from '../../../components/index';
+import {Button} from 'react-bootstrap';
+import Helmet from 'react-helmet';
 
 @connect(
   state => ({
@@ -73,6 +72,7 @@ export default class ImagesPanel extends Component {
     };
     return (
       <div>
+        <Helmet title="Images"/>
         <StatisticsPanel metrics={this.statisticsMetrics}
                         values={[availableImages, runningImages]}
         />

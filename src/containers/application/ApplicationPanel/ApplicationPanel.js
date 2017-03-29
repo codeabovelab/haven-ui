@@ -2,11 +2,11 @@ import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 import * as applicationActions from 'redux/modules/application/application';
 import {connect} from 'react-redux';
-import { Link, RouteHandler } from 'react-router';
-import { LinkContainer } from 'react-router-bootstrap';
+import {RouteHandler} from 'react-router';
+import Helmet from 'react-helmet';
 import {DockTable, LoadingDialog, Chain, NavContainer, ActionMenu, StatisticsPanel} from '../../../components/index';
 import { asyncConnect } from 'redux-async-connect';
-import {Button, ButtonToolbar, ProgressBar, Popover, Nav, NavItem} from 'react-bootstrap';
+import {Button, ButtonToolbar, ProgressBar, Popover} from 'react-bootstrap';
 import {ApplicationCreate} from '../../../containers/index';
 import {downloadFile} from '../../../utils/fileActions';
 import _ from 'lodash';
@@ -228,6 +228,7 @@ export default class ApplicationPanel extends Component {
 
     return (
       <div>
+        <Helmet title="Applications"/>
         {cluster && (
           <StatisticsPanel metrics={this.statisticsMetrics}
                            cluster={cluster}

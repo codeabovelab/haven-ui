@@ -6,12 +6,13 @@ import _ from 'lodash';
 import {ClusterNodesDialog} from 'containers/index';
 import {DockTable, ClustersList, StatisticsPanel, Dialog, EventLog} from 'components';
 import {ClusterAdd, ClusterConfig, ClusterInformation} from '../../index';
-import {Label, Badge, ButtonToolbar, SplitButton, MenuItem, Panel, Button, ProgressBar} from 'react-bootstrap';
+import {Panel} from 'react-bootstrap';
 import {count as countEvents} from 'redux/modules/events/events';
 import {deleteClusterImages} from 'redux/modules/images/images';
 import {load as loadAllNodes} from 'redux/modules/nodes/nodes';
 import { Stomp } from 'stompjs/lib/stomp.min.js';
 import {connectToStomp} from '../../../utils/stompUtils';
+import Helmet from 'react-helmet';
 
 let stompClient = null;
 let clustersPanelMounted = null;
@@ -176,6 +177,7 @@ export default class ClustersPanel extends Component {
 
     return (
       <div>
+        <Helmet title="Clusters"/>
         {(runningNodes > 0 || runningNodes === downNodes) && (
           <StatisticsPanel metrics={this.statisticsMetricsNodesUp}
                            values={[clusterCount, runningNodes, runningContainers, errorCount]}

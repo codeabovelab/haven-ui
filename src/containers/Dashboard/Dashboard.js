@@ -1,10 +1,9 @@
 import React, { Component, PropTypes} from 'react';
-import config from '../../config';
 import Helmet from 'react-helmet';
 import {connect} from 'react-redux';
 import _ from 'lodash';
-import {Row, Col, Panel} from 'react-bootstrap';
-import {DockTable, StatisticsPanel, DashboardNodesList, DashboardClustersList} from '../../components';
+import {Row, Col} from 'react-bootstrap';
+import {StatisticsPanel, DashboardNodesList, DashboardClustersList} from '../../components';
 import {load as loadClusters} from 'redux/modules/clusters/clusters';
 import {load as loadNodes} from 'redux/modules/nodes/nodes';
 import {count as countEvents} from 'redux/modules/events/events';

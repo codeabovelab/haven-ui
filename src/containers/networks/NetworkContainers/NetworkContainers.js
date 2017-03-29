@@ -5,6 +5,7 @@ import {connect} from 'react-redux';
 import {DockTable, ActionMenu, LoadingDialog, StatisticsPanel} from '../../../components/index';
 import {Panel, ProgressBar} from 'react-bootstrap';
 import _ from 'lodash';
+import Helmet from 'react-helmet';
 
 function renderTdImage(row) {
   let name = row.image || '';
@@ -208,6 +209,7 @@ export default class NetworkContainers extends Component {
 
     return (
       <div key={name}>
+        <Helmet title="Network Containers"/>
         {rows && (
           <StatisticsPanel metrics={this.statisticsMetrics}
                            values={[rows.length]}

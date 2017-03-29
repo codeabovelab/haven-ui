@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {ClusterNodesDialog} from '../../../containers/index';
 import {DockTable, NodesList, StatisticsPanel} from '../../../components';
 import {NodeAdd} from '../../index';
+import Helmet from 'react-helmet';
 
 @connect(
   state => ({
@@ -63,6 +64,7 @@ export default class NodesPanel extends Component {
     }
     return (
       <div>
+        <Helmet title="Nodes"/>
         <StatisticsPanel metrics={this.statisticsMetrics}
                          values={[runningNodes, stoppedNodes, totalNodes]}
         />

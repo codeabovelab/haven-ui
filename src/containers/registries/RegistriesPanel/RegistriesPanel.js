@@ -3,10 +3,10 @@ import {connect} from 'react-redux';
 import {load as loadRegistries, refreshRegistry, removeRegistry} from 'redux/modules/registries/registries';
 import {loadClusterRegistries} from 'redux/modules/clusters/clusters';
 import {update, load} from 'redux/modules/clusters/clusters';
-import {DockTable, RegistriesList, StatisticsPanel, ClusterRegistriesDialog} from '../../../components/index';
+import {RegistriesList, StatisticsPanel, ClusterRegistriesDialog} from '../../../components/index';
 import {RegistryEditForms} from '../../index';
 import _ from 'lodash';
-import { Link } from 'react-router';
+import Helmet from 'react-helmet';
 
 @connect(
   state => ({
@@ -68,6 +68,7 @@ export default class RegistriesPanel extends Component {
 
     return (
       <div>
+        <Helmet title="Registries"/>
         <StatisticsPanel metrics={this.statisticsMetrics} values={[connectedRegistries]}/>
 
         <RegistriesList loading={typeof RegistriesList === "undefined"}

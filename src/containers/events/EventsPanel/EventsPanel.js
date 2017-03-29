@@ -5,6 +5,7 @@ import { Link, RouteHandler } from 'react-router';
 import _ from 'lodash';
 import {DockTable, ClustersList, StatisticsPanel, Dialog, EventLog, NavContainer} from 'components';
 import * as clusterActions from 'redux/modules/clusters/clusters';
+import Helmet from 'react-helmet';
 
 @asyncConnect([{
   promise: ({store: {dispatch, getState}}) => {
@@ -113,6 +114,7 @@ export default class EventsPanel extends Component {
 
     return (
       <div>
+        <Helmet title="Events"/>
         {cluster && (
           <StatisticsPanel metrics={this.statisticsMetrics}
                            cluster={cluster}

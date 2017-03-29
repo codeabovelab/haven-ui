@@ -7,6 +7,7 @@ import {updateContainers} from 'redux/modules/containers/containers';
 import {ProgressBar} from 'react-bootstrap';
 import _ from 'lodash';
 import {listNetworks, deleteNetwork} from 'redux/modules/networks/networks';
+import Helmet from 'react-helmet';
 
 let clusterNetworksMounted = null;
 
@@ -163,6 +164,7 @@ export default class ClusterNetworks extends Component {
 
     return (
       <div key={name}>
+        <Helmet title="Networks"/>
         {rows && (
           <StatisticsPanel metrics={this.statisticsMetrics}
                            values={[rows.length]}

@@ -7,6 +7,7 @@ import {updateContainers} from 'redux/modules/containers/containers';
 import {FormGroup, InputGroup, FormControl, ControlLabel, Button, ProgressBar, Popover, Modal, OverlayTrigger} from 'react-bootstrap';
 import _ from 'lodash';
 import Select from 'react-select';
+import Helmet from 'react-helmet';
 
 let clusterImagesMounted = null;
 
@@ -440,6 +441,7 @@ export default class ClusterImages extends Component {
 
     return (
       <div key={name}>
+        <Helmet title="Update"/>
         {rows && (
           <StatisticsPanel metrics={this.statisticsMetrics}
                            values={[rows.length]}

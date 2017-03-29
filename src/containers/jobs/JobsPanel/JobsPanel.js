@@ -5,6 +5,7 @@ import {Dialog, StatisticsPanel, JobsList, PropertyGrid} from 'components';
 import {ProgressBar} from 'react-bootstrap';
 import {loadList, loadInfo, loadLog, deleteJob, rollbackJob} from 'redux/modules/jobs/jobs';
 import _ from 'lodash';
+import Helmet from 'react-helmet';
 
 @connect(
   state => ({
@@ -87,6 +88,7 @@ export default class JobsPanel extends Component {
     };
     return (
       <div>
+        <Helmet title="Jobs"/>
         <StatisticsPanel metrics={this.statisticsMetrics}
                         values={[running, successfully, failed]}
         />

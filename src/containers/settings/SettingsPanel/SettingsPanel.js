@@ -5,6 +5,7 @@ import {UploadSettings} from '../../../components/index';
 import {ProgressBar} from 'react-bootstrap';
 import {downloadFile} from '../../../utils/fileActions';
 import TimeUtils from 'utils/TimeUtils';
+import Helmet from 'react-helmet';
 
 let addScript;
 
@@ -64,6 +65,7 @@ export default class SettingsPanel extends Component {
     }
     return (
       <div>
+        <Helmet title="Settings"/>
         <h4>
           <a href="https://github.com/codeabovelab/haven-platform" target="_blank">Haven</a>&nbsp;
         </h4>

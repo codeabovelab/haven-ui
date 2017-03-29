@@ -10,6 +10,7 @@ import {deleteClusterImages} from 'redux/modules/images/images';
 import {Button, ButtonGroup, DropdownButton, ButtonToolbar, MenuItem, ProgressBar} from 'react-bootstrap';
 import _ from 'lodash';
 import {downloadFile} from '../../../utils/fileActions';
+import Helmet from 'react-helmet';
 
 function renderTdContainerName(row) {
   return (
@@ -423,6 +424,7 @@ export default class ClusterDetailsPanel extends Component {
 
     return (
       <div key={name}>
+        <Helmet title="Containers"/>
         {(runningNodes > 0 || runningNodes === downNodes) && (
           <StatisticsPanel metrics={this.statisticsMetricsNodesUp}
                            cluster={cluster}
