@@ -61,6 +61,9 @@ const NETWORK_FIELDS = {
 const CPU_FIELDS_KEYS = Object.keys(CPU_FIELDS);
 const NETWORK_FIELDS_KEYS = Object.keys(NETWORK_FIELDS);
 
+const SERVICE_PORTS_MODES = ['INGRESS', 'HOST'];
+const SERVICE_PORTS_TYPES = ['TCP', 'UDP'];
+
 @connect(state => ({
   clusters: state.clusters,
   containers: state.containers,
@@ -107,11 +110,12 @@ export default class ContainerCreate extends Component {
       dns: [],
       dnsSearch: [],
       ports: [{field1: '', field2: ''}],
+      servicePorts: [{privatePort: '', publicPort: '', type: SERVICE_PORTS_TYPES[0], mode: SERVICE_PORTS_MODES[0]}],
       links: [{field1: '', field2: ''}],
       volumeBinds: [""],
       volumesFrom: [""],
       environment: [{field1: '', field2: ''}],
-      constraints: [""],
+      constraints: [],
       affinity: [""],
       command: [""],
       entrypoint: [""],
@@ -147,7 +151,6 @@ export default class ContainerCreate extends Component {
     let tag = '';
     this.setState({loadingParams: true});
     loadDetails(origin).then((originParams) => {
-      console.log('originParams: ', originParams);
       _.forOwn(originParams, (value, key) => {
         this.setDefaultFields(originParams, value, key, fields);
       });
@@ -448,7 +451,11 @@ export default class ContainerCreate extends Component {
                 {this.oneInputField('volumesFrom', 'Volumes From', "container:['rw'|'ro']")}
               </Panel>
               <Panel header="Network Settings" eventKey="4">
-                {this.doubleInputField('ports', 'Ports', 'Public Port', 'Private Port')}
+                {!service && (
+                  this.doubleInputField('ports', 'Ports', 'Public Port', 'Private Port')
+                ) || (
+                  this.servicePortsField()
+                )}
                 <div className="row">
                   {NETWORK_FIELDS_KEYS.map(key =>
                     <div className="col-sm-6" key={key}>
@@ -486,7 +493,7 @@ export default class ContainerCreate extends Component {
               <label>Create Log: <i className="fa fa-spinner fa-2x fa-pulse"/></label>
               <textarea readOnly
                         className="container-creation-log"
-                        defaultValue="Creating Container..."
+                        defaultValue= {service ? "Creating Service..." : "Creating Container..."}
                         id="creation-log"
               />
             </div>
@@ -664,16 +671,7 @@ export default class ContainerCreate extends Component {
   }
 
   onSubmit() {
-    if (this.props.service) {
-      this.createService();
-    } else {
-      this.createContainer();
-    }
-  }
-
-  createService() {
-    const {fields, createService, cluster, resetForm, getClusterServices, origin} = this.props;
-    console.log('createService');
+    const {fields, cluster, origin} = this.props;
     let container = {
       cluster: cluster.name
     };
@@ -703,59 +701,44 @@ export default class ContainerCreate extends Component {
     this.setState({
       creationLogVisible: true
     });
+    $spinner.show();
+
+    if (this.props.service) {
+      this.createService(container, $spinner);
+    } else {
+      this.createContainer(container, $spinner);
+    }
+  }
+
+  createService(container, $spinner) {
+    const {fields, createService, cluster, getClusterServices} = this.props;
     let service = {
       container: container,
       cluster: cluster.name,
+      ports: this.state.servicePorts,
       name: fields.serviceName.value ? fields.serviceName.value : ''
     };
-    $spinner.show();
+    if (!_.isEmpty(this.state.constraints)) {
+      service.constraints = this.state.constraints;
+    }
     return createService(service)
       .then((response) => {
         let msg = (response._res.text && response._res.text.length > 0) ? response._res.text : "No response message";
         $('#creation-log').val(msg);
         $spinner.hide();
         fields.name.onChange('');
+        fields.serviceName.onChange('');
         return getClusterServices(cluster.name);
       })
       .catch((response) => {
         $spinner.hide();
-        throw new SubmissionError(response.message);
+        $('#creation-log').val(response.message);
       });
   }
 
-  createContainer() {
-    const {fields, create, cluster, resetForm, loadContainers, origin} = this.props;
-    console.log('createContainer');
-    let container = {
-      cluster: cluster.name
-    };
-    let fieldNames = ['node', 'name', 'dns', 'dnsSearch'].concat(CPU_FIELDS_KEYS, NETWORK_FIELDS_KEYS);
-    fieldNames.forEach(key => {
-      let value = fields[key].value;
-      if (value) {
-        container[key] = value;
-      }
-    });
-    let registry = fields.registry.value ? fields.registry.value + '/' : '';
-    let tag = fields.tag.value ? ':' + fields.tag.value : '';
-    if (origin && this.state.originTag === tag) {
-      container.imageId = origin.imageId;
-    }
-    container.image = $.trim(registry + fields.image.value + tag);
-    let $logBlock = $('#creation-log-block');
-    let $spinner = $logBlock.find('i');
-    container.ports = this.getPorts();
-    container.environment = this.getEnvironmentFields();
-    container.restart = this.getRestart();
-    container.volumesFrom = this.getOneInputField('volumesFrom');
-    container.volumeBinds = this.getOneInputField('volumeBinds');
-    container.command = this.getOneInputField('command');
-    container.entrypoint = this.getOneInputField('entrypoint');
-    $logBlock.show();
-    this.setState({
-      creationLogVisible: true
-    });
-    $spinner.show();
+  createContainer(container, $spinner) {
+    const {fields, create, cluster, loadContainers} = this.props;
+
     return create(container)
       .then((response) => {
         let msg = (response._res.text && response._res.text.length > 0) ? response._res.text : "No response message";
@@ -766,8 +749,56 @@ export default class ContainerCreate extends Component {
       })
       .catch((response) => {
         $spinner.hide();
-        throw new SubmissionError(response.message);
+        $('#creation-log').val(response.message);
       });
+  }
+
+  servicePortsField() {
+    let items = this.state.servicePorts;
+    return (
+      <div className="form-group field-servicePorts">
+        {this.iconPlus('servicePorts', 'Service Ports', addItem)}
+        <div className="field-body">
+          {items.map((item, key) => <div className="row" key={key}>
+            <div className="col-sm-6">
+              <input type="string" onChange={handleChange.bind(this, key, 'publicPort')} className="form-control"
+                     placeholder="Public Port" value={this.state.servicePorts[key].publicPort}/>
+              <select className="form-control" onChange={handleChange.bind(this, key, 'mode')}>
+                {SERVICE_PORTS_MODES.map(value =>
+                  <option key={value} value={value}>{value}</option>
+                )}
+              </select>
+            </div>
+            <div className="col-sm-6 preIcon">
+              <input type="string" onChange={handleChange.bind(this, key, 'privatePort')} className="form-control"
+                     placeholder="Private Port" value={this.state.servicePorts[key].privatePort}/>
+              {key > 0 && this.iconMinus("servicePorts", key)}
+              <select className="form-control" onChange={handleChange.bind(this, key, 'type')}>
+                {SERVICE_PORTS_TYPES.map(value =>
+                  <option key={value} value={value}>{value}</option>
+                )}
+              </select>
+            </div>
+          </div>)}
+        </div>
+      </div>
+    );
+
+    function handleChange(i, type, event) {
+      let state = Object.assign({}, this.state);
+      state.servicePorts[i][type] = event.target.value;
+      this.setState(state);
+    }
+
+    function addItem() {
+      this.setState({
+        ...this.state,
+        servicePorts: [
+          ...this.state.servicePorts,
+          {privatePort: '', publicPort: '', type: SERVICE_PORTS_TYPES[0], mode: SERVICE_PORTS_MODES[0]}
+        ]
+      });
+    }
   }
 
   doubleInputField(fieldName, label, placeholder1 = "", placeholder2 = "" ) {

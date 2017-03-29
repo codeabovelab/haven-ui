@@ -66,7 +66,6 @@ export function getClusterServices(clusterId) {
 }
 
 export function create(service) {
-  console.log('service ', service);
   return {
     types: [ACTIONS.CREATE_SERVICE, ACTIONS.CREATE_SERVICE_SUCCESS, ACTIONS.CREATE_SERVICE_FAIL],
     promise: (client) => client.post(`/ui/api/services/create`, {data: service})

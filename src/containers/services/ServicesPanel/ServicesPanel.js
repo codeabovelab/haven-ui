@@ -1,14 +1,13 @@
 import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
-import * as containerActions from 'redux/modules/containers/containers';
 import {getClusterServices, deleteService, scaleService} from 'redux/modules/services/services';
 import {connect} from 'react-redux';
-import {ContainerLog, ContainerDetails, ContainerStatistics, DockTable, Dialog, Chain, LoadingDialog, StatisticsPanel, ActionMenu, ClusterUploadCompose, ClusterSetSource, NavContainer} from '../../../components/index';
-import { Link, browserHistory, RouteHandler } from 'react-router';
-import {ContainerCreate, ContainerScale, ContainerUpdate} from '../../../containers/index';
+import {DockTable, Chain, LoadingDialog, StatisticsPanel, ActionMenu, NavContainer} from '../../../components/index';
+import {ContainerCreate, ContainerScale} from '../../../containers/index';
+import { RouteHandler } from 'react-router';
 import { asyncConnect } from 'redux-async-connect';
 import {deleteClusterImages} from 'redux/modules/images/images';
-import {Button, ButtonGroup, DropdownButton, ButtonToolbar, MenuItem, ProgressBar} from 'react-bootstrap';
+import {Button, ButtonToolbar, ProgressBar} from 'react-bootstrap';
 import _ from 'lodash';
 import TimeUtils from 'utils/TimeUtils';
 
@@ -76,7 +75,7 @@ function renderTdImage(row) {
     const promises = [];
 
     if (!clusterActions.isLoaded(getState())) {
-      promises.push(dispatch(clusterActions.load()));// actually we need just one cluster here, no API method for one
+      promises.push(dispatch(clusterActions.load()));
     }
     return Promise.all(promises);
   }
@@ -85,11 +84,8 @@ function renderTdImage(row) {
   state => ({
     clusters: state.clusters,
     services: state.services,
-    containers: state.containers,
     events: state.events,
-    users: state.users
   }), {
-    loadContainers: clusterActions.loadContainers,
     loadClusters: clusterActions.load,
     getClusterServices,
     deleteClusterImages,
@@ -99,12 +95,9 @@ function renderTdImage(row) {
 export default class ServicesPanel extends Component {
   static propTypes = {
     clusters: PropTypes.object,
-    containers: PropTypes.object,
     events: PropTypes.object,
     params: PropTypes.object,
-    users: PropTypes.object,
     services: PropTypes.object,
-    loadContainers: PropTypes.func.isRequired,
     getClusterServices: PropTypes.func.isRequired,
     deleteService: PropTypes.func.isRequired,
     scaleService: PropTypes.func.isRequired,
@@ -114,8 +107,8 @@ export default class ServicesPanel extends Component {
   statisticsMetricsNodesUp = [
     {
       type: 'number',
-      title: 'Container Running',
-      titles: 'Containers Running'
+      title: 'Service',
+      titles: 'Services'
     },
     {
       type: 'number',
@@ -137,8 +130,8 @@ export default class ServicesPanel extends Component {
   statisticsMetricsNodesDown = [
     {
       type: 'number',
-      title: 'Container Running',
-      titles: 'Containers Running'
+      title: 'Service',
+      titles: 'Services'
     },
     {
       type: 'number',
@@ -205,22 +198,11 @@ export default class ServicesPanel extends Component {
     }
   ];
 
-  shouldComponentUpdate(nextProps, nextState) {
-    const {loadContainers, params: {name}} = this.props;
-    const nextName = nextProps.params.name;
-    if (name !== nextName && nextName === 'all') {
-      loadContainers(nextName);
-    }
-    return true;
-  }
-
   componentDidMount() {
-    const {loadContainers, loadClusters, params: {name}, getClusterServices} = this.props;
+    const {loadClusters, params: {name}, getClusterServices} = this.props;
     this.state = {};
     loadClusters();
     getClusterServices(name);
-    loadContainers(name);
-
     $('.input-search').focus();
   }
 
@@ -228,15 +210,10 @@ export default class ServicesPanel extends Component {
     let ports = row.ports;
     let portsCoupled = [];
     ports.map((el) => {
-      if (checkPort(el.PublicPort) && checkPort(el.PublicPort)) {
-        if (el.IP) {
-          portsCoupled.push(el.IP + ":" + el.PublicPort + ":" + el.PrivatePort);
-        } else {
-          portsCoupled.push(el.PublicPort + ":" + el.PrivatePort);
-        }
+      if (checkPort(el.publicPort) && checkPort(el.privatePort)) {
+        portsCoupled.push(el.publicPort + ":" + el.privatePort + '(' + el.type + '/' + el.mode + ')');
       }
     });
-
     return (
       <td key="ports">
         <span>{portsCoupled.join(', ')}</span>
@@ -244,19 +221,8 @@ export default class ServicesPanel extends Component {
     );
   }
 
-  renderTdCluster(row) {
-    const {loadContainers} = this.props;
-    let resultValue = processTdVal(row.cluster);
-    return (
-      <td key="cluster" title={resultValue.title}>
-        <Link to={"/clusters/" + resultValue.val}
-              onClick={() => {loadContainers(resultValue.val);}}>
-          {resultValue.val}</Link></td>
-    );
-  }
-
   render() {
-    const {containers, clusters, params: {name}, services} = this.props;
+    const {clusters, params: {name}, services} = this.props;
     const cluster = clusters[name];
     let rows = [];
     if (!cluster) {
@@ -274,7 +240,7 @@ export default class ServicesPanel extends Component {
       }
     }
     this.additionalData(rows);
-    let runningContainers = 0;
+    let servicesNumber = rows.length;
     let runningNodes = 0;
     let downNodes = 0;
     let Apps = 0;
@@ -295,13 +261,6 @@ export default class ServicesPanel extends Component {
     } else {
       Apps = _.size(cluster.applications);
     }
-    if (rows && rows.length > 0) {
-      rows.forEach((container) => {
-        if (container.run) {
-          runningContainers++;
-        }
-      });
-    }
 
     if (typeof(cluster.nodes.on) !== 'undefined') {
       runningNodes = cluster.nodes.on;
@@ -315,11 +274,6 @@ export default class ServicesPanel extends Component {
 
     let columns = this.COLUMNS;
 
-    if (!isAllPage) {
-      columns = columns.filter((object)=> object.name !== 'cluster');
-    } else {
-      $('div.content-top').find('h1').text('Containers');
-    }
     columns.forEach(column => column.sortable = column.name !== 'actions');
 
     return (
@@ -327,13 +281,13 @@ export default class ServicesPanel extends Component {
         {(runningNodes > 0 || runningNodes === downNodes) && (
           <StatisticsPanel metrics={this.statisticsMetricsNodesUp}
                            cluster={cluster}
-                           values={[runningContainers, runningNodes, Apps, eventsCount]}
+                           values={[servicesNumber, runningNodes, Apps, eventsCount]}
           />
         )}
         {(runningNodes === 0 && downNodes > 0) && (
           <StatisticsPanel metrics={this.statisticsMetricsNodesDown}
                            cluster={cluster}
-                           values={[runningContainers, downNodes, Apps, eventsCount]}
+                           values={[servicesNumber, downNodes, Apps, eventsCount]}
           />
         )}
         <div className="panel panel-default">
@@ -349,14 +303,9 @@ export default class ServicesPanel extends Component {
                     <i className="fa fa-plus"/>&nbsp;
                     New Service
                   </Button>
-                  <Button
-                    bsStyle="primary"
-                    onClick={()=> console.log('rows: ', rows)}
-                  >Show ROWS
-                  </Button>
                 </ButtonToolbar>
               )}
-              <div className="containers">
+              <div className="services">
                 <DockTable columns={columns}
                            rows={rows}
                            key={name}
@@ -364,14 +313,14 @@ export default class ServicesPanel extends Component {
               </div>
             </div>
           )}
-          {!rows && (
+          {(rows.length === 0 && services.loading) && (
             <div className="progressBarBlock">
               <ProgressBar active now={100}/>
             </div>
           )}
-          {(rows && rows.length === 0) && (
+          {(rows.length === 0 && !services.loading) && (
             <div className="alert alert-info">
-              No containers yet
+              No services yet
             </div>
           )}
         </div>
@@ -390,6 +339,7 @@ export default class ServicesPanel extends Component {
     if (rows) {
       rows.forEach(row => {
         row.actions = this.tdActions.bind(this);
+        row.image = row.container.image;
       });
     }
   }
