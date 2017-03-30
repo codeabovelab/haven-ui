@@ -18,6 +18,39 @@ export default function reducer(state = {}, action = {}) {
       return {
         loading: false,
       };
+    case ACTIONS.GET_SERVICE:
+      return {
+        ...state,
+        [action.cluster]: {
+          ...state[action.cluster],
+          [action.id]: {
+            ...state[action.cluster][action.id],
+            loading: true
+          }
+        }
+      };
+    case ACTIONS.GET_SERVICE_SUCCESS:
+      return {
+        ...state,
+        [action.cluster]: {
+          ...state[action.cluster],
+          [action.id]: {
+            ...action.result,
+            loading: false
+          }
+        }
+      };
+    case ACTIONS.GET_SERVICE_FAIL:
+      return {
+        ...state,
+        [action.cluster]: {
+          ...state[action.cluster],
+          [action.id]: {
+            ...state[action.cluster][action.id],
+            loading: false
+          }
+        }
+      };
     case ACTIONS.SCALE_SERVICE:
       return {
         ...state,
@@ -85,5 +118,14 @@ export function scaleService(service, cluster, scale) {
     cluster: cluster,
     types: [ACTIONS.SCALE_SERVICE, ACTIONS.SCALE_SERVICE_SUCCESS, ACTIONS.SCALE_SERVICE_FAIL],
     promise: (client) => client.post(`/ui/api/services/scale`, {params: {id: service.id, cluster: cluster, scale: scale}})
+  };
+}
+
+export function getService(clusterId, serviceId) {
+  return {
+    cluster: clusterId,
+    id: serviceId,
+    types: [ACTIONS.GET_SERVICE, ACTIONS.GET_SERVICE_SUCCESS, ACTIONS.GET_SERVICE_FAIL],
+    promise: (client) => client.get(`/ui/api/services/get`, {params: {id: serviceId, cluster: clusterId}})
   };
 }

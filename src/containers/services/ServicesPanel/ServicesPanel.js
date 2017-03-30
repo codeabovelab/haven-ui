@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import * as clusterActions from 'redux/modules/clusters/clusters';
 import {getClusterServices, deleteService, scaleService} from 'redux/modules/services/services';
 import {connect} from 'react-redux';
-import {DockTable, Chain, LoadingDialog, StatisticsPanel, ActionMenu, NavContainer} from '../../../components/index';
+import {DockTable, Chain, LoadingDialog, StatisticsPanel, ActionMenu, NavContainer, ServiceDetails} from '../../../components/index';
 import {ContainerCreate, ContainerScale} from '../../../containers/index';
 import { RouteHandler } from 'react-router';
 import { asyncConnect } from 'redux-async-connect';
@@ -205,13 +205,17 @@ export default class ServicesPanel extends Component {
 
   ACTIONS = [
     {
+      key: "info",
+      title: "Info",
+      default: true
+    },
+    {
       key: "scale",
       title: "Scale"
     },
     {
       key: "delete",
       title: "Delete",
-      default: true
     }
   ];
 
@@ -423,6 +427,17 @@ export default class ServicesPanel extends Component {
             <ContainerScale service={currentService}
                             onHide={this.onHideDialog.bind(this)}
                             name={name}
+            />
+          )
+        });
+        return;
+
+      case "info":
+        this.setState({
+          actionDialog: (
+            <ServiceDetails serviceId={serviceId}
+                            cluster={name}
+                            onHide={this.onHideDialog.bind(this)}
             />
           )
         });

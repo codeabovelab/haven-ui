@@ -1,7 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {loadDetails} from 'redux/modules/containers/containers';
 import {Dialog, PropertyGrid} from 'components';
-import {Row, Col, FormGroup, FormControl, Checkbox, ControlLabel, HelpBlock} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 

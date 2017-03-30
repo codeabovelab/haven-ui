@@ -41,3 +41,4 @@ export ClusterRegistriesDialog from './clusters/ClusterRegistriesDialog';
 export AgentGet from './agent/AgentGet';
 export AgentAddNode from './agent/AgentAddNode';
 export NavContainer from './common/NavContainer/NavContainer';
+export ServiceDetails from './services/ServiceDetails';
