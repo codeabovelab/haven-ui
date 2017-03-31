@@ -7,6 +7,7 @@ import {getClusterServices, create as createService} from 'redux/modules/service
 import {loadNodes, loadContainers, loadDefaultParams} from 'redux/modules/clusters/clusters';
 import {loadImages, loadImageTags, searchImages} from 'redux/modules/images/images';
 import {Alert, Accordion, Panel, Label} from 'react-bootstrap';
+import {parseStr, joinArr} from '../../../utils/parseUnixLine';
 import _ from 'lodash';
 import Select from 'react-select';
 
@@ -434,7 +435,7 @@ export default class ContainerCreate extends Component {
                 {this.doubleInputField('environment', 'Environment')}
                 {this.oneInputField('constraints', 'Constraints')}
                 {this.oneInputField('affinity', 'Affinity')}
-                {this.oneInputField('command', 'Command', {hint: '  Add each argument in a separate line using (+)'})}
+                {this.oneInputField('command', 'Command', {plusEnabled: false})}
                 {this.oneInputField('entrypoint', 'Entry Point')}
               </Panel>
               <Panel header="Runtime Constraints" eventKey="2">
@@ -630,10 +631,17 @@ export default class ContainerCreate extends Component {
         });
       }
     }
-    if (key === 'command' || key === 'entrypoint') {
+    if (key === 'entrypoint') {
       if (value.length > 0) {
         this.setState({
           [key]: value
+        });
+      }
+    }
+    if (key === 'command') {
+      if (value.length > 0) {
+        this.setState({
+          [key]: [joinArr(value)]
         });
       }
     }
@@ -696,7 +704,7 @@ export default class ContainerCreate extends Component {
     container.restart = this.getRestart();
     container.volumesFrom = this.getOneInputField('volumesFrom');
     container.volumeBinds = this.getOneInputField('volumeBinds');
-    container.command = this.getOneInputField('command');
+    container.command = parseStr(this.state.command[0]);
     container.entrypoint = this.getOneInputField('entrypoint');
     $logBlock.show();
     this.setState({
@@ -802,11 +810,11 @@ export default class ContainerCreate extends Component {
     }
   }
 
-  doubleInputField(fieldName, label, placeholder1 = "", placeholder2 = "" ) {
+  doubleInputField(fieldName, label, placeholder1 = "", placeholder2 = "", options = {plusEnabled: true}) {
     let items = this.state[fieldName];
     return (
       <div className={"form-group " + "field-" + fieldName}>
-        {this.iconPlus(fieldName, label, addItem)}
+        {this.iconPlus(fieldName, label, addItem, options)}
         <div className="field-body">
           {items.map((item, key) => <div className="row" key={key}>
             <div className="col-sm-6">
@@ -846,27 +854,27 @@ export default class ContainerCreate extends Component {
     );
   }
 
-  iconPlus(fieldName, label, addItem, hint) {
+  iconPlus(fieldName, label, addItem, options) {
     return (
       <div className="field-header">
         <label>{label}</label>
-        <a onClick={addItem.bind(this, fieldName)}><i className="fa fa-plus-circle"/></a>
-        {hint && <span>&nbsp;{hint}</span>}
+        {(options && options.plusEnabled) && <a onClick={addItem.bind(this, fieldName)}><i className="fa fa-plus-circle"/></a>}
+        {(options && options.hint) && <span>&nbsp;{options.hint}</span>}
       </div>
     );
   }
 
-  oneInputField(fieldName, label, placeholder = {text: '', hint: null}) {
+  oneInputField(fieldName, label, options = {text: '', hint: null, plusEnabled: true}) {
     let items = this.state[fieldName];
     return (
       <div className={"form-group " + "field-" + fieldName}>
-        {this.iconPlus(fieldName, label, addItem, placeholder.hint)}
+        {this.iconPlus(fieldName, label, addItem, options)}
         <div className="field-body">
           {items.map((item, key) => <div className="row" key={key}>
             <div className="col-sm-12 preIcon">
               <input type="text" onChange={handleChange.bind(this, key, fieldName)} value={this.state[fieldName][key]}
                      className="form-control"
-                     placeholder={placeholder.text}/>
+                     placeholder={options.text}/>
               {key > 0 && this.iconMinus(fieldName, key)}
             </div>
           </div>)}
