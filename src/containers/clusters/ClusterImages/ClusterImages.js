@@ -117,7 +117,7 @@ export default class ClusterImages extends Component {
       const clustersImages = _.get(deployedImages, name, []);
       clustersImages.map(el => {
         if (el.name) {
-          let key = el.registry.trim().length > 0 ? el.registry + '/' + el.name : el.name;
+          let key = getFullImageName(el);
           let tags = _.get(el, 'tags', []);
           let lastTag = tags[tags.length - 1];
           if (clusterImagesMounted) {
@@ -217,10 +217,11 @@ export default class ClusterImages extends Component {
         <OverlayTrigger trigger={checkUpdateAvailability(row) ? ['hover', 'focus'] : []} placement="right" overlay={popoverTop}>
           <div className="select-update-block">
             <input type="checkbox"
+                   title={row.tags.length === 0 ? 'No tags found' : ''}
                    key={checkBoxName}
                    className="checkbox-control"
                    defaultChecked={false}
-                   disabled={!row.name}
+                   disabled={!row.name || row.tags.length === 0}
                    checked={this.state.imagesToUpdate[checkBoxName]}
                    name={checkBoxName}
                    onChange={this.toggleCheckbox.bind(this)}
@@ -228,7 +229,6 @@ export default class ClusterImages extends Component {
           </div>
         </OverlayTrigger>
       </td>
-
     );
   }
 
@@ -376,27 +376,24 @@ export default class ClusterImages extends Component {
 
   getContainersList(images) {
     const rowsUpdated = this.getRows();
-    console.log('Images to get containers ', images);
-    console.log('All Rows ', rowsUpdated);
     let rowsFiltered = [];
     let containersUpdated = [];
     _.forEach(images.images, (value, key) => {
-      rowsFiltered = _.concat(rowsFiltered, _.filter(rowsUpdated, {'name': value.name}));
+      rowsFiltered = _.concat(rowsFiltered, _.filter(rowsUpdated, (row) => {
+        return getFullImageName(row) === value.name;
+      }));
     });
-    console.log('Filtered ROws ', rowsFiltered);
     _.forEach(rowsFiltered, (value, key) => {
       containersUpdated = _.concat(containersUpdated, value.containers);
     });
     this.setState({
       containersToUpdate: containersUpdated
     });
-    console.log('containersToUpdate ', this.state.containersToUpdate);
     return containersUpdated;
   }
 
   getRows() {
     const {images, params: {name}} = this.props;
-    console.log('store Images ', images);
     return _.get(images, `deployedImages.${name}`, []).map((row)=> {
       if (checkUpdateAvailability(row)) {
         row.trColor = 'availableToUpdate';
@@ -636,4 +633,8 @@ function checkUpdateAvailability(row) {
   let tags = _.get(row, 'tags', []);
   let lastTag = tags[tags.length - 1];
   return lastTag && lastTag !== row.currentTag ? true : false;
+}
+
+function getFullImageName(row) {
+  return row.registry.trim().length > 0 ? row.registry + '/' + row.name : row.name;
 }
