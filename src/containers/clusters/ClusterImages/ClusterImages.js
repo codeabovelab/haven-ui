@@ -376,22 +376,27 @@ export default class ClusterImages extends Component {
 
   getContainersList(images) {
     const rowsUpdated = this.getRows();
+    console.log('Images to get containers ', images);
+    console.log('All Rows ', rowsUpdated);
     let rowsFiltered = [];
     let containersUpdated = [];
     _.forEach(images.images, (value, key) => {
       rowsFiltered = _.concat(rowsFiltered, _.filter(rowsUpdated, {'name': value.name}));
     });
+    console.log('Filtered ROws ', rowsFiltered);
     _.forEach(rowsFiltered, (value, key) => {
       containersUpdated = _.concat(containersUpdated, value.containers);
     });
     this.setState({
       containersToUpdate: containersUpdated
     });
+    console.log('containersToUpdate ', this.state.containersToUpdate);
     return containersUpdated;
   }
 
   getRows() {
     const {images, params: {name}} = this.props;
+    console.log('store Images ', images);
     return _.get(images, `deployedImages.${name}`, []).map((row)=> {
       if (checkUpdateAvailability(row)) {
         row.trColor = 'availableToUpdate';
