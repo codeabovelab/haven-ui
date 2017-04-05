@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
 import {load, create, loadNodes, loadClusterRegistries, update} from 'redux/modules/clusters/clusters';
 import {create as createNode} from 'redux/modules/nodes/nodes';
-import {createValidator, required, alphanumeric, maxLength} from 'utils/validation';
+import {createValidator, required, alphanumeric, maxLength, notEmptyArr} from 'utils/validation';
 import {Dialog} from 'components';
 import {load as loadRegistries} from 'redux/modules/registries/registries';
 import Select from 'react-select';
@@ -19,9 +19,11 @@ import _ from 'lodash';
   fields: [
     'name',
     'description',
-    'filter'
+    'filter',
+    'managers',
   ],
   validate: createValidator({
+    managers: [notEmptyArr],
     name: [required, alphanumeric],
     description: [maxLength(128)]
   })
@@ -93,18 +95,16 @@ export default class ClusterAdd extends Component {
       strategy: this.STRATEGIES[0].value,
       type: this.TYPES[0].value,
       assignedRegistries: [],
-      assignedNodes: [],
-      managers: []
+      assignedNodes: []
     };
   }
 
   onSubmit() {
-    const { create, update, cluster, resetForm } = this.props;
+    const { create, update, cluster, resetForm, fields, existingClusters } = this.props;
     this.setState({
       firstLoad: false
     });
     let nodes = [];
-    let managers = [];
     let submitAction = create;
     let registries = this.state.assignedRegistries.map((registry)=> {
       let el = registry.name ? registry.name : registry;
@@ -116,13 +116,8 @@ export default class ClusterAdd extends Component {
         return node.name;
       }
     });
-    managers = this.state.managers.map((node)=> {
-      if (node.name) {
-        return node.name;
-      }
-    });
+    let managers = fields.managers.value;
     this.refs.error.textContent = '';
-    const {fields, existingClusters} = this.props;
     if (_.includes(existingClusters, fields.name.value) && this.props.okTitle === 'Create Cluster') {
       this.refs.error.textContent = 'Cluster with name: "' + fields.name.value + '" already exists. Please use another name.';
       return false;
@@ -173,7 +168,7 @@ export default class ClusterAdd extends Component {
   }
 
   componentWillMount() {
-    const {loadRegistries, cluster, ownRegistries, strategy, type, managers} = this.props;
+    const {loadRegistries, cluster, ownRegistries, strategy, type, managers, fields} = this.props;
     loadRegistries().then(()=> {
       if (!cluster) {
         let registries = this.props.registries;
@@ -188,6 +183,7 @@ export default class ClusterAdd extends Component {
         return el.length === 0 ? 'Docker Hub' : el;
       });
       let assignedManagers = this.getNodes(managers);
+      fields.managers.onChange(assignedManagers);
       this.setState({
         assignedRegistries: registriesFiltered,
         strategy: strategy,
@@ -210,8 +206,12 @@ export default class ClusterAdd extends Component {
     });
   }
 
-  getNodes(nodes) {
-    return _.map(nodes, (node)=> {
+  getNodes(nodes, concatManagers = false) {
+    let allNodes = nodes;
+    if (this.props.managers && concatManagers === true) {
+      allNodes = _.concat(allNodes, this.props.managers);
+    }
+    return _.map(allNodes, (node)=> {
       if (typeof(node === 'string')) {
         return {name: node, className: "Select-value-success"};
       }
@@ -235,6 +235,15 @@ export default class ClusterAdd extends Component {
     this.setState({
       [fieldName]: value
     });
+  }
+
+  handleManagersChange(event) {
+    const {fields} = this.props;
+    let managers = [];
+    _.forEach(event, (value, key) => {
+      managers = [...managers, value.name];
+    });
+    fields.managers.onChange(managers);
   }
 
   render() {
@@ -348,7 +357,7 @@ export default class ClusterAdd extends Component {
                       searchable/>
             </FormGroup>
           )}
-          <FormGroup>
+          <FormGroup required>
             <ControlLabel>Managers</ControlLabel>
             <Select ref="managersSelect"
                     className="managersSelect"
@@ -357,12 +366,12 @@ export default class ClusterAdd extends Component {
                     multi
                     clearable
                     valueRenderer={this.renderSelectValue}
-                    onChange={this.handleReactSelectChange.bind(this, 'managers')}
+                    onChange={this.handleManagersChange.bind(this)}
                     name="managers"
-                    value={this.state.managers}
+                    value={fields.managers.value}
                     labelKey="name"
                     valueKey="name"
-                    options={this.getNodes(this.props.orphanNodes)}
+                    options={this.getNodes(this.props.orphanNodes, true)}
                     searchable/>
           </FormGroup>
         </form>

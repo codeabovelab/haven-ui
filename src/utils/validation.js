@@ -14,6 +14,13 @@ export function required(value) {
   }
 }
 
+export function notEmptyArr(value) {
+  if (isEmpty(value) || value.length === 0) {
+    return 'Required';
+  }
+}
+
+
 export function minLength(min) {
   return value => {
     if (!isEmpty(value) && value.length < min) {
