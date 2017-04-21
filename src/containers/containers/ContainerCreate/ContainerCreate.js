@@ -727,9 +727,7 @@ export default class ContainerCreate extends Component {
       ports: this.state.servicePorts,
       name: fields.serviceName.value ? fields.serviceName.value : ''
     };
-    if (this.state.constraints !== [""]) {
-      service.constraints = this.state.constraints;
-    }
+    service.constraints = this.getOneInputField('constraints');
     return createService(service)
       .then((response) => {
         let msg = (response._res.text && response._res.text.length > 0) ? response._res.text : "No response message";
@@ -766,7 +764,7 @@ export default class ContainerCreate extends Component {
     let items = this.state.servicePorts;
     return (
       <div className="form-group field-servicePorts">
-        {this.iconPlus('servicePorts', 'Service Ports', addItem)}
+        {this.iconPlus('servicePorts', 'Service Ports', addItem, {plusEnabled: true})}
         <div className="field-body">
           {items.map((item, key) => <div className="row" key={key}>
             <div className="col-sm-6">
