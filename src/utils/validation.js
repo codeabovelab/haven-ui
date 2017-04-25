@@ -79,6 +79,11 @@ export function ipWithPort(value) {
   }
 }
 
+export function isInt(value) {
+  return !isNaN(value) &&
+    parseInt(Number(value), 10) === value && !isNaN(parseInt(value, 10));
+}
+
 export function createValidator(rules) {
   return (data = {}) => {
     const errors = {};

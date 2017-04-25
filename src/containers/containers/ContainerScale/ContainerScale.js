@@ -6,6 +6,7 @@ import {scale as scaleContainer} from 'redux/modules/containers/containers';
 import {getClusterServices, scaleService} from 'redux/modules/services/services';
 import {loadContainers} from 'redux/modules/clusters/clusters';
 import _ from 'lodash';
+import {isInt} from 'utils/validation';
 
 @connect(state => ({
   containersUI: state.containersUI,
@@ -29,6 +30,15 @@ export default class ContainerScale extends Component {
   constructor(...params) {
     super(...params);
     this.state = {scaleFactor: 1};
+  }
+
+  componentWillMount() {
+    const replicas = _.get(this.props.service, 'mode.replicas', false);
+    if (isInt(replicas)) {
+      this.setState({
+        scaleFactor: replicas
+      });
+    }
   }
 
   onSubmit() {

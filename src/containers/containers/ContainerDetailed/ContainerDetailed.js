@@ -10,6 +10,7 @@ import {browserHistory} from 'react-router';
 import { Stomp } from 'stompjs/lib/stomp.min.js';
 import {connectToStomp} from '../../../utils/stompUtils';
 import Helmet from 'react-helmet';
+import {isInt} from 'utils/validation';
 
 let stompClient = null;
 
@@ -413,10 +414,5 @@ export default class ContainerDetailed extends Component {
     );
   }
 
-}
-
-function isInt(value) {
-  return !isNaN(value) &&
-    parseInt(Number(value), 10) === value && !isNaN(parseInt(value, 10));
 }
 
