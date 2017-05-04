@@ -219,7 +219,7 @@ export default class ContainerCreate extends Component {
       }.bind(this)).filter((element)=> {
         return typeof(element) !== 'undefined';
       });
-      let registries = registriesArr.join(', ');
+      let registries = registriesArr.length > 0 ? registriesArr.join(', ') : '*';
       if (input.length > 0) {
         this.props.dispatch(searchImages(input, 10, 100, registries, cluster.name)).then(() => {
           let results = this.props.images.search.results;
