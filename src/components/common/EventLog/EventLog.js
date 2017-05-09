@@ -99,7 +99,7 @@ export default class EventLog extends Component {
         {(this.props.data && !this.props.loading) && (
           <DockTable columns={this.COLUMNS}
                      rows={this.props.data}
-                     striped={false}
+                     striped
                      searchable={false}
           />
         )}
