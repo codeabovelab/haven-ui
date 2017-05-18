@@ -1,7 +1,8 @@
 import {ACTIONS} from './actions';
 const initialState = {
   new: {
-    creating: false
+    creating: false,
+    recreating: false
   }
 };
 export default function reducer(state = initialState, action = {}) {
@@ -194,6 +195,27 @@ export default function reducer(state = initialState, action = {}) {
         [action.id]: {
           ...state[action.id],
           stopping: false
+        }
+      };
+    case ACTIONS.RECREATE:
+      return {
+        ...state,
+        new: {
+          recreating: true
+        }
+      };
+    case ACTIONS.RECREATE_SUCCESS:
+      return {
+        ...state,
+        new: {
+          recreating: false
+        }
+      };
+    case ACTIONS.RECREATE_FAIL:
+      return {
+        ...state,
+        new: {
+          recreating: false
         }
       };
     default:

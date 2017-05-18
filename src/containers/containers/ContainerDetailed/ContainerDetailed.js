@@ -28,6 +28,7 @@ let stompClient = null;
   loadStatistics: containerActions.loadStatistics,
   startContainer: containerActions.start,
   stopContainer: containerActions.stop,
+  recreateContainer: containerActions.recreate,
   loadLogs: containerActions.loadLogs,
   loadDetailsByName: containerActions.loadDetailsByName,
   restartContainer: containerActions.restart,
@@ -45,6 +46,7 @@ export default class ContainerDetailed extends Component {
     loadDetailsByName: PropTypes.func.isRequired,
     startContainer: PropTypes.func.isRequired,
     stopContainer: PropTypes.func.isRequired,
+    recreateContainer: PropTypes.func.isRequired,
     loadContainers: PropTypes.func.isRequired,
     loadClusters: PropTypes.func.isRequired,
     loadLogs: PropTypes.func.isRequired,
@@ -73,6 +75,10 @@ export default class ContainerDetailed extends Component {
     {
       key: "clone",
       title: "Clone"
+    },
+    {
+      key: "recreate",
+      title: "Recreate"
     },
     {
       key: "edit",
@@ -180,6 +186,24 @@ export default class ContainerDetailed extends Component {
             />
           )
         });
+        return;
+
+      case "recreate":
+        confirm('Are you sure you want to recreate this container?')
+          .then(() => {
+            this.setState({
+              actionDialog: (
+                <LoadingDialog container={currentContainer}
+                               entityType="container"
+                               onHide={this.onHideDialogAfterRestart.bind(this)}
+                               name={name}
+                               longTermAction={this.props.recreateContainer}
+                               refreshData={this.props.loadContainers}
+                               actionKey="recreated"
+                />
+              )
+            });
+          });
         return;
 
       case "delete":

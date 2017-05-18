@@ -161,3 +161,12 @@ export function updateContainers(cluster, type, percentage, schedule, title, ima
     promise: (client) => client.post('/ui/api/jobs/', {data: body})
   };
 }
+
+export function recreate(container) {
+  console.log('CONTAINER ', container);
+  return {
+    types: [ACTIONS.RECREATE, ACTIONS.RECREATE_SUCCESS, ACTIONS.RECREATE_FAIL],
+    id: container.id,
+    promise: (client) => client.post(`/ui/api/containers/recreate`, {params: {container: container.id}})
+  };
+}

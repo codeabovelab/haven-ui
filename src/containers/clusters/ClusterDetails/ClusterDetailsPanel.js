@@ -91,6 +91,7 @@ function renderTdImage(row) {
     stopContainer: containerActions.stop,
     restartContainer: containerActions.restart,
     removeContainer: containerActions.remove,
+    recreateContainer: containerActions.recreate,
     getClusterSource: clusterActions.getClusterSource,
     deleteClusterImages
   })
@@ -106,6 +107,7 @@ export default class ClusterDetailsPanel extends Component {
     stopContainer: PropTypes.func.isRequired,
     restartContainer: PropTypes.func.isRequired,
     removeContainer: PropTypes.func.isRequired,
+    recreateContainer: PropTypes.func.isRequired,
     getClusterSource: PropTypes.func.isRequired,
     loadClusters: PropTypes.func.isRequired,
     deleteClusterImages: PropTypes.func.isRequired,
@@ -236,6 +238,10 @@ export default class ClusterDetailsPanel extends Component {
       title: "Clone"
     },
     {
+      key: "recreate",
+      title: "Recreate"
+    },
+    {
       key: "details",
       title: "Details"
     },
@@ -285,6 +291,10 @@ export default class ClusterDetailsPanel extends Component {
     {
       key: "clone",
       title: "Clone"
+    },
+    {
+      key: "recreate",
+      title: "Recreate"
     },
     {
       key: "details",
@@ -706,6 +716,15 @@ export default class ClusterDetailsPanel extends Component {
           .then(() => {
             this.setState({
               actionDialog: this.createLoadingDialog(currentContainer, this.props.restartContainer, 'restarted')
+            });
+          }).catch(()=>null);
+        return;
+
+      case "recreate":
+        confirm('Are you sure you want to recreate container "' + currentContainer.name + '" ?')
+          .then(() => {
+            this.setState({
+              actionDialog: this.createLoadingDialog(currentContainer, this.props.recreateContainer, 'recreated')
             });
           }).catch(()=>null);
         return;
