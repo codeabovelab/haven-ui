@@ -84,7 +84,7 @@ export default class AgentAddNode extends Component {
               className={css.buttonLink}
               onClick={this.onSubmit.bind(this)}
               bsStyle="primary"
-              disabled={fields.nodeTitle.error || fields.nodeAddress.error}
+              disabled={!!(fields.nodeTitle.error || fields.nodeAddress.error)}
               >Add Node</Button>
           </div>
         </form>

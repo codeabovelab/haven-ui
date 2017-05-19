@@ -1,6 +1,11 @@
 import {ACTIONS} from './actions';
+import _ from 'lodash';
 
-export default function reducer(state = {}, action = {}) {
+const initialState = {
+  agent: '' //* it means that get_agent cmd is not yet loaded */
+};
+
+export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
     case ACTIONS.SET_SETTINGS:
       return {
@@ -35,6 +40,11 @@ export default function reducer(state = {}, action = {}) {
         ...state,
         version: action.result
       };
+    case ACTIONS.GET_AGENT_SUCCESS:
+      return {
+        ...state,
+        agent: _.get(action.result, '_res.text', '')
+      };
     default:
       return state;
   }
@@ -58,5 +68,12 @@ export function getAppInfo() {
   return {
     types: [ACTIONS.GET_APP_INFO, ACTIONS.GET_APP_INFO_SUCCESS, ACTIONS.GET_APP_INFO_FAIL],
     promise: (client) => client.get(`/ui/api/version`)
+  };
+}
+
+export function getAgent() {
+  return {
+    types: [ACTIONS.GET_AGENT, ACTIONS.GET_AGENT_SUCCESS, ACTIONS.GET_AGENT_FAIL],
+    promise: (client) => client.get(`/discovery/agent/`)
   };
 }

@@ -1,48 +1,44 @@
 import React, {Component, PropTypes} from 'react';
-import config from '../../config';
-import {FormGroup, FormControl, ControlLabel, HelpBlock, Button} from 'react-bootstrap';
-import {createValidator, required, ipOrEmpty} from 'utils/validation';
-import {Field, reduxForm, SubmissionError} from 'redux-form';
-import {isEmpty} from '../../utils/validation';
+import {FormGroup, ControlLabel, Button} from 'react-bootstrap';
 
-@reduxForm({
-  form: 'GetAgent',
-  fields: [
-    'nodeIp'
-  ],
-  validate: createValidator({
-    nodeIp: [ipOrEmpty],
-  })
-})
 export default class AgentGet extends Component {
 
   static propTypes = {
-    fields: PropTypes.object,
-    css: PropTypes.object.isRequired
+    css: PropTypes.object.isRequired,
+    agent: PropTypes.string.isRequired
   };
+
+  copyToClipboard() {
+    const agent = this.props.agent;
+    if (agent && agent.length !== 0) {
+      this.agentInput.select();
+      try {
+        let successful = document.execCommand('copy');
+        let msg = successful ? 'successful' : 'unsuccessful';
+        console.log('Copying text command was ' + msg);
+      } catch (err) {
+        console.log('Oops, unable to copy. Try to copy command manually');
+      }
+    }
+  }
 
   render() {
     const css = this.props.css;
-    const fields = this.props.fields;
-    const nodeIpEmpty = isEmpty(fields.nodeIp.value);
-    let agentURL = location.protocol + '//' + config.apiHost + "/discovery/agent/haven-agent.py";
-    if (!nodeIpEmpty) {
-      agentURL += "?node=" + fields.nodeIp.value + ":2375";
-    }
+    const agent = this.props.agent;
 
     return (
       <div className="row">
         <div className="col-md-10 col-sm-12">
-          <form onSubmit={this.handleSubmit}>
-            <FormGroup validationState={fields.nodeIp.error ? "error" : null}>
-              <ControlLabel>Node IP</ControlLabel>
-              <FormControl type="text"
-                           {...fields.nodeIp}
-                           placeholder="node's ip address (can be skipped)"
-              />
-              {fields.nodeIp.error && (
-                <HelpBlock>{fields.nodeIp.error}</HelpBlock>
-              )}
+          <form>
+            <FormGroup>
+              <ControlLabel>Get Agent Command</ControlLabel>
+              <input type="string"
+                     ref={(input) => {
+                       this.agentInput = input;
+                     }}
+                     className="form-control"
+                     readOnly
+                     value={agent}/>
             </FormGroup>
           </form>
         </div>
@@ -50,8 +46,9 @@ export default class AgentGet extends Component {
           <Button
             className={"btn btn-primary " + css.buttonLink}
             type="button"
-            disabled={fields.nodeIp.error}
-            href={agentURL}>Get Agent</Button>
+            disabled={!!(!agent || agent.length === 0)}
+            onClick={this.copyToClipboard.bind(this)}
+            >Copy To Clipboard</Button>
         </div>
       </div>
     );
