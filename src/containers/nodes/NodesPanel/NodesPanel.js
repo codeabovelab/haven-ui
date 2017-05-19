@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {load} from 'redux/modules/nodes/nodes';
+import {load, deleteNode} from 'redux/modules/nodes/nodes';
 import {connect} from 'react-redux';
 import {ClusterNodesDialog} from '../../../containers/index';
 import {DockTable, NodesList, StatisticsPanel} from '../../../components';
@@ -10,13 +10,14 @@ import Helmet from 'react-helmet';
   state => ({
     nodes: state.nodes,
     nodesIds: state.nodesUI.list
-  }), {load})
+  }), {load, deleteNode})
 export default class NodesPanel extends Component {
   static propTypes = {
     nodes: PropTypes.object,
     params: PropTypes.object,
     nodesIds: PropTypes.array,
-    load: PropTypes.func.isRequired
+    load: PropTypes.func.isRequired,
+    deleteNode: PropTypes.func.isRequired
   };
 
   statisticsMetrics = [
@@ -70,6 +71,8 @@ export default class NodesPanel extends Component {
         />
         <NodesList loading={nodes.loading}
                    data={nodesList}
+                   deleteNode={this.props.deleteNode}
+                   loadNodes={this.props.load}
                    clusterName={params.name}
                    manageNodes={this.manageNodes.bind(this)}
         />

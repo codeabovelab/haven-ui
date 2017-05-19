@@ -79,3 +79,10 @@ export function add(name, address) {
     promise: (client) => client.put(`/ui/api/nodes/${name}`, {params: {address: address}})
   };
 }
+//address prop needed for loadingDialog unification
+export function deleteNode(name, address) {
+  return {
+    types: [ACTIONS.DELETE, ACTIONS.DELETE_SUCCESS, ACTIONS.DELETE_FAIL],
+    promise: (client) => client.del(`/ui/api/nodes/${name}`)
+  };
+}

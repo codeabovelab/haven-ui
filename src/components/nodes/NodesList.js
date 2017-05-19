@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import { Link, RouteHandler } from 'react-router';
-import {DockTable, ActionMenu, Chain} from '../index';
+import {DockTable, ActionMenu, Chain, LoadingDialog} from '../index';
 import {Badge, ButtonToolbar, Button, ProgressBar, Popover} from 'react-bootstrap';
 import {Dialog, PropertyGrid, NavContainer} from 'components';
 import TimeUtils from 'utils/TimeUtils';
@@ -11,7 +11,9 @@ export default class NodesList extends Component {
     data: PropTypes.array,
     loading: PropTypes.bool,
     clusterName: PropTypes.string,
-    manageNodes: PropTypes.func
+    manageNodes: PropTypes.func,
+    loadNodes: PropTypes.func.isRequired,
+    deleteNode: PropTypes.func.isRequired
   };
 
   COLUMNS = [
@@ -81,6 +83,10 @@ export default class NodesList extends Component {
     {
       key: "info",
       title: "Info"
+    },
+    {
+      key: "delete",
+      title: "Delete"
     }
   ];
 
@@ -170,6 +176,24 @@ export default class NodesList extends Component {
         this.setState({
           actionDialog: this.getDialog(node)
         });
+        return;
+
+      case "delete":
+        confirm(`Are you sure you want to delete node ${node.name}?`)
+          .then(() => {
+            this.setState({
+              actionDialog: (
+                <LoadingDialog node={node}
+                               entityType="node"
+                               onHide={this.onHideDialog.bind(this)}
+                               name=""
+                               longTermAction={this.props.deleteNode}
+                               refreshData={this.props.loadNodes}
+                               actionKey="deleted"
+                />
+              )
+            });
+          });
         return;
 
       default:
