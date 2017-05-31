@@ -636,5 +636,5 @@ function checkUpdateAvailability(row) {
 }
 
 function getFullImageName(row) {
-  return row.registry.trim().length > 0 ? row.registry + '/' + row.name : row.name;
+  return (row.registry && row.registry.trim().length > 0) ? row.registry + '/' + row.name : row.name;
 }
