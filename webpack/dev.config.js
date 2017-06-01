@@ -140,8 +140,7 @@ module.exports = {
       __DEVTOOLS__: true  // <-------- DISABLE redux-devtools HERE
     }),
     new CopyWebpackPlugin([{
-        from: 'static',
-        to: ''
+        from: './static'
       }]
     ),
     new HtmlWebpackPlugin({
