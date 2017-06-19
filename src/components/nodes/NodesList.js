@@ -311,7 +311,12 @@ export default class NodesList extends Component {
   }
 
   timeFotmat(row) {
-    let time = row.time ? TimeUtils.format(row.time) : 'none';
+    let time = 'none';
+    if (row.time) {
+      const currentTime = + new Date();
+      const previousTime = + new Date(row.time);
+      time = TimeUtils.timeDifference(currentTime, previousTime);
+    }
     return (
       <td key="time">
         {time}
