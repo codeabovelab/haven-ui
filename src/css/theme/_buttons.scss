@@ -9,10 +9,6 @@ $hover: 24;
   transition: all 0.1s ease;
 }
 
-.btn:hover {
-  transform: scale(1.2);
-}
-
 .btnNotTransformed {
   transform: none!important;
 }
