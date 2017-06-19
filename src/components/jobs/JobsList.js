@@ -158,7 +158,7 @@ export default class JobsList extends Component {
             <DockTable columns={this.COLUMNS} rows={data} />
           )}
           {(!hasData && !loading) && (
-            <div className="alert alert-info">
+            <div className="alert alert-no-results">
               No jobs yet
             </div>
           )}

@@ -341,7 +341,7 @@ export default class ServicesPanel extends Component {
             </div>
           )}
           {(rows.length === 0 && !services.loading) && (
-            <div className="alert alert-info">
+            <div className="alert alert-no-results">
               No services yet
             </div>
           )}

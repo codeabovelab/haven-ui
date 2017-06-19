@@ -129,7 +129,7 @@ export default class NodesList extends Component {
             </div>
           )}
           {(this.props.data && this.props.data.length === 0) && (
-            <div className="alert alert-info">
+            <div className="alert alert-no-results">
               No nodes to display
             </div>
           )}

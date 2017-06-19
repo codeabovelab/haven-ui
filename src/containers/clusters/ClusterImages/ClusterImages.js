@@ -561,7 +561,7 @@ export default class ClusterImages extends Component {
             </div>
           )}
           {(rows.length === 0 && !images.loadingDeployed) && (
-            <div className="alert alert-info">
+            <div className="alert alert-no-results">
               No images yet
             </div>
           )}

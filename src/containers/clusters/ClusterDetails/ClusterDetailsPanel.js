@@ -519,7 +519,7 @@ export default class ClusterDetailsPanel extends Component {
             </div>
           )}
           {(rows && rows.length === 0) && (
-            <div className="alert alert-info">
+            <div className="alert alert-no-results">
               No containers yet
             </div>
           )}

@@ -180,7 +180,7 @@ export default class ClusterNetworks extends Component {
                 </div>
               )}
               {(!networks.loadingList && rows.length === 0) && (
-                <div className="alert alert-info">
+                <div className="alert alert-no-results">
                   No networks yet
                 </div>
               )}
