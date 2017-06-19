@@ -22,7 +22,8 @@ import {
   ClusterNetworks,
   NetworkContainers,
   AgentPanel,
-  ServicesPanel
+  ServicesPanel,
+  UserPassChange
 } from 'containers';
 
 export default (store) => {
@@ -89,6 +90,7 @@ export default (store) => {
         <Route name="Job Detailed View" path="jobs/:name" component={JobDetailed}/>
         <Route name="Users" path="users" component={UsersPanel}/>
         <Route name="Agent" path="agent" component={AgentPanel}/>
+        <Route name="My Account" path="my_account" component={UserPassChange}/>
       </Route>
 
       { /* Public Routes */ }

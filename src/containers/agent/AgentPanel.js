@@ -27,16 +27,14 @@ export default class AgentPanel extends Component {
   }
 
   render() {
-    const css = require('./AgentPanel.scss');
-
     return (
       <Panel>
         <Helmet title="Agent"/>
         <div className="col-md-offset-1 col-md-10 col-md-offset-1">
           <h3>Get Agent</h3>
-          <AgentGet css={css} agent={this.props.agent}/>
+          <AgentGet agent={this.props.agent}/>
           <h3>Add Node</h3>
-          <AgentAddNode css={css} addNode={this.props.addNode} loadNodes={this.props.loadNodes}/>
+          <AgentAddNode addNode={this.props.addNode} loadNodes={this.props.loadNodes}/>
         </div>
       </Panel>
     );
