@@ -17,6 +17,14 @@ export default class PropertyGridLeaf extends Component {
     };
   }
 
+  componentDidMount() {
+    this.colorOddRows();
+  }
+
+  componentDidUpdate() {
+    this.colorOddRows();
+  }
+
   getType(value) {
     return Object.prototype.toString.call(value).slice(8, -1);
   }
@@ -34,6 +42,18 @@ export default class PropertyGridLeaf extends Component {
     this.setState({
       expanded: !this.state.expanded
     });
+  }
+
+  colorOddRows() {
+    const rows = document.getElementsByClassName('pg-row');
+    for (let i = 0; i < rows.length; i++) {
+      const element = rows.item(i);
+      if (i % 2 === 0) {
+        element.classList.add('pg-colored-row');
+      } else {
+        element.classList.remove('pg-colored-row');
+      }
+    }
   }
 
   render() {
