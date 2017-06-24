@@ -129,7 +129,7 @@ export default class NodesList extends Component {
             </div>
           )}
           {(this.props.data && this.props.data.length === 0) && (
-            <div className="alert alert-info">
+            <div className="alert alert-no-results">
               No nodes to display
             </div>
           )}
@@ -311,7 +311,12 @@ export default class NodesList extends Component {
   }
 
   timeFotmat(row) {
-    let time = row.time ? TimeUtils.format(row.time) : 'none';
+    let time = 'none';
+    if (row.time) {
+      const currentTime = + new Date();
+      const previousTime = + new Date(row.time);
+      time = TimeUtils.timeDifference(currentTime, previousTime);
+    }
     return (
       <td key="time">
         {time}

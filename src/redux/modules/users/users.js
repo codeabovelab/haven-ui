@@ -8,12 +8,23 @@ export default function reducer(state = {}, action = {}) {
         ...state,
         roles: action.result
       };
+    case ACTIONS.GET_CURRENT_USER:
+      return {
+        ...state,
+        loadingCurrentUser: true
+      };
+    case ACTIONS.GET_CURRENT_USER_FAIL:
+      return {
+        ...state,
+        loadingCurrentUser: false
+      };
     case ACTIONS.GET_CURRENT_USER_SUCCESS:
       let user = _.get(action.result, 'user', 'undefined');
       let role = _.get(action.result, 'roles[0].name', '');
       let credentialsState = _.get(action.result, 'credentialsNonExpired', true);
       return {
         ...state,
+        loadingCurrentUser: false,
         currentUser: {
           name: user,
           role: role,
@@ -33,12 +44,20 @@ export default function reducer(state = {}, action = {}) {
     case ACTIONS.SET_USER:
       return {
         ...state,
+        settingUser: true,
         setUserError: null
       };
     case ACTIONS.SET_USER_FAIL:
       return {
         ...state,
+        settingUser: false,
         setUserError: action.error.message
+      };
+    case ACTIONS.SET_USER_SUCCESS:
+      return {
+        ...state,
+        settingUser: false,
+        setUserError: null
       };
     case ACTIONS.GET_USER_ROLES_SUCCESS:
       return {

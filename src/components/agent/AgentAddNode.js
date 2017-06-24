@@ -19,7 +19,6 @@ export default class AgentAddNode extends Component {
 
   static propTypes = {
     fields: PropTypes.object,
-    css: PropTypes.object.isRequired,
     handleSubmit: PropTypes.func,
     addNode: PropTypes.func.isRequired,
     loadNodes: PropTypes.func.isRequired,
@@ -49,7 +48,6 @@ export default class AgentAddNode extends Component {
   }
 
   render() {
-    const css = this.props.css;
     const fields = this.props.fields;
 
     return (
@@ -81,7 +79,7 @@ export default class AgentAddNode extends Component {
           </div>
           <div className="col-md-2 col-sm-12">
             <Button
-              className={css.buttonLink}
+              className="buttonLink"
               onClick={this.onSubmit.bind(this)}
               bsStyle="primary"
               disabled={!!(fields.nodeTitle.error || fields.nodeAddress.error)}

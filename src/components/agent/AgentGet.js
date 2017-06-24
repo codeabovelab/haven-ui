@@ -4,7 +4,6 @@ import {FormGroup, ControlLabel, Button} from 'react-bootstrap';
 export default class AgentGet extends Component {
 
   static propTypes = {
-    css: PropTypes.object.isRequired,
     agent: PropTypes.string.isRequired
   };
 
@@ -23,7 +22,6 @@ export default class AgentGet extends Component {
   }
 
   render() {
-    const css = this.props.css;
     const agent = this.props.agent;
 
     return (
@@ -44,7 +42,7 @@ export default class AgentGet extends Component {
         </div>
         <div className="col-md-2 col-sm-12">
           <Button
-            className={"btn btn-primary " + css.buttonLink}
+            className="btn btn-primary buttonLink"
             type="button"
             disabled={!!(!agent || agent.length === 0)}
             onClick={this.copyToClipboard.bind(this)}

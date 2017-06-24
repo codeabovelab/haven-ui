@@ -118,7 +118,7 @@ export default class RegistriesList extends Component {
         )}
 
         {this.props.data && this.props.data.length === 0 && (
-          <div className="alert alert-info">
+          <div className="alert alert-no-results">
             No Registries yet
           </div>
         )}

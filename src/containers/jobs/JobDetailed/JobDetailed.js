@@ -142,7 +142,7 @@ export default class JobDetailed extends Component {
                            nullDisplayName=""
                 />
               ) || (
-                <div className="alert alert-info">
+                <div className="alert alert-no-results">
                   No log entries available
                 </div>
               )}

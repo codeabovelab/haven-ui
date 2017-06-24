@@ -1,11 +1,12 @@
 import React, {Component, PropTypes} from 'react';
-import { Link } from 'react-router';
+import { Link, browserHistory } from 'react-router';
+import {Alert} from 'react-bootstrap';
 import {toggle} from 'redux/modules/menuLeft/menuLeft';
 import {logout} from 'redux/modules/auth/auth';
 import { connect } from 'react-redux';
 import {getCurrentUser} from 'redux/modules/users/users';
 import _ from 'lodash';
-import {UserPassChange} from '../../containers/index';
+import {Dialog} from '../index';
 import { connectWebsocketEventsListener } from '../common/EventListener/EventListener';
 
 @connect(
@@ -55,7 +56,7 @@ export default class MenuLeft extends Component {
     const {getCurrentUser} = this.props;
     getCurrentUser().then(()=> {
       const {users} = this.props;
-      if (!users.currentUser.credentialsNonExpired) {
+      if (!users.currentUser.credentialsNonExpired && window.location.pathname !== '/my_account') {
         this.setState({
           actionDialog: undefined
         });
@@ -73,14 +74,20 @@ export default class MenuLeft extends Component {
   }
 
   showPasswordChange(title) {
-    const {users} = this.props;
     this.setState({
       actionDialog: (
-        <UserPassChange title={title}
-                        onHide={this.onHideDialog.bind(this)}
-                        okTitle="Change Password"
-                        userName={users.currentUser.name}
-        />
+        <Dialog
+          title={title}
+          onHide={this.onHideDialog.bind(this)}
+          okTitle="OK"
+          hideCancel
+          onSubmit={() => {
+            browserHistory.push('/my_account');
+            this.onHideDialog();
+          }}
+          show>
+          <Alert bsStyle="info" className="margin-top-20">Click "OK" to change password</Alert>
+        </Dialog>
       )
     });
   }
@@ -146,7 +153,7 @@ export default class MenuLeft extends Component {
           </li>
 
           <li className="al-sidebar-list-item" title="Change password">
-            <Link className="al-sidebar-list-link" onClick={()=>{this.showPasswordChange("Change Password");}}>
+            <Link className="al-sidebar-list-link" to="/my_account">
               <i className="fa fa-id-badge fa-fw"/>
               <span>My Account</span>
             </Link>

@@ -10,6 +10,10 @@ export default class PropertyGrid extends Component {
   render() {
     return (
       <div className="property-grid">
+        <div className="pg-leaf" style={{textAlign: 'center'}}>
+          <span className="pg-label" style={{fontWeight: 'bold'}}>Attribute Name</span>
+          <span className="pg-value" style={{fontWeight: 'bold'}}>Values</span>
+        </div>
         <PropertyGridLeaf data={this.props.data}
                           label="root"
                           isRoot

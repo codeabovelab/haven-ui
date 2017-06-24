@@ -338,16 +338,19 @@ export default class ClusterDetailsPanel extends Component {
     ports.map((el) => {
       if (checkPort(el.publicPort) && checkPort(el.privatePort)) {
         if (el.IP) {
-          portsCoupled.push(el.IP + ":" + el.publicPort + ":" + el.privatePort);
+          portsCoupled.push(el.IP + ":" + el.publicPort + " => " + el.privatePort);
         } else {
-          portsCoupled.push(el.publicPort + ":" + el.privatePort);
+          portsCoupled.push(el.publicPort + " => " + el.privatePort);
         }
       }
     });
-
     return (
       <td key="ports">
-      <span>{portsCoupled.join(', ')}</span>
+        {
+          portsCoupled.map((el, i) => {
+            return <div key={i}>{el}</div>;
+          })
+        }
       </td>
     );
   }
@@ -519,7 +522,7 @@ export default class ClusterDetailsPanel extends Component {
             </div>
           )}
           {(rows && rows.length === 0) && (
-            <div className="alert alert-info">
+            <div className="alert alert-no-results">
               No containers yet
             </div>
           )}
