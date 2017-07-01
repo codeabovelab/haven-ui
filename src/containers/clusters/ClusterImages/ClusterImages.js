@@ -630,9 +630,18 @@ function shortenName(name) {
 }
 
 function checkUpdateAvailability(row) {
-  let tags = _.get(row, 'tags', []);
-  let lastTag = tags[tags.length - 1];
-  return lastTag && lastTag !== row.currentTag ? true : false;
+  const tags = _.get(row, 'tags', []);
+  const lastTag = tags[tags.length - 1];
+  const preLastTag = tags[tags.length - 2];
+  let updateAvailable = false;
+  if (lastTag) {
+    if (lastTag === 'latest' && preLastTag) {
+      updateAvailable = (preLastTag !== row.currentTag) && (lastTag !== row.currentTag);
+    } else {
+      updateAvailable = lastTag !== row.currentTag;
+    }
+  }
+  return updateAvailable;
 }
 
 function getFullImageName(row) {
