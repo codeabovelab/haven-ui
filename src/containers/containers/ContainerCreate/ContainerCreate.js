@@ -153,6 +153,7 @@ export default class ContainerCreate extends Component {
     this.setState({loadingParams: true});
     loadDetails(origin).then((originParams) => {
       originParams.hostname = '';
+      originParams.name = '';
       _.forOwn(originParams, (value, key) => {
         this.setDefaultFields(originParams, value, key, fields);
       });
