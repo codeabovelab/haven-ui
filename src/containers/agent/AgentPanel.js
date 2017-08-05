@@ -31,10 +31,13 @@ export default class AgentPanel extends Component {
       <Panel>
         <Helmet title="Agent"/>
         <div className="col-md-offset-1 col-md-10 col-md-offset-1">
-          <h3>Get Agent</h3>
+          <h3>Start agent at node</h3>
           <AgentGet agent={this.props.agent}/>
-          <h3>Add Node</h3>
+          <h3>Or add node via agentless mode* (docker should listen network port)</h3>
           <AgentAddNode addNode={this.props.addNode} loadNodes={this.props.loadNodes}/>
+          <p>Full installation guide is available
+            <a target="_blank"
+               href="https://github.com/codeabovelab/haven-platform/blob/master/doc/installation.md"> here</a>.</p>
         </div>
       </Panel>
     );
