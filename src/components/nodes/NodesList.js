@@ -255,9 +255,11 @@ export default class NodesList extends Component {
   }
 
   cpusRender(row) {
+    const cpusReserved = row.health.swarmCpusReserved ? row.health.swarmCpusReserved : '-';
+    const cpusTotal = row.health.swarmCpusTotal ? row.health.swarmCpusTotal : '-';
     return (
       <td key="cpus">
-        <span>{row.health.swarmCpusReserved + '/' + row.health.swarmCpusTotal}</span>
+        <span>{cpusReserved + '/' + cpusTotal}</span>
       </td>
     );
   }
