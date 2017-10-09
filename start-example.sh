@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 #starts dev server
-export API_HOST=hb1.codeabovelab.com:80
+export API_HOST=some-host-name.com:port
 npm run dev
