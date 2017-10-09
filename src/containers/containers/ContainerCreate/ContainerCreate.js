@@ -455,7 +455,7 @@ export default class ContainerCreate extends Component {
               </Panel>
               <Panel header="Network Settings" eventKey="4">
                 {!service && (
-                  this.doubleInputField('ports', 'Ports', 'Public Port', 'Private Port')
+                  this.doubleInputField('ports', 'Ports', 'Private Port', 'Public Port')
                 ) || (
                   this.servicePortsField()
                 )}
@@ -770,20 +770,20 @@ export default class ContainerCreate extends Component {
         <div className="field-body">
           {items.map((item, key) => <div className="row" key={key}>
             <div className="col-sm-6">
-              <input type="string" onChange={handleChange.bind(this, key, 'publicPort')} className="form-control"
-                     placeholder="Public Port" value={this.state.servicePorts[key].publicPort}/>
-              <select className="form-control" onChange={handleChange.bind(this, key, 'mode')}>
-                {SERVICE_PORTS_MODES.map(value =>
-                  <option key={value} value={value}>{value}</option>
-                )}
-              </select>
-            </div>
-            <div className="col-sm-6 preIcon">
               <input type="string" onChange={handleChange.bind(this, key, 'privatePort')} className="form-control"
                      placeholder="Private Port" value={this.state.servicePorts[key].privatePort}/>
               {key > 0 && this.iconMinus("servicePorts", key)}
               <select className="form-control" onChange={handleChange.bind(this, key, 'type')}>
                 {SERVICE_PORTS_TYPES.map(value =>
+                  <option key={value} value={value}>{value}</option>
+                )}
+              </select>
+            </div>
+            <div className="col-sm-6 preIcon">
+              <input type="string" onChange={handleChange.bind(this, key, 'publicPort')} className="form-control"
+                     placeholder="Public Port" value={this.state.servicePorts[key].publicPort}/>
+              <select className="form-control" onChange={handleChange.bind(this, key, 'mode')}>
+                {SERVICE_PORTS_MODES.map(value =>
                   <option key={value} value={value}>{value}</option>
                 )}
               </select>
