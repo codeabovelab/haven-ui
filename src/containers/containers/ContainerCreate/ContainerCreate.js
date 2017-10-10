@@ -131,9 +131,6 @@ export default class ContainerCreate extends Component {
 
   componentWillMount() {
     const {loadNodes, loadImages, cluster, fields, origin} = this.props;
-
-    fields.restart.value = 'no';
-    fields.publishAllPorts.value = 'false';
     _.each(fields, function loopFields(value, key) {
       if (CPU_FIELDS[key] && CPU_FIELDS[key].defaultValue) {
         fields[key].onChange(CPU_FIELDS[key].defaultValue);
@@ -141,6 +138,9 @@ export default class ContainerCreate extends Component {
     });
     if (origin) {
       this.setOriginParams();
+    } else {
+      fields.restart.value = 'no';
+      fields.publishAllPorts.value = 'false';
     }
     loadNodes(cluster.name);
     loadImages();
@@ -602,7 +602,6 @@ export default class ContainerCreate extends Component {
   }
 
   setDefaultFields(defaultParams, value, key, fields) {
-    if (['tag'].indexOf(key) > -1) return;
     if (key === 'environment') {
       let envVars = {};
       envVars.environment = [];
@@ -664,6 +663,15 @@ export default class ContainerCreate extends Component {
           return match[0].toLowerCase();
         });
         fields[key].onChange(result);
+      } else if (key === 'restart' && value && value.length > 0) {
+        const regExp = /(on-failure):(\d+)/g;
+        const onFailureCase = regExp.exec(value);
+        if (onFailureCase && onFailureCase[2] && onFailureCase[2].length > 0) {
+          fields.restart.onChange('on-failure');
+          fields.restartRetries.onChange(onFailureCase[2]);
+        } else {
+          fields.restart.onChange(value);
+        }
       } else {
         fields[key].onChange(value);
       }
