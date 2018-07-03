@@ -942,7 +942,7 @@ export default class ContainerCreate extends Component {
     let map = {};
     list.forEach(item => {
       if (item.field1 && item.field2) {
-        map[item.field1] = item.field2;
+        map[item.field2] = item.field1;
       }
     });
     return map;
